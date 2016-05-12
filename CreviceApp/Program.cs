@@ -101,12 +101,14 @@ namespace CreviceApp
         
         private readonly Object hookLock = new Object();
         private readonly UserProcedure userProcedure;
+        private readonly Procedure bindedProcedure;
 
         private IntPtr hHook = IntPtr.Zero;
         
         public LowLevelMouseHook(UserProcedure userProcedure)
         {
             this.userProcedure = userProcedure;
+            this.bindedProcedure = MouseHookProc;
         }
 
         public bool Activated()
@@ -125,7 +127,7 @@ namespace CreviceApp
                 var hInstance = Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]);
                 Debug.Print("hInstance: 0x{0:X}", hInstance.ToInt64());
                 Debug.Print("trying to set a hook(WH_MOUSE_LL)");
-                hHook = SetWindowsHookEx(WH_MOUSE_LL, MouseHookProc, hInstance, 0);
+                hHook = SetWindowsHookEx(WH_MOUSE_LL, this.bindedProcedure, hInstance, 0);
                 Debug.Print("hHook: 0x{0:X}", hHook.ToInt64());
                 if (!Activated())
                 {
@@ -133,6 +135,7 @@ namespace CreviceApp
                     Debug.Print("failed to set a hook(WH_MOUSE_LL), ErrorCode: {0}", errorCode);
                     throw new Win32Exception(errorCode);
                 }
+                Debug.Print("success");
             }
         }
 
@@ -153,6 +156,7 @@ namespace CreviceApp
                     throw new Win32Exception(errorCode);
                 }
                 hHook = IntPtr.Zero;
+                Debug.Print("success");
             }
         }
 
