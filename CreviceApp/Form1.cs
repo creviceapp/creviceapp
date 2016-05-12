@@ -26,6 +26,26 @@ namespace CreviceApp
             InitializeComponent();
         }
 
+        /**
+         * 
+         * APP     : App((x) => {})  ( ON )
+         * 
+         * ON      : @on(BUTTON)     ( DO | IF | STROKE )
+         * 
+         * IF      : @if(BUTTON)     ( DO )
+         * 
+         * DO      : @do((x) => {}) 
+         * 
+         * STROKE  : @stroke(MOVE *) ( BY )
+         * 
+         * BY      : @by(BUTTON)     ( DO )
+         * 
+         * BUTTON  : L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
+         * 
+         * MOVE    : MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
+         * 
+         */
+
         public LowLevelMouseHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
             var app = winApp.GetOnCursor(data.pt.x, data.pt.y);
@@ -34,19 +54,19 @@ namespace CreviceApp
 
             switch (evnt)
             {
-                case LowLevelMouseHook.Event.L_BUTTONDOWN:
-                case LowLevelMouseHook.Event.L_BUTTONUP:
-                case LowLevelMouseHook.Event.MOUSEMOVE:
-                case LowLevelMouseHook.Event.R_BUTTONDOWN:
-                case LowLevelMouseHook.Event.R_BUTTONUP:
+                case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
+                case LowLevelMouseHook.Event.WM_LBUTTONUP:
+                case LowLevelMouseHook.Event.WM_MOUSEMOVE:
+                case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
+                case LowLevelMouseHook.Event.WM_RBUTTONUP:
                     Debug.Print("0x{0:X}: x={1}, y={2}", evnt, data.pt.x, data.pt.y);
                     break;
-                case LowLevelMouseHook.Event.V_MOUSEWHEEL:
-                case LowLevelMouseHook.Event.H_MOUSEWHEEL:
+                case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
+                case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
                     Debug.Print("0x{0:X}: delta={1}", evnt, data.mouseData.higher);
                     break;
-                case LowLevelMouseHook.Event.X_BUTTONDOWN:
-                case LowLevelMouseHook.Event.X_BUTTONUP:
+                case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
+                case LowLevelMouseHook.Event.WM_XBUTTONUP:
                     Debug.Print("0x{0:X}: type={1}", evnt, data.mouseData.higher);
                     break;
                 default:
