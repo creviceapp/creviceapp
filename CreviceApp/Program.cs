@@ -6,6 +6,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -27,6 +28,77 @@ namespace CreviceApp
         }
     }
 
+    class WindowsApplication
+    {
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(int x, int y);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+        [DllImport("kernel32.dll")]
+        private static extern bool CloseHandle(IntPtr hHandle);
+
+        [DllImport("kernel32.dll")]
+        static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, out int lpdwSize);
+
+        private const int PROCESS_VM_READ           = 0x0010;
+        private const int PROCESS_QUERY_INFORMATION = 0x0400;
+
+        private const int maxPathSize = 1024;
+        private readonly StringBuilder buffer = new StringBuilder(maxPathSize);
+
+        public WindowsApplicationInfo GetForeground()
+        {
+            IntPtr hWindow = GetForegroundWindow();
+            return FindFromWindowHandle(hWindow);
+        }
+        public WindowsApplicationInfo GetOnCursor(int x, int y)
+        {
+            IntPtr hWindow = WindowFromPoint(x, y);
+            return FindFromWindowHandle(hWindow);
+        }
+
+        private WindowsApplicationInfo FindFromWindowHandle(IntPtr hWindow)
+        {
+            int pid = 0;
+            int tid = GetWindowThreadProcessId(hWindow, out pid);
+            Debug.Print("tid: 0x{0:X}", tid);
+            Debug.Print("pid: 0x{0:X}", pid);
+            IntPtr hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, pid);
+            Debug.Print("hProcess: 0x{0:X}", hProcess.ToInt64());
+            int lpdwSize = maxPathSize;
+            try
+            {
+                QueryFullProcessImageName(hProcess, 0, buffer, out lpdwSize);
+            }
+            finally
+            {
+                CloseHandle(hProcess);
+            }
+            String path = buffer.ToString();
+            String name = path.Substring(path.LastIndexOf("\\")+1);
+            return new WindowsApplicationInfo(path, name);
+        }
+    }
+
+    class WindowsApplicationInfo
+    {
+        public readonly String path;
+        public readonly String name;
+        public WindowsApplicationInfo(String path, String name)
+        {
+            this.path = path;
+            this.name = name;
+        }
+    }
+
     public class LowLevelMouseHook : IDisposable
     {
         [DllImport("user32.dll", SetLastError = true)]
@@ -37,7 +109,7 @@ namespace CreviceApp
         private static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
         
         private delegate IntPtr Procedure(int nCode, IntPtr wParam, IntPtr lParam);
-        public delegate Result UserProcedure(Event e, MSLLHOOKSTRUCT data);
+        public delegate Result UserProcedure(Event evnt, MSLLHOOKSTRUCT data);
 
         private const int HC_ACTION = 0;
 
@@ -99,7 +171,7 @@ namespace CreviceApp
 
         private static readonly IntPtr LRESULTCancel = new IntPtr(1);
         
-        private readonly Object hookLock = new Object();
+        private readonly Object lockObject = new Object();
         private readonly UserProcedure userProcedure;
         private readonly Procedure bindedProcedure;
 
@@ -118,7 +190,7 @@ namespace CreviceApp
 
         public void SetHook()
         {
-            lock (hookLock)
+            lock (lockObject)
             {
                 if (Activated())
                 {
@@ -141,7 +213,7 @@ namespace CreviceApp
 
         public void Unhook()
         {
-            lock (hookLock)
+            lock (lockObject)
             {
                 if (!Activated())
                 {
@@ -162,7 +234,7 @@ namespace CreviceApp
 
         public IntPtr MouseHookProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            lock (hookLock)
+            lock (lockObject)
             {
                 if (nCode >= 0 && Activated())
                 {
@@ -185,7 +257,7 @@ namespace CreviceApp
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            lock (hookLock)
+            lock (lockObject)
             {
                 if (Activated())
                 {
