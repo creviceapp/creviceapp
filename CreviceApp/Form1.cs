@@ -27,7 +27,7 @@ namespace CreviceApp
             Task.Run(() => {
                 var inputSender = new SingleInputSender();
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
                 /*
                 inputSender.LeftDown();
                 inputSender.LeftUp();
@@ -39,6 +39,7 @@ namespace CreviceApp
                 ushort VK_TAB     = 0x09;
                 ushort VK_CONTROL = 0x11;
                 ushort N_0        = 0x30;
+                ushort VK_LWIN    = 0x5B;
 
                 /*
                 inputSender.ExtendedKeyDown(N_0);
@@ -56,15 +57,28 @@ namespace CreviceApp
                 
                 inputSender.ExtendedKeyDown(N_0);
                 inputSender.ExtendedKeyUp(N_0);
+                
                 */
+
                 new InputSequenceBuilder()
-                  .ExtendedKeyDown(VK_CONTROL)
-                  .ExtendedKeyDown(VK_TAB)
-                  .ExtendedKeyUp(VK_TAB)
-                  .ExtendedKeyUp(VK_CONTROL)
+                  .KeyDownWithScanCode(VK_CONTROL)
+                  .KeyDownWithScanCode(VK_TAB)
+                  .KeyUpWithScanCode(VK_TAB)
+                  .KeyUpWithScanCode(VK_CONTROL)
                   .Send();
 
-                
+
+                /*
+                Thread.Sleep(5000);
+                inputSender.KeyDown(VK_LWIN);
+                inputSender.KeyUp(VK_LWIN);
+                Thread.Sleep(5000);
+                inputSender.ExtendedKeyDown(VK_LWIN);
+                inputSender.ExtendedKeyUp(VK_LWIN);
+                Thread.Sleep(5000);
+                inputSender.ExtendedKeyDownWithScanCode(VK_LWIN);
+                inputSender.ExtendedKeyUpWithScanCode(VK_LWIN);
+                */
             });
 
             InitializeComponent();

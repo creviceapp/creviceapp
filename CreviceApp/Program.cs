@@ -139,6 +139,30 @@ namespace CreviceApp
 
         protected void Send(INPUT[] input)
         {
+            Debug.Print("calling a native method SendInput");
+            foreach (var x in input)
+            {
+                switch (x.type)
+                {
+                    case INPUT_MOUSE:
+                        Debug.Print("dx: {0}", x.data.asMouseInput.dx);
+                        Debug.Print("dy: {0}", x.data.asMouseInput.dy);
+                        Debug.Print("asWheelDelta.delta: {0}", x.data.asMouseInput.mouseData.asWheelDelta.delta);
+                        Debug.Print("asXButton.type: {0}", x.data.asMouseInput.mouseData.asXButton.type);
+                        Debug.Print("dwFlags: {0}",BitConverter.ToString(BitConverter.GetBytes(x.data.asMouseInput.dwFlags)));
+                        Debug.Print("dwExtraInfo: {0}", BitConverter.ToString(BitConverter.GetBytes(x.data.asMouseInput.dwExtraInfo.ToUInt64())));
+                        break;
+                    case INPUT_KEYBOARD:
+                        Debug.Print("wVk: {0}", x.data.asKeyboardInput.wVk);
+                        Debug.Print("wScan: {0}", x.data.asKeyboardInput.wScan);
+                        Debug.Print("dwFlags: {0}", BitConverter.ToString(BitConverter.GetBytes(x.data.asKeyboardInput.dwFlags)));
+                        Debug.Print("dwExtraInfo: {0}", BitConverter.ToString(BitConverter.GetBytes(x.data.asKeyboardInput.dwExtraInfo.ToUInt64())));
+                        break;
+                    case INPUT_HARDWARE:
+                        break;
+                }
+            }
+
             if (SendInput((uint)input.Length, input, Marshal.SizeOf(input[0])) > 0)
             {
                 Debug.Print("success");
@@ -302,6 +326,14 @@ namespace CreviceApp
             return keyboardInput;
         }
 
+        private KEYBDINPUT KeyWithScanCodeEvent(ushort keyCode)
+        {
+            var keyboardInput = KeyEvent(keyCode);
+            keyboardInput.wScan = (ushort)MapVirtualKey(keyCode, 0);
+            keyboardInput.dwFlags = keyboardInput.dwFlags | KEYEVENTF_SCANCODE;
+            return keyboardInput;
+        }
+
         private KEYBDINPUT ExtendedKeyWithScanCodeEvent(ushort keyCode)
         {
             var keyboardInput = ExtendedKeyEvent(keyCode);
@@ -332,6 +364,14 @@ namespace CreviceApp
             return keyboardInput;
         }
 
+        protected KEYBDINPUT KeyUpWithScanCodeEvent(ushort keyCode)
+        {
+            var keyboardInput = KeyWithScanCodeEvent(keyCode);
+            keyboardInput.dwFlags = keyboardInput.dwFlags | KEYEVENTF_KEYUP;
+            return keyboardInput;
+
+        }
+
         protected KEYBDINPUT ExtendedKeyUpWithScanCodeEvent(ushort keyCode)
         {
             var keyboardInput = ExtendedKeyWithScanCodeEvent(keyCode);
@@ -356,6 +396,12 @@ namespace CreviceApp
         {
             return ExtendedKeyEvent(keyCode);
         }
+
+        protected KEYBDINPUT KeyDownWithScanCodeEvent(ushort keyCode)
+        {
+            return KeyWithScanCodeEvent(keyCode);
+        }
+
         protected KEYBDINPUT ExtendedKeyDownWithScanCodeEvent(ushort keyCode)
         {
             return ExtendedKeyWithScanCodeEvent(keyCode);
@@ -468,6 +514,11 @@ namespace CreviceApp
             Send(ExtendedKeyUpEvent(keyCode));
         }
 
+        public void KeyUpWithScanCode(ushort keyCode)
+        {
+            Send(KeyUpWithScanCodeEvent(keyCode));
+        }
+
         public void ExtendedKeyUpWithScanCode(ushort keyCode)
         {
             Send(ExtendedKeyUpWithScanCodeEvent(keyCode));
@@ -487,6 +538,12 @@ namespace CreviceApp
         {
             Send(ExtendedKeyDownEvent(keyCode));
         }
+
+        public void KeyDownWithScanCode(ushort keyCode)
+        {
+            Send(KeyDownWithScanCodeEvent(keyCode));
+        }
+
         public void ExtendedKeyDownWithScanCode(ushort keyCode)
         {
             Send(ExtendedKeyDownWithScanCodeEvent(keyCode));
@@ -620,6 +677,12 @@ namespace CreviceApp
             return this;
         }
 
+        public InputSequenceBuilder KeyUpWithScanCode(ushort keyCode)
+        {
+            Add(KeyUpWithScanCodeEvent(keyCode));
+            return this;
+        }
+
         public InputSequenceBuilder ExtendedKeyUpWithScanCode(ushort keyCode)
         {
             Add(ExtendedKeyUpWithScanCodeEvent(keyCode));
@@ -643,6 +706,13 @@ namespace CreviceApp
             Add(ExtendedKeyDownEvent(keyCode));
             return this;
         }
+
+        public InputSequenceBuilder KeyDownWithScanCode(ushort keyCode)
+        {
+            Add(KeyDownWithScanCodeEvent(keyCode));
+            return this;
+        }
+
         public InputSequenceBuilder ExtendedKeyDownWithScanCode(ushort keyCode)
         {
             Add(ExtendedKeyDownWithScanCodeEvent(keyCode));
