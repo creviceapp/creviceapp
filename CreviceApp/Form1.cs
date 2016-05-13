@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +23,14 @@ namespace CreviceApp
             winApp = new WindowsApplication();
             hook = new LowLevelMouseHook(MouseProc);
             hook.SetHook();
+
+
+            var eventSender = new EventSender();
+            Task.Run(() => {
+                Thread.Sleep(1000);
+                eventSender.LeftDown();
+                eventSender.LeftUp();
+            });
 
             InitializeComponent();
         }
@@ -43,7 +52,7 @@ namespace CreviceApp
          * BUTTON  : L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
          * 
          * MOVE    : MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
-         * 
+         *
          */
 
         public LowLevelMouseHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
@@ -52,6 +61,11 @@ namespace CreviceApp
             Debug.Print("process path: {0}", app.path);
             Debug.Print("process name: {0}", app.name);
 
+            Debug.Print("dwExtraInfo: {0}", BitConverter.ToString(BitConverter.GetBytes(data.dwExtraInfo.ToUInt64())));
+            Debug.Print("time: {0}", data.time);
+            Debug.Print("fromCreviceApp: {0}", data.fromCreviceApp);
+            Debug.Print("fromTablet: {0}", data.fromTablet);
+
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
@@ -59,18 +73,18 @@ namespace CreviceApp
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    Debug.Print("0x{0:X}: x={1}, y={2}", evnt, data.pt.x, data.pt.y);
+                    Debug.Print("{0}: x={1}, y={2}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.pt.x, data.pt.y);
                     break;
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
-                    Debug.Print("0x{0:X}: delta={1}", evnt, data.mouseData.higher);
+                    Debug.Print("{0}: delta={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.higher);
                     break;
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
-                    Debug.Print("0x{0:X}: type={1}", evnt, data.mouseData.higher);
+                    Debug.Print("{0}: type={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.higher);
                     break;
                 default:
-                    Debug.Print("0x{0:X}", evnt);
+                    Debug.Print("{0}", evnt);
                     break;
             }
             return LowLevelMouseHook.Result.Transfer;

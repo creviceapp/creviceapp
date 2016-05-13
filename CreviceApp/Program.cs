@@ -28,6 +28,118 @@ namespace CreviceApp
         }
     }
 
+    class EventSender
+    {
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct INPUT
+        {
+            public int type;
+            public INPUTDATA data;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct INPUTDATA
+        {
+            [FieldOffset(0)]
+            public MOUSEINPUT mi;
+            [FieldOffset(0)]
+            public KEYBDINPUT ki;
+            [FieldOffset(0)]
+            public MOUSEINPUT hi;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MouseData
+        {
+            public short lower;
+            public short higher;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public MouseData mouseData;
+            public int dwFlags;
+            public int time;
+            public UIntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBDINPUT
+        {
+            public ushort wVk;
+            public ushort wScan;
+            public uint dwFlags;
+            public uint time;
+            public UIntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HARDWAREINPUT
+        {
+            public int uMsg;
+            public short wParamL;
+            public short wParamH;
+        }
+        
+        private const int INPUT_MOUSE    = 0;
+        private const int INPUT_KEYBOARD = 1;
+        private const int INPUT_HARDWARE = 2;
+
+        private const int MOUSEEVENTF_MOVED      = 0x0001;
+        private const int MOUSEEVENTF_LEFTDOWN   = 0x0002;
+        private const int MOUSEEVENTF_LEFTUP     = 0x0004;
+        private const int MOUSEEVENTF_RIGHTDOWN  = 0x0008;
+        private const int MOUSEEVENTF_RIGHTUP    = 0x0010;
+        private const int MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+        private const int MOUSEEVENTF_MIDDLEUP   = 0x0040;
+        private const int MOUSEEVENTF_WHEEL      = 0x0080;
+        private const int MOUSEEVENTF_XDOWN      = 0x0100;
+        private const int MOUSEEVENTF_XUP        = 0x0200;
+        private const int MOUSEEVENTF_ABSOLUTE   = 0x8000;
+        
+        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFFFF);
+        
+        private void Send(INPUT[] input)
+        {
+            for (var i = 0; i < input.Length; i++)
+            {
+                input[i].data.mi.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
+            }
+
+            if (SendInput(1, input, Marshal.SizeOf(input[0])) > 0)
+            {
+                Debug.Print("success");
+            }
+            else
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                Debug.Print("SendInput failed; ErrorCode: {0}", errorCode);
+            }
+        }
+
+        public void LeftDown()
+        {
+            INPUT[] input = new INPUT[1];
+            input[0].data.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+            Send(input);
+        }
+
+        public void LeftUp()
+        {
+            INPUT[] input = new INPUT[1];
+            input[0].data.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            Send(input);
+        }
+
+        //KeyDown, KeyUp, Key
+    }
+
     class WindowsApplication
     {
         [DllImport("user32.dll")]
@@ -169,7 +281,17 @@ namespace CreviceApp
             public MouseData mouseData;
             public uint flags;
             public uint time;
-            public IntPtr dwExtraInfo;
+            public UIntPtr dwExtraInfo;
+
+            public bool fromCreviceApp
+            {
+                get { return (uint)dwExtraInfo == MOUSEEVENTF_CREVICE_APP; }
+            }
+
+            public bool fromTablet
+            {
+                get { return ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET; }
+            }
         }
 
         public enum Result
@@ -178,6 +300,10 @@ namespace CreviceApp
             Determine,
             Cancel
         };
+        
+        private const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFFFF;
+        private const uint MOUSEEVENTF_TMASK       = 0xFFFFFF00;
+        private const uint MOUSEEVENTF_FROMTABLET  = 0xFF515700;
 
         private static readonly IntPtr LRESULTCancel = new IntPtr(1);
         
@@ -208,13 +334,13 @@ namespace CreviceApp
                 }
                 var hInstance = Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]);
                 Debug.Print("hInstance: 0x{0:X}", hInstance.ToInt64());
-                Debug.Print("trying to set a hook(WH_MOUSE_LL)");
+                Debug.Print("calling a native method SetWindowsHookEx(WH_MOUSE_LL)");
                 hHook = SetWindowsHookEx(WH_MOUSE_LL, this.bindedProcedure, hInstance, 0);
                 Debug.Print("hHook: 0x{0:X}", hHook.ToInt64());
                 if (!Activated())
                 {
                     int errorCode = Marshal.GetLastWin32Error();
-                    Debug.Print("failed to set a hook(WH_MOUSE_LL), ErrorCode: {0}", errorCode);
+                    Debug.Print("SetWindowsHookEx(WH_MOUSE_LL) failed; ErrorCode: {0}", errorCode);
                     throw new Win32Exception(errorCode);
                 }
                 Debug.Print("success");
@@ -229,12 +355,12 @@ namespace CreviceApp
                 {
                     throw new InvalidOperationException();
                 }
-                Debug.Print("trying to unhook a hook(WH_MOUSE_LL)");
+                Debug.Print("calling a native method UnhookWindowsHookEx(WH_MOUSE_LL)");
                 Debug.Print("hHook: 0x{0:X}", hHook);
                 if (!UnhookWindowsHookEx(hHook))
                 {
                     int errorCode = Marshal.GetLastWin32Error();
-                    Debug.Print("failed to set a hook(WH_MOUSE_LL), ErrorCode: {0}", errorCode);
+                    Debug.Print("UnhookWindowsHookEx(WH_MOUSE_LL) failed; ErrorCode: {0}", errorCode);
                     throw new Win32Exception(errorCode);
                 }
                 hHook = IntPtr.Zero;
