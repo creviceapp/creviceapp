@@ -103,13 +103,13 @@ namespace CreviceApp
         private const int MOUSEEVENTF_XUP        = 0x0200;
         private const int MOUSEEVENTF_ABSOLUTE   = 0x8000;
         
-        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFFFF);
+        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
         
         private void Send(INPUT[] input)
         {
             for (var i = 0; i < input.Length; i++)
             {
-                input[i].data.mi.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
+                //input[i].data.mi.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
             }
 
             if (SendInput(1, input, Marshal.SizeOf(input[0])) > 0)
@@ -134,6 +134,20 @@ namespace CreviceApp
         {
             INPUT[] input = new INPUT[1];
             input[0].data.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            Send(input);
+        }
+
+        public void RightDown()
+        {
+            INPUT[] input = new INPUT[1];
+            input[0].data.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+            Send(input);
+        }
+
+        public void RightUp()
+        {
+            INPUT[] input = new INPUT[1];
+            input[0].data.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
             Send(input);
         }
 
@@ -301,7 +315,7 @@ namespace CreviceApp
             Cancel
         };
         
-        private const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFFFF;
+        private const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFF00;
         private const uint MOUSEEVENTF_TMASK       = 0xFFFFFF00;
         private const uint MOUSEEVENTF_FROMTABLET  = 0xFF515700;
 

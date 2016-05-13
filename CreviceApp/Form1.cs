@@ -30,6 +30,8 @@ namespace CreviceApp
                 Thread.Sleep(1000);
                 eventSender.LeftDown();
                 eventSender.LeftUp();
+                eventSender.RightDown();
+                eventSender.RightUp();
             });
 
             InitializeComponent();
