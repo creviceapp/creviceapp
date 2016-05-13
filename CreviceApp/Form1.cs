@@ -24,14 +24,47 @@ namespace CreviceApp
             hook = new LowLevelMouseHook(MouseProc);
             hook.SetHook();
 
-
-            var eventSender = new EventSender();
             Task.Run(() => {
+                var inputSender = new SingleInputSender();
+
                 Thread.Sleep(1000);
-                eventSender.LeftDown();
-                eventSender.LeftUp();
-                eventSender.RightDown();
-                eventSender.RightUp();
+                /*
+                inputSender.LeftDown();
+                inputSender.LeftUp();
+                inputSender.RightDown();
+                inputSender.RightUp();
+                */
+
+                ushort VK_MENU    = 0x12;
+                ushort VK_TAB     = 0x09;
+                ushort VK_CONTROL = 0x11;
+                ushort N_0        = 0x30;
+
+                /*
+                inputSender.ExtendedKeyDown(N_0);
+                inputSender.ExtendedKeyUp(N_0);
+
+                Thread.Sleep(1000);
+
+                inputSender.ExtendedKeyDown(VK_CONTROL);
+                Thread.Sleep(1000);
+                inputSender.ExtendedKeyDown(VK_TAB);
+                Thread.Sleep(1000);
+                inputSender.ExtendedKeyUp(VK_TAB);
+                Thread.Sleep(1000);
+                inputSender.ExtendedKeyUp(VK_CONTROL);
+                
+                inputSender.ExtendedKeyDown(N_0);
+                inputSender.ExtendedKeyUp(N_0);
+                */
+                new InputSequenceBuilder()
+                  .ExtendedKeyDown(VK_CONTROL)
+                  .ExtendedKeyDown(VK_TAB)
+                  .ExtendedKeyUp(VK_TAB)
+                  .ExtendedKeyUp(VK_CONTROL)
+                  .Send();
+
+                
             });
 
             InitializeComponent();

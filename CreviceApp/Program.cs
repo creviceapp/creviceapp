@@ -28,49 +28,68 @@ namespace CreviceApp
         }
     }
 
-    class EventSender
+    class InputSender
     {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
+        [DllImport("user32.dll")]
+        static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
         [StructLayout(LayoutKind.Sequential)]
-        private struct INPUT
+        protected struct INPUT
         {
             public int type;
             public INPUTDATA data;
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        private struct INPUTDATA
+        protected struct INPUTDATA
         {
             [FieldOffset(0)]
-            public MOUSEINPUT mi;
+            public MOUSEINPUT asMouseInput;
             [FieldOffset(0)]
-            public KEYBDINPUT ki;
+            public KEYBDINPUT asKeyboardInput;
             [FieldOffset(0)]
-            public MOUSEINPUT hi;
+            public HARDWAREINPUT asHardwareInput;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct MouseData
+        protected struct WHEELDELTA
         {
-            public short lower;
-            public short higher;
+            private short lower;
+            public short delta;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct MOUSEINPUT
+        protected struct XBUTTON
+        {
+            private short lower;
+            public short type;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        protected struct MouseData
+        {
+            [FieldOffset(0)]
+            public WHEELDELTA asWheelDelta;
+            [FieldOffset(0)]
+            public XBUTTON asXButton;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        protected struct MOUSEINPUT
         {
             public int dx;
             public int dy;
             public MouseData mouseData;
-            public int dwFlags;
-            public int time;
+            public uint dwFlags;
+            public uint time;
             public UIntPtr dwExtraInfo;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct KEYBDINPUT
+        protected struct KEYBDINPUT
         {
             public ushort wVk;
             public ushort wScan;
@@ -80,13 +99,18 @@ namespace CreviceApp
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct HARDWAREINPUT
+        protected struct HARDWAREINPUT
         {
             public int uMsg;
             public short wParamL;
             public short wParamH;
         }
-        
+
+        private const short WHEEL_DELTA = 120;
+
+        private const short XBUTTON1 = 0x0001;
+        private const short XBUTTON2 = 0x0002;
+
         private const int INPUT_MOUSE    = 0;
         private const int INPUT_KEYBOARD = 1;
         private const int INPUT_HARDWARE = 2;
@@ -102,17 +126,20 @@ namespace CreviceApp
         private const int MOUSEEVENTF_XDOWN      = 0x0100;
         private const int MOUSEEVENTF_XUP        = 0x0200;
         private const int MOUSEEVENTF_ABSOLUTE   = 0x8000;
-        
-        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
-        
-        private void Send(INPUT[] input)
-        {
-            for (var i = 0; i < input.Length; i++)
-            {
-                //input[i].data.mi.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
-            }
 
-            if (SendInput(1, input, Marshal.SizeOf(input[0])) > 0)
+
+        private const int KEYEVENTF_EXTENDEDKEY = 0x0001;
+        private const int KEYEVENTF_KEYUP       = 0x0002;
+        private const int KEYEVENTF_UNICODE     = 0x0004;
+        private const int KEYEVENTF_SCANCODE    = 0x0008;
+        
+
+
+        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
+
+        protected void Send(INPUT[] input)
+        {
+            if (SendInput((uint)input.Length, input, Marshal.SizeOf(input[0])) > 0)
             {
                 Debug.Print("success");
             }
@@ -123,35 +150,516 @@ namespace CreviceApp
             }
         }
 
+        protected INPUT ToInput(MOUSEINPUT mouseInput)
+        {
+            var input = new INPUT();
+            input.type = INPUT_MOUSE;
+            input.data.asMouseInput = mouseInput;
+            return input;
+        }
+
+        protected INPUT ToInput(KEYBDINPUT keyboardInput)
+        {
+            var input = new INPUT();
+            input.type = INPUT_KEYBOARD;
+            input.data.asKeyboardInput = keyboardInput;
+            return input;
+        }
+
+        private MOUSEINPUT GetCreviceMouseInput()
+        {
+            var mouseInput = new MOUSEINPUT();
+            // Set the CreviceApp signature to the mouse event
+            mouseInput.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
+            return mouseInput;
+        }
+        
+        protected MOUSEINPUT MouseLeftDownEvent()
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_LEFTDOWN;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseLeftUpEvent()
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_LEFTUP;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseRightDownEvent()
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseRightUpEvent()
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_RIGHTUP;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseMoveEvent(int dx, int dy)
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dx = dx;
+            mouseInput.dx = dy;
+            mouseInput.dwFlags = MOUSEEVENTF_MOVED;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseMoveToEvent(int x, int y)
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dx = x;
+            mouseInput.dx = y;
+            mouseInput.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseMiddleDownEvent()
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseMiddleUpEvent()
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_MIDDLEUP;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseWheelEvent(short delta)
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_WHEEL;
+            mouseInput.mouseData.asWheelDelta.delta = delta;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseWheelDownEvent()
+        {
+            return MouseWheelEvent(120);
+        }
+
+        protected MOUSEINPUT MouseWheelUpEvent()
+        {
+            return MouseWheelEvent(-120);
+        }
+
+        private MOUSEINPUT MouseXUpEvent(short type)
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_XUP;
+            mouseInput.mouseData.asXButton.type = type;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseX1UpEvent()
+        {
+            return MouseXUpEvent(XBUTTON1);
+        }
+
+        protected MOUSEINPUT MouseX2UpEvent()
+        {
+            return MouseXUpEvent(XBUTTON2);
+        }
+
+        private MOUSEINPUT MouseXDownEvent(short type)
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_XDOWN;
+            mouseInput.mouseData.asXButton.type = type;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseX1DownEvent()
+        {
+            return MouseXDownEvent(XBUTTON1);
+        }
+
+        protected MOUSEINPUT MouseX2DownEvent()
+        {
+            return MouseXDownEvent(XBUTTON2);
+        }
+
+        private KEYBDINPUT KeyEvent(ushort keyCode)
+        {
+            var keyboardInput = new KEYBDINPUT();
+            keyboardInput.wVk = keyCode;
+            return keyboardInput;
+        }
+
+        private KEYBDINPUT ExtendedKeyEvent(ushort keyCode)
+        {
+            var keyboardInput = KeyEvent(keyCode);
+            keyboardInput.dwFlags = KEYEVENTF_EXTENDEDKEY;
+            return keyboardInput;
+        }
+
+        private KEYBDINPUT ExtendedKeyWithScanCodeEvent(ushort keyCode)
+        {
+            var keyboardInput = ExtendedKeyEvent(keyCode);
+            keyboardInput.wScan = (ushort)MapVirtualKey(keyCode, 0);
+            keyboardInput.dwFlags = keyboardInput.dwFlags | KEYEVENTF_SCANCODE;
+            return keyboardInput;
+        }
+
+        private KEYBDINPUT UnicodeKeyEvent(char c)
+        {
+            var keyboardInput = new KEYBDINPUT();
+            keyboardInput.wScan = c;
+            keyboardInput.dwFlags = KEYEVENTF_UNICODE;
+            return keyboardInput;
+        }
+
+        protected KEYBDINPUT KeyUpEvent(ushort keyCode)
+        {
+            var keyboardInput = KeyEvent(keyCode);
+            keyboardInput.dwFlags = KEYEVENTF_KEYUP;
+            return keyboardInput;
+        }
+
+        protected KEYBDINPUT ExtendedKeyUpEvent(ushort keyCode)
+        {
+            var keyboardInput = ExtendedKeyEvent(keyCode);
+            keyboardInput.dwFlags = keyboardInput.dwFlags | KEYEVENTF_KEYUP;
+            return keyboardInput;
+        }
+
+        protected KEYBDINPUT ExtendedKeyUpWithScanCodeEvent(ushort keyCode)
+        {
+            var keyboardInput = ExtendedKeyWithScanCodeEvent(keyCode);
+            keyboardInput.dwFlags = keyboardInput.dwFlags | KEYEVENTF_KEYUP;
+            return keyboardInput;
+
+        }
+
+        protected KEYBDINPUT UnicodeKeyUpEvent(char c)
+        {
+            var keyboardInput = UnicodeKeyEvent(c);
+            keyboardInput.dwFlags = keyboardInput.dwFlags | KEYEVENTF_KEYUP;
+            return keyboardInput;
+        }
+
+        protected KEYBDINPUT KeyDownEvent(ushort keyCode)
+        {
+            return KeyEvent(keyCode);
+        }
+
+        protected KEYBDINPUT ExtendedKeyDownEvent(ushort keyCode)
+        {
+            return ExtendedKeyEvent(keyCode);
+        }
+        protected KEYBDINPUT ExtendedKeyDownWithScanCodeEvent(ushort keyCode)
+        {
+            return ExtendedKeyWithScanCodeEvent(keyCode);
+        }
+
+        protected KEYBDINPUT UnicodeKeyDownEvent(char c)
+        {
+            return UnicodeKeyEvent(c);
+        }
+    }
+
+    class SingleInputSender : InputSender
+    {
+        protected void Send(MOUSEINPUT mouseInput)
+        {
+            var input = new INPUT[1];
+            input[0] = ToInput(mouseInput);
+            Send(input);
+        }
+
+        protected void Send(KEYBDINPUT keyboardInput)
+        {
+            var input = new INPUT[1];
+            input[0] = ToInput(keyboardInput);
+            Send(input);
+        }
+
         public void LeftDown()
         {
-            INPUT[] input = new INPUT[1];
-            input[0].data.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-            Send(input);
+            Send(MouseLeftDownEvent());
         }
 
         public void LeftUp()
         {
-            INPUT[] input = new INPUT[1];
-            input[0].data.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-            Send(input);
+            Send(MouseLeftUpEvent());
         }
 
         public void RightDown()
         {
-            INPUT[] input = new INPUT[1];
-            input[0].data.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-            Send(input);
+            Send(MouseRightDownEvent());
         }
 
         public void RightUp()
         {
-            INPUT[] input = new INPUT[1];
-            input[0].data.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-            Send(input);
+            Send(MouseRightUpEvent());
         }
 
-        //KeyDown, KeyUp, Key
+        public void Move(int dx, int dy)
+        {
+            Send(MouseMoveEvent(dx, dy));
+        }
+
+        public void MoveTo(int x, int y)
+        {
+            Send(MouseMoveToEvent(x, y));
+        }
+
+        public void MiddleDown()
+        {
+            Send(MouseMiddleDownEvent());
+        }
+
+        public void MiddleUp()
+        {
+            Send(MouseMiddleUpEvent());
+        }
+
+        public void Wheel(short delta)
+        {
+            Send(MouseWheelEvent(delta));
+        }
+
+        public void WheelDown()
+        {
+            Send(MouseWheelEvent(120));
+        }
+
+        public void WheelUp()
+        {
+            Send(MouseWheelEvent(-120));
+        }
+        
+        public void X1Up()
+        {
+            Send(MouseX1UpEvent());
+        }
+
+        public void X2Up()
+        {
+            Send(MouseX2UpEvent());
+        }
+        
+        public void X1Down()
+        {
+            Send(MouseX2DownEvent());
+        }
+
+        public void X2Down()
+        {
+            Send(MouseX2UpEvent());
+        }
+
+        public void KeyUp(ushort keyCode)
+        {
+            Send(KeyUpEvent(keyCode));
+        }
+
+        public void ExtendedKeyUp(ushort keyCode)
+        {
+            Send(ExtendedKeyUpEvent(keyCode));
+        }
+
+        public void ExtendedKeyUpWithScanCode(ushort keyCode)
+        {
+            Send(ExtendedKeyUpWithScanCodeEvent(keyCode));
+        }
+
+        public void UnicodeKeyUp(char c)
+        {
+            Send(UnicodeKeyUpEvent(c));
+        }
+
+        public void KeyDown(ushort keyCode)
+        {
+            Send(KeyDownEvent(keyCode));
+        }
+
+        public void ExtendedKeyDown(ushort keyCode)
+        {
+            Send(ExtendedKeyDownEvent(keyCode));
+        }
+        public void ExtendedKeyDownWithScanCode(ushort keyCode)
+        {
+            Send(ExtendedKeyDownWithScanCodeEvent(keyCode));
+        }
+
+        public void UnicodeKeyDown(char c)
+        {
+            Send(UnicodeKeyDownEvent(c));
+        }
+    }
+
+
+    class InputSequenceBuilder : InputSender
+    {
+        private readonly List<INPUT> buffer;
+
+        public InputSequenceBuilder()
+        {
+            this.buffer = new List<INPUT>();
+        }
+
+        private void Add(MOUSEINPUT mouseEvent)
+        {
+            this.buffer.Add(ToInput(mouseEvent));
+        }
+
+        private void Add(KEYBDINPUT keyboardEvent)
+        {
+            this.buffer.Add(ToInput(keyboardEvent));
+        }
+
+        public InputSequenceBuilder LeftDown()
+        {
+            Add(MouseLeftDownEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder LeftUp()
+        {
+            Add(MouseLeftUpEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder RightDown()
+        {
+            Add(MouseRightDownEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder RightUp()
+        {
+            Add(MouseRightUpEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder Move(int dx, int dy)
+        {
+            Add(MouseMoveEvent(dx, dy));
+            return this;
+        }
+
+        public InputSequenceBuilder MoveTo(int x, int y)
+        {
+            Add(MouseMoveToEvent(x, y));
+            return this;
+        }
+
+        public InputSequenceBuilder MiddleDown()
+        {
+            Add(MouseMiddleDownEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder MiddleUp()
+        {
+            Add(MouseMiddleUpEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder Wheel(short delta)
+        {
+            Add(MouseWheelEvent(delta));
+            return this;
+        }
+
+        public InputSequenceBuilder WheelDown()
+        {
+            Add(MouseWheelEvent(120));
+            return this;
+        }
+
+        public InputSequenceBuilder WheelUp()
+        {
+            Add(MouseWheelEvent(-120));
+            return this;
+        }
+
+        public InputSequenceBuilder X1Up()
+        {
+            Add(MouseX1UpEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder X2Up()
+        {
+            Add(MouseX2UpEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder X1Down()
+        {
+            Add(MouseX2DownEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder X2Down()
+        {
+            Add(MouseX2UpEvent());
+            return this;
+        }
+
+        public InputSequenceBuilder KeyUp(ushort keyCode)
+        {
+            Add(KeyUpEvent(keyCode));
+            return this;
+        }
+
+        public InputSequenceBuilder ExtendedKeyUp(ushort keyCode)
+        {
+            Add(ExtendedKeyUpEvent(keyCode));
+            return this;
+        }
+
+        public InputSequenceBuilder ExtendedKeyUpWithScanCode(ushort keyCode)
+        {
+            Add(ExtendedKeyUpWithScanCodeEvent(keyCode));
+            return this;
+        }
+
+        public InputSequenceBuilder UnicodeKeyUp(char c)
+        {
+            Add(UnicodeKeyUpEvent(c));
+            return this;
+        }
+
+        public InputSequenceBuilder KeyDown(ushort keyCode)
+        {
+            Add(KeyDownEvent(keyCode));
+            return this;
+        }
+
+        public InputSequenceBuilder ExtendedKeyDown(ushort keyCode)
+        {
+            Add(ExtendedKeyDownEvent(keyCode));
+            return this;
+        }
+        public InputSequenceBuilder ExtendedKeyDownWithScanCode(ushort keyCode)
+        {
+            Add(ExtendedKeyDownWithScanCodeEvent(keyCode));
+            return this;
+        }
+
+        public InputSequenceBuilder UnicodeKeyDown(char c)
+        {
+            Add(UnicodeKeyDownEvent(c));
+            return this;
+        }
+
+        public void Send()
+        {
+            Send(buffer.ToArray());
+            buffer.Clear();
+        }
     }
 
     class WindowsApplication
@@ -286,6 +794,16 @@ namespace CreviceApp
         {
             public short lower;
             public short higher;
+
+            public bool isXButton1
+            {
+                get { return higher == 0x0001; }
+            }
+
+            public bool isXButton2
+            {
+                get { return higher == 0x0002; }
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
