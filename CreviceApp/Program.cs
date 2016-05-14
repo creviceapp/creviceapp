@@ -268,12 +268,12 @@ namespace CreviceApp
 
         protected MOUSEINPUT MouseWheelDownEvent()
         {
-            return MouseWheelEvent(120);
+            return MouseWheelEvent(-120);
         }
 
         protected MOUSEINPUT MouseWheelUpEvent()
         {
-            return MouseWheelEvent(-120);
+            return MouseWheelEvent(120);
         }
 
         private MOUSEINPUT MouseXUpEvent(short type)
