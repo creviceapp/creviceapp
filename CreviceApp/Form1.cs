@@ -60,13 +60,14 @@ namespace CreviceApp
                 
                 */
 
+                /*
                 new InputSequenceBuilder()
                   .KeyDownWithScanCode(VK_CONTROL)
                   .KeyDownWithScanCode(VK_TAB)
                   .KeyUpWithScanCode(VK_TAB)
                   .KeyUpWithScanCode(VK_CONTROL)
                   .Send();
-
+                */
 
                 /*
                 Thread.Sleep(5000);
@@ -79,6 +80,8 @@ namespace CreviceApp
                 inputSender.ExtendedKeyDownWithScanCode(VK_LWIN);
                 inputSender.ExtendedKeyUpWithScanCode(VK_LWIN);
                 */
+
+                inputSender.UnicodeKeyStroke("🍣🍣🍣🍣");
             });
 
             InitializeComponent();
