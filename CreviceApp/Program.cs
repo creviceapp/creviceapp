@@ -28,6 +28,156 @@ namespace CreviceApp
         }
     }
 
+    /**
+     * 
+     * APP     : App((x) => {})    ON
+     * 
+     * ON      : @on(BUTTON)     ( IF | STROKE )
+     * 
+     * IF      : @if(BUTTON)       DO |
+     *           @if(MOVE *)       DO
+     * 
+     * DO      : @do((x) => {}) 
+     * 
+     * BUTTON  : L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
+     * 
+     * MOVE    : MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
+     *
+     * 
+     * Root:
+     * with keyA down | check(keyA) -> App -> check(keyA) -> On
+     * 
+     * On:
+     * with keyB down | check(keyB) -> IfButton
+     * with keyA up | emulate click or try Gesture
+     * 
+     * IfButton:
+     * with keyB up | check(key) -> execute Do
+     * with KeyA up | cancel and add keyB to ingore candidate listでいい。複数になることはなさげ
+     * 
+     */
+
+    class GestureConfigDSL
+    {
+
+        class RootElement
+        {
+            public readonly List<AppElement> appElements = new List<AppElement>();
+            public AppElement App(Func<AppContext> func)
+            {
+                var elem = new AppElement(func);
+                appElements.Add(elem);
+                return elem;
+            }
+        }
+
+        class AppElement
+        {
+            public readonly Func<AppContext> func;
+            public AppElement(Func<AppContext> func)
+            {
+                this.func = func;
+            }
+            public readonly List<OnElement> onElements = new List<OnElement>();
+            public OnElement @on(Button button)
+            {
+                var elem = new OnElement(button);
+                onElements.Add(elem);
+                return elem;
+            }
+        }
+
+        class OnElement
+        {
+            public readonly Button button;
+            public OnElement(Button button)
+            {
+                this.button = button;
+            }
+            public readonly List<IfButtonElement> ifButtonElement = new List<IfButtonElement>();
+            public IfButtonElement @if(Button button)
+            {
+                var elm = new IfButtonElement(button);
+                ifButtonElement.Add(elm);
+                return elm;
+            }
+            public readonly List<IfStrokeElement> ifStrokeElement = new List<IfStrokeElement>();
+            public IfStrokeElement @if(params Move[] moves)
+            {
+                var elm = new IfStrokeElement(moves);
+                ifStrokeElement.Add(elm);
+                return elm;
+            }
+        }
+
+        class IfButtonElement : DoOwner
+        {
+            public readonly Button button;
+            public IfButtonElement(Button button)
+            {
+                this.button = button;
+            }
+
+        }
+
+        class IfStrokeElement : DoOwner
+        {
+            public readonly IEnumerable<Move> moves;
+            public IfStrokeElement(params Move[] moves)
+            {
+                this.moves = moves;
+            }
+        }
+
+        class DoElement
+        {
+            public readonly Func<DoContext> func;
+            public DoElement(Func<DoContext> func)
+            {
+                this.func = func;
+            }
+        }
+
+        abstract class DoOwner {
+            public readonly List<DoElement> doElements = new List<DoElement>();
+            public DoElement @do(Func<DoContext> func)
+            {
+                var doElement = new DoElement(func);
+                doElements.Add(doElement);
+                return doElement;
+            }
+        }
+
+        class AppContext
+        {
+
+        }
+
+        class DoContext
+        {
+
+        }
+        
+        enum Button
+        {
+            LeftButton,
+            MiddleButton,
+            RightButton,
+            WheelUpButton,
+            WheelDownButton,
+            X1Button,
+            X2Button
+        }
+
+        enum Move
+        {
+            MoveUp,
+            MoveDown,
+            MoveLeft,
+            MoveRight
+        }
+    }
+
     class InputSender
     {
         [DllImport("user32.dll", SetLastError = true)]
