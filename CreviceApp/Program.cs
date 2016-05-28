@@ -28,6 +28,8 @@ namespace CreviceApp
         }
     }
 
+    namespace GestureConfig
+    {
     /**
      * 
      * APP     : App((x) => {})    ON
@@ -55,128 +57,205 @@ namespace CreviceApp
      * with keyB up | check(key) -> execute Do
      * with KeyA up | cancel and add keyB to ingore candidate listでいい。複数になることはなさげ
      * 
+     * MachineContext
+     * var (result, state) = state.exe(keyCode);
      */
 
-    class GestureConfigDSL
-    {
-
-        class RootElement
-        {
-            public readonly List<AppElement> appElements = new List<AppElement>();
-            public AppElement App(Func<AppContext> func)
-            {
-                var elem = new AppElement(func);
-                appElements.Add(elem);
-                return elem;
-            }
-        }
-
-        class AppElement
-        {
-            public readonly Func<AppContext> func;
-            public AppElement(Func<AppContext> func)
-            {
-                this.func = func;
-            }
-            public readonly List<OnElement> onElements = new List<OnElement>();
-            public OnElement @on(Button button)
-            {
-                var elem = new OnElement(button);
-                onElements.Add(elem);
-                return elem;
-            }
-        }
-
-        class OnElement
-        {
-            public readonly Button button;
-            public OnElement(Button button)
-            {
-                this.button = button;
-            }
-            public readonly List<IfButtonElement> ifButtonElement = new List<IfButtonElement>();
-            public IfButtonElement @if(Button button)
-            {
-                var elm = new IfButtonElement(button);
-                ifButtonElement.Add(elm);
-                return elm;
-            }
-            public readonly List<IfStrokeElement> ifStrokeElement = new List<IfStrokeElement>();
-            public IfStrokeElement @if(params Move[] moves)
-            {
-                var elm = new IfStrokeElement(moves);
-                ifStrokeElement.Add(elm);
-                return elm;
-            }
-        }
-
-        class IfButtonElement : DoOwner
-        {
-            public readonly Button button;
-            public IfButtonElement(Button button)
-            {
-                this.button = button;
-            }
-
-        }
-
-        class IfStrokeElement : DoOwner
-        {
-            public readonly IEnumerable<Move> moves;
-            public IfStrokeElement(params Move[] moves)
-            {
-                this.moves = moves;
-            }
-        }
-
-        class DoElement
-        {
-            public readonly Func<DoContext> func;
-            public DoElement(Func<DoContext> func)
-            {
-                this.func = func;
-            }
-        }
-
-        abstract class DoOwner {
-            public readonly List<DoElement> doElements = new List<DoElement>();
-            public DoElement @do(Func<DoContext> func)
-            {
-                var doElement = new DoElement(func);
-                doElements.Add(doElement);
-                return doElement;
-            }
-        }
-
-        class AppContext
+        namespace DSL
         {
 
-        }
+            public class Root
+            {
+                public readonly List<AppElement.Value> appElements = new List<AppElement.Value>();
 
-        class DoContext
-        {
+                public AppElement App(Func<AppContext, bool> func)
+                {
+                    return new AppElement(this, func);
+                }
+            }
 
-        }
-        
-        enum Button
-        {
-            LeftButton,
-            MiddleButton,
-            RightButton,
-            WheelUpButton,
-            WheelDownButton,
-            X1Button,
-            X2Button
-        }
+            public class AppElement
+            {
+                public class Value
+                {
+                    public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
+                    public readonly Func<AppContext, bool> func;
 
-        enum Move
-        {
-            MoveUp,
-            MoveDown,
-            MoveLeft,
-            MoveRight
+                    public Value(Func<AppContext, bool> func)
+                    {
+                        this.func = func;
+                    }
+                }
+
+                private readonly Root parent;
+                private readonly Value value;
+
+                public AppElement(Root parent, Func<AppContext, bool> func)
+                {
+                    this.parent = parent;
+                    this.value = new Value(func);
+                    this.parent.appElements.Add(this.value);
+                }
+
+                public OnElement @on(Button button)
+                {
+                    return new OnElement(value, button);
+                }
+            }
+
+            public class OnElement
+            {
+                public class Value
+                {
+                    public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
+                    public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
+                    public readonly Button button;
+
+                    public Value(Button button)
+                    {
+                        this.button = button;
+                    }
+                }
+
+                private readonly AppElement.Value parent;
+                private readonly Value value;
+
+                public OnElement(AppElement.Value parent, Button button)
+                {
+                    this.parent = parent;
+                    this.value = new Value(button);
+                    this.parent.onElements.Add(this.value);
+                }
+
+                public IfButtonElement @if(Button button)
+                {
+                    return new IfButtonElement(value, button);
+                }
+
+                public IfStrokeElement @if(params Move[] moves)
+                {
+                    return new IfStrokeElement(value, moves);
+                }
+            }
+
+            public abstract class IfElement
+            {
+                public abstract class Value
+                {
+                    public readonly List<DoElement.Value> doElements = new List<DoElement.Value>();
+                }
+            }
+
+            public class IfButtonElement
+            {
+                public class Value : IfElement.Value
+                {
+                    public readonly Button button;
+
+                    public Value(Button button)
+                    {
+                        this.button = button;
+                    }
+                }
+
+                private readonly OnElement.Value parent;
+                private readonly Value value;
+
+                public IfButtonElement(OnElement.Value parent, Button button)
+                {
+                    this.parent = parent;
+                    this.value = new Value(button);
+                    this.parent.ifButtonElements.Add(this.value);
+                }
+
+                public DoElement @do(Action<DoContext> func)
+                {
+                    return new DoElement(value, func);
+                }
+            }
+
+            public class IfStrokeElement
+            {
+                public class Value : IfElement.Value
+                {
+                    public readonly IEnumerable<Move> moves;
+
+                    public Value(IEnumerable<Move> moves)
+                    {
+                        this.moves = moves;
+                    }
+                }
+
+                private readonly OnElement.Value parent;
+                private readonly Value value;
+
+                public IfStrokeElement(OnElement.Value parent, params Move[] moves)
+                {
+                    this.parent = parent;
+                    this.value = new Value(moves);
+                    this.parent.ifStrokeElements.Add(this.value);
+                }
+
+                public DoElement @do(Action<DoContext> func)
+                {
+                    return new DoElement(value, func);
+                }
+            }
+
+            public class DoElement
+            {
+                public class Value
+                {
+                    public readonly Action<DoContext> func;
+
+                    public Value(Action<DoContext> func)
+                    {
+                        this.func = func;
+                    }
+                }
+
+                private readonly IfElement.Value parent;
+                private readonly Value value;
+
+                public DoElement(IfElement.Value parent, Action<DoContext> func)
+                {
+                    this.parent = parent;
+                    this.value = new Value(func);
+                    this.parent.doElements.Add(this.value);
+                }
+            }
+
+            public class AppContext
+            {
+
+            }
+
+            public class DoContext
+            {
+
+            }
+
+            public enum Button
+            {
+                LeftButton,
+                MiddleButton,
+                RightButton,
+                WheelUpButton,
+                WheelDownButton,
+                X1Button,
+                X2Button
+            }
+
+            public enum Move
+            {
+                MoveUp,
+                MoveDown,
+                MoveLeft,
+                MoveRight
+            }
         }
     }
+    
 
     class InputSender
     {
