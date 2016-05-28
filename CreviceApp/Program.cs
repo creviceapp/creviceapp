@@ -257,7 +257,7 @@ namespace CreviceApp
     }
     
 
-    class InputSender
+    public class InputSender
     {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
@@ -642,7 +642,7 @@ namespace CreviceApp
         }
     }
 
-    class SingleInputSender : InputSender
+    public class SingleInputSender : InputSender
     {
         protected void Send(params MOUSEINPUT[] mouseInput)
         {
@@ -823,7 +823,7 @@ namespace CreviceApp
         }
     }
 
-    class InputSequenceBuilder : InputSender
+    public class InputSequenceBuilder : InputSender
     {
         private readonly IEnumerable<INPUT> buffer;
 
@@ -1078,7 +1078,7 @@ namespace CreviceApp
         }
     }
 
-    class WindowsApplicationInfo
+    public class WindowsApplicationInfo
     {
         public readonly String path;
         public readonly String name;
@@ -1092,14 +1092,16 @@ namespace CreviceApp
     public class LowLevelMouseHook : IDisposable
     {
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, Procedure callback, IntPtr hInstance, int threadId);
+        private static extern IntPtr SetWindowsHookEx(int idHook, Callback callback, IntPtr hInstance, int threadId);
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnhookWindowsHookEx(IntPtr hook);
         [DllImport("user32.dll")]
         private static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
-        
-        private delegate IntPtr Procedure(int nCode, IntPtr wParam, IntPtr lParam);
-        public delegate Result UserProcedure(Event evnt, MSLLHOOKSTRUCT data);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetModuleHandle(string name);
+
+        private delegate IntPtr Callback(int nCode, IntPtr wParam, IntPtr lParam);
+        public delegate Result UserCallback(Event evnt, MSLLHOOKSTRUCT data);
 
         private const int HC_ACTION = 0;
 
@@ -1196,15 +1198,16 @@ namespace CreviceApp
         private static readonly IntPtr LRESULTCancel = new IntPtr(1);
         
         private readonly Object lockObject = new Object();
-        private readonly UserProcedure userProcedure;
-        private readonly Procedure bindedProcedure;
+        private readonly UserCallback userCallback;
+        // There is need to bind a Callback Function to a local variable to protect it from GC.
+        private readonly Callback callback;
 
         private IntPtr hHook = IntPtr.Zero;
         
-        public LowLevelMouseHook(UserProcedure userProcedure)
+        public LowLevelMouseHook(UserCallback userCallback)
         {
-            this.userProcedure = userProcedure;
-            this.bindedProcedure = MouseHookProc;
+            this.userCallback = userCallback;
+            this.callback = MouseHookCallback;
         }
 
         public bool Activated()
@@ -1220,10 +1223,11 @@ namespace CreviceApp
                 {
                     throw new InvalidOperationException();
                 }
-                var hInstance = Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]);
+
+                var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
                 Debug.Print("hInstance: 0x{0:X}", hInstance.ToInt64());
                 Debug.Print("calling a native method SetWindowsHookEx(WH_MOUSE_LL)");
-                hHook = SetWindowsHookEx(WH_MOUSE_LL, this.bindedProcedure, hInstance, 0);
+                hHook = SetWindowsHookEx(WH_MOUSE_LL, this.callback, hInstance, 0);
                 Debug.Print("hHook: 0x{0:X}", hHook.ToInt64());
                 if (!Activated())
                 {
@@ -1256,15 +1260,15 @@ namespace CreviceApp
             }
         }
 
-        public IntPtr MouseHookProc(int nCode, IntPtr wParam, IntPtr lParam)
+        public IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             lock (lockObject)
             {
-                if (nCode >= 0 && Activated())
+                if (nCode >= 0)
                 {
                     var a = (Event)wParam;
                     var b = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-                    switch (userProcedure(a, b))
+                    switch (userCallback(a, b))
                     {
                         case Result.Transfer:
                             return CallNextHookEx(hHook, nCode, wParam, lParam);
