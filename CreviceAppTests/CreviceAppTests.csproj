@@ -81,10 +81,12 @@
     <Compile Include="DoElementTests.cs" />
     <Compile Include="IfButtonElementTests.cs" />
     <Compile Include="IfStrokeElementTests.cs" />
+    <Compile Include="LowLevelKeyboardHookTests.cs" />
     <Compile Include="LowLevelMouseHookTests.cs" />
     <Compile Include="OnElementTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RootTests.cs" />
+    <Compile Include="WindowsApplicationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CreviceApp\CreviceApp.csproj">

@@ -298,7 +298,7 @@ namespace CreviceApp
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        protected struct MouseData
+        protected struct MOUSEDATA
         {
             [FieldOffset(0)]
             public WHEELDELTA asWheelDelta;
@@ -311,7 +311,7 @@ namespace CreviceApp
         {
             public int dx;
             public int dy;
-            public MouseData mouseData;
+            public MOUSEDATA mouseData;
             public uint dwFlags;
             public uint time;
             public UIntPtr dwExtraInfo;
@@ -1018,7 +1018,7 @@ namespace CreviceApp
         }
     }
 
-    class WindowsApplication
+    public class WindowsApplication
     {
         [DllImport("user32.dll")]
         public static extern IntPtr WindowFromPoint(int x, int y);
@@ -1049,6 +1049,7 @@ namespace CreviceApp
             IntPtr hWindow = GetForegroundWindow();
             return FindFromWindowHandle(hWindow);
         }
+
         public WindowsApplicationInfo GetOnCursor(int x, int y)
         {
             IntPtr hWindow = WindowFromPoint(x, y);
@@ -1089,10 +1090,10 @@ namespace CreviceApp
         }
     }
 
-    public class LowLevelMouseHook : IDisposable
+    public class WindowsHook : IDisposable
     {
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, Callback callback, IntPtr hInstance, int threadId);
+        private static extern IntPtr SetWindowsHookEx(int idHook, SystemCallback callback, IntPtr hInstance, int threadId);
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnhookWindowsHookEx(IntPtr hook);
         [DllImport("user32.dll")]
@@ -1100,14 +1101,144 @@ namespace CreviceApp
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetModuleHandle(string name);
 
-        private delegate IntPtr Callback(int nCode, IntPtr wParam, IntPtr lParam);
-        public delegate Result UserCallback(Event evnt, MSLLHOOKSTRUCT data);
-
+        private delegate IntPtr SystemCallback(int nCode, IntPtr wParam, IntPtr lParam);
+        protected delegate Result UserCallback(IntPtr wParam, IntPtr lParam);
+        
         private const int HC_ACTION = 0;
+        
+        public enum HookType
+        {
+            WH_MSGFILTER      = -1,
+            WH_JOURNALRECORD   = 0,
+            WH_JOURNALPLAYBACK = 1,
+            WH_KEYBOARD        = 2,
+            WH_GETMESSAGE      = 3,
+            WH_CALLWNDPROC     = 4,
+            WH_CBT             = 5,
+            WH_SYSMSGFILTER    = 6,
+            WH_MOUSE           = 7,
+            WH_DEBUG           = 9,
+            WH_SHELL          = 10,
+            WH_FOREGROUNDIDLE = 11,
+            WH_CALLWNDPROCRET = 12,
+            WH_KEYBOARD_LL    = 13,
+            WH_MOUSE_LL       = 14
+        }
+        
+        public enum Result
+        {
+            Transfer,
+            Determine,
+            Cancel
+        };
+        
+        private static readonly IntPtr LRESULTCancel = new IntPtr(1);
+        
+        private readonly Object lockObject = new Object();
+        private readonly UserCallback userCallback;
+        // There is need to bind a callback function to a local variable to protect it from GC.
+        private readonly SystemCallback systemCallback;
+        private readonly HookType hookType;
 
-        //private const int WH_MOUSE    =  7;
-        private const int WH_MOUSE_LL = 14;
+        private IntPtr hHook = IntPtr.Zero;
+        
+        protected WindowsHook(HookType hookType, UserCallback userCallback)
+        {
+            this.hookType = hookType;
+            this.userCallback = userCallback;
+            this.systemCallback = Callback;
+        }
 
+        public bool IsActivated
+        {
+            get { return hHook != IntPtr.Zero; }
+        }
+
+        public void SetHook()
+        {
+            lock (lockObject)
+            {
+                if (IsActivated)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
+                Debug.Print("hInstance: 0x{0:X}", hInstance.ToInt64());
+                Debug.Print("calling a native method SetWindowsHookEx(HookType: {0})", Enum.GetName(typeof(HookType), hookType));
+                hHook = SetWindowsHookEx((int)hookType, this.systemCallback, hInstance, 0);
+                Debug.Print("hHook: 0x{0:X}", hHook.ToInt64());
+                if (!IsActivated)
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    Debug.Print("SetWindowsHookEx(HookType: {0}) failed; ErrorCode: {1}", Enum.GetName(typeof(HookType), hookType), errorCode);
+                    throw new Win32Exception(errorCode);
+                }
+                Debug.Print("success");
+            }
+        }
+
+        public void Unhook()
+        {
+            lock (lockObject)
+            {
+                if (!IsActivated)
+                {
+                    throw new InvalidOperationException();
+                }
+                Debug.Print("calling a native method UnhookWindowsHookEx(HookType: {0})", Enum.GetName(typeof(HookType), hookType));
+                Debug.Print("hHook: 0x{0:X}", hHook);
+                if (!UnhookWindowsHookEx(hHook))
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    Debug.Print("UnhookWindowsHookEx(HookType: {0}) failed; ErrorCode: {1}", Enum.GetName(typeof(HookType), hookType), errorCode);
+                    throw new Win32Exception(errorCode);
+                }
+                hHook = IntPtr.Zero;
+                Debug.Print("success");
+            }
+        }
+
+        public IntPtr Callback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            lock (lockObject)
+            {
+                if (nCode >= 0)
+                {
+                    switch (userCallback(wParam, lParam))
+                    {
+                        case Result.Transfer:
+                            return CallNextHookEx(hHook, nCode, wParam, lParam);
+                        case Result.Cancel:
+                            return LRESULTCancel;
+                        case Result.Determine:
+                            return IntPtr.Zero;
+                    }
+                }
+                return CallNextHookEx(hHook, nCode, wParam, lParam);
+            }
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            lock (lockObject)
+            {
+                if (IsActivated)
+                {
+                    Unhook();
+                }
+            }
+        }
+
+        ~WindowsHook()
+        {
+            Dispose();
+        }
+    }
+
+    public class LowLevelMouseHook : WindowsHook
+    {
         public enum Event
         {
             WM_NCMOUSEMOVE     = 0x00A0,
@@ -1148,7 +1279,7 @@ namespace CreviceApp
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct MouseData
+        public struct MOUSEDATA
         {
             public short lower;
             public short higher;
@@ -1168,7 +1299,7 @@ namespace CreviceApp
         public struct MSLLHOOKSTRUCT
         {
             public POINT pt;
-            public MouseData mouseData;
+            public MOUSEDATA mouseData;
             public uint flags;
             public uint time;
             public UIntPtr dwExtraInfo;
@@ -1183,120 +1314,69 @@ namespace CreviceApp
                 get { return ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET; }
             }
         }
-
-        public enum Result
-        {
-            Transfer,
-            Determine,
-            Cancel
-        };
         
         private const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFF00;
         private const uint MOUSEEVENTF_TMASK       = 0xFFFFFF00;
         private const uint MOUSEEVENTF_FROMTABLET  = 0xFF515700;
-
-        private static readonly IntPtr LRESULTCancel = new IntPtr(1);
         
-        private readonly Object lockObject = new Object();
-        private readonly UserCallback userCallback;
-        // There is need to bind a Callback Function to a local variable to protect it from GC.
-        private readonly Callback callback;
-
-        private IntPtr hHook = IntPtr.Zero;
-        
-        public LowLevelMouseHook(UserCallback userCallback)
-        {
-            this.userCallback = userCallback;
-            this.callback = MouseHookCallback;
-        }
-
-        public bool Activated()
-        {
-            return hHook != IntPtr.Zero;
-        }
-
-        public void SetHook()
-        {
-            lock (lockObject)
-            {
-                if (Activated())
-                {
-                    throw new InvalidOperationException();
-                }
-
-                var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
-                Debug.Print("hInstance: 0x{0:X}", hInstance.ToInt64());
-                Debug.Print("calling a native method SetWindowsHookEx(WH_MOUSE_LL)");
-                hHook = SetWindowsHookEx(WH_MOUSE_LL, this.callback, hInstance, 0);
-                Debug.Print("hHook: 0x{0:X}", hHook.ToInt64());
-                if (!Activated())
-                {
-                    int errorCode = Marshal.GetLastWin32Error();
-                    Debug.Print("SetWindowsHookEx(WH_MOUSE_LL) failed; ErrorCode: {0}", errorCode);
-                    throw new Win32Exception(errorCode);
-                }
-                Debug.Print("success");
-            }
-        }
-
-        public void Unhook()
-        {
-            lock (lockObject)
-            {
-                if (!Activated())
-                {
-                    throw new InvalidOperationException();
-                }
-                Debug.Print("calling a native method UnhookWindowsHookEx(WH_MOUSE_LL)");
-                Debug.Print("hHook: 0x{0:X}", hHook);
-                if (!UnhookWindowsHookEx(hHook))
-                {
-                    int errorCode = Marshal.GetLastWin32Error();
-                    Debug.Print("UnhookWindowsHookEx(WH_MOUSE_LL) failed; ErrorCode: {0}", errorCode);
-                    throw new Win32Exception(errorCode);
-                }
-                hHook = IntPtr.Zero;
-                Debug.Print("success");
-            }
-        }
-
-        public IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            lock (lockObject)
-            {
-                if (nCode >= 0)
+        public LowLevelMouseHook(Func<Event, MSLLHOOKSTRUCT, Result> userCallback) : 
+            base
+            (
+                HookType.WH_MOUSE_LL,
+                (wParam, lParam) =>
                 {
                     var a = (Event)wParam;
                     var b = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-                    switch (userCallback(a, b))
-                    {
-                        case Result.Transfer:
-                            return CallNextHookEx(hHook, nCode, wParam, lParam);
-                        case Result.Cancel:
-                            return LRESULTCancel;
-                        case Result.Determine:
-                            return IntPtr.Zero;
-                    }
+                    return userCallback(a, b);
                 }
-                return CallNextHookEx(hHook, nCode, wParam, lParam);
-            }
+            )
+        {
+
+        }
+    }
+
+    public class LowLevelKeyboardHook : WindowsHook
+    {
+        public enum Event
+        {
+            WM_KEYDOWN    = 0x0100,
+            WM_KEYUP      = 0x0101,
+            WM_SYSKEYDOWN = 0x0104,
+            WM_SYSKEYUP   = 0x0105
         }
 
-        public void Dispose()
+        [StructLayout(LayoutKind.Sequential)]
+        public class KBDLLHOOKSTRUCT
         {
-            GC.SuppressFinalize(this);
-            lock (lockObject)
-            {
-                if (Activated())
+            public uint vkCode;
+            public uint scanCode;
+            public FLAGS flags;
+            public uint time;
+            public UIntPtr dwExtraInfo;
+        }
+
+        [Flags]
+        public enum FLAGS : uint
+        {
+            LLKHF_EXTENDED = 0x01,
+            LLKHF_INJECTED = 0x10,
+            LLKHF_ALTDOWN  = 0x20,
+            LLKHF_UP       = 0x80,
+        }
+        
+        public LowLevelKeyboardHook(Func<Event, KBDLLHOOKSTRUCT, Result> userCallback) :
+            base
+            (
+                HookType.WH_KEYBOARD_LL,
+                (wParam, lParam) =>
                 {
-                    Unhook();
+                    var a = (Event)wParam;
+                    var b = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
+                    return userCallback(a, b);
                 }
-            }
-        }
-
-        ~ LowLevelMouseHook()
+            )
         {
-            Dispose();
+
         }
     }
 }

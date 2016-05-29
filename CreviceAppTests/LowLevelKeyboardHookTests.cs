@@ -4,18 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CreviceApp.Tests
 {
     [TestClass()]
-    public class LowLevelMouseHookTests
+    public class LowLevelKeyboardHookTests
     {
         [TestMethod()]
         public void ActivatedTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
             Assert.IsFalse(hook.IsActivated);
             hook.SetHook();
             Assert.IsTrue(hook.IsActivated);
@@ -26,7 +25,7 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void SetHookThrowsInvalidOperationExceptionTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
             hook.SetHook();
             try
             {
@@ -46,7 +45,7 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void UnhookThrowsInvalidOperationExceptionTestTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
             hook.SetHook();
             hook.Unhook();
             try
@@ -61,21 +60,17 @@ namespace CreviceApp.Tests
         }
 
         [TestMethod()]
-        public void LowLevelMouseHookProcTest()
+        public void LowLevelKeyboardHookTest()
         {
             var sender = new SingleInputSender();
-            var list = new List<LowLevelMouseHook.Event>();
-            var hook = new LowLevelMouseHook((evnt, data) => {
-                if (data.fromCreviceApp)
-                {
-                    list.Add(evnt);
-                    return LowLevelMouseHook.Result.Cancel;
-                }
-                return LowLevelMouseHook.Result.Transfer;
+            var list = new List<LowLevelKeyboardHook.Event>();
+            var hook = new LowLevelKeyboardHook((evnt, data) => {
+                list.Add(evnt);
+                return LowLevelKeyboardHook.Result.Cancel;
             });
             Assert.AreEqual(list.Count, 0);
             hook.SetHook();
-            sender.RightClick();
+            sender.UnicodeKeyStroke("A");
             hook.Unhook();
             Assert.AreEqual(list.Count, 2);
         }
@@ -83,7 +78,7 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void DisposeWhenActivatedTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
             hook.SetHook();
             Assert.IsTrue(hook.IsActivated);
             hook.Dispose();
@@ -93,7 +88,7 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void DisposeWhenNotActivatedTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
             Assert.IsFalse(hook.IsActivated);
             hook.Dispose();
             Assert.IsFalse(hook.IsActivated);
