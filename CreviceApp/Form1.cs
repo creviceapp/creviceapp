@@ -54,10 +54,10 @@ namespace CreviceApp
                 inputSender.ExtendedKeyUp(VK_TAB);
                 Thread.Sleep(1000);
                 inputSender.ExtendedKeyUp(VK_CONTROL);
-                
+
                 inputSender.ExtendedKeyDown(N_0);
                 inputSender.ExtendedKeyUp(N_0);
-                
+
                 */
 
                 /*
@@ -81,7 +81,8 @@ namespace CreviceApp
                 inputSender.ExtendedKeyUpWithScanCode(VK_LWIN);
                 */
 
-                inputSender.UnicodeKeyStroke("🍣🍣🍣🍣");
+                //inputSender.UnicodeKeyStroke("🍣🍣🍣🍣");
+                inputSender.Wheel(2400);
             });
 
             InitializeComponent();
@@ -129,11 +130,11 @@ namespace CreviceApp
                     break;
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
-                    Debug.Print("{0}: delta={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.higher);
+                    Debug.Print("{0}: delta={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.asWheelDelta.delta);
                     break;
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
-                    Debug.Print("{0}: type={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.higher);
+                    Debug.Print("{0}: type={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.asXButton.type);
                     break;
                 default:
                     Debug.Print("{0}", evnt);
