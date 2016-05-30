@@ -2,10 +2,13 @@
 using CreviceApp;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+
 
 namespace CreviceApp.Tests
 {
@@ -101,24 +104,49 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void MoveTest()
         {
-            sender.WheelUp();
-            sender.Move(100, 100);
-            sender.Move(-100, -100);
-            var pt = mouseEvents[0].Item2.pt;
-            Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-            Assert.IsTrue(mouseEvents[1].Item2.pt.x > pt.x);
-            Assert.IsTrue(mouseEvents[1].Item2.pt.y > pt.y);
-            Assert.IsTrue(mouseEvents[2].Item2.pt.x < pt.x);
-            Assert.IsTrue(mouseEvents[2].Item2.pt.y < pt.y);
-       } 
+            var rand = new System.Random();
+            var max_cursor_range = 0xFFF;
+            var min_cursor_range = -0xFFF;
+            var error_margin = 2;
+            var start = Cursor.Position;
+            var min_error = new Point(start.X - error_margin, start.Y - error_margin);
+            var max_error = new Point(start.X + error_margin, start.Y + error_margin);
+            foreach (int i in Enumerable.Range(0, 100))
+            {
+                mouseEvents.Clear();
+                var dx = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                var dy = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                sender.Move(dx, dy);
+                var evnt = mouseEvents[0].Item1;
+                var pos = mouseEvents[0].Item2.pt;
+                Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
+                Assert.IsTrue(min_error.X <= pos.x || pos.x <= max_error.X);
+                Assert.IsTrue(min_error.Y <= pos.y || pos.y <= max_error.Y);
+            }
+        } 
 
         [TestMethod()]
         public void MoveToTest()
         {
-            sender.MoveTo(100, 100);
-            Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-            Assert.AreEqual(mouseEvents[0].Item2.pt.x, 100);
-            Assert.AreEqual(mouseEvents[0].Item2.pt.y, 100);
+            var rand = new System.Random();
+            var max_cursor_range = 0xFFF;
+            var min_cursor_range = -0xFFF;
+            var error_margin = 2;
+            var start = Cursor.Position;
+            var min_error = new Point(start.X - error_margin, start.Y - error_margin);
+            var max_error = new Point(start.X + error_margin, start.Y + error_margin);
+            foreach (int i in Enumerable.Range(0, 100))
+            {
+                mouseEvents.Clear();
+                var x = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                var y = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                sender.MoveTo(x, y);
+                var evnt = mouseEvents[0].Item1;
+                var pos = mouseEvents[0].Item2.pt;
+                Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
+                Assert.IsTrue(min_error.X <= pos.x || pos.x <= max_error.X);
+                Assert.IsTrue(min_error.Y <= pos.y || pos.y <= max_error.Y);
+            }
         }
 
         [TestMethod()]

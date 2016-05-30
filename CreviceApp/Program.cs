@@ -661,18 +661,17 @@ namespace CreviceApp
 
         protected MOUSEINPUT MouseMoveEvent(int dx, int dy)
         {
-            var mouseInput = GetCreviceMouseInput();
-            mouseInput.dx = dx;
-            mouseInput.dy = dy;
-            mouseInput.dwFlags = MOUSEEVENTF_MOVE;
-            return mouseInput;
+            var x = Cursor.Position.X + dx;
+            var y = Cursor.Position.Y + dy;
+            return MouseMoveToEvent(x, y);
         }
 
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
         protected MOUSEINPUT MouseMoveToEvent(int x, int y)
         {
             var mouseInput = GetCreviceMouseInput();
-            mouseInput.dx = (int)Math.Ceiling(x * ((double)ushort.MaxValue / Screen.PrimaryScreen.Bounds.Width));
-            mouseInput.dy = (int)Math.Ceiling(y * ((double)ushort.MaxValue / Screen.PrimaryScreen.Bounds.Height));
+            mouseInput.dx = x * 0xFFFF / Screen.PrimaryScreen.Bounds.Width;
+            mouseInput.dy = y * 0xFFFF / Screen.PrimaryScreen.Bounds.Height;
             mouseInput.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
             return mouseInput;
         }
