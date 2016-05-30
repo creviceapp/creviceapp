@@ -15,9 +15,9 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         public void AppTest()
         {
             var root = new Root();
-            Assert.AreEqual(root.appElements.Count, 0);
+            Assert.AreEqual(root.whenElements.Count, 0);
             var appElement = root.App(x => true);
-            Assert.AreEqual(root.appElements.Count, 1);
+            Assert.AreEqual(root.whenElements.Count, 1);
         }
     }
 }

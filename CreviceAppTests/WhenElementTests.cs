@@ -16,9 +16,9 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         {
             var root = new Root();
             var appElement = root.App(x => true);
-            Assert.AreEqual(root.appElements[0].onElements.Count, 0);
+            Assert.AreEqual(root.whenElements[0].onElements.Count, 0);
             appElement.@on(Button.RightButton);
-            Assert.AreEqual(root.appElements[0].onElements.Count, 1);
+            Assert.AreEqual(root.whenElements[0].onElements.Count, 1);
         }
 
         [TestMethod()]
@@ -26,7 +26,7 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         {
             var root = new Root();
             var appElement = root.App(x => true);
-            Assert.IsTrue(root.appElements[0].func(new WhenContext()));
+            Assert.IsTrue(root.whenElements[0].func(new WhenContext()));
         }
 
     }

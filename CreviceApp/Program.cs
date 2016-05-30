@@ -28,6 +28,118 @@ namespace CreviceApp
         }
     }
 
+    namespace Core
+    {
+        namespace Constant
+        {
+            public interface Event               { }
+            public interface GestureStartTrigger { }
+            public interface GestureEndTrigger   { }
+            public interface ActionTrigger       { }
+            public class LeftButtonDown   : Event, GestureStartTrigger                                   { }
+            public class LeftButtonUp     : Event,                      GestureEndTrigger                { }
+            public class MiddleButtonDown : Event, GestureStartTrigger                                   { }
+            public class MiddleButtonUp   : Event,                      GestureEndTrigger                { }
+            public class RightButtonDown  : Event, GestureStartTrigger                                   { }
+            public class RightButtonUp    : Event,                      GestureEndTrigger                { }
+            public class WheelDown        : Event,                                         ActionTrigger { }
+            public class WheelUp          : Event,                                         ActionTrigger { }
+            public class WheelLeft        : Event,                                         ActionTrigger { }
+            public class WheelRight       : Event,                                         ActionTrigger { }
+            public class X1ButtonDown     : Event, GestureStartTrigger                                   { }
+            public class X1ButtonUp       : Event,                      GestureEndTrigger                { }
+            public class X2ButtonDown     : Event, GestureStartTrigger                                   { }
+            public class X2ButtonUp       : Event,                      GestureEndTrigger                { }
+            public class Stroke           : Event
+            {
+                public readonly IEnumerable<Move> move;
+                public Stroke(IEnumerable<Move> move)
+                {
+                    this.move = move;
+                }
+            }
+
+            public enum Move
+            {
+                MoveUp,
+                MoveDown,
+                MoveLeft,
+                MoveRight
+            }
+        }
+
+        namespace FSM
+        {
+            using Constant;
+
+            public class GestureMachine
+            {
+                private readonly Dictionary<GestureStartTrigger, IEnumerable<GestureConfig.DSL.WhenElement>> StartTriggerToWhen;
+
+                // 
+
+                public GestureMachine(GestureConfig.DSL.Root root)
+                {
+
+                }
+
+                public bool Input(Event evnt)
+                {
+                    
+                    var t = typeof(LeftButtonDown);
+                }
+            }
+            
+            // Initial state.
+            // Using a map (Event -> When)
+            public class State0
+            {
+                private readonly Dictionary<GestureStartTrigger, IEnumerable<GestureConfig.DSL.WhenElement>> StartTriggerToWhen;
+
+                // Gestures
+                // if Gestures.GestureStartTrigger -> State1
+            }
+
+            // ON
+            public class State1
+            {
+                // Actions
+                // Strokes
+                // keyA : GestureEndTrigger
+                //
+                // if keyA -> 
+                //           if no action executed -> Strokes.findMatch(storke).execute()
+                //           State0
+                // if Actions.GestureStartTrigger -> State2
+                // if Actions.ActionTrigger -> execute()
+            }
+
+
+            // IF
+            public class State2
+            {
+                // keyA : GestureEndTrigger
+                // keyB : GestureEndTrigger
+                // 
+                // if keyA -> IgnoreNext.Add(keyB); State0
+                // if keyB -> execute(); State1
+            }
+
+            public class TreeParser
+            {
+                public ParsedInfo Parse(GestureConfig.DSL.Root root)
+                {
+
+                }
+            }
+
+            public class ParsedInfo
+            {
+
+            }
+        }
+    }
+
     namespace GestureConfig
     {
     /**
@@ -60,13 +172,12 @@ namespace CreviceApp
      * MachineContext
      * var (result, state) = state.exe(keyCode);
      */
-
         namespace DSL
         {
 
             public class Root
             {
-                public readonly List<WhenElement.Value> appElements = new List<WhenElement.Value>();
+                public readonly List<WhenElement.Value> whenElements = new List<WhenElement.Value>();
 
                 public WhenElement @when(Func<WhenContext, bool> func)
                 {
@@ -94,10 +205,10 @@ namespace CreviceApp
                 {
                     this.parent = parent;
                     this.value = new Value(func);
-                    this.parent.appElements.Add(this.value);
+                    this.parent.whenElements.Add(this.value);
                 }
 
-                public OnElement @on(Button button)
+                public OnElement @on(OnButton button)
                 {
                     return new OnElement(value, button);
                 }
@@ -109,9 +220,9 @@ namespace CreviceApp
                 {
                     public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
                     public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
-                    public readonly Button button;
+                    public readonly OnButton button;
 
-                    public Value(Button button)
+                    public Value(OnButton button)
                     {
                         this.button = button;
                     }
@@ -120,14 +231,14 @@ namespace CreviceApp
                 private readonly WhenElement.Value parent;
                 private readonly Value value;
 
-                public OnElement(WhenElement.Value parent, Button button)
+                public OnElement(WhenElement.Value parent, OnButton button)
                 {
                     this.parent = parent;
                     this.value = new Value(button);
                     this.parent.onElements.Add(this.value);
                 }
 
-                public IfButtonElement @if(Button button)
+                public IfButtonElement @if(IfButton button)
                 {
                     return new IfButtonElement(value, button);
                 }
@@ -150,9 +261,9 @@ namespace CreviceApp
             {
                 public class Value : IfElement.Value
                 {
-                    public readonly Button button;
+                    public readonly IfButton button;
 
-                    public Value(Button button)
+                    public Value(IfButton button)
                     {
                         this.button = button;
                     }
@@ -161,7 +272,7 @@ namespace CreviceApp
                 private readonly OnElement.Value parent;
                 private readonly Value value;
 
-                public IfButtonElement(OnElement.Value parent, Button button)
+                public IfButtonElement(OnElement.Value parent, IfButton button)
                 {
                     this.parent = parent;
                     this.value = new Value(button);
@@ -235,24 +346,23 @@ namespace CreviceApp
 
             }
 
-            public enum Button
-            {
-                LeftButton,
-                MiddleButton,
-                RightButton,
-                WheelUpButton,
-                WheelDownButton,
-                X1Button,
-                X2Button
-            }
-
-            public enum Move
-            {
-                MoveUp,
-                MoveDown,
-                MoveLeft,
-                MoveRight
-            }
+            public interface OnButton { }
+            public interface IfButton { }
+            public class LeftButton   : OnButton, IfButton { }
+            public class MiddleButton : OnButton, IfButton { }
+            public class RightButton  : OnButton, IfButton { }
+            public class WheelUp      :           IfButton { }
+            public class WheelDown    :           IfButton { }
+            public class WheelLeft    :           IfButton { }
+            public class WheelRight   :           IfButton { }
+            public class X1Button     : OnButton, IfButton { }
+            public class X2Button     : OnButton, IfButton { }
+            
+            public interface Move { }
+            public class MoveUp    : Move { }
+            public class MoveDown  : Move { }
+            public class MoveLeft  : Move { }
+            public class MoveRight : Move { }
         }
     }
     

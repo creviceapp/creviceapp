@@ -21,7 +21,7 @@ namespace CreviceApp.GestureConfig.DSL.Tests
             var called = false;
             var doEmenent = ifElement.@do(x => { called = true; });
             Assert.IsFalse(called);
-            root.appElements[0].onElements[0].ifStrokeElements[0].doElements[0].func(new DoContext());
+            root.whenElements[0].onElements[0].ifStrokeElements[0].doElements[0].func(new DoContext());
             Assert.IsTrue(called);
         }
     }
