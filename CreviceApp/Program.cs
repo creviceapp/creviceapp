@@ -32,11 +32,11 @@ namespace CreviceApp
     {
     /**
      * 
-     * APP     : App((x) => {})    ON
+     * WHEN    : @when((x) => {})    ON
      * 
      * ON      : @on(BUTTON)     ( IF | STROKE )
      * 
-     * IF      : @if(BUTTON)       DO |
+     * IF      : @if(BUTTON)       DO
      *           @if(MOVE *)       DO
      * 
      * DO      : @do((x) => {}) 
@@ -47,7 +47,7 @@ namespace CreviceApp
      *
      * 
      * Root:
-     * with keyA down | check(keyA) -> App -> check(keyA) -> On
+     * with keyA down | check(keyA) -> When -> check(keyA) -> On
      * 
      * On:
      * with keyB down | check(keyB) -> IfButton
@@ -66,22 +66,22 @@ namespace CreviceApp
 
             public class Root
             {
-                public readonly List<AppElement.Value> appElements = new List<AppElement.Value>();
+                public readonly List<WhenElement.Value> appElements = new List<WhenElement.Value>();
 
-                public AppElement App(Func<AppContext, bool> func)
+                public WhenElement @when(Func<WhenContext, bool> func)
                 {
-                    return new AppElement(this, func);
+                    return new WhenElement(this, func);
                 }
             }
 
-            public class AppElement
+            public class WhenElement
             {
                 public class Value
                 {
                     public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
-                    public readonly Func<AppContext, bool> func;
+                    public readonly Func<WhenContext, bool> func;
 
-                    public Value(Func<AppContext, bool> func)
+                    public Value(Func<WhenContext, bool> func)
                     {
                         this.func = func;
                     }
@@ -90,7 +90,7 @@ namespace CreviceApp
                 private readonly Root parent;
                 private readonly Value value;
 
-                public AppElement(Root parent, Func<AppContext, bool> func)
+                public WhenElement(Root parent, Func<WhenContext, bool> func)
                 {
                     this.parent = parent;
                     this.value = new Value(func);
@@ -117,10 +117,10 @@ namespace CreviceApp
                     }
                 }
 
-                private readonly AppElement.Value parent;
+                private readonly WhenElement.Value parent;
                 private readonly Value value;
 
-                public OnElement(AppElement.Value parent, Button button)
+                public OnElement(WhenElement.Value parent, Button button)
                 {
                     this.parent = parent;
                     this.value = new Value(button);
@@ -225,7 +225,7 @@ namespace CreviceApp
                 }
             }
 
-            public class AppContext
+            public class WhenContext
             {
 
             }
