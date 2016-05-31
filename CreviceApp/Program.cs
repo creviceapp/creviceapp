@@ -27,51 +27,135 @@ namespace CreviceApp
             Application.Run(new Form1());
         }
     }
-
+    
     namespace Core
     {
-        namespace Constant
+        public class Def
         {
-            public interface Event               { }
-            public interface GestureStartTrigger { }
-            public interface GestureEndTrigger   { }
-            public interface ActionTrigger       { }
-            public class LeftButtonDown   : Event, GestureStartTrigger                                   { }
-            public class LeftButtonUp     : Event,                      GestureEndTrigger                { }
-            public class MiddleButtonDown : Event, GestureStartTrigger                                   { }
-            public class MiddleButtonUp   : Event,                      GestureEndTrigger                { }
-            public class RightButtonDown  : Event, GestureStartTrigger                                   { }
-            public class RightButtonUp    : Event,                      GestureEndTrigger                { }
-            public class WheelDown        : Event,                                         ActionTrigger { }
-            public class WheelUp          : Event,                                         ActionTrigger { }
-            public class WheelLeft        : Event,                                         ActionTrigger { }
-            public class WheelRight       : Event,                                         ActionTrigger { }
-            public class X1ButtonDown     : Event, GestureStartTrigger                                   { }
-            public class X1ButtonUp       : Event,                      GestureEndTrigger                { }
-            public class X2ButtonDown     : Event, GestureStartTrigger                                   { }
-            public class X2ButtonUp       : Event,                      GestureEndTrigger                { }
-            public class Stroke           : Event
+            public class Trigger
             {
-                public readonly IEnumerable<Move> move;
-                public Stroke(IEnumerable<Move> move)
+                public interface ITrigger { }
+                public interface ISet { }
+                public interface IRelease { }
+                public interface IDoubleAction
                 {
-                    this.move = move;
+                    ITrigger GetPair();
+                }
+                public interface ISingleAction { }
+                public class LeftButtonDown   : ITrigger, IDoubleAction, ISet
+                {
+                    public ITrigger GetPair() { return Constant.LeftButtonUp; }
+                }
+                public class LeftButtonUp     : ITrigger, IDoubleAction, IRelease
+                {
+                    public ITrigger GetPair() { return Constant.LeftButtonDown; }
+                }
+                public class MiddleButtonDown : ITrigger, IDoubleAction, ISet
+                {
+                    public ITrigger GetPair() { return Constant.MiddleButtonUp; }
+                }
+                public class MiddleButtonUp   : ITrigger, IDoubleAction, IRelease
+                {
+                    public ITrigger GetPair() { return Constant.MiddleButtonDown; }
+                }
+                public class RightButtonDown  : ITrigger, IDoubleAction, ISet
+                {
+                    public ITrigger GetPair() { return Constant.RightButtonUp; }
+                }
+                public class RightButtonUp    : ITrigger, IDoubleAction, IRelease
+                {
+                    public ITrigger GetPair() { return Constant.RightButtonDown; }
+                }
+                public class WheelDown        : ITrigger, ISingleAction, IRelease { }
+                public class WheelUp          : ITrigger, ISingleAction, IRelease { }
+                public class WheelLeft        : ITrigger, ISingleAction, IRelease { }
+                public class WheelRight       : ITrigger, ISingleAction, IRelease { }
+                public class X1ButtonDown     : ITrigger, IDoubleAction, ISet
+                {
+                    public ITrigger GetPair() { return Constant.X1ButtonUp; }
+                }
+                public class X1ButtonUp       : ITrigger, IDoubleAction, IRelease
+                {
+                    public ITrigger GetPair() { return Constant.X1ButtonDown; }
+                }
+                public class X2ButtonDown     : ITrigger, IDoubleAction, ISet
+                {
+                    public ITrigger GetPair() { return Constant.X2ButtonUp; }
+                }
+                public class X2ButtonUp       : ITrigger, IDoubleAction, IRelease
+                {
+                    public ITrigger GetPair() { return Constant.X2ButtonDown; }
                 }
             }
 
             public enum Move
             {
-                MoveUp,
-                MoveDown,
-                MoveLeft,
-                MoveRight
+                Up,
+                Down,
+                Left,
+                Right
+            }
+
+            public class ConstantSingleton
+            {
+                private static ConstantSingleton singleton = new ConstantSingleton();
+
+                public readonly Trigger.LeftButtonDown   LeftButtonDown   = new Trigger.LeftButtonDown();
+                public readonly Trigger.LeftButtonUp     LeftButtonUp     = new Trigger.LeftButtonUp();
+                public readonly Trigger.MiddleButtonDown MiddleButtonDown = new Trigger.MiddleButtonDown();
+                public readonly Trigger.MiddleButtonUp   MiddleButtonUp   = new Trigger.MiddleButtonUp();
+                public readonly Trigger.RightButtonDown  RightButtonDown  = new Trigger.RightButtonDown();
+                public readonly Trigger.RightButtonUp    RightButtonUp    = new Trigger.RightButtonUp();
+                public readonly Trigger.WheelDown        WheelDown        = new Trigger.WheelDown();
+                public readonly Trigger.WheelUp          WheelUp          = new Trigger.WheelUp();
+                public readonly Trigger.WheelLeft        WheelLeft        = new Trigger.WheelLeft();
+                public readonly Trigger.WheelRight       WheelRight       = new Trigger.WheelRight();
+                public readonly Trigger.X1ButtonDown     X1ButtonDown     = new Trigger.X1ButtonDown();
+                public readonly Trigger.X1ButtonUp       X1ButtonUp       = new Trigger.X1ButtonUp();
+                public readonly Trigger.X2ButtonDown     X2ButtonDown     = new Trigger.X2ButtonDown();
+                public readonly Trigger.X2ButtonUp       X2ButtonUp       = new Trigger.X2ButtonUp();
+
+                public static ConstantSingleton GetInstance()
+                {
+                    return singleton;
+                }
+            }
+
+            public static ConstantSingleton Constant
+            {
+                get { return ConstantSingleton.GetInstance(); }
+            }
+
+            public static Move FromDSL(GestureConfig.DSL.AcceptableInIfStrokeClause move)
+            {
+                if (move is GestureConfig.DSL.MoveUp)
+                {
+                    return Move.Up;
+                }
+                else if (move is GestureConfig.DSL.MoveDown)
+                {
+                    return Move.Down;
+                }
+                else if (move is GestureConfig.DSL.MoveLeft)
+                {
+                    return Move.Left;
+                }
+                else if (move is GestureConfig.DSL.MoveRight)
+                {
+                    return Move.Right;
+                }
+                else
+                {
+                    throw new ArgumentException("Unknown type");
+                }
             }
         }
 
         namespace FSM
         {
-            using Constant;
+            using GestureConfig;
 
+            /*
             public class GestureMachine
             {
                 private readonly Dictionary<GestureStartTrigger, IEnumerable<GestureConfig.DSL.WhenElement>> StartTriggerToWhen;
@@ -98,6 +182,7 @@ namespace CreviceApp
 
                 // Gestures
                 // if Gestures.GestureStartTrigger -> State1
+                // if Stop -> Stop
             }
 
             // ON
@@ -112,6 +197,7 @@ namespace CreviceApp
                 //           State0
                 // if Actions.GestureStartTrigger -> State2
                 // if Actions.ActionTrigger -> execute()
+                // if Stop -> Stop
             }
 
 
@@ -123,13 +209,231 @@ namespace CreviceApp
                 // 
                 // if keyA -> IgnoreNext.Add(keyB); State0
                 // if keyB -> execute(); State1
+                // if Stop -> Stop
             }
+            */
 
             public class TreeParser
             {
-                public ParsedInfo Parse(GestureConfig.DSL.Root root)
+                public ParsedInfo Parse(DSL.Root root)
                 {
+                    var gestureDef = TreeToGestureDefinition(root);
 
+                    var completeGestureDef =
+                        from g in gestureDef
+                        where g.IsComplete == true
+                        select g;
+                    
+                    var whenFuncs =
+                        (from g in completeGestureDef
+                         select g.whenFunc).Distinct();
+
+                    var triggerToWhenFunc = TriggerToWhenFunc(completeGestureDef);
+                    
+                }
+
+                private IDictionary<Def.Trigger.ISet, IEnumerable<Func<bool>>> TriggerToWhenFunc(IEnumerable<GestureDefinition> gestureDef)
+                {
+                        return (from g in gestureDef
+                                select Tuple.Create(Convert(g.onButton), g.whenFunc))
+                                .ToLookup(x => x.Item1, x => x.Item2)
+                                .ToDictionary(x => x.Key, x => x.Distinct());
+                }
+
+                private IEnumerable<GestureDefinition> TreeToGestureDefinition(DSL.Root root)
+                {
+                    List<GestureDefinition> gestureDef = new List<GestureDefinition>();
+                    Debug.Print("Parsing tree of GestureConfig.DSL");
+                    foreach (var whenElement in root.whenElements)
+                    {
+                        if (whenElement.onElements.Count == 0)
+                        {
+                            gestureDef.Add(new GestureDefinition(whenElement.func, null));
+                            continue;
+                        }
+                        foreach (var onElement in whenElement.onElements)
+                        {
+                            if (onElement.ifButtonElements.Count == 0 && onElement.ifStrokeElements.Count == 0)
+                            {
+                                gestureDef.Add(new GestureDefinition(whenElement.func, onElement.button));
+                                continue;
+                            }
+                            foreach (var ifButtonElement in onElement.ifButtonElements)
+                            {
+                                if (ifButtonElement.doElements.Count == 0)
+                                {
+                                    gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, null));
+                                    continue;
+                                }
+                                foreach (var doElement in ifButtonElement.doElements)
+                                {
+                                    gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, doElement.action));
+                                }
+                            }
+                            foreach (var ifStrokeElement in onElement.ifStrokeElements)
+                            {
+                                var moves = ConvertToMoves(ifStrokeElement.moves);
+                                if (ifStrokeElement.doElements.Count == 0)
+                                {
+                                    gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, moves, null));
+                                    continue;
+                                }
+                                foreach (var doElement in ifStrokeElement.doElements)
+                                {
+                                    gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, moves, doElement.action));
+                                }
+                            }
+                        }
+                    }
+                    Debug.Print("Parse end.");
+                    return gestureDef; 
+                }
+
+                private IEnumerable<Def.Move> ConvertToMoves(IEnumerable<DSL.AcceptableInIfStrokeClause> moves)
+                {
+                    return moves.Select(m => Def.FromDSL(m));
+                }
+
+                private Def.Trigger.ISet Convert(DSL.AcceptableInOnClause onButton)
+                {
+                    if (onButton is DSL.LeftButton)
+                    {
+                        return Def.Constant.LeftButtonDown;
+                    }
+                    else if (onButton is DSL.MiddleButton)
+                    {
+                        return Def.Constant.MiddleButtonDown;
+                    }
+                    else if (onButton is DSL.RightButton)
+                    {
+                        return Def.Constant.RightButtonDown;
+                    }
+                    else if (onButton is DSL.X1Button)
+                    {
+                        return Def.Constant.X1ButtonDown;
+                    }
+                    else if (onButton is DSL.X2Button)
+                    {
+                        return Def.Constant.X2ButtonDown;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Unknown type");
+                    }
+                }
+
+                private Def.Trigger.ITrigger Convert(DSL.AcceptableInIfButtonClause ifButton)
+                {
+                    if (ifButton is DSL.LeftButton)
+                    {
+                        return Def.Constant.LeftButtonDown;
+                    }
+                    else if (ifButton is DSL.MiddleButton)
+                    {
+                        return Def.Constant.MiddleButtonDown;
+                    }
+                    else if (ifButton is DSL.RightButton)
+                    {
+                        return Def.Constant.RightButtonDown;
+                    }
+                    else if (ifButton is DSL.WheelUp)
+                    {
+                        return Def.Constant.WheelUp;
+                    }
+                    else if (ifButton is DSL.WheelDown)
+                    {
+                        return Def.Constant.WheelDown;
+                    }
+                    else if (ifButton is DSL.WheelLeft)
+                    {
+                        return Def.Constant.WheelLeft;
+                    }
+                    else if (ifButton is DSL.WheelRight)
+                    {
+                        return Def.Constant.WheelRight;
+                    }
+                    else if (ifButton is DSL.X1Button)
+                    {
+                        return Def.Constant.X1ButtonDown;
+                    }
+                    else if (ifButton is DSL.X2Button)
+                    {
+                        return Def.Constant.X2ButtonDown;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Unknown type");
+                    }
+                }
+            }
+
+            public class GestureDefinition
+            {
+                public readonly Func<bool> whenFunc;
+                public readonly DSL.AcceptableInOnClause onButton;
+                public GestureDefinition(
+                    Func<bool> whenFunc,
+                    DSL.AcceptableInOnClause onButton
+                    )
+                {
+                    this.whenFunc = whenFunc;
+                    this.onButton = onButton;
+                }
+                virtual public bool IsComplete
+                {
+                    get { return false; }
+                }
+            }
+
+            public class ButtonGestureDefinition : GestureDefinition
+            {
+                public readonly DSL.AcceptableInIfButtonClause ifButton;
+                public readonly Action doAction;
+                public ButtonGestureDefinition(
+                    Func<bool> whenFunc,
+                    DSL.AcceptableInOnClause onButton,
+                    DSL.AcceptableInIfButtonClause ifButton,
+                    Action doAction
+                    ) : base(whenFunc, onButton)
+                {
+                    this.ifButton = ifButton;
+                    this.doAction = doAction;
+                }
+                override public bool IsComplete
+                {
+                    get
+                    {
+                        return whenFunc != null &&
+                               onButton != null &&
+                               ifButton != null &&
+                               doAction != null;
+                    }
+                }
+            }
+
+            public class StrokeGestureDefinition : GestureDefinition
+            {
+                public readonly IEnumerable<Def.Move> moves;
+                public readonly Action doAction;
+                public StrokeGestureDefinition(
+                    Func<bool> whenFunc,
+                    DSL.AcceptableInOnClause onButton,
+                    IEnumerable<Def.Move> moves,
+                    Action doAction
+                    ) : base(whenFunc, onButton)
+                {
+                    this.moves = moves;
+                    this.doAction = doAction;
+                }
+                override public bool IsComplete
+                {
+                    get
+                    {
+                        return whenFunc != null &&
+                               onButton != null &&
+                               moves != null &&
+                               doAction != null;
+                    }
                 }
             }
 
@@ -172,14 +476,13 @@ namespace CreviceApp
      * MachineContext
      * var (result, state) = state.exe(keyCode);
      */
-        namespace DSL
+        public static class DSL
         {
-
             public class Root
             {
                 public readonly List<WhenElement.Value> whenElements = new List<WhenElement.Value>();
 
-                public WhenElement @when(Func<WhenContext, bool> func)
+                public WhenElement @when(Func<bool> func)
                 {
                     return new WhenElement(this, func);
                 }
@@ -190,9 +493,9 @@ namespace CreviceApp
                 public class Value
                 {
                     public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
-                    public readonly Func<WhenContext, bool> func;
+                    public readonly Func<bool> func;
 
-                    public Value(Func<WhenContext, bool> func)
+                    public Value(Func<bool> func)
                     {
                         this.func = func;
                     }
@@ -201,14 +504,14 @@ namespace CreviceApp
                 private readonly Root parent;
                 private readonly Value value;
 
-                public WhenElement(Root parent, Func<WhenContext, bool> func)
+                public WhenElement(Root parent, Func<bool> func)
                 {
                     this.parent = parent;
                     this.value = new Value(func);
                     this.parent.whenElements.Add(this.value);
                 }
 
-                public OnElement @on(OnButton button)
+                public OnElement @on(AcceptableInOnClause button)
                 {
                     return new OnElement(value, button);
                 }
@@ -220,9 +523,9 @@ namespace CreviceApp
                 {
                     public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
                     public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
-                    public readonly OnButton button;
+                    public readonly AcceptableInOnClause button;
 
-                    public Value(OnButton button)
+                    public Value(AcceptableInOnClause button)
                     {
                         this.button = button;
                     }
@@ -231,19 +534,19 @@ namespace CreviceApp
                 private readonly WhenElement.Value parent;
                 private readonly Value value;
 
-                public OnElement(WhenElement.Value parent, OnButton button)
+                public OnElement(WhenElement.Value parent, AcceptableInOnClause button)
                 {
                     this.parent = parent;
                     this.value = new Value(button);
                     this.parent.onElements.Add(this.value);
                 }
 
-                public IfButtonElement @if(IfButton button)
+                public IfButtonElement @if(AcceptableInIfButtonClause button)
                 {
                     return new IfButtonElement(value, button);
                 }
 
-                public IfStrokeElement @if(params Move[] moves)
+                public IfStrokeElement @if(params AcceptableInIfStrokeClause[] moves)
                 {
                     return new IfStrokeElement(value, moves);
                 }
@@ -261,9 +564,9 @@ namespace CreviceApp
             {
                 public class Value : IfElement.Value
                 {
-                    public readonly IfButton button;
+                    public readonly AcceptableInIfButtonClause button;
 
-                    public Value(IfButton button)
+                    public Value(AcceptableInIfButtonClause button)
                     {
                         this.button = button;
                     }
@@ -272,16 +575,16 @@ namespace CreviceApp
                 private readonly OnElement.Value parent;
                 private readonly Value value;
 
-                public IfButtonElement(OnElement.Value parent, IfButton button)
+                public IfButtonElement(OnElement.Value parent, AcceptableInIfButtonClause button)
                 {
                     this.parent = parent;
                     this.value = new Value(button);
                     this.parent.ifButtonElements.Add(this.value);
                 }
 
-                public DoElement @do(Action<DoContext> func)
+                public DoElement @do(Action action)
                 {
-                    return new DoElement(value, func);
+                    return new DoElement(value, action);
                 }
             }
 
@@ -289,9 +592,9 @@ namespace CreviceApp
             {
                 public class Value : IfElement.Value
                 {
-                    public readonly IEnumerable<Move> moves;
+                    public readonly IEnumerable<AcceptableInIfStrokeClause> moves;
 
-                    public Value(IEnumerable<Move> moves)
+                    public Value(IEnumerable<AcceptableInIfStrokeClause> moves)
                     {
                         this.moves = moves;
                     }
@@ -300,16 +603,16 @@ namespace CreviceApp
                 private readonly OnElement.Value parent;
                 private readonly Value value;
 
-                public IfStrokeElement(OnElement.Value parent, params Move[] moves)
+                public IfStrokeElement(OnElement.Value parent, params AcceptableInIfStrokeClause[] moves)
                 {
                     this.parent = parent;
                     this.value = new Value(moves);
                     this.parent.ifStrokeElements.Add(this.value);
                 }
 
-                public DoElement @do(Action<DoContext> func)
+                public DoElement @do(Action action)
                 {
-                    return new DoElement(value, func);
+                    return new DoElement(value, action);
                 }
             }
 
@@ -317,52 +620,42 @@ namespace CreviceApp
             {
                 public class Value
                 {
-                    public readonly Action<DoContext> func;
+                    public readonly Action action;
 
-                    public Value(Action<DoContext> func)
+                    public Value(Action action)
                     {
-                        this.func = func;
+                        this.action = action;
                     }
                 }
 
                 private readonly IfElement.Value parent;
                 private readonly Value value;
 
-                public DoElement(IfElement.Value parent, Action<DoContext> func)
+                public DoElement(IfElement.Value parent, Action action)
                 {
                     this.parent = parent;
-                    this.value = new Value(func);
+                    this.value = new Value(action);
                     this.parent.doElements.Add(this.value);
                 }
             }
 
-            public class WhenContext
-            {
-
-            }
-
-            public class DoContext
-            {
-
-            }
-
-            public interface OnButton { }
-            public interface IfButton { }
-            public class LeftButton   : OnButton, IfButton { }
-            public class MiddleButton : OnButton, IfButton { }
-            public class RightButton  : OnButton, IfButton { }
-            public class WheelUp      :           IfButton { }
-            public class WheelDown    :           IfButton { }
-            public class WheelLeft    :           IfButton { }
-            public class WheelRight   :           IfButton { }
-            public class X1Button     : OnButton, IfButton { }
-            public class X2Button     : OnButton, IfButton { }
+            public interface AcceptableInOnClause { }
+            public interface AcceptableInIfButtonClause { }
+            public class LeftButton   : AcceptableInOnClause, AcceptableInIfButtonClause { }
+            public class MiddleButton : AcceptableInOnClause, AcceptableInIfButtonClause { }
+            public class RightButton  : AcceptableInOnClause, AcceptableInIfButtonClause { }
+            public class WheelUp      :                       AcceptableInIfButtonClause { }
+            public class WheelDown    :                       AcceptableInIfButtonClause { }
+            public class WheelLeft    :                       AcceptableInIfButtonClause { }
+            public class WheelRight   :                       AcceptableInIfButtonClause { }
+            public class X1Button     : AcceptableInOnClause, AcceptableInIfButtonClause { }
+            public class X2Button     : AcceptableInOnClause, AcceptableInIfButtonClause { }
             
-            public interface Move { }
-            public class MoveUp    : Move { }
-            public class MoveDown  : Move { }
-            public class MoveLeft  : Move { }
-            public class MoveRight : Move { }
+            public interface AcceptableInIfStrokeClause { }
+            public class MoveUp    : AcceptableInIfStrokeClause { }
+            public class MoveDown  : AcceptableInIfStrokeClause { }
+            public class MoveLeft  : AcceptableInIfStrokeClause { }
+            public class MoveRight : AcceptableInIfStrokeClause { }
         }
     }
     
@@ -780,8 +1073,8 @@ namespace CreviceApp
         protected MOUSEINPUT MouseMoveToEvent(int x, int y)
         {
             var mouseInput = GetCreviceMouseInput();
-            mouseInput.dx = x * 0xFFFF / Screen.PrimaryScreen.Bounds.Width;
-            mouseInput.dy = y * 0xFFFF / Screen.PrimaryScreen.Bounds.Height;
+            mouseInput.dx = (x + 1) * 0xFFFF / Screen.PrimaryScreen.Bounds.Width;
+            mouseInput.dy = (y + 1) * 0xFFFF / Screen.PrimaryScreen.Bounds.Height;
             mouseInput.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
             return mouseInput;
         }
