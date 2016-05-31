@@ -15,9 +15,9 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         public void funcTest()
         {
             var root = new Root();
-            var appElement = root.App(x => true);
-            var onElement = appElement.@on(Button.RightButton);
-            var ifElement = onElement.@if(Move.MoveDown, Move.MoveRight);
+            var appElement = root.@when(x => true);
+            var onElement = appElement.@on(new RightButton());
+            var ifElement = onElement.@if(new MoveDown(), new MoveRight());
             var called = false;
             var doEmenent = ifElement.@do(x => { called = true; });
             Assert.IsFalse(called);

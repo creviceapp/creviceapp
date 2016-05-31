@@ -79,7 +79,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AppElementTests.cs" />
+    <Compile Include="WhenElementTests.cs" />
     <Compile Include="DoElementTests.cs" />
     <Compile Include="IfButtonElementTests.cs" />
     <Compile Include="IfStrokeElementTests.cs" />

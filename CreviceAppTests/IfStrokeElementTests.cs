@@ -15,9 +15,9 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         public void doTest()
         {
             var root = new Root();
-            var appElement = root.App(x => true);
-            var onElement = appElement.@on(Button.RightButton);
-            var ifElement = onElement.@if(Move.MoveDown, Move.MoveRight);
+            var appElement = root.@when(x => true);
+            var onElement = appElement.@on(new RightButton());
+            var ifElement = onElement.@if(new MoveDown(), new MoveRight());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifStrokeElements[0].doElements.Count, 0);
             ifElement.@do(x => { });
             Assert.AreEqual(root.whenElements[0].onElements[0].ifStrokeElements[0].doElements.Count, 1);

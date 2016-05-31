@@ -107,10 +107,7 @@ namespace CreviceApp.Tests
             var rand = new System.Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var error_margin = 2;
             var start = Cursor.Position;
-            var min_error = new Point(start.X - error_margin, start.Y - error_margin);
-            var max_error = new Point(start.X + error_margin, start.Y + error_margin);
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();
@@ -120,8 +117,8 @@ namespace CreviceApp.Tests
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
                 Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-                Assert.IsTrue(min_error.X <= pos.x || pos.x <= max_error.X);
-                Assert.IsTrue(min_error.Y <= pos.y || pos.y <= max_error.Y);
+                Assert.AreEqual(pos.x, start.X + dx);
+                Assert.AreEqual(pos.y, start.Y + dy);
             }
         } 
 
@@ -131,10 +128,7 @@ namespace CreviceApp.Tests
             var rand = new System.Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var error_margin = 2;
             var start = Cursor.Position;
-            var min_error = new Point(start.X - error_margin, start.Y - error_margin);
-            var max_error = new Point(start.X + error_margin, start.Y + error_margin);
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();
@@ -144,8 +138,8 @@ namespace CreviceApp.Tests
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
                 Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-                Assert.IsTrue(min_error.X <= pos.x || pos.x <= max_error.X);
-                Assert.IsTrue(min_error.Y <= pos.y || pos.y <= max_error.Y);
+                Assert.AreEqual(pos.x, x);
+                Assert.AreEqual(pos.y, y);
             }
         }
 
