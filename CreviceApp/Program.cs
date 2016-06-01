@@ -277,7 +277,7 @@ namespace CreviceApp
                 // Transition 2
                 // State1 -> State1
                 // Transition from the state(S1) to the state(S1), in other words, no tansition. However, functions given as
-                // the parameter of `@do` clause of ButtonGestureDefinition are executed by a single action mouse button as a trigger.
+                // the parameter of `@do` clause of ButtonGestureDefinition are executed by pressing a single action mouse button as a trigger.
                 private IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Transition02(IEnumerable<GestureDefinition> gestureDef)
                 {
                     return gestureDef
@@ -291,7 +291,7 @@ namespace CreviceApp
                 // Transition 3
                 // State1 -> State0
                 // Transition from the state(S1) to the state(S0) holding no double action mouse buttion, and functions given as
-                // the parameter of `@do` clause of StrokeGestureDefinition are executed by release of primary double action mouse button
+                // the parameter of `@do` clause of StrokeGestureDefinition are executed by releasing of primary double action mouse button
                 // as a trigger.
                 private IDictionary<IEnumerable<Def.Move>, IEnumerable<StrokeGestureDefinition>> Transition03(IEnumerable<GestureDefinition> gestureDef)
                 {
@@ -305,19 +305,19 @@ namespace CreviceApp
                 // Transition 4
                 // State1 -> State0
                 // Transition from the state(S1) to the state(S0) holding no double action mouse buttion with no side effect 
-                // by release of primary double action mouse button as a trigger.
+                // by releasing of primary double action mouse button as a trigger.
 
                 // Transition 5
                 // State2 -> State1
                 // Transition from the state(S2) to the state(S1) holding primary double action mouse button, and functions 
-                // given as the parameter of `@do` clause of ButtonGestureDefinition are executed by release of secondary double action
+                // given as the parameter of `@do` clause of ButtonGestureDefinition are executed by releasing of secondary double action
                 // mouse button as a trigger.
 
                 // Transition 6
                 // State2 -> State0
-                // Transition from the state(S2) to the state(S0) holding no double action mouse button by release primary double action
+                // Transition from the state(S2) to the state(S0) holding no double action mouse button by releasing primary double action
                 // mouse button in irregular order as a trigger. After this transition, previous secondary double action mouse button 
-                // left holding is marked as irreggularly holding by the user, and the release event of it will be ignored.
+                // left holding is marked as irreggularly holding by the user, and the next release event of it will be ignored.
                 
                 
                 private IEnumerable<GestureDefinition> TreeToGestureDefinition(Config.DSL.Root root)
