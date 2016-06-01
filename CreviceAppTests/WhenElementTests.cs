@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.GestureConfig.DSL;
+using CreviceApp.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.GestureConfig.DSL.Tests
+namespace CreviceApp.Config.Tests
 {
     [TestClass()]
     public class AppElementTests
@@ -14,19 +14,19 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         [TestMethod()]
         public void onTest()
         {
-            var root = new Root();
-            var appElement = root.@when(x => true);
+            var root = new DSL.Root();
+            var appElement = root.@when(() => true);
             Assert.AreEqual(root.whenElements[0].onElements.Count, 0);
-            appElement.@on(new RightButton());
+            appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements.Count, 1);
         }
 
         [TestMethod()]
         public void funcTest()
         {
-            var root = new Root();
-            var appElement = root.when(x => true);
-            Assert.IsTrue(root.whenElements[0].func(new WhenContext()));
+            var root = new DSL.Root();
+            var appElement = root.when(() => true);
+            Assert.IsTrue(root.whenElements[0].func());
         }
 
     }

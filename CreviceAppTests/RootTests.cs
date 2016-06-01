@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.GestureConfig.DSL;
+using CreviceApp.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.GestureConfig.DSL.Tests
+namespace CreviceApp.Config.Tests
 {
     [TestClass()]
     public class RootTests
@@ -14,9 +14,9 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         [TestMethod()]
         public void AppTest()
         {
-            var root = new Root();
+            var root = new DSL.Root();
             Assert.AreEqual(root.whenElements.Count, 0);
-            var appElement = root.@when(x => true);
+            var appElement = root.@when(() => true);
             Assert.AreEqual(root.whenElements.Count, 1);
         }
     }

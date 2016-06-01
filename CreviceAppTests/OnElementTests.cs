@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.GestureConfig.DSL;
+using CreviceApp.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.GestureConfig.DSL.Tests
+namespace CreviceApp.Config.Tests
 {
     [TestClass()]
     public class OnElementTests
@@ -14,22 +14,22 @@ namespace CreviceApp.GestureConfig.DSL.Tests
         [TestMethod()]
         public void ifButtonTest()
         {
-            var root = new Root();
-            var appElement = root.@when(x => true);
-            var onElement = appElement.@on(new RightButton());
+            var root = new DSL.Root();
+            var appElement = root.@when(() => true);
+            var onElement = appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements.Count, 0);
-            onElement.@if(new WheelUp());
+            onElement.@if(new Def.WheelUp());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements.Count, 1);
         }
 
         [TestMethod()]
         public void ifStrokeTest()
         {
-            var root = new Root();
-            var appElement = root.@when(x => true);
-            var onElement = appElement.@on(new RightButton());
+            var root = new DSL.Root();
+            var appElement = root.@when(() => true);
+            var onElement = appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifStrokeElements.Count, 0);
-            onElement.@if(new MoveDown(), new MoveRight());
+            onElement.@if(new Def.MoveDown(), new Def.MoveRight());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifStrokeElements.Count, 1);
         }
     }
