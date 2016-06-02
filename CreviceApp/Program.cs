@@ -30,61 +30,63 @@ namespace CreviceApp
     
     namespace Core
     {
-        public class Def
+        public static class Def
         {
-            public class Trigger
+            public static class Trigger
             {
                 public interface ITrigger { }
-                public interface ISet { }
-                public interface IRelease { }
-                public interface IDoubleAction
+                public interface IDoubleActionSet
                 {
-                    ITrigger GetPair();
+                    IDoubleActionRelease GetPair();
+                }
+                public interface IDoubleActionRelease
+                {
+                    IDoubleActionSet GetPair();
                 }
                 public interface ISingleAction { }
-                public class LeftButtonDown   : ITrigger, IDoubleAction, ISet
+                public class LeftButtonDown   : ITrigger, IDoubleActionSet
                 {
-                    public ITrigger GetPair() { return Constant.LeftButtonUp; }
+                    public IDoubleActionRelease GetPair() { return Constant.LeftButtonUp; }
                 }
-                public class LeftButtonUp     : ITrigger, IDoubleAction, IRelease
+                public class LeftButtonUp     : ITrigger, IDoubleActionRelease
                 {
-                    public ITrigger GetPair() { return Constant.LeftButtonDown; }
+                    public IDoubleActionSet GetPair() { return Constant.LeftButtonDown; }
                 }
-                public class MiddleButtonDown : ITrigger, IDoubleAction, ISet
+                public class MiddleButtonDown : ITrigger, IDoubleActionSet
                 {
-                    public ITrigger GetPair() { return Constant.MiddleButtonUp; }
+                    public IDoubleActionRelease GetPair() { return Constant.MiddleButtonUp; }
                 }
-                public class MiddleButtonUp   : ITrigger, IDoubleAction, IRelease
+                public class MiddleButtonUp   : ITrigger, IDoubleActionRelease
                 {
-                    public ITrigger GetPair() { return Constant.MiddleButtonDown; }
+                    public IDoubleActionSet GetPair() { return Constant.MiddleButtonDown; }
                 }
-                public class RightButtonDown  : ITrigger, IDoubleAction, ISet
+                public class RightButtonDown  : ITrigger, IDoubleActionSet
                 {
-                    public ITrigger GetPair() { return Constant.RightButtonUp; }
+                    public IDoubleActionRelease GetPair() { return Constant.RightButtonUp; }
                 }
-                public class RightButtonUp    : ITrigger, IDoubleAction, IRelease
+                public class RightButtonUp    : ITrigger, IDoubleActionRelease
                 {
-                    public ITrigger GetPair() { return Constant.RightButtonDown; }
+                    public IDoubleActionSet GetPair() { return Constant.RightButtonDown; }
                 }
-                public class WheelDown        : ITrigger, ISingleAction, IRelease { }
-                public class WheelUp          : ITrigger, ISingleAction, IRelease { }
-                public class WheelLeft        : ITrigger, ISingleAction, IRelease { }
-                public class WheelRight       : ITrigger, ISingleAction, IRelease { }
-                public class X1ButtonDown     : ITrigger, IDoubleAction, ISet
+                public class WheelDown        : ITrigger, ISingleAction { }
+                public class WheelUp          : ITrigger, ISingleAction { }
+                public class WheelLeft        : ITrigger, ISingleAction { }
+                public class WheelRight       : ITrigger, ISingleAction { }
+                public class X1ButtonDown     : ITrigger, IDoubleActionSet
                 {
-                    public ITrigger GetPair() { return Constant.X1ButtonUp; }
+                    public IDoubleActionRelease GetPair() { return Constant.X1ButtonUp; }
                 }
-                public class X1ButtonUp       : ITrigger, IDoubleAction, IRelease
+                public class X1ButtonUp       : ITrigger, IDoubleActionRelease
                 {
-                    public ITrigger GetPair() { return Constant.X1ButtonDown; }
+                    public IDoubleActionSet GetPair() { return Constant.X1ButtonDown; }
                 }
-                public class X2ButtonDown     : ITrigger, IDoubleAction, ISet
+                public class X2ButtonDown     : ITrigger, IDoubleActionSet
                 {
-                    public ITrigger GetPair() { return Constant.X2ButtonUp; }
+                    public IDoubleActionRelease GetPair() { return Constant.X2ButtonUp; }
                 }
-                public class X2ButtonUp       : ITrigger, IDoubleAction, IRelease
+                public class X2ButtonUp       : ITrigger, IDoubleActionRelease
                 {
-                    public ITrigger GetPair() { return Constant.X2ButtonDown; }
+                    public IDoubleActionSet GetPair() { return Constant.X2ButtonDown; }
                 }
             }
 
@@ -117,7 +119,7 @@ namespace CreviceApp
                     {
                         return false;
                     }
-                    return Equals((Stroke)obj);
+                    return Equals(obj as Stroke);
                 }
 
                 public override int GetHashCode()
@@ -146,6 +148,112 @@ namespace CreviceApp
                     }
                     return hash;
                 }
+            }
+
+            private static Move FromDSL(Config.Def.AcceptableInIfStrokeClause move)
+            {
+                if (move is Config.Def.MoveUp)
+                {
+                    return Move.Up;
+                }
+                else if (move is Config.Def.MoveDown)
+                {
+                    return Move.Down;
+                }
+                else if (move is Config.Def.MoveLeft)
+                {
+                    return Move.Left;
+                }
+                else if (move is Config.Def.MoveRight)
+                {
+                    return Move.Right;
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+
+            public static Stroke Convert(IEnumerable<Config.Def.AcceptableInIfStrokeClause> moves)
+            {
+                return new Stroke(moves.Select(m => FromDSL(m)));
+            }
+
+            public static Trigger.IDoubleActionSet Convert(Config.Def.AcceptableInOnClause onButton)
+            {
+                if (onButton is Config.Def.LeftButton)
+                {
+                    return Constant.LeftButtonDown;
+                }
+                else if (onButton is Config.Def.MiddleButton)
+                {
+                    return Constant.MiddleButtonDown;
+                }
+                else if (onButton is Config.Def.RightButton)
+                {
+                    return Constant.RightButtonDown;
+                }
+                else if (onButton is Config.Def.X1Button)
+                {
+                    return Constant.X1ButtonDown;
+                }
+                else if (onButton is Config.Def.X2Button)
+                {
+                    return Constant.X2ButtonDown;
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+
+            public static Trigger.ITrigger Convert(Config.Def.AcceptableInIfButtonClause ifButton)
+            {
+                if (ifButton is Config.Def.LeftButton)
+                {
+                    return Constant.LeftButtonDown;
+                }
+                else if (ifButton is Config.Def.MiddleButton)
+                {
+                    return Constant.MiddleButtonDown;
+                }
+                else if (ifButton is Config.Def.RightButton)
+                {
+                    return Constant.RightButtonDown;
+                }
+                else if (ifButton is Config.Def.WheelUp)
+                {
+                    return Constant.WheelUp;
+                }
+                else if (ifButton is Config.Def.WheelDown)
+                {
+                    return Constant.WheelDown;
+                }
+                else if (ifButton is Config.Def.WheelLeft)
+                {
+                    return Constant.WheelLeft;
+                }
+                else if (ifButton is Config.Def.WheelRight)
+                {
+                    return Constant.WheelRight;
+                }
+                else if (ifButton is Config.Def.X1Button)
+                {
+                    return Constant.X1ButtonDown;
+                }
+                else if (ifButton is Config.Def.X2Button)
+                {
+                    return Constant.X2ButtonDown;
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+
+            public static Action Convert(Config.Def.DoFunc doFunc)
+            {
+                return Delegate.CreateDelegate(typeof(Action), doFunc.Method) as Action;
             }
 
             public class ConstantSingleton
@@ -177,67 +285,341 @@ namespace CreviceApp
             {
                 get { return ConstantSingleton.GetInstance(); }
             }
-
-            public static Move FromDSL(Config.Def.AcceptableInIfStrokeClause move)
-            {
-                if (move is Config.Def.MoveUp)
-                {
-                    return Move.Up;
-                }
-                else if (move is Config.Def.MoveDown)
-                {
-                    return Move.Down;
-                }
-                else if (move is Config.Def.MoveLeft)
-                {
-                    return Move.Left;
-                }
-                else if (move is Config.Def.MoveRight)
-                {
-                    return Move.Right;
-                }
-                else
-                {
-                    throw new ArgumentException("Unknown type");
-                }
-            }
         }
 
         namespace FSM
         {
-            /*
-            public class GestureMachine
+            public static class Transition
             {
-                private readonly Dictionary<GestureStartTrigger, IEnumerable<GestureConfig.DSL.WhenElement>> StartTriggerToWhen;
-
-                // 
-
-                public GestureMachine(GestureConfig.DSL.Root root)
+                #region Transition Definition
+                // Transition 0
+                // State0 -> State1
+                // Transition from initilal state(S0) to the state(S1) holding primary double action mouse button.
+                public static IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>
+                    Gen0(IEnumerable<GestureDefinition> gestureDef)
                 {
-
+                    return gestureDef
+                        .ToLookup(x => Def.Convert(x.onButton))
+                        .ToDictionary(x => x.Key, x => x.Select(y => y));
                 }
 
-                public bool Input(Event evnt)
+                // Transition 1
+                // State1 -> State2
+                // Transition from the state(S1) to the state(S2) holding primary and secondary double action mouse buttons.
+                public static IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>>
+                    Gen1(IEnumerable<GestureDefinition> gestureDef)
                 {
-                    
-                    var t = typeof(LeftButtonDown);
+                    return gestureDef
+                        .Select(x => x as ButtonGestureDefinition)
+                        .Where(x => x != null)
+                        .ToLookup(x => Def.Convert(x.ifButton))
+                        .Where(x => x.Key is Def.Trigger.IDoubleActionSet)
+                        .ToDictionary(x => x.Key as Def.Trigger.IDoubleActionSet, x => x.Select(y => y));
+                }
+
+                // Transition 2
+                // State1 -> State1
+                // Transition from the state(S1) to the state(S1), in other words, no tansition. However, functions given as
+                // the parameter of `@do` clause of ButtonGestureDefinition are executed. This event happens when a single 
+                // action mouse button is pressed.
+                public static IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>>
+                    Gen2(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Select(x => x as ButtonGestureDefinition)
+                        .Where(x => x != null)
+                        .ToLookup(x => Def.Convert(x.ifButton))
+                        .Where(x => x.Key is Def.Trigger.ISingleAction)
+                        .ToDictionary(x => x.Key as Def.Trigger.ISingleAction, x => x.Select(y => y));
+                }
+
+                // Transition 3
+                // State1 -> State0
+                // Transition from the state(S1) to the state(S0) holding no double action mouse button, and functions given as
+                // the parameter of `@do` clause of StrokeGestureDefinition are executed. This event happens when primary double 
+                // action mouse button is released.
+                public static IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>>
+                    Gen3(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Select(x => x as StrokeGestureDefinition)
+                        .Where(x => x != null)
+                        .ToLookup(x => x.stroke)
+                        .ToDictionary(x => x.Key, x => x.Select(y => y));
+                }
+
+                // Transition 4
+                // State1 -> State0
+                // Transition from the state(S1) to the state(S0) holding no double action mouse button with only one side effect
+                // that primary double action mouse button will be restored. This event happens whenprimary double action mouse 
+                // button is released.
+
+
+                // Transition 5
+                // State1 -> State0
+                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion with no side effect.
+                // This event happens when primary double action mouse button is released.
+
+                // Transition 6
+                // State2 -> State1
+                // Transition from the state(S2) to the state(S1) holding primary double action mouse button, and functions 
+                // given as the parameter of `@do` clause of ButtonGestureDefinition are executed. This event happens when
+                // secondary double action mouse button is released.
+
+                // Transition 7
+                // State2 -> State0
+                // Transition from the state(S2) to the state(S0) holding no double action mouse button. This event happends when 
+                // primary double action is released in irregular order as a trigger. After this transition, previous secondary 
+                // double action mouse button left holding is marked as irreggularly holding by the user, and the next release 
+                // event of it will be ignored.
+                #endregion
+
+
+            }
+
+            public class GestureMachine
+            {
+                private IState state;
+
+                public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    this.state = new State0(Transition.Gen0(gestureDef));
+                }
+
+                public bool Input(Def.Trigger.ITrigger trigger)
+                {
+                    var res = this.state.Input(trigger);
+                    this.state = res.Item2;
+                    return res.Item1;
+                }
+
+                public static IEnumerable<GestureDefinition> FilterComplete(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Where(x => x.IsComplete)
+                        .ToList();
+                }
+            }
+
+            public interface IState
+            {
+                Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger);
+            }
+
+            public abstract class State : IState
+            {
+                public class GlobalValues
+                {
+                    public readonly HashSet<Def.Trigger.IDoubleActionRelease> ignoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
+                }
+
+                protected GlobalValues Global;
+
+                public State(GlobalValues Global)
+                {
+                    this.Global = Global;
+                }
+
+                public bool MustBeIgnored(Def.Trigger.ITrigger trigger)
+                {
+                    if (trigger is Def.Trigger.IDoubleActionRelease)
+                    {
+                        var t = trigger as Def.Trigger.IDoubleActionRelease;
+                        if (Global.ignoreNext.Contains(t))
+                        {
+                            Global.ignoreNext.Remove(t);
+                            return true;
+                        }
+                    }
+                    if (trigger is Def.Trigger.IDoubleActionSet)
+                    {
+                        var t = trigger as Def.Trigger.IDoubleActionSet;
+                        var p = t.GetPair();
+                        if (Global.ignoreNext.Contains(p))
+                        {
+                            Global.ignoreNext.Remove(p);
+                            return false;
+                        }
+                    }
+                    return false;
+                }
+
+                public virtual Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                {
+                    return Tuple.Create(false, this as IState);
                 }
             }
             
-            // Initial state.
-            // Using a map (Event -> When)
-            public class State0
-            {
-                private readonly Dictionary<GestureStartTrigger, IEnumerable<GestureConfig.DSL.WhenElement>> StartTriggerToWhen;
 
-                // Gestures
-                // if Gestures.GestureStartTrigger -> State1
-                // if Stop -> Stop
+            // State0
+            public class State0 : State
+            {
+                private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
+                
+                public State0(IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0) : base(new GlobalValues())
+                {
+                    this.T0 = T0;
+                }
+
+                public override Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                {
+                    if (trigger is Def.Trigger.IDoubleActionSet)
+                    {
+                        var t = trigger as Def.Trigger.IDoubleActionSet;
+                        if (T0.Keys.Contains(t))
+                        {
+                            var gestureDef = FilterByWhenClause(T0[t]);
+                            if (gestureDef.Count() > 0)
+                            {
+                                // Transition 0
+                                return Tuple.Create(true, new State1(
+                                    this,
+                                    Global,
+                                    t,
+                                    Transition.Gen1(gestureDef),
+                                    Transition.Gen2(gestureDef),
+                                    Transition.Gen3(gestureDef)
+                                    ) as IState);
+                            }
+                        }
+                    }
+                    return base.Input(trigger);
+                }
+
+                public static IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
+                    // but executing it in sequential order here for simplicity.
+                    
+                    var cache = gestureDef
+                        .Select(x => x.whenFunc)
+                        .Distinct()
+                        .ToDictionary(x => x, x => x());
+
+                    return gestureDef
+                        .Where(x => cache[x.whenFunc] == true)
+                        .ToList();
+                }
             }
 
             // ON
-            public class State1
+            public class State1 : State
             {
+                private readonly State0 S0;
+                private readonly Def.Trigger.IDoubleActionSet primaryTrigger;
+                private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
+                private readonly IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
+                private readonly IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3;
+
+                private bool PrimaryTriggerIsRestorable { get; set; } = true;
+
+                public State1(
+                    State0 S0,
+                    GlobalValues Global,
+                    Def.Trigger.IDoubleActionSet primaryTrigger,
+                    IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1,
+                    IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2,
+                    IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3
+                    ) : base(Global)
+                {
+                    this.S0 = S0;
+                    this.primaryTrigger = primaryTrigger;
+                    this.T1 = T1;
+                    this.T2 = T2;
+                    this.T3 = T3;
+                }
+
+                public override Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                {
+                    if (trigger is Def.Trigger.IDoubleActionSet)
+                    {
+                        var t = trigger as Def.Trigger.IDoubleActionSet;
+                        // Transition 1
+                        PrimaryTriggerIsRestorable = false;
+                        return Tuple.Create(true, new State2() as IState);
+                    }
+                    else if (trigger is Def.Trigger.ISingleAction)
+                    {
+                        var t = trigger as Def.Trigger.ISingleAction;
+                        if (T2.Keys.Contains(t))
+                        {
+                            // Transition 2
+                            foreach (var gDef in T2[t])
+                            {
+                                PrimaryTriggerIsRestorable = false;
+                                Task.Run(gDef.doFunc);
+                            }
+                        }
+                    }
+                    else if (trigger is Def.Trigger.IDoubleActionRelease)
+                    {
+                        var t = trigger as Def.Trigger.IDoubleActionRelease;
+                        if (t == primaryTrigger.GetPair())
+                        {
+                            // if (T3[t] == strokeMachine.GetStroke())
+                            //{
+                                // Transition 3
+                            //}
+
+                            if (PrimaryTriggerIsRestorable)
+                            {
+                                // Transition 4    
+                            }
+                            else
+                            {
+                                // Transition 5
+                            }
+                        }
+                    }
+                    return base.Input(trigger);
+                }
+
+                // 
+                // Transition 1
+                // State1 -> State2
+                // Transition from the state(S1) to the state(S2) holding primary and secondary double action mouse buttons.
+                public static IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Gen1(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Select(x => x as ButtonGestureDefinition)
+                        .Where(x => x != null)
+                        .ToLookup(x => Def.Convert(x.ifButton))
+                        .Where(x => x.Key is Def.Trigger.IDoubleAction)
+                        .ToDictionary(x => x.Key, x => x.Select(y => y));
+                }
+
+                // Transition 2
+                // State1 -> State1
+                // Transition from the state(S1) to the state(S1), in other words, no tansition. However, functions given as
+                // the parameter of `@do` clause of ButtonGestureDefinition are executed by pressing a single action mouse button as a trigger.
+                public static IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Gen2(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Select(x => x as ButtonGestureDefinition)
+                        .Where(x => x != null)
+                        .ToLookup(x => Def.Convert(x.ifButton))
+                        .Where(x => x.Key is Def.Trigger.ISingleAction)
+                        .ToDictionary(x => x.Key, x => x.Select(y => y));
+                }
+
+                // Transition 3
+                // State1 -> State0
+                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion, and functions given as
+                // the parameter of `@do` clause of StrokeGestureDefinition are executed by releasing of primary double action mouse button
+                // as a trigger.
+                public static IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> Gen3(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Select(x => x as StrokeGestureDefinition)
+                        .Where(x => x != null)
+                        .ToLookup(x => x.stroke)
+                        .ToDictionary(x => x.Key, x => x.Select(y => y));
+                }
+
+                // Transition 4
+                // State1 -> State0
+                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion with no side effect 
+                // by releasing of primary double action mouse button as a trigger.
                 // Actions
                 // Strokes
                 // keyA : GestureEndTrigger
@@ -252,18 +634,49 @@ namespace CreviceApp
 
 
             // IF
-            public class State2
+            public class State2 : State
             {
-                // keyA : GestureEndTrigger
-                // keyB : GestureEndTrigger
-                // 
-                // if keyA -> IgnoreNext.Add(keyB); State0
-                // if keyB -> execute(); State1
-                // if Stop -> Stop
-            }
-            */
+                private readonly State0 S0;
+                private readonly State1 S1;
+                private readonly Def.Trigger.IDoubleActionSet primaryTrigger;
+                private readonly Def.Trigger.IDoubleActionSet secondaryTrigger;
+                private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
 
-            public class TreeParser
+                public State2(
+                    GlobalValues Global,
+                    State0 S0,
+                    State1 S1,
+                    Def.Trigger.IDoubleActionSet primaryTrigger,
+                    Def.Trigger.IDoubleActionSet secondaryTrigger,
+                    IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
+                    ) : base(Global)
+                {
+                    this.S0 = S0;
+                    this.S1 = S1;
+                    this.primaryTrigger = primaryTrigger;
+                    this.secondaryTrigger = secondaryTrigger;
+                    this.T1 = T1;
+                }
+
+                public override Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                {
+                    if (trigger is Def.Trigger.IDoubleActionRelease)
+                    {
+                        var t = trigger as Def.Trigger.IDoubleActionRelease;
+                        if (t == primaryTrigger.GetPair())
+                        {
+                            // add secondaryTrigger.GetPair() to ignore list
+                        }
+                        if (t == secondaryTrigger.GetPair())
+                        {
+                            return ();
+                        }
+                    }
+                    return base.Input(trigger);
+                }
+            }
+
+            public static class ConfigDSLTreeParser
             {
                 /*
                 public ParsedInfo Parse(Config.DSL.Root root)
@@ -283,96 +696,8 @@ namespace CreviceApp
                     
                 }
                 */
-
-                private IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
-                    // but executing it in sequential order here for simplicity.
-                    var cache = new Dictionary<Config.Def.WhenFunc, bool>();
-                    foreach (var gDef in gestureDef)
-                    {
-                        var f = gDef.whenFunc;
-                        if (!cache.ContainsKey(f))
-                        {
-                            cache[f] = f();
-                        }
-                        if (cache[f] == true)
-                        {
-                            yield return gDef;
-                        }
-                    }
-                }
-
-                // Transition 0
-                // State0 -> State1
-                // Transition from initilal state(S0) to the state(S1) holding primary double action mouse button.
-                private IDictionary<Def.Trigger.ITrigger, IEnumerable<GestureDefinition>> Transition00(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .ToLookup(x => Convert(x.onButton))
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
-                }
-
-                // Transition 1
-                // State1 -> State2
-                // Transition from the state(S1) to the state(S2) holding primary and secondary double action mouse buttons.
-                private IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Transition01(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .Select(x => x as ButtonGestureDefinition)
-                        .Where(x => x != null)
-                        .ToLookup(x => Convert(x.ifButton))
-                        .Where(x => x.Key is Def.Trigger.IDoubleAction)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
-                }
-
-                // Transition 2
-                // State1 -> State1
-                // Transition from the state(S1) to the state(S1), in other words, no tansition. However, functions given as
-                // the parameter of `@do` clause of ButtonGestureDefinition are executed by pressing a single action mouse button as a trigger.
-                private IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Transition02(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .Select(x => x as ButtonGestureDefinition)
-                        .Where(x => x != null)
-                        .ToLookup(x => Convert(x.ifButton))
-                        .Where(x => x.Key is Def.Trigger.ISingleAction)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
-                }
-
-                // Transition 3
-                // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion, and functions given as
-                // the parameter of `@do` clause of StrokeGestureDefinition are executed by releasing of primary double action mouse button
-                // as a trigger.
-                private IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> Transition03(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .Select(x => x as StrokeGestureDefinition)
-                        .Where(x => x != null)
-                        .ToLookup(x => x.stroke)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
-                }
-
-                // Transition 4
-                // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion with no side effect 
-                // by releasing of primary double action mouse button as a trigger.
-
-                // Transition 5
-                // State2 -> State1
-                // Transition from the state(S2) to the state(S1) holding primary double action mouse button, and functions 
-                // given as the parameter of `@do` clause of ButtonGestureDefinition are executed by releasing of secondary double action
-                // mouse button as a trigger.
-
-                // Transition 6
-                // State2 -> State0
-                // Transition from the state(S2) to the state(S0) holding no double action mouse button by releasing primary double action
-                // mouse button in irregular order as a trigger. After this transition, previous secondary double action mouse button 
-                // left holding is marked as irreggularly holding by the user, and the next release event of it will be ignored.
                 
-                
-                private IEnumerable<GestureDefinition> TreeToGestureDefinition(Config.DSL.Root root)
+                public static IEnumerable<GestureDefinition> TreeToGestureDefinition(Config.DSL.Root root)
                 {
                     List<GestureDefinition> gestureDef = new List<GestureDefinition>();
                     Debug.Print("Parsing tree of GestureConfig.DSL");
@@ -399,20 +724,20 @@ namespace CreviceApp
                                 }
                                 foreach (var doElement in ifButtonElement.doElements)
                                 {
-                                    gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, doElement.func));
+                                    gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, Def.Convert(doElement.func)));
                                 }
                             }
                             foreach (var ifStrokeElement in onElement.ifStrokeElements)
                             {
-                                var moves = ConvertToMoves(ifStrokeElement.moves);
+                                var stroke = Def.Convert(ifStrokeElement.moves);
                                 if (ifStrokeElement.doElements.Count == 0)
                                 {
-                                    gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, moves, null));
+                                    gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, null));
                                     continue;
                                 }
                                 foreach (var doElement in ifStrokeElement.doElements)
                                 {
-                                    gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, moves, doElement.func));
+                                    gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, Def.Convert(doElement.func)));
                                 }
                             }
                         }
@@ -421,82 +746,6 @@ namespace CreviceApp
                     return gestureDef; 
                 }
 
-                private Def.Stroke ConvertToMoves(IEnumerable<Config.Def.AcceptableInIfStrokeClause> moves)
-                {
-                    return new Def.Stroke(moves.Select(m => Def.FromDSL(m)));
-                }
-
-                private Def.Trigger.ITrigger Convert(Config.Def.AcceptableInOnClause onButton)
-                {
-                    if (onButton is Config.Def.LeftButton)
-                    {
-                        return Def.Constant.LeftButtonDown;
-                    }
-                    else if (onButton is Config.Def.MiddleButton)
-                    {
-                        return Def.Constant.MiddleButtonDown;
-                    }
-                    else if (onButton is Config.Def.RightButton)
-                    {
-                        return Def.Constant.RightButtonDown;
-                    }
-                    else if (onButton is Config.Def.X1Button)
-                    {
-                        return Def.Constant.X1ButtonDown;
-                    }
-                    else if (onButton is Config.Def.X2Button)
-                    {
-                        return Def.Constant.X2ButtonDown;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Unknown type");
-                    }
-                }
-
-                private Def.Trigger.ITrigger Convert(Config.Def.AcceptableInIfButtonClause ifButton)
-                {
-                    if (ifButton is Config.Def.LeftButton)
-                    {
-                        return Def.Constant.LeftButtonDown;
-                    }
-                    else if (ifButton is Config.Def.MiddleButton)
-                    {
-                        return Def.Constant.MiddleButtonDown;
-                    }
-                    else if (ifButton is Config.Def.RightButton)
-                    {
-                        return Def.Constant.RightButtonDown;
-                    }
-                    else if (ifButton is Config.Def.WheelUp)
-                    {
-                        return Def.Constant.WheelUp;
-                    }
-                    else if (ifButton is Config.Def.WheelDown)
-                    {
-                        return Def.Constant.WheelDown;
-                    }
-                    else if (ifButton is Config.Def.WheelLeft)
-                    {
-                        return Def.Constant.WheelLeft;
-                    }
-                    else if (ifButton is Config.Def.WheelRight)
-                    {
-                        return Def.Constant.WheelRight;
-                    }
-                    else if (ifButton is Config.Def.X1Button)
-                    {
-                        return Def.Constant.X1ButtonDown;
-                    }
-                    else if (ifButton is Config.Def.X2Button)
-                    {
-                        return Def.Constant.X2ButtonDown;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Unknown type");
-                    }
-                }
             }
 
             public class GestureDefinition
@@ -520,12 +769,12 @@ namespace CreviceApp
             public class ButtonGestureDefinition : GestureDefinition
             {
                 public readonly Config.Def.AcceptableInIfButtonClause ifButton;
-                public readonly Config.Def.DoFunc doFunc;
+                public readonly Action doFunc;
                 public ButtonGestureDefinition(
                     Config.Def.WhenFunc whenFunc,
                     Config.Def.AcceptableInOnClause onButton,
                     Config.Def.AcceptableInIfButtonClause ifButton,
-                    Config.Def.DoFunc doFunc
+                    Action doFunc
                     ) : base(whenFunc, onButton)
                 {
                     this.ifButton = ifButton;
@@ -546,12 +795,12 @@ namespace CreviceApp
             public class StrokeGestureDefinition : GestureDefinition
             {
                 public readonly Def.Stroke stroke;
-                public readonly Config.Def.DoFunc doFunc;
+                public readonly Action doFunc;
                 public StrokeGestureDefinition(
                     Config.Def.WhenFunc whenFunc,
                     Config.Def.AcceptableInOnClause onButton,
                     Def.Stroke stroke,
-                    Config.Def.DoFunc doFunc
+                    Action doFunc
                     ) : base(whenFunc, onButton)
                 {
                     this.stroke = stroke;
@@ -608,7 +857,8 @@ namespace CreviceApp
          * MachineContext
          * var (result, state) = state.exe(keyCode);
          */
-        public class Def
+
+        public static class Def
         {
             public delegate bool WhenFunc();
             public delegate void DoFunc();
