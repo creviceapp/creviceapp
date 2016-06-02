@@ -96,6 +96,58 @@ namespace CreviceApp
                 Right
             }
 
+            public class Stroke : List<Move>, IEquatable<Stroke>
+            {
+                public Stroke() : base() { }
+                public Stroke(int capacity) : base(capacity) { }
+                public Stroke(IEnumerable<Move> moves) : base(moves) { }
+
+                public bool Equals(Stroke that)
+                {
+                    if (that == null)
+                    {
+                        return false;
+                    }
+                    return (this.SequenceEqual(that));
+                }
+
+                public override bool Equals(object obj)
+                {
+                    if (obj == null || this.GetType() != obj.GetType())
+                    {
+                        return false;
+                    }
+                    return Equals((Stroke)obj);
+                }
+
+                public override int GetHashCode()
+                {
+                    var hash = 0x00;
+                    foreach (var move in this)
+                    {
+                        hash = hash << 2;
+                        switch(move)
+                        {
+                            case Move.Up:
+                                hash = hash | 0x00;
+                                break;
+                            case Move.Down:
+                                hash = hash | 0x01;
+                                break;
+                            case Move.Left:
+                                hash = hash | 0x02;
+                                break;
+                            case Move.Right:
+                                hash = hash | 0x03;
+                                break;
+                            default:
+                                throw new ArgumentException();
+                        }
+                    }
+                    return hash;
+                }
+            }
+
             public class ConstantSingleton
             {
                 private static ConstantSingleton singleton = new ConstantSingleton();
@@ -293,12 +345,12 @@ namespace CreviceApp
                 // Transition from the state(S1) to the state(S0) holding no double action mouse buttion, and functions given as
                 // the parameter of `@do` clause of StrokeGestureDefinition are executed by releasing of primary double action mouse button
                 // as a trigger.
-                private IDictionary<IEnumerable<Def.Move>, IEnumerable<StrokeGestureDefinition>> Transition03(IEnumerable<GestureDefinition> gestureDef)
+                private IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> Transition03(IEnumerable<GestureDefinition> gestureDef)
                 {
                     return gestureDef
                         .Select(x => x as StrokeGestureDefinition)
                         .Where(x => x != null)
-                        .ToLookup(x => x.moves)
+                        .ToLookup(x => x.stroke)
                         .ToDictionary(x => x.Key, x => x.Select(y => y));
                 }
 
@@ -369,9 +421,9 @@ namespace CreviceApp
                     return gestureDef; 
                 }
 
-                private IEnumerable<Def.Move> ConvertToMoves(IEnumerable<Config.Def.AcceptableInIfStrokeClause> moves)
+                private Def.Stroke ConvertToMoves(IEnumerable<Config.Def.AcceptableInIfStrokeClause> moves)
                 {
-                    return moves.Select(m => Def.FromDSL(m));
+                    return new Def.Stroke(moves.Select(m => Def.FromDSL(m)));
                 }
 
                 private Def.Trigger.ITrigger Convert(Config.Def.AcceptableInOnClause onButton)
@@ -493,16 +545,16 @@ namespace CreviceApp
 
             public class StrokeGestureDefinition : GestureDefinition
             {
-                public readonly IEnumerable<Def.Move> moves;
+                public readonly Def.Stroke stroke;
                 public readonly Config.Def.DoFunc doFunc;
                 public StrokeGestureDefinition(
                     Config.Def.WhenFunc whenFunc,
                     Config.Def.AcceptableInOnClause onButton,
-                    IEnumerable<Def.Move> moves,
+                    Def.Stroke stroke,
                     Config.Def.DoFunc doFunc
                     ) : base(whenFunc, onButton)
                 {
-                    this.moves = moves;
+                    this.stroke = stroke;
                     this.doFunc = doFunc;
                 }
                 override public bool IsComplete
@@ -511,7 +563,7 @@ namespace CreviceApp
                     {
                         return whenFunc != null &&
                                onButton != null &&
-                               moves != null &&
+                               stroke != null &&
                                doFunc != null;
                     }
                 }
