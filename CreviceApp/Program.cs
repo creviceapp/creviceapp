@@ -388,9 +388,9 @@ namespace CreviceApp
 
                 public bool Input(Def.Trigger.ITrigger trigger)
                 {
-                    var res = this.state.Input(trigger);
-                    this.state = res.Item2;
-                    return res.Item1;
+                    var result = this.state.Input(trigger);
+                    this.state = result.NextState;
+                    return result.Trigger.IsConsumed;
                 }
 
                 public static IEnumerable<GestureDefinition> FilterComplete(IEnumerable<GestureDefinition> gestureDef)
@@ -401,9 +401,39 @@ namespace CreviceApp
                 }
             }
 
+            public class Result
+            {
+                public class TriggerResult
+                {
+                    public bool IsConsumed { get; private set; }
+                    public TriggerResult(bool consumed)
+                    {
+                        this.IsConsumed = consumed;
+                    }
+                }
+                public TriggerResult Trigger;
+                public IState NextState { get; private set; }
+
+                private Result(bool consumed, IState nextState)
+                {
+                    this.Trigger = new TriggerResult(consumed);
+                    this.NextState = nextState;
+                }
+
+                public static Result TriggerIsConsumed(IState nextState)
+                {
+                    return new Result(true, nextState);
+                }
+
+                public static Result TriggerIsRemaining(IState nextState)
+                {
+                    return new Result(false, nextState);
+                }
+            }
+
             public interface IState
             {
-                Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger);
+                Result Input(Def.Trigger.ITrigger trigger);
             }
 
             public abstract class State : IState
@@ -413,13 +443,17 @@ namespace CreviceApp
                     public readonly HashSet<Def.Trigger.IDoubleActionRelease> ignoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
                 }
 
-                protected GlobalValues Global;
+                protected readonly GlobalValues Global;
 
                 public State(GlobalValues Global)
                 {
                     this.Global = Global;
                 }
 
+                // Check whether given trigger must be ignored or not.
+                // Return true if given trigger is in the ignore list, and remove it from ignore list.
+                // Return false if the pair of given trigger is in the ignore list, and remove it from ignore list.
+                // Otherwise return false.
                 public bool MustBeIgnored(Def.Trigger.ITrigger trigger)
                 {
                     if (trigger is Def.Trigger.IDoubleActionRelease)
@@ -431,7 +465,7 @@ namespace CreviceApp
                             return true;
                         }
                     }
-                    if (trigger is Def.Trigger.IDoubleActionSet)
+                    else if (trigger is Def.Trigger.IDoubleActionSet)
                     {
                         var t = trigger as Def.Trigger.IDoubleActionSet;
                         var p = t.GetPair();
@@ -444,14 +478,12 @@ namespace CreviceApp
                     return false;
                 }
 
-                public virtual Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                public virtual Result Input(Def.Trigger.ITrigger trigger)
                 {
-                    return Tuple.Create(false, this as IState);
+                    return Result.TriggerIsRemaining(nextState: this);
                 }
             }
             
-
-            // State0
             public class State0 : State
             {
                 private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
@@ -461,8 +493,13 @@ namespace CreviceApp
                     this.T0 = T0;
                 }
 
-                public override Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                public override Result Input(Def.Trigger.ITrigger trigger)
                 {
+                    if (MustBeIgnored(trigger))
+                    {
+                        return Result.TriggerIsConsumed(nextState: this);
+                    }
+
                     if (trigger is Def.Trigger.IDoubleActionSet)
                     {
                         var t = trigger as Def.Trigger.IDoubleActionSet;
@@ -472,14 +509,7 @@ namespace CreviceApp
                             if (gestureDef.Count() > 0)
                             {
                                 // Transition 0
-                                return Tuple.Create(true, new State1(
-                                    this,
-                                    Global,
-                                    t,
-                                    Transition.Gen1(gestureDef),
-                                    Transition.Gen2(gestureDef),
-                                    Transition.Gen3(gestureDef)
-                                    ) as IState);
+                                return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef));
                             }
                         }
                     }
@@ -502,7 +532,6 @@ namespace CreviceApp
                 }
             }
 
-            // ON
             public class State1 : State
             {
                 private readonly State0 S0;
@@ -511,32 +540,40 @@ namespace CreviceApp
                 private readonly IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
                 private readonly IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3;
 
+                private readonly SingleInputSender inputSender = new SingleInputSender();
+
                 private bool PrimaryTriggerIsRestorable { get; set; } = true;
 
                 public State1(
-                    State0 S0,
                     GlobalValues Global,
+                    State0 S0,
                     Def.Trigger.IDoubleActionSet primaryTrigger,
-                    IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1,
-                    IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2,
-                    IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3
+                    IEnumerable<GestureDefinition> gestureDef
                     ) : base(Global)
                 {
                     this.S0 = S0;
                     this.primaryTrigger = primaryTrigger;
-                    this.T1 = T1;
-                    this.T2 = T2;
-                    this.T3 = T3;
+                    this.T1 = Transition.Gen1(gestureDef);
+                    this.T2 = Transition.Gen2(gestureDef);
+                    this.T3 = Transition.Gen3(gestureDef);
                 }
 
-                public override Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                public override Result Input(Def.Trigger.ITrigger trigger)
                 {
+                    if (MustBeIgnored(trigger))
+                    {
+                        return Result.TriggerIsConsumed(nextState: this);
+                    }
+
                     if (trigger is Def.Trigger.IDoubleActionSet)
                     {
                         var t = trigger as Def.Trigger.IDoubleActionSet;
-                        // Transition 1
-                        PrimaryTriggerIsRestorable = false;
-                        return Tuple.Create(true, new State2() as IState);
+                        if (T1.Keys.Contains(t))
+                        {
+                            // Transition 1
+                            PrimaryTriggerIsRestorable = false;
+                            return Result.TriggerIsConsumed(nextState: new State2(Global, S0, this, primaryTrigger, t, T1));
+                        }
                     }
                     else if (trigger is Def.Trigger.ISingleAction)
                     {
@@ -544,11 +581,14 @@ namespace CreviceApp
                         if (T2.Keys.Contains(t))
                         {
                             // Transition 2
-                            foreach (var gDef in T2[t])
-                            {
-                                PrimaryTriggerIsRestorable = false;
-                                Task.Run(gDef.doFunc);
-                            }
+                            PrimaryTriggerIsRestorable = false;
+                            Task.Run(() => {
+                                foreach (var gDef in T2[t])
+                                {
+                                    gDef.doFunc();
+                                }
+                            });
+                            return Result.TriggerIsConsumed(nextState: this);
                         }
                     }
                     else if (trigger is Def.Trigger.IDoubleActionRelease)
@@ -558,82 +598,46 @@ namespace CreviceApp
                         {
                             // if (T3[t] == strokeMachine.GetStroke())
                             //{
-                                // Transition 3
+                            // Transition 3
                             //}
 
+                            // Transition 4 and 5
                             if (PrimaryTriggerIsRestorable)
                             {
-                                // Transition 4    
+                                // Side effect of Transition 4
+                                RestorePrimaryTrigger();
                             }
-                            else
-                            {
-                                // Transition 5
-                            }
+                            return Result.TriggerIsConsumed(nextState: S0);
                         }
                     }
                     return base.Input(trigger);
                 }
-
-                // 
-                // Transition 1
-                // State1 -> State2
-                // Transition from the state(S1) to the state(S2) holding primary and secondary double action mouse buttons.
-                public static IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Gen1(IEnumerable<GestureDefinition> gestureDef)
+                
+                private void RestorePrimaryTrigger()
                 {
-                    return gestureDef
-                        .Select(x => x as ButtonGestureDefinition)
-                        .Where(x => x != null)
-                        .ToLookup(x => Def.Convert(x.ifButton))
-                        .Where(x => x.Key is Def.Trigger.IDoubleAction)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
+                    if (primaryTrigger == Def.Constant.LeftButtonDown)
+                    {
+                        inputSender.LeftClick();
+                    }
+                    else if (primaryTrigger == Def.Constant.MiddleButtonDown)
+                    {
+                        inputSender.MiddleClick();
+                    }
+                    else if (primaryTrigger == Def.Constant.RightButtonDown)
+                    {
+                        inputSender.RightClick();
+                    }
+                    else if (primaryTrigger == Def.Constant.X1ButtonDown)
+                    {
+                        inputSender.X1Click();
+                    }
+                    else if (primaryTrigger == Def.Constant.X2ButtonDown)
+                    {
+                        inputSender.X2Click();
+                    }
                 }
-
-                // Transition 2
-                // State1 -> State1
-                // Transition from the state(S1) to the state(S1), in other words, no tansition. However, functions given as
-                // the parameter of `@do` clause of ButtonGestureDefinition are executed by pressing a single action mouse button as a trigger.
-                public static IDictionary<Def.Trigger.ITrigger, IEnumerable<ButtonGestureDefinition>> Gen2(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .Select(x => x as ButtonGestureDefinition)
-                        .Where(x => x != null)
-                        .ToLookup(x => Def.Convert(x.ifButton))
-                        .Where(x => x.Key is Def.Trigger.ISingleAction)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
-                }
-
-                // Transition 3
-                // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion, and functions given as
-                // the parameter of `@do` clause of StrokeGestureDefinition are executed by releasing of primary double action mouse button
-                // as a trigger.
-                public static IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> Gen3(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .Select(x => x as StrokeGestureDefinition)
-                        .Where(x => x != null)
-                        .ToLookup(x => x.stroke)
-                        .ToDictionary(x => x.Key, x => x.Select(y => y));
-                }
-
-                // Transition 4
-                // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion with no side effect 
-                // by releasing of primary double action mouse button as a trigger.
-                // Actions
-                // Strokes
-                // keyA : GestureEndTrigger
-                //
-                // if keyA -> 
-                //           if no action executed -> Strokes.findMatch(storke).execute()
-                //           State0
-                // if Actions.GestureStartTrigger -> State2
-                // if Actions.ActionTrigger -> execute()
-                // if Stop -> Stop
             }
 
-
-            // IF
             public class State2 : State
             {
                 private readonly State0 S0;
@@ -658,18 +662,33 @@ namespace CreviceApp
                     this.T1 = T1;
                 }
 
-                public override Tuple<bool, IState> Input(Def.Trigger.ITrigger trigger)
+                public override Result Input(Def.Trigger.ITrigger trigger)
                 {
+                    if (MustBeIgnored(trigger))
+                    {
+                        return Result.TriggerIsConsumed(nextState: this);
+                    }
+                    
                     if (trigger is Def.Trigger.IDoubleActionRelease)
                     {
                         var t = trigger as Def.Trigger.IDoubleActionRelease;
-                        if (t == primaryTrigger.GetPair())
-                        {
-                            // add secondaryTrigger.GetPair() to ignore list
-                        }
                         if (t == secondaryTrigger.GetPair())
                         {
-                            return ();
+                            // Transtion 6
+                            Task.Run(() => {
+                                foreach (var gDef in T1[secondaryTrigger])
+                                {
+                                    gDef.doFunc();
+                                }
+                            });
+                            return Result.TriggerIsConsumed(nextState: S1);
+                        }
+                        else if (t == primaryTrigger.GetPair())
+                        {
+                            // Transition 7
+                            // Add the release event of secondary trigger to ignore list.
+                            Global.ignoreNext.Add(secondaryTrigger.GetPair());
+                            return Result.TriggerIsConsumed(nextState: S0);
                         }
                     }
                     return base.Input(trigger);
