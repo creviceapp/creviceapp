@@ -392,13 +392,6 @@ namespace CreviceApp
                     this.state = result.NextState;
                     return result.Trigger.IsConsumed;
                 }
-
-                public static IEnumerable<GestureDefinition> FilterComplete(IEnumerable<GestureDefinition> gestureDef)
-                {
-                    return gestureDef
-                        .Where(x => x.IsComplete)
-                        .ToList();
-                }
             }
 
             public class Result
@@ -443,7 +436,7 @@ namespace CreviceApp
                     public readonly HashSet<Def.Trigger.IDoubleActionRelease> ignoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
                 }
 
-                protected readonly GlobalValues Global;
+                internal readonly GlobalValues Global;
 
                 public State(GlobalValues Global)
                 {
@@ -697,25 +690,6 @@ namespace CreviceApp
 
             public static class ConfigDSLTreeParser
             {
-                /*
-                public ParsedInfo Parse(Config.DSL.Root root)
-                {
-                    var gestureDef = TreeToGestureDefinition(root);
-
-                    var completeGestureDef =
-                        from g in gestureDef
-                        where g.IsComplete == true
-                        select g;
-                    
-                    var whenFuncs =
-                        (from g in completeGestureDef
-                         select g.whenFunc).Distinct();
-
-                    var triggerToWhenFunc = TriggerToWhenFunc(completeGestureDef);
-                    
-                }
-                */
-                
                 public static IEnumerable<GestureDefinition> TreeToGestureDefinition(Config.DSL.Root root)
                 {
                     List<GestureDefinition> gestureDef = new List<GestureDefinition>();
@@ -764,7 +738,13 @@ namespace CreviceApp
                     Debug.Print("Parse end.");
                     return gestureDef; 
                 }
-
+                
+                public static IEnumerable<GestureDefinition> FilterComplete(IEnumerable<GestureDefinition> gestureDef)
+                {
+                    return gestureDef
+                        .Where(x => x.IsComplete)
+                        .ToList();
+                }
             }
 
             public class GestureDefinition
@@ -836,45 +816,33 @@ namespace CreviceApp
                     }
                 }
             }
-
-            public class ParsedInfo
-            {
-
-            }
         }
     }
 
     namespace Config
     {
         /**
+         * BNF of Gesture Definition DSL 
          * 
-         * WHEN    : @when((x) => {})    ON
+         * WHEN      ::= @when(WHEN_FUNC) ON
          * 
-         * ON      : @on(BUTTON)     ( IF | STROKE )
+         * ON        ::= @on(ON_BUTTON)   IF
          * 
-         * IF      : @if(BUTTON)       DO
-         *           @if(MOVE *)       DO
+         * IF        ::= @if(IF_BUTTON)   DO
+         *             | @if(MOVE *)      DO
          * 
-         * DO      : @do((x) => {}) 
+         * DO        ::= @do(DO_FUNC) 
          * 
-         * BUTTON  : L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
+         * ON_BUTTON ::= L | M | R | X1 | X2
          * 
-         * MOVE    : MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
-         *
+         * IF_BUTTON ::= L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
          * 
-         * Root:
-         * with keyA down | check(keyA) -> When -> check(keyA) -> On
+         * MOVE      ::= MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
          * 
-         * On:
-         * with keyB down | check(keyB) -> IfButton
-         * with keyA up | emulate click or try Gesture
+         * WHEN_FUNC ::= Func<bool>
          * 
-         * IfButton:
-         * with keyB up | check(key) -> execute Do
-         * with KeyA up | cancel and add keyB to ingore candidate listでいい。複数になることはなさげ
+         * DO_FUNC   ::= Action
          * 
-         * MachineContext
-         * var (result, state) = state.exe(keyCode);
          */
 
         public static class Def
