@@ -874,7 +874,7 @@ namespace CreviceApp
 
                 public readonly LeftButton   LeftButton      = new LeftButton();
                 public readonly MiddleButton MiddleButton    = new MiddleButton();
-                public readonly RightButton  RightButtonDown = new RightButton();
+                public readonly RightButton  RightButton     = new RightButton();
                 public readonly WheelDown    WheelDown       = new WheelDown();
                 public readonly WheelUp      WheelUp         = new WheelUp();
                 public readonly WheelLeft    WheelLeft       = new WheelLeft();
