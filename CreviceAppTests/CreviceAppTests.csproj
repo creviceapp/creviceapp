@@ -80,6 +80,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="State0Tests.cs" />
+    <Compile Include="State1Tests.cs" />
     <Compile Include="StrokeTests.cs" />
     <Compile Include="TransitionTests.cs" />
     <Compile Include="WhenElementTests.cs" />

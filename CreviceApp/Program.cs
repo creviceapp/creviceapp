@@ -527,15 +527,15 @@ namespace CreviceApp
 
             public class State1 : State
             {
-                private readonly State0 S0;
-                private readonly Def.Trigger.IDoubleActionSet primaryTrigger;
-                private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
-                private readonly IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
-                private readonly IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3;
+                internal readonly State0 S0;
+                internal readonly Def.Trigger.IDoubleActionSet primaryTrigger;
+                internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
+                internal readonly IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
+                internal readonly IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3;
 
                 private readonly SingleInputSender inputSender = new SingleInputSender();
 
-                private bool PrimaryTriggerIsRestorable { get; set; } = true;
+                internal bool PrimaryTriggerIsRestorable { get; set; } = true;
 
                 public State1(
                     GlobalValues Global,
@@ -606,7 +606,7 @@ namespace CreviceApp
                     return base.Input(trigger);
                 }
                 
-                private void RestorePrimaryTrigger()
+                internal void RestorePrimaryTrigger()
                 {
                     if (primaryTrigger == Def.Constant.LeftButtonDown)
                     {

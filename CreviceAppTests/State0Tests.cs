@@ -51,31 +51,34 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void InputMustReturnAppropriateTransitionTest()
+        public void InputMustNotExecuteTransitionTest()
+        {
+            // todo: round robin test
+            var gestureDef = new List<GestureDefinition>() {
+                new ButtonGestureDefinition(
+                    () => { return true; },
+                    Config.Def.Constant.RightButton,
+                    Config.Def.Constant.WheelUp,
+                    () => { })
+            };
+            var S0 = new State0(Transition.Gen0(gestureDef));
+            var res = S0.Input(Def.Constant.LeftButtonDown);
+            Assert.IsTrue(res.NextState is State0);
+        }
+
+        [TestMethod()]
+        public void InputMustExecuteTransition0Test()
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
                     () => { return true; },
                     Config.Def.Constant.RightButton,
                     Config.Def.Constant.WheelUp,
-                    () => { }),
-                 new ButtonGestureDefinition(
-                    () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.WheelDown,
                     () => { })
             };
             var S0 = new State0(Transition.Gen0(gestureDef));
-            {
-                // S0 -> S0
-                var res = S0.Input(Def.Constant.LeftButtonDown);
-                Assert.IsTrue(res.NextState is State0);
-            }
-            {
-                // S0 -> S1
-                var res = S0.Input(Def.Constant.RightButtonDown);
-                Assert.IsTrue(res.NextState is State1);
-            }
+            var res = S0.Input(Def.Constant.RightButtonDown);
+            Assert.IsTrue(res.NextState is State1);
        }
 
         [TestMethod()]
