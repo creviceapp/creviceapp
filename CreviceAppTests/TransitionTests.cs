@@ -56,7 +56,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void Gen1MustAcceptButtonGestureDefinitionHavingIDoubleActionAsIfButtonTest()
+        public void Gen1MustAcceptOnlyButtonGestureDefinitionHavingIDoubleActionAsIfButtonTest()
         {
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
@@ -86,7 +86,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void Gen2MustAcceptButtonGestureDefinitionHavingISingleActionAsIfButtonTest()
+        public void Gen2MustAcceptOnlyButtonGestureDefinitionHavingISingleActionAsIfButtonTest()
         {
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
@@ -116,7 +116,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void Gen3MustAcceptStrokeGestureDefinitionTest()
+        public void Gen3MustAcceptOnlyStrokeGestureDefinitionTest()
         {
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(

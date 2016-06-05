@@ -479,7 +479,7 @@ namespace CreviceApp
             
             public class State0 : State
             {
-                private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
+                internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
                 
                 public State0(IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0) : base(new GlobalValues())
                 {
@@ -509,7 +509,7 @@ namespace CreviceApp
                     return base.Input(trigger);
                 }
 
-                public static IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
+                internal static IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
                 {
                     // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
                     // but executing it in sequential order here for simplicity.
