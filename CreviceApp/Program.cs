@@ -633,11 +633,11 @@ namespace CreviceApp
 
             public class State2 : State
             {
-                private readonly State0 S0;
-                private readonly State1 S1;
-                private readonly Def.Trigger.IDoubleActionSet primaryTrigger;
-                private readonly Def.Trigger.IDoubleActionSet secondaryTrigger;
-                private readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
+                internal readonly State0 S0;
+                internal readonly State1 S1;
+                internal readonly Def.Trigger.IDoubleActionSet primaryTrigger;
+                internal readonly Def.Trigger.IDoubleActionSet secondaryTrigger;
+                internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
 
                 public State2(
                     GlobalValues Global,

@@ -170,6 +170,7 @@ namespace CreviceApp.Core.FSM.Tests
 
             Assert.AreEqual(S1.Global, S0.Global);
             Assert.AreEqual(S1.S0, S0);
+            Assert.AreEqual(S1.primaryTrigger, Def.Constant.RightButtonDown);
             Assert.AreEqual(S1.T1.Count, 1);
             Assert.AreEqual(S1.T2.Count, 1);
             Assert.AreEqual(S1.T3.Count, 1);
