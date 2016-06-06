@@ -17,6 +17,7 @@ namespace CreviceApp
     {
         readonly WindowsApplication winApp;
         readonly LowLevelMouseHook hook;
+        Core.Stroke.StrokeWatcher strokeWatcher;
 
         public Form1()
         {
@@ -110,6 +111,7 @@ namespace CreviceApp
 
         public LowLevelMouseHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
+            /*
             var app = winApp.GetOnCursor(data.pt.x, data.pt.y);
             Debug.Print("process path: {0}", app.path);
             Debug.Print("process name: {0}", app.name);
@@ -118,7 +120,26 @@ namespace CreviceApp
             Debug.Print("time: {0}", data.time);
             Debug.Print("fromCreviceApp: {0}", data.fromCreviceApp);
             Debug.Print("fromTablet: {0}", data.fromTablet);
+            */
 
+            if (strokeWatcher != null)
+            {
+                strokeWatcher.Queue(data.pt);
+            }
+
+            switch (evnt)
+            {
+                case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
+                    strokeWatcher = new Core.Stroke.StrokeWatcher(data.pt, 100, 50, 0, 10);
+                    break;
+                case LowLevelMouseHook.Event.WM_RBUTTONUP:
+                    Debug.Print("Stroke: {0}", strokeWatcher.GetStorke());
+                    strokeWatcher.Dispose();
+                    strokeWatcher = null;
+                    break;
+            }
+
+            /*
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
@@ -140,6 +161,7 @@ namespace CreviceApp
                     Debug.Print("{0}", evnt);
                     break;
             }
+            */
             return LowLevelMouseHook.Result.Transfer;
         } 
     }
