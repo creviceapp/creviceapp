@@ -7,6 +7,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -370,7 +371,7 @@ namespace CreviceApp
                 
                 public void Queue(LowLevelMouseHook.POINT point)
                 {
-                    if (MustBeProcessed(current: timeGetTime()))
+                    if (MustBeProcessed(currentTime: timeGetTime()))
                     {
                         queue.Add(point);
                     }
@@ -529,17 +530,17 @@ namespace CreviceApp
                 
                 internal long lastProcessed = 0;
 
-                internal bool MustBeProcessed(uint current)
+                internal bool MustBeProcessed(uint currentTime)
                 {
-                    if (lastProcessed + WatchInterval < current)
+                    if (lastProcessed + WatchInterval < currentTime)
                     {
-                        lastProcessed = current;
+                        lastProcessed = currentTime;
                         return true;
                     }
-                    else if (lastProcessed > current)
+                    else if (lastProcessed > currentTime)
                     {
                         lastProcessed = uint.MaxValue - lastProcessed;
-                        return MustBeProcessed(current);
+                        return MustBeProcessed(currentTime);
                     }
                     return false;
                 }
