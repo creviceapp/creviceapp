@@ -21,9 +21,6 @@ namespace CreviceApp
 
         public Form1()
         {
-            var f = new Form2();
-            f.UpdateLocalDeviceContext();
-
             winApp = new WindowsApplication();
             hook = new LowLevelMouseHook(MouseProc);
             hook.SetHook();
