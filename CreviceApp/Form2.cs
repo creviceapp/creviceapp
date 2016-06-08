@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
@@ -253,7 +254,8 @@ namespace CreviceApp
         public const int WS_EX_LAYERED     = 0x00080000;
         public const int WS_EX_NOACTIVATE  = 0x08000000;
 
-        private LocalDeviceContext ldc;
+        private readonly LocalDeviceContext ldc;
+        private readonly Pen pen;
         
         public Form2()
         {
@@ -263,19 +265,10 @@ namespace CreviceApp
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 
             this.ldc = new LocalDeviceContext();
-            Debug.Print("LocalDeviceContext: {0}", this.ldc.GetBounds());
+            this.pen = new Pen(Color.Blue, 5);
+            this.pen.SetLineCap(LineCap.Round, LineCap.Round, DashCap.Flat);
         }
 
-        public void UpdateLocalDeviceContext()
-        {
-            var hdc = GetDC(IntPtr.Zero);
-            if (!ldc.IsCompatible(hdc))
-            {
-                this.ldc.Dispose();
-                this.ldc = new LocalDeviceContext(hdc);
-            }
-        }
-        
         protected override CreateParams CreateParams
         {
             get
@@ -288,7 +281,13 @@ namespace CreviceApp
 
         public void Update(IEnumerable<LowLevelMouseHook.POINT> points)
         {
-
+            var g = ldc.GetGraphics();
+            g.Clear(Color.Transparent);
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            foreach (var x in points.Zip(points.Skip(1), (a, b) => Tuple.Create(a, b)))
+            {
+                g.DrawLine(pen, x.Item1.x, x.Item1.y, x.Item2.x, x.Item2.y);
+            }
         }
 
         class LocalDeviceContext : IDisposable
@@ -307,35 +306,12 @@ namespace CreviceApp
                     ReleaseDC(IntPtr.Zero, hdc);
                 }
             }
+
+            public Graphics GetGraphics()
+            {
+                return Graphics.FromHdc(Handle);
+            }
             
-            public LocalDeviceContext(IntPtr hdc)
-            {
-                this.Handle = CreateCompatibleDC(hdc);
-            }
-
-            public Rectangle GetBounds()
-            {
-                return GetBounds(Handle);
-            }
-
-            public Rectangle GetBounds(IntPtr hdc)
-            {
-                var obj = GetCurrentObject(hdc, OBJ_BITMAP);
-                var bmp = new BITMAP();
-                GetObject(obj, Marshal.SizeOf(bmp), ref bmp);
-                return new Rectangle(0, 0, bmp.bmWidth, bmp.bmHeight);
-            }
-
-            public bool IsCompatible(IntPtr hdc)
-            {
-                var a = GetBounds(Handle);
-                var b = GetBounds(hdc);
-                Debug.Print("a: {0}", a);
-                Debug.Print("b: {0}", b);
-                return a.Width == b.Width &&
-                       a.Height == b.Height;
-            }
-
             public void Dispose()
             {
                 GC.SuppressFinalize(this);
