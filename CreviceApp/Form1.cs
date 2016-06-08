@@ -130,7 +130,7 @@ namespace CreviceApp
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    strokeWatcher = new Core.Stroke.StrokeWatcher(10, 20, 10, 0, 0);
+                    strokeWatcher = new Core.Stroke.StrokeWatcher(10, 20, 10, 10);
                     break;
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
                     Debug.Print("Stroke: {0}", strokeWatcher.GetStorke());

@@ -315,25 +315,22 @@ namespace CreviceApp
 
         namespace Stroke
         {
-            public abstract class Stroke
+            public class Stroke
             {
                 public readonly Def.Move Move;
                 internal readonly int NewStrokeThreshold;
                 internal readonly int StrokeExtensionThreshold;
-                internal readonly double DirectionCornerTheta;
 
                 private readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
 
-                protected Stroke(
+                public Stroke(
                     Def.Move move,
                     int strokeChangeThreshold,
-                    int strokeExtensionThreshold,
-                    double directionCornerTheta)
+                    int strokeExtensionThreshold)
                 {
                     this.Move = move;
                     this.NewStrokeThreshold = strokeChangeThreshold;
                     this.StrokeExtensionThreshold = strokeExtensionThreshold;
-                    this.DirectionCornerTheta = directionCornerTheta;
                 }
 
                 public virtual Stroke Input(List<LowLevelMouseHook.POINT> input)
@@ -343,27 +340,21 @@ namespace CreviceApp
                     var dx = Math.Abs(p0.x - p1.x);
                     var dy = Math.Abs(p0.y - p1.y);
                     var angle = GetAngle(p0, p1);
-                    Debug.Print("Input | p0({0}, {1}), p1({2},{3}), dx: {4} dy: {5} angle: {6}", p0.x, p0.y, p1.x, p1.y, dx, dy, angle);
-
                     if (dx > NewStrokeThreshold || dy > NewStrokeThreshold)
                     {
-                        var m = NextDirection(angle);
-                        if (m == Move)
+                        var move = NextDirection(angle);
+                        if (move == Move)
                         {
-                            Debug.Print(" -> Same Direction");
                             Absorb(input);
                             return this;
                         }
-
-                        Debug.Print(" -> New Direction");
-                        return Create(m);
+                        return Create(move);
                     }
 
                     if (dx > StrokeExtensionThreshold || dy > StrokeExtensionThreshold)
                     {
                         if (IsExtensionable(angle))
                         {
-                            Debug.Print(" -> Extensionable");
                             Absorb(input);
                         }
                     }
@@ -376,29 +367,40 @@ namespace CreviceApp
                     points.Clear();
                 }
                 
-                protected abstract Def.Move NextDirection(double angle);
-                protected abstract bool IsExtensionable(double angle);
-
-                public Stroke Create(Def.Move move)
+                private static Def.Move NextDirection(double angle)
                 {
-                    switch (move)
+                    if (-135 <= angle && angle < -45)
                     {
-                        case Def.Move.Up:
-                            return new Up(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
-                        case Def.Move.Right:
-                            return new Right(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
-                        case Def.Move.Down:
-                            return new Down(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
-                        default: // case Def.Move.Left:
-                            return new Left(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
+                        return Def.Move.Up;
                     }
+                    else if (-45 <= angle && angle < 45)
+                    {
+                        return Def.Move.Right;
+                    }
+                    else if (45 <= angle && angle < 135)
+                    {
+                        return Def.Move.Down;
+                    }
+                    else // if (135 <= angle || angle < -135)
+                    {
+                        return Def.Move.Left;
+                    }
+                }
+
+                private bool IsExtensionable(double angle)
+                {
+                    return Move == NextDirection(angle);
+                }
+
+                private Stroke Create(Def.Move move)
+                {
+                    return new Stroke(move, NewStrokeThreshold, StrokeExtensionThreshold);
                 }
 
                 public static Stroke Create(
                     int initialStrokeThreshold,
                     int strokeChangeThreshold,
                     int strokeExtensionThreshold,
-                    double directionCornerTheta,
                     List<LowLevelMouseHook.POINT> input)
                 {
                     var p0 = input.First();
@@ -406,34 +408,11 @@ namespace CreviceApp
                     var dx = Math.Abs(p0.x - p1.x);
                     var dy = Math.Abs(p0.y - p1.y);
                     var angle = GetAngle(p0, p1);
-                    Debug.Print("Create | p0({0}, {1}), p1({2},{3}), dx: {4} dy: {5} angle: {6}", p0.x, p0.y, p1.x, p1.y, dx, dy, angle);
-
                     if (dx > initialStrokeThreshold || dy > initialStrokeThreshold)
                     {
-                        if (-135 <= angle && angle < -45)
-                        {
-                            var s = new Up(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
-                            s.Input(input);
-                            return s;
-                        }
-                        else if (-45 <= angle && angle < 45)
-                        {
-                            var s = new Right(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
-                            s.Input(input);
-                            return s;
-                        }
-                        else if (45 <= angle && angle < 135)
-                        {
-                            var s = new Down(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
-                            s.Input(input);
-                            return s;
-                        }
-                        else // if (135 <= angle || angle < -135)
-                        {
-                            var s = new Left(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
-                            s.Input(input);
-                            return s;
-                        }
+                        var s = new Stroke(NextDirection(angle), strokeChangeThreshold, strokeExtensionThreshold);
+                        s.Input(input);
+                        return s;
                     }
                     return null;
                 }
@@ -441,171 +420,6 @@ namespace CreviceApp
                 private static double GetAngle(LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
                 {
                     return Math.Atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
-                }
-
-
-                public class Up : Stroke
-                {
-                    public Up(
-                        int strokeChangeThreshold,
-                        int strokeExtensionThreshold,
-                        double directionCornerTheta)
-                        : base(
-                              Def.Move.Up,
-                              strokeChangeThreshold,
-                              strokeExtensionThreshold,
-                              directionCornerTheta)
-                    {
-
-                    }
-
-                    protected override Def.Move NextDirection(double angle)
-                    {
-                        if (-135 - (DirectionCornerTheta / 2) <= angle && angle < -45 + (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Up;
-                        }
-                        else if (-45 + (DirectionCornerTheta / 2) <= angle && angle < 45)
-                        {
-                            return Def.Move.Right;
-                        }
-                        else if (45 <= angle && angle < 135)
-                        {
-                            return Def.Move.Down;
-                        }
-                        else // if (135 <= angle || angle < -135 - (CornerTheta / 2))
-                        {
-                            return Def.Move.Left;
-                        }
-                    }
-
-                    protected override bool IsExtensionable(double angle)
-                    {
-                        return -135 - (DirectionCornerTheta / 2) <= angle && angle < -45 + (DirectionCornerTheta / 2);
-                    }
-                }
-
-                public class Right : Stroke
-                {
-                    public Right(
-                        int strokeChangeThreshold,
-                        int strokeExtensionThreshold,
-                        double directionCornerTheta)
-                        : base(
-                              Def.Move.Right,
-                              strokeChangeThreshold,
-                              strokeExtensionThreshold,
-                              directionCornerTheta)
-                    {
-
-                    }
-
-                    protected override Def.Move NextDirection(double angle)
-                    {
-                        if (-135 <= angle && angle < -45 - (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Up;
-                        }
-                        else if (-45 - (DirectionCornerTheta / 2) <= angle && angle < 45 + (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Right;
-                        }
-                        else if (45 + (DirectionCornerTheta / 2) <= angle && angle < 135)
-                        {
-                            return Def.Move.Down;
-                        }
-                        else // if (135 <= angle || angle < -135)
-                        {
-                            return Def.Move.Left;
-                        }
-                    }
-
-                    protected override bool IsExtensionable(double angle)
-                    {
-                        return -45 - (DirectionCornerTheta / 2) <= angle && angle < 45 + (DirectionCornerTheta / 2);
-                    }
-                }
-
-                public class Down : Stroke
-                {
-                    public Down(
-                       int strokeChangeThreshold,
-                       int strokeExtensionThreshold,
-                       double directionCornerTheta)
-                       : base(
-                             Def.Move.Down,
-                             strokeChangeThreshold,
-                             strokeExtensionThreshold,
-                             directionCornerTheta)
-                    {
-
-                    }
-
-                    protected override Def.Move NextDirection(double angle)
-                    {
-                        if (-135 <= angle && angle < -45)
-                        {
-                            return Def.Move.Up;
-                        }
-                        else if (-45 <= angle && angle < 45 - (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Right;
-                        }
-                        else if (45 - (DirectionCornerTheta / 2) <= angle && angle < 135 + (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Down;
-                        }
-                        else // if (135 + (DirectionCornerTheta / 2) <= angle || angle < -135)
-                        {
-                            return Def.Move.Left;
-                        }
-                    }
-
-                    protected override bool IsExtensionable(double angle)
-                    {
-                        return 45 - (DirectionCornerTheta / 2) <= angle && angle < 135 + (DirectionCornerTheta / 2);
-                    }
-                }
-
-                public class Left : Stroke
-                {
-                    public Left(
-                        int strokeChangeThreshold,
-                        int strokeExtensionThreshold,
-                        double directionCornerTheta)
-                        : base(
-                              Def.Move.Left,
-                              strokeChangeThreshold,
-                              strokeExtensionThreshold,
-                              directionCornerTheta)
-                    {
-
-                    }
-
-                    protected override Def.Move NextDirection(double angle)
-                    {
-                        if (-135 + (DirectionCornerTheta / 2) <= angle && angle < -45)
-                        {
-                            return Def.Move.Up;
-                        }
-                        else if (-45 <= angle && angle < 45)
-                        {
-                            return Def.Move.Right;
-                        }
-                        else if (45 <= angle && angle < 135 - (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Down;
-                        }
-                        else // if (135 - (DirectionCornerTheta / 2) <= angle || angle < -135 + (DirectionCornerTheta / 2))
-                        {
-                            return Def.Move.Left;
-                        }
-                    }
-
-                    protected override bool IsExtensionable(double angle)
-                    {
-                        return 135 - (DirectionCornerTheta / 2) <= angle || angle < -135 + (DirectionCornerTheta / 2);
-                    }
                 }
             }
 
@@ -646,7 +460,6 @@ namespace CreviceApp
                 internal readonly int InitialStrokeThreshold;
                 internal readonly int StrokeChangeThreshold;
                 internal readonly int StrokeExtensionThreshold;
-                internal readonly double DirectionCornerTheta;
 
                 internal readonly List<Stroke> strokes = new List<Stroke>();
                 internal readonly BlockingCollection<LowLevelMouseHook.POINT> queue = new BlockingCollection<LowLevelMouseHook.POINT>();
@@ -657,13 +470,11 @@ namespace CreviceApp
                     int initialStrokeThreshold,
                     int strokeChangeThreshold, 
                     int strokeExtensionThreshold,
-                    double directionCornerTheta,
                     int watchInterval) : base(watchInterval)
                 {
                     this.InitialStrokeThreshold = initialStrokeThreshold;
                     this.StrokeChangeThreshold = strokeChangeThreshold;
                     this.StrokeExtensionThreshold = strokeExtensionThreshold;
-                    this.DirectionCornerTheta = directionCornerTheta;
                     this.task = Start();
                 }
                 
@@ -683,6 +494,7 @@ namespace CreviceApp
                     {
                         foreach (var point in queue.GetConsumingEnumerable())
                         {
+                            Debug.Print("x: {0}, y: {1}", point.x, point.y);
                             buffer.Add(point);
                             if (buffer.Count < 2)
                             {
@@ -690,9 +502,10 @@ namespace CreviceApp
                             }
                             if (strokes.Count == 0)
                             {
-                                var res = Stroke.Create(InitialStrokeThreshold, StrokeChangeThreshold, StrokeExtensionThreshold, DirectionCornerTheta, buffer);
+                                var res = Stroke.Create(InitialStrokeThreshold, StrokeChangeThreshold, StrokeExtensionThreshold, buffer);
                                 if (res != null)
                                 {
+                                    Debug.Print("Stroke({0}) is determined", Enum.GetName(typeof(Def.Move), res.Move));
                                     strokes.Add(res);
                                 }
                             }
@@ -702,6 +515,7 @@ namespace CreviceApp
                                 var res = s.Input(buffer);
                                 if (s != res)
                                 {
+                                    Debug.Print("Stroke({0}) is determined", Enum.GetName(typeof(Def.Move), res.Move));
                                     strokes.Add(res);
                                 }
                             }
@@ -711,7 +525,10 @@ namespace CreviceApp
 
                 private void Stop()
                 {
-                    tokenSource.Cancel();
+                    if (tokenSource.Token.CanBeCanceled)
+                    {
+                        tokenSource.Cancel();
+                    }
                 }
                 
                 public Def.Stroke GetStorke()
