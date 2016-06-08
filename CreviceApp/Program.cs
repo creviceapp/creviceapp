@@ -29,7 +29,68 @@ namespace CreviceApp
             Application.Run(new Form1());
         }
     }
-    
+
+    namespace Threading
+    {
+        // http://www.codeguru.com/csharp/article.php/c18931/Understanding-the-NET-Task-Parallel-Library-TaskScheduler.htm
+        public class SingleThreadScheduler : TaskScheduler, IDisposable
+        {
+            private BlockingCollection<Task> _tasks = new BlockingCollection<Task>();
+            private Thread _main = null;
+
+            public SingleThreadScheduler()
+            {
+                this._main = new Thread(new ThreadStart(Main));
+                this._main.Start();
+            }
+
+            private void Main()
+            {
+                Debug.Print("SingleThreadScheduler(thread id: {0}) started", Thread.CurrentThread.ManagedThreadId);
+                foreach (var t in _tasks.GetConsumingEnumerable())
+                {
+                    TryExecuteTask(t);
+                }
+            }
+
+            protected override IEnumerable<Task> GetScheduledTasks()
+            {
+                return _tasks.ToArray();
+            }
+
+            protected override void QueueTask(Task task)
+            {
+                _tasks.Add(task);
+            }
+
+            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+            {
+                return false;
+            }
+
+            public void Dispose()
+            {
+                _tasks.CompleteAdding();
+            }
+        }
+    }
+
+    namespace Config
+    {
+        public class UserConfig
+        {
+            public readonly GestureConfig Gesture = new GestureConfig();
+        }
+
+        public class GestureConfig
+        {
+            public int InitialStrokeThreshold         { get; set; } = 10;
+            public int StrokeDirectionChangeThreshold { get; set; } = 20;
+            public int StrokeExtensionThreshold       { get; set; } = 10;
+            public int WatchInterval                  { get; set; } = 10;
+        }
+    }
+
     namespace Core
     {
         public static class Def
@@ -37,6 +98,9 @@ namespace CreviceApp
             public static class Trigger
             {
                 public interface ITrigger { }
+                
+                public class Move             : ITrigger { }
+
                 public interface IDoubleActionSet
                 {
                     IDoubleActionRelease GetPair();
@@ -46,6 +110,7 @@ namespace CreviceApp
                     IDoubleActionSet GetPair();
                 }
                 public interface ISingleAction { }
+
                 public class LeftButtonDown   : ITrigger, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.LeftButtonUp; }
@@ -54,6 +119,7 @@ namespace CreviceApp
                 {
                     public IDoubleActionSet GetPair() { return Constant.LeftButtonDown; }
                 }
+
                 public class MiddleButtonDown : ITrigger, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.MiddleButtonUp; }
@@ -62,6 +128,7 @@ namespace CreviceApp
                 {
                     public IDoubleActionSet GetPair() { return Constant.MiddleButtonDown; }
                 }
+
                 public class RightButtonDown  : ITrigger, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.RightButtonUp; }
@@ -70,10 +137,12 @@ namespace CreviceApp
                 {
                     public IDoubleActionSet GetPair() { return Constant.RightButtonDown; }
                 }
+
                 public class WheelDown        : ITrigger, ISingleAction { }
                 public class WheelUp          : ITrigger, ISingleAction { }
                 public class WheelLeft        : ITrigger, ISingleAction { }
                 public class WheelRight       : ITrigger, ISingleAction { }
+
                 public class X1ButtonDown     : ITrigger, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.X1ButtonUp; }
@@ -82,6 +151,7 @@ namespace CreviceApp
                 {
                     public IDoubleActionSet GetPair() { return Constant.X1ButtonDown; }
                 }
+
                 public class X2ButtonDown     : ITrigger, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.X2ButtonUp; }
@@ -92,7 +162,7 @@ namespace CreviceApp
                 }
             }
 
-            public enum Move
+            public enum Direction
             {
                 Up,
                 Down,
@@ -100,11 +170,11 @@ namespace CreviceApp
                 Right
             }
 
-            public class Stroke : List<Move>, IEquatable<Stroke>
+            public class Stroke : List<Direction>, IEquatable<Stroke>
             {
                 public Stroke() : base() { }
                 public Stroke(int capacity) : base(capacity) { }
-                public Stroke(IEnumerable<Move> moves) : base(moves) { }
+                public Stroke(IEnumerable<Direction> dirs) : base(dirs) { }
 
                 public bool Equals(Stroke that)
                 {
@@ -132,16 +202,16 @@ namespace CreviceApp
                         hash = hash << 2;
                         switch(move)
                         {
-                            case Move.Up:
+                            case Direction.Up:
                                 hash = hash | 0x00;
                                 break;
-                            case Move.Down:
+                            case Direction.Down:
                                 hash = hash | 0x01;
                                 break;
-                            case Move.Left:
+                            case Direction.Left:
                                 hash = hash | 0x02;
                                 break;
-                            case Move.Right:
+                            case Direction.Right:
                                 hash = hash | 0x03;
                                 break;
                             default:
@@ -158,16 +228,16 @@ namespace CreviceApp
                     {
                         switch (move)
                         {
-                            case Move.Up:
+                            case Direction.Up:
                                 sb.Append("U");
                                 break;
-                            case Move.Down:
+                            case Direction.Down:
                                 sb.Append("D");
                                 break;
-                            case Move.Left:
+                            case Direction.Left:
                                 sb.Append("L");
                                 break;
-                            case Move.Right:
+                            case Direction.Right:
                                 sb.Append("R");
                                 break;
                         }
@@ -176,23 +246,23 @@ namespace CreviceApp
                 }
             }
 
-            private static Move FromDSL(Config.Def.AcceptableInIfStrokeClause move)
+            private static Direction FromDSL(DSL.Def.AcceptableInIfStrokeClause move)
             {
-                if (move is Config.Def.MoveUp)
+                if (move is DSL.Def.MoveUp)
                 {
-                    return Move.Up;
+                    return Direction.Up;
                 }
-                else if (move is Config.Def.MoveDown)
+                else if (move is DSL.Def.MoveDown)
                 {
-                    return Move.Down;
+                    return Direction.Down;
                 }
-                else if (move is Config.Def.MoveLeft)
+                else if (move is DSL.Def.MoveLeft)
                 {
-                    return Move.Left;
+                    return Direction.Left;
                 }
-                else if (move is Config.Def.MoveRight)
+                else if (move is DSL.Def.MoveRight)
                 {
-                    return Move.Right;
+                    return Direction.Right;
                 }
                 else
                 {
@@ -200,30 +270,30 @@ namespace CreviceApp
                 }
             }
 
-            public static Stroke Convert(IEnumerable<Config.Def.AcceptableInIfStrokeClause> moves)
+            public static Stroke Convert(IEnumerable<DSL.Def.AcceptableInIfStrokeClause> moves)
             {
                 return new Stroke(moves.Select(m => FromDSL(m)));
             }
 
-            public static Trigger.IDoubleActionSet Convert(Config.Def.AcceptableInOnClause onButton)
+            public static Trigger.IDoubleActionSet Convert(DSL.Def.AcceptableInOnClause onButton)
             {
-                if (onButton is Config.Def.LeftButton)
+                if (onButton is DSL.Def.LeftButton)
                 {
                     return Constant.LeftButtonDown;
                 }
-                else if (onButton is Config.Def.MiddleButton)
+                else if (onButton is DSL.Def.MiddleButton)
                 {
                     return Constant.MiddleButtonDown;
                 }
-                else if (onButton is Config.Def.RightButton)
+                else if (onButton is DSL.Def.RightButton)
                 {
                     return Constant.RightButtonDown;
                 }
-                else if (onButton is Config.Def.X1Button)
+                else if (onButton is DSL.Def.X1Button)
                 {
                     return Constant.X1ButtonDown;
                 }
-                else if (onButton is Config.Def.X2Button)
+                else if (onButton is DSL.Def.X2Button)
                 {
                     return Constant.X2ButtonDown;
                 }
@@ -233,41 +303,41 @@ namespace CreviceApp
                 }
             }
 
-            public static Trigger.ITrigger Convert(Config.Def.AcceptableInIfButtonClause ifButton)
+            public static Trigger.ITrigger Convert(DSL.Def.AcceptableInIfButtonClause ifButton)
             {
-                if (ifButton is Config.Def.LeftButton)
+                if (ifButton is DSL.Def.LeftButton)
                 {
                     return Constant.LeftButtonDown;
                 }
-                else if (ifButton is Config.Def.MiddleButton)
+                else if (ifButton is DSL.Def.MiddleButton)
                 {
                     return Constant.MiddleButtonDown;
                 }
-                else if (ifButton is Config.Def.RightButton)
+                else if (ifButton is DSL.Def.RightButton)
                 {
                     return Constant.RightButtonDown;
                 }
-                else if (ifButton is Config.Def.WheelUp)
+                else if (ifButton is DSL.Def.WheelUp)
                 {
                     return Constant.WheelUp;
                 }
-                else if (ifButton is Config.Def.WheelDown)
+                else if (ifButton is DSL.Def.WheelDown)
                 {
                     return Constant.WheelDown;
                 }
-                else if (ifButton is Config.Def.WheelLeft)
+                else if (ifButton is DSL.Def.WheelLeft)
                 {
                     return Constant.WheelLeft;
                 }
-                else if (ifButton is Config.Def.WheelRight)
+                else if (ifButton is DSL.Def.WheelRight)
                 {
                     return Constant.WheelRight;
                 }
-                else if (ifButton is Config.Def.X1Button)
+                else if (ifButton is DSL.Def.X1Button)
                 {
                     return Constant.X1ButtonDown;
                 }
-                else if (ifButton is Config.Def.X2Button)
+                else if (ifButton is DSL.Def.X2Button)
                 {
                     return Constant.X2ButtonDown;
                 }
@@ -277,7 +347,7 @@ namespace CreviceApp
                 }
             }
 
-            public static Action Convert(Config.Def.DoFunc doFunc)
+            public static Action Convert(DSL.Def.DoFunc doFunc)
             {
                 return Delegate.CreateDelegate(typeof(Action), doFunc.Method) as Action;
             }
@@ -286,6 +356,7 @@ namespace CreviceApp
             {
                 private static ConstantSingleton singleton = new ConstantSingleton();
 
+                public readonly Trigger.Move             Move             = new Trigger.Move();
                 public readonly Trigger.LeftButtonDown   LeftButtonDown   = new Trigger.LeftButtonDown();
                 public readonly Trigger.LeftButtonUp     LeftButtonUp     = new Trigger.LeftButtonUp();
                 public readonly Trigger.MiddleButtonDown MiddleButtonDown = new Trigger.MiddleButtonDown();
@@ -312,24 +383,24 @@ namespace CreviceApp
                 get { return ConstantSingleton.GetInstance(); }
             }
         }
-
+        
         namespace Stroke
         {
             public class Stroke
             {
-                public readonly Def.Move Move;
-                internal readonly int NewStrokeThreshold;
+                public readonly Def.Direction Direction;
+                internal readonly int StrokeDirectionChangeThreshold;
                 internal readonly int StrokeExtensionThreshold;
 
                 private readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
 
                 public Stroke(
-                    Def.Move move,
-                    int strokeChangeThreshold,
+                    Def.Direction dir,
+                    int strokeDirectionChangeThreshold,
                     int strokeExtensionThreshold)
                 {
-                    this.Move = move;
-                    this.NewStrokeThreshold = strokeChangeThreshold;
+                    this.Direction = dir;
+                    this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
                     this.StrokeExtensionThreshold = strokeExtensionThreshold;
                 }
 
@@ -340,10 +411,10 @@ namespace CreviceApp
                     var dx = Math.Abs(p0.x - p1.x);
                     var dy = Math.Abs(p0.y - p1.y);
                     var angle = GetAngle(p0, p1);
-                    if (dx > NewStrokeThreshold || dy > NewStrokeThreshold)
+                    if (dx > StrokeDirectionChangeThreshold || dy > StrokeDirectionChangeThreshold)
                     {
                         var move = NextDirection(angle);
-                        if (move == Move)
+                        if (move == Direction)
                         {
                             Absorb(input);
                             return this;
@@ -367,34 +438,34 @@ namespace CreviceApp
                     points.Clear();
                 }
                 
-                private static Def.Move NextDirection(double angle)
+                private static Def.Direction NextDirection(double angle)
                 {
                     if (-135 <= angle && angle < -45)
                     {
-                        return Def.Move.Up;
+                        return Def.Direction.Up;
                     }
                     else if (-45 <= angle && angle < 45)
                     {
-                        return Def.Move.Right;
+                        return Def.Direction.Right;
                     }
                     else if (45 <= angle && angle < 135)
                     {
-                        return Def.Move.Down;
+                        return Def.Direction.Down;
                     }
                     else // if (135 <= angle || angle < -135)
                     {
-                        return Def.Move.Left;
+                        return Def.Direction.Left;
                     }
                 }
 
                 private bool IsExtensionable(double angle)
                 {
-                    return Move == NextDirection(angle);
+                    return Direction == NextDirection(angle);
                 }
 
-                private Stroke Create(Def.Move move)
+                private Stroke Create(Def.Direction dir)
                 {
-                    return new Stroke(move, NewStrokeThreshold, StrokeExtensionThreshold);
+                    return new Stroke(dir, StrokeDirectionChangeThreshold, StrokeExtensionThreshold);
                 }
 
                 public static Stroke Create(
@@ -456,24 +527,26 @@ namespace CreviceApp
             {
                 [DllImport("winmm.dll")]
                 private static extern uint timeGetTime();
-
+                
+                internal readonly TaskFactory Factory;
                 internal readonly int InitialStrokeThreshold;
-                internal readonly int StrokeChangeThreshold;
+                internal readonly int StrokeDirectionChangeThreshold;
                 internal readonly int StrokeExtensionThreshold;
 
                 internal readonly List<Stroke> strokes = new List<Stroke>();
                 internal readonly BlockingCollection<LowLevelMouseHook.POINT> queue = new BlockingCollection<LowLevelMouseHook.POINT>();
-                internal readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
                 internal readonly Task task;
 
                 public StrokeWatcher(
+                    TaskFactory factory,
                     int initialStrokeThreshold,
-                    int strokeChangeThreshold, 
+                    int strokeDirectionChangeThreshold, 
                     int strokeExtensionThreshold,
                     int watchInterval) : base(watchInterval)
                 {
+                    this.Factory = factory;
                     this.InitialStrokeThreshold = initialStrokeThreshold;
-                    this.StrokeChangeThreshold = strokeChangeThreshold;
+                    this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
                     this.StrokeExtensionThreshold = strokeExtensionThreshold;
                     this.task = Start();
                 }
@@ -490,7 +563,7 @@ namespace CreviceApp
 
                 private Task Start()
                 {
-                    return Task.Factory.StartNew(() =>
+                    return Factory.StartNew(() =>
                     {
                         foreach (var point in queue.GetConsumingEnumerable())
                         {
@@ -502,10 +575,10 @@ namespace CreviceApp
                             }
                             if (strokes.Count == 0)
                             {
-                                var res = Stroke.Create(InitialStrokeThreshold, StrokeChangeThreshold, StrokeExtensionThreshold, buffer);
+                                var res = Stroke.Create(InitialStrokeThreshold, StrokeDirectionChangeThreshold, StrokeExtensionThreshold, buffer);
                                 if (res != null)
                                 {
-                                    Debug.Print("Stroke({0}) is determined", Enum.GetName(typeof(Def.Move), res.Move));
+                                    Debug.Print("Initial Stroke({0}) is determined", Enum.GetName(typeof(Def.Direction), res.Direction));
                                     strokes.Add(res);
                                 }
                             }
@@ -515,7 +588,7 @@ namespace CreviceApp
                                 var res = s.Input(buffer);
                                 if (s != res)
                                 {
-                                    Debug.Print("Stroke({0}) is determined", Enum.GetName(typeof(Def.Move), res.Move));
+                                    Debug.Print("Stroke({0}) is determined", Enum.GetName(typeof(Def.Direction), res.Direction));
                                     strokes.Add(res);
                                 }
                             }
@@ -525,24 +598,20 @@ namespace CreviceApp
 
                 private void Stop()
                 {
-                    if (tokenSource.Token.CanBeCanceled)
-                    {
-                        tokenSource.Cancel();
-                    }
+                    queue.CompleteAdding();
                 }
                 
                 public Def.Stroke GetStorke()
                 {
-                    queue.CompleteAdding();
+                    Stop();
                     task.Wait();
-                    return new Def.Stroke(strokes.Select(x => x.Move));
+                    return new Def.Stroke(strokes.Select(x => x.Direction));
                 }
                 
                 public void Dispose()
                 {
                     GC.SuppressFinalize(this);
                     Stop();
-                    tokenSource.Dispose();
                 }
 
                 ~StrokeWatcher()
@@ -637,24 +706,28 @@ namespace CreviceApp
                 // primary double action is released in irregular order as a trigger. After this transition, previous secondary 
                 // double action mouse button left holding is marked as irreggularly holding by the user, and the next release 
                 // event of it will be ignored.
+
+                // Special side effects
+                // 1. Transition any state to the State(S1) are reset the gesture stroke. Transition 0, 2 and 6 correspond this condition.
+                // 2. Input given to the State(S1) is translated to the gesture stroke.
                 #endregion
-
-
             }
 
             public class GestureMachine
             {
-                private IState state;
+                public GlobalValues Global;
+                public IState State;
 
                 public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
                 {
-                    this.state = new State0(Transition.Gen0(gestureDef));
+                    this.Global = new GlobalValues();
+                    this.State = new State0(Global, Transition.Gen0(gestureDef));
                 }
 
-                public bool Input(Def.Trigger.ITrigger trigger)
+                public bool Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
-                    var result = this.state.Input(trigger);
-                    this.state = result.NextState;
+                    var result = State.Input(trigger, pt);
+                    State = result.NextState;
                     return result.Trigger.IsConsumed;
                 }
             }
@@ -689,18 +762,48 @@ namespace CreviceApp
                 }
             }
 
+            public class GlobalValues
+            {
+                public readonly TaskFactory Factory0;
+                public readonly TaskFactory Factory1;
+
+                public readonly Config.UserConfig Config;
+
+                public readonly HashSet<Def.Trigger.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
+                
+                public Stroke.StrokeWatcher StrokeWatcher { get; private set; } = null;
+
+                public GlobalValues()
+                {
+                    this.Factory0 = new TaskFactory(new Threading.SingleThreadScheduler());
+                    this.Factory1 = new TaskFactory(new Threading.SingleThreadScheduler());
+                    this.Config = new Config.UserConfig();
+                }
+
+                public void InitializeStrokeWatcher()
+                {
+                    if (StrokeWatcher != null)
+                    {
+                        StrokeWatcher.Dispose();
+                    }
+                    StrokeWatcher
+                        = new Stroke.StrokeWatcher(
+                            Factory0,
+                            Config.Gesture.InitialStrokeThreshold,
+                            Config.Gesture.StrokeDirectionChangeThreshold,
+                            Config.Gesture.StrokeExtensionThreshold,
+                            Config.Gesture.WatchInterval);
+                }
+            }
+
             public interface IState
             {
-                Result Input(Def.Trigger.ITrigger trigger);
+                Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt);
             }
+
 
             public abstract class State : IState
             {
-                public class GlobalValues
-                {
-                    public readonly HashSet<Def.Trigger.IDoubleActionRelease> ignoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
-                }
-
                 internal readonly GlobalValues Global;
 
                 public State(GlobalValues Global)
@@ -717,9 +820,9 @@ namespace CreviceApp
                     if (trigger is Def.Trigger.IDoubleActionRelease)
                     {
                         var t = trigger as Def.Trigger.IDoubleActionRelease;
-                        if (Global.ignoreNext.Contains(t))
+                        if (Global.IgnoreNext.Contains(t))
                         {
-                            Global.ignoreNext.Remove(t);
+                            Global.IgnoreNext.Remove(t);
                             return true;
                         }
                     }
@@ -727,16 +830,16 @@ namespace CreviceApp
                     {
                         var t = trigger as Def.Trigger.IDoubleActionSet;
                         var p = t.GetPair();
-                        if (Global.ignoreNext.Contains(p))
+                        if (Global.IgnoreNext.Contains(p))
                         {
-                            Global.ignoreNext.Remove(p);
+                            Global.IgnoreNext.Remove(p);
                             return false;
                         }
                     }
                     return false;
                 }
 
-                public virtual Result Input(Def.Trigger.ITrigger trigger)
+                public virtual Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
                     return Result.TriggerIsRemaining(nextState: this);
                 }
@@ -746,12 +849,15 @@ namespace CreviceApp
             {
                 internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
                 
-                public State0(IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0) : base(new GlobalValues())
+                public State0(
+                    GlobalValues globalValues,
+                    IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0) 
+                    : base(globalValues)
                 {
                     this.T0 = T0;
                 }
 
-                public override Result Input(Def.Trigger.ITrigger trigger)
+                public override Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
                     if (MustBeIgnored(trigger))
                     {
@@ -767,11 +873,12 @@ namespace CreviceApp
                             if (gestureDef.Count() > 0)
                             {
                                 // Transition 0
+                                Global.InitializeStrokeWatcher();
                                 return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef));
                             }
                         }
                     }
-                    return base.Input(trigger);
+                    return base.Input(trigger, pt);
                 }
 
                 internal static IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
@@ -816,12 +923,14 @@ namespace CreviceApp
                     this.T3 = Transition.Gen3(gestureDef);
                 }
 
-                public override Result Input(Def.Trigger.ITrigger trigger)
+                public override Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
                     if (MustBeIgnored(trigger))
                     {
                         return Result.TriggerIsConsumed(nextState: this);
                     }
+
+                    Global.StrokeWatcher.Queue(pt);
 
                     if (trigger is Def.Trigger.IDoubleActionSet)
                     {
@@ -840,12 +949,13 @@ namespace CreviceApp
                         {
                             // Transition 2
                             PrimaryTriggerIsRestorable = false;
-                            Task.Run(() => {
+                            Global.Factory1.StartNew(() => {
                                 foreach (var gDef in T2[t])
                                 {
                                     gDef.doFunc();
                                 }
                             });
+                            Global.InitializeStrokeWatcher();
                             return Result.TriggerIsConsumed(nextState: this);
                         }
                     }
@@ -854,13 +964,19 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.IDoubleActionRelease;
                         if (t == primaryTrigger.GetPair())
                         {
-                            // if (T3[t] == strokeMachine.GetStroke())
-                            //{
-                            // Transition 3
-                            //}
-
+                            var stroke = Global.StrokeWatcher.GetStorke();
+                            if (T3.Keys.Contains(stroke))
+                            {
+                                // Transition 3
+                                Global.Factory1.StartNew(() => {
+                                    foreach (var gDef in T3[stroke])
+                                    {
+                                        gDef.doFunc();
+                                    }
+                                });
+                            }
                             // Transition 4 and 5
-                            if (PrimaryTriggerIsRestorable)
+                            if (PrimaryTriggerIsRestorable && stroke.Count == 0)
                             {
                                 // Side effect of Transition 4
                                 RestorePrimaryTrigger();
@@ -868,7 +984,7 @@ namespace CreviceApp
                             return Result.TriggerIsConsumed(nextState: S0);
                         }
                     }
-                    return base.Input(trigger);
+                    return base.Input(trigger, pt);
                 }
                 
                 internal void RestorePrimaryTrigger()
@@ -920,7 +1036,7 @@ namespace CreviceApp
                     this.T1 = T1;
                 }
 
-                public override Result Input(Def.Trigger.ITrigger trigger)
+                public override Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
                     if (MustBeIgnored(trigger))
                     {
@@ -939,23 +1055,24 @@ namespace CreviceApp
                                     gDef.doFunc();
                                 }
                             });
+                            Global.InitializeStrokeWatcher();
                             return Result.TriggerIsConsumed(nextState: S1);
                         }
                         else if (t == primaryTrigger.GetPair())
                         {
                             // Transition 7
                             // Add the release event of secondary trigger to ignore list.
-                            Global.ignoreNext.Add(secondaryTrigger.GetPair());
+                            Global.IgnoreNext.Add(secondaryTrigger.GetPair());
                             return Result.TriggerIsConsumed(nextState: S0);
                         }
                     }
-                    return base.Input(trigger);
+                    return base.Input(trigger, pt);
                 }
             }
 
             public static class ConfigDSLTreeParser
             {
-                public static IEnumerable<GestureDefinition> TreeToGestureDefinition(Config.DSL.Root root)
+                public static IEnumerable<GestureDefinition> TreeToGestureDefinition(DSL.Root root)
                 {
                     List<GestureDefinition> gestureDef = new List<GestureDefinition>();
                     Debug.Print("Parsing tree of GestureConfig.DSL");
@@ -1014,11 +1131,11 @@ namespace CreviceApp
 
             public class GestureDefinition
             {
-                public readonly Config.Def.WhenFunc whenFunc;
-                public readonly Config.Def.AcceptableInOnClause onButton;
+                public readonly DSL.Def.WhenFunc whenFunc;
+                public readonly DSL.Def.AcceptableInOnClause onButton;
                 public GestureDefinition(
-                    Config.Def.WhenFunc whenFunc,
-                    Config.Def.AcceptableInOnClause onButton
+                    DSL.Def.WhenFunc whenFunc,
+                    DSL.Def.AcceptableInOnClause onButton
                     )
                 {
                     this.whenFunc = whenFunc;
@@ -1032,12 +1149,12 @@ namespace CreviceApp
 
             public class ButtonGestureDefinition : GestureDefinition
             {
-                public readonly Config.Def.AcceptableInIfButtonClause ifButton;
+                public readonly DSL.Def.AcceptableInIfButtonClause ifButton;
                 public readonly Action doFunc;
                 public ButtonGestureDefinition(
-                    Config.Def.WhenFunc whenFunc,
-                    Config.Def.AcceptableInOnClause onButton,
-                    Config.Def.AcceptableInIfButtonClause ifButton,
+                    DSL.Def.WhenFunc whenFunc,
+                    DSL.Def.AcceptableInOnClause onButton,
+                    DSL.Def.AcceptableInIfButtonClause ifButton,
                     Action doFunc
                     ) : base(whenFunc, onButton)
                 {
@@ -1061,8 +1178,8 @@ namespace CreviceApp
                 public readonly Def.Stroke stroke;
                 public readonly Action doFunc;
                 public StrokeGestureDefinition(
-                    Config.Def.WhenFunc whenFunc,
-                    Config.Def.AcceptableInOnClause onButton,
+                    DSL.Def.WhenFunc whenFunc,
+                    DSL.Def.AcceptableInOnClause onButton,
                     Def.Stroke stroke,
                     Action doFunc
                     ) : base(whenFunc, onButton)
@@ -1084,7 +1201,7 @@ namespace CreviceApp
         }
     }
 
-    namespace Config
+    namespace DSL
     {
         /**
          * BNF of Gesture Definition DSL 
@@ -1158,168 +1275,165 @@ namespace CreviceApp
                 get { return ConstantSingleton.GetInstance(); }
             }
         }
-
-        public static class DSL
+            
+        public class Root
         {
-            public class Root
-            {
-                public readonly List<WhenElement.Value> whenElements = new List<WhenElement.Value>();
+            public readonly List<WhenElement.Value> whenElements = new List<WhenElement.Value>();
 
-                public WhenElement @when(Def.WhenFunc func)
+            public WhenElement @when(Def.WhenFunc func)
+            {
+                return new WhenElement(this, func);
+            }
+        }
+
+        public class WhenElement
+        {
+            public class Value
+            {
+                public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
+                public readonly Def.WhenFunc func;
+
+                public Value(Def.WhenFunc func)
                 {
-                    return new WhenElement(this, func);
+                    this.func = func;
                 }
             }
 
-            public class WhenElement
+            private readonly Root parent;
+            private readonly Value value;
+
+            public WhenElement(Root parent, Def.WhenFunc func)
             {
-                public class Value
+                this.parent = parent;
+                this.value = new Value(func);
+                this.parent.whenElements.Add(this.value);
+            }
+
+            public OnElement @on(Def.AcceptableInOnClause button)
+            {
+                return new OnElement(value, button);
+            }
+        }
+
+        public class OnElement
+        {
+            public class Value
+            {
+                public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
+                public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
+                public readonly Def.AcceptableInOnClause button;
+
+                public Value(Def.AcceptableInOnClause button)
                 {
-                    public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
-                    public readonly Def.WhenFunc func;
-
-                    public Value(Def.WhenFunc func)
-                    {
-                        this.func = func;
-                    }
-                }
-
-                private readonly Root parent;
-                private readonly Value value;
-
-                public WhenElement(Root parent, Def.WhenFunc func)
-                {
-                    this.parent = parent;
-                    this.value = new Value(func);
-                    this.parent.whenElements.Add(this.value);
-                }
-
-                public OnElement @on(Def.AcceptableInOnClause button)
-                {
-                    return new OnElement(value, button);
+                    this.button = button;
                 }
             }
 
-            public class OnElement
+            private readonly WhenElement.Value parent;
+            private readonly Value value;
+
+            public OnElement(WhenElement.Value parent, Def.AcceptableInOnClause button)
             {
-                public class Value
+                this.parent = parent;
+                this.value = new Value(button);
+                this.parent.onElements.Add(this.value);
+            }
+
+            public IfButtonElement @if(Def.AcceptableInIfButtonClause button)
+            {
+                return new IfButtonElement(value, button);
+            }
+
+            public IfStrokeElement @if(params Def.AcceptableInIfStrokeClause[] moves)
+            {
+                return new IfStrokeElement(value, moves);
+            }
+        }
+
+        public abstract class IfElement
+        {
+            public abstract class Value
+            {
+                public readonly List<DoElement.Value> doElements = new List<DoElement.Value>();
+            }
+        }
+
+        public class IfButtonElement
+        {
+            public class Value : IfElement.Value
+            {
+                public readonly Def.AcceptableInIfButtonClause button;
+
+                public Value(Def.AcceptableInIfButtonClause button)
                 {
-                    public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
-                    public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
-                    public readonly Def.AcceptableInOnClause button;
-
-                    public Value(Def.AcceptableInOnClause button)
-                    {
-                        this.button = button;
-                    }
-                }
-
-                private readonly WhenElement.Value parent;
-                private readonly Value value;
-
-                public OnElement(WhenElement.Value parent, Def.AcceptableInOnClause button)
-                {
-                    this.parent = parent;
-                    this.value = new Value(button);
-                    this.parent.onElements.Add(this.value);
-                }
-
-                public IfButtonElement @if(Def.AcceptableInIfButtonClause button)
-                {
-                    return new IfButtonElement(value, button);
-                }
-
-                public IfStrokeElement @if(params Def.AcceptableInIfStrokeClause[] moves)
-                {
-                    return new IfStrokeElement(value, moves);
+                    this.button = button;
                 }
             }
 
-            public abstract class IfElement
+            private readonly OnElement.Value parent;
+            private readonly Value value;
+
+            public IfButtonElement(OnElement.Value parent, Def.AcceptableInIfButtonClause button)
             {
-                public abstract class Value
+                this.parent = parent;
+                this.value = new Value(button);
+                this.parent.ifButtonElements.Add(this.value);
+            }
+
+            public DoElement @do(Def.DoFunc func)
+            {
+                return new DoElement(value, func);
+            }
+        }
+
+        public class IfStrokeElement
+        {
+            public class Value : IfElement.Value
+            {
+                public readonly IEnumerable<Def.AcceptableInIfStrokeClause> moves;
+
+                public Value(IEnumerable<Def.AcceptableInIfStrokeClause> moves)
                 {
-                    public readonly List<DoElement.Value> doElements = new List<DoElement.Value>();
+                    this.moves = moves;
                 }
             }
 
-            public class IfButtonElement
+            private readonly OnElement.Value parent;
+            private readonly Value value;
+
+            public IfStrokeElement(OnElement.Value parent, params Def.AcceptableInIfStrokeClause[] moves)
             {
-                public class Value : IfElement.Value
+                this.parent = parent;
+                this.value = new Value(moves);
+                this.parent.ifStrokeElements.Add(this.value);
+            }
+
+            public DoElement @do(Def.DoFunc func)
+            {
+                return new DoElement(value, func);
+            }
+        }
+
+        public class DoElement
+        {
+            public class Value
+            {
+                public readonly Def.DoFunc func;
+
+                public Value(Def.DoFunc func)
                 {
-                    public readonly Def.AcceptableInIfButtonClause button;
-
-                    public Value(Def.AcceptableInIfButtonClause button)
-                    {
-                        this.button = button;
-                    }
-                }
-
-                private readonly OnElement.Value parent;
-                private readonly Value value;
-
-                public IfButtonElement(OnElement.Value parent, Def.AcceptableInIfButtonClause button)
-                {
-                    this.parent = parent;
-                    this.value = new Value(button);
-                    this.parent.ifButtonElements.Add(this.value);
-                }
-
-                public DoElement @do(Def.DoFunc func)
-                {
-                    return new DoElement(value, func);
+                    this.func = func;
                 }
             }
 
-            public class IfStrokeElement
+            private readonly IfElement.Value parent;
+            private readonly Value value;
+
+            public DoElement(IfElement.Value parent, Def.DoFunc func)
             {
-                public class Value : IfElement.Value
-                {
-                    public readonly IEnumerable<Def.AcceptableInIfStrokeClause> moves;
-
-                    public Value(IEnumerable<Def.AcceptableInIfStrokeClause> moves)
-                    {
-                        this.moves = moves;
-                    }
-                }
-
-                private readonly OnElement.Value parent;
-                private readonly Value value;
-
-                public IfStrokeElement(OnElement.Value parent, params Def.AcceptableInIfStrokeClause[] moves)
-                {
-                    this.parent = parent;
-                    this.value = new Value(moves);
-                    this.parent.ifStrokeElements.Add(this.value);
-                }
-
-                public DoElement @do(Def.DoFunc func)
-                {
-                    return new DoElement(value, func);
-                }
-            }
-
-            public class DoElement
-            {
-                public class Value
-                {
-                    public readonly Def.DoFunc func;
-
-                    public Value(Def.DoFunc func)
-                    {
-                        this.func = func;
-                    }
-                }
-
-                private readonly IfElement.Value parent;
-                private readonly Value value;
-
-                public DoElement(IfElement.Value parent, Def.DoFunc func)
-                {
-                    this.parent = parent;
-                    this.value = new Value(func);
-                    this.parent.doElements.Add(this.value);
-                }
+                this.parent = parent;
+                this.value = new Value(func);
+                this.parent.doElements.Add(this.value);
             }
         }
     }

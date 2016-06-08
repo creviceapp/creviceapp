@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.Config.Tests
+namespace CreviceApp.DSL.Tests
 {
     [TestClass()]
     public class OnElementTests
@@ -14,7 +14,7 @@ namespace CreviceApp.Config.Tests
         [TestMethod()]
         public void ifButtonTest()
         {
-            var root = new DSL.Root();
+            var root = new Root();
             var appElement = root.@when(() => true);
             var onElement = appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements.Count, 0);
@@ -25,7 +25,7 @@ namespace CreviceApp.Config.Tests
         [TestMethod()]
         public void ifStrokeTest()
         {
-            var root = new DSL.Root();
+            var root = new Root();
             var appElement = root.@when(() => true);
             var onElement = appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifStrokeElements.Count, 0);

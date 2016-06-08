@@ -29,27 +29,27 @@ namespace CreviceApp.Core.Tests
         [TestMethod()]
         public void Stroke2Test()
         {
-            var s = new Def.Stroke() { Def.Move.Up };
+            var s = new Def.Stroke() { Def.Direction.Up };
             Assert.AreEqual(s.Count, 1);
-            Assert.AreEqual(s[0], Def.Move.Up);
+            Assert.AreEqual(s[0], Def.Direction.Up);
 
-            s = new Def.Stroke() { Def.Move.Up, Def.Move.Down };
+            s = new Def.Stroke() { Def.Direction.Up, Def.Direction.Down };
             Assert.AreEqual(s.Count, 2);
-            Assert.AreEqual(s[0], Def.Move.Up);
-            Assert.AreEqual(s[1], Def.Move.Down);
+            Assert.AreEqual(s[0], Def.Direction.Up);
+            Assert.AreEqual(s[1], Def.Direction.Down);
         }
         
         [TestMethod()]
         public void Stroke3Test()
         {
-            var s = new Def.Stroke(new List<Def.Move>() { Def.Move.Up });
+            var s = new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up });
             Assert.AreEqual(s.Count, 1);
-            Assert.AreEqual(s[0], Def.Move.Up);
+            Assert.AreEqual(s[0], Def.Direction.Up);
 
-            s = new Def.Stroke(new List<Def.Move>() { Def.Move.Up, Def.Move.Down });
+            s = new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up, Def.Direction.Down });
             Assert.AreEqual(s.Count, 2);
-            Assert.AreEqual(s[0], Def.Move.Up);
-            Assert.AreEqual(s[1], Def.Move.Down);
+            Assert.AreEqual(s[0], Def.Direction.Up);
+            Assert.AreEqual(s[1], Def.Direction.Down);
         }
 
         [TestMethod()]
@@ -59,30 +59,30 @@ namespace CreviceApp.Core.Tests
 
             Assert.AreEqual(new Def.Stroke(), new Def.Stroke());
 
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Up }, new Def.Stroke() { Def.Move.Up });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Down }, new Def.Stroke() { Def.Move.Down });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Left }, new Def.Stroke() { Def.Move.Left });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Right }, new Def.Stroke() { Def.Move.Right });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Up }, new Def.Stroke() { Def.Direction.Up });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Down }, new Def.Stroke() { Def.Direction.Down });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Left }, new Def.Stroke() { Def.Direction.Left });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Right }, new Def.Stroke() { Def.Direction.Right });
 
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Up, Def.Move.Up }, new Def.Stroke() { Def.Move.Up, Def.Move.Up });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Up, Def.Move.Down }, new Def.Stroke() { Def.Move.Up, Def.Move.Down });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Up, Def.Move.Left }, new Def.Stroke() { Def.Move.Up, Def.Move.Left });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Up, Def.Move.Right }, new Def.Stroke() { Def.Move.Up, Def.Move.Right });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Up, Def.Direction.Up }, new Def.Stroke() { Def.Direction.Up, Def.Direction.Up });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Up, Def.Direction.Down }, new Def.Stroke() { Def.Direction.Up, Def.Direction.Down });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Up, Def.Direction.Left }, new Def.Stroke() { Def.Direction.Up, Def.Direction.Left });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Up, Def.Direction.Right }, new Def.Stroke() { Def.Direction.Up, Def.Direction.Right });
 
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Down, Def.Move.Up }, new Def.Stroke() { Def.Move.Down, Def.Move.Up });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Down, Def.Move.Down }, new Def.Stroke() { Def.Move.Down, Def.Move.Down });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Down, Def.Move.Left }, new Def.Stroke() { Def.Move.Down, Def.Move.Left });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Down, Def.Move.Right }, new Def.Stroke() { Def.Move.Down, Def.Move.Right });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Down, Def.Direction.Up }, new Def.Stroke() { Def.Direction.Down, Def.Direction.Up });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Down, Def.Direction.Down }, new Def.Stroke() { Def.Direction.Down, Def.Direction.Down });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Down, Def.Direction.Left }, new Def.Stroke() { Def.Direction.Down, Def.Direction.Left });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Down, Def.Direction.Right }, new Def.Stroke() { Def.Direction.Down, Def.Direction.Right });
 
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Left, Def.Move.Up }, new Def.Stroke() { Def.Move.Left, Def.Move.Up });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Left, Def.Move.Down }, new Def.Stroke() { Def.Move.Left, Def.Move.Down });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Left, Def.Move.Left }, new Def.Stroke() { Def.Move.Left, Def.Move.Left });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Left, Def.Move.Right }, new Def.Stroke() { Def.Move.Left, Def.Move.Right });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Left, Def.Direction.Up }, new Def.Stroke() { Def.Direction.Left, Def.Direction.Up });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Left, Def.Direction.Down }, new Def.Stroke() { Def.Direction.Left, Def.Direction.Down });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Left, Def.Direction.Left }, new Def.Stroke() { Def.Direction.Left, Def.Direction.Left });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Left, Def.Direction.Right }, new Def.Stroke() { Def.Direction.Left, Def.Direction.Right });
 
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Right, Def.Move.Up }, new Def.Stroke() { Def.Move.Right, Def.Move.Up });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Right, Def.Move.Down }, new Def.Stroke() { Def.Move.Right, Def.Move.Down });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Right, Def.Move.Left }, new Def.Stroke() { Def.Move.Right, Def.Move.Left });
-            Assert.AreEqual(new Def.Stroke() { Def.Move.Right, Def.Move.Right }, new Def.Stroke() { Def.Move.Right, Def.Move.Right });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Right, Def.Direction.Up }, new Def.Stroke() { Def.Direction.Right, Def.Direction.Up });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Right, Def.Direction.Down }, new Def.Stroke() { Def.Direction.Right, Def.Direction.Down });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Right, Def.Direction.Left }, new Def.Stroke() { Def.Direction.Right, Def.Direction.Left });
+            Assert.AreEqual(new Def.Stroke() { Def.Direction.Right, Def.Direction.Right }, new Def.Stroke() { Def.Direction.Right, Def.Direction.Right });
         }
 
         [TestMethod()]
@@ -98,84 +98,84 @@ namespace CreviceApp.Core.Tests
             var s = new Def.Stroke();
 
             Assert.AreEqual(s.GetHashCode(), 0);
-            s.Add(Def.Move.Up);
+            s.Add(Def.Direction.Up);
             Assert.AreEqual(s.GetHashCode(), 0);
             s.Clear();
-            s.Add(Def.Move.Down);
+            s.Add(Def.Direction.Down);
             Assert.AreEqual(s.GetHashCode(), 1);
             s.Clear();
-            s.Add(Def.Move.Left);
+            s.Add(Def.Direction.Left);
             Assert.AreEqual(s.GetHashCode(), 2);
             s.Clear();
-            s.Add(Def.Move.Right);
+            s.Add(Def.Direction.Right);
             Assert.AreEqual(s.GetHashCode(), 3);
 
             s.Clear();
-            s.Add(Def.Move.Up);
-            s.Add(Def.Move.Up);
+            s.Add(Def.Direction.Up);
+            s.Add(Def.Direction.Up);
             Assert.AreEqual(s.GetHashCode(), 0);
             s.Clear();
-            s.Add(Def.Move.Up);
-            s.Add(Def.Move.Down);
+            s.Add(Def.Direction.Up);
+            s.Add(Def.Direction.Down);
             Assert.AreEqual(s.GetHashCode(), 1);
             s.Clear();
-            s.Add(Def.Move.Up);
-            s.Add(Def.Move.Left);
+            s.Add(Def.Direction.Up);
+            s.Add(Def.Direction.Left);
             Assert.AreEqual(s.GetHashCode(), 2);
             s.Clear();
-            s.Add(Def.Move.Up);
-            s.Add(Def.Move.Right);
+            s.Add(Def.Direction.Up);
+            s.Add(Def.Direction.Right);
             Assert.AreEqual(s.GetHashCode(), 3);
 
             s.Clear();
-            s.Add(Def.Move.Down);
-            s.Add(Def.Move.Up);
+            s.Add(Def.Direction.Down);
+            s.Add(Def.Direction.Up);
             Assert.AreEqual(s.GetHashCode(), 4);
             s.Clear();
-            s.Add(Def.Move.Down);
-            s.Add(Def.Move.Down);
+            s.Add(Def.Direction.Down);
+            s.Add(Def.Direction.Down);
             Assert.AreEqual(s.GetHashCode(), 5);
             s.Clear();
-            s.Add(Def.Move.Down);
-            s.Add(Def.Move.Left);
+            s.Add(Def.Direction.Down);
+            s.Add(Def.Direction.Left);
             Assert.AreEqual(s.GetHashCode(), 6);
             s.Clear();
-            s.Add(Def.Move.Down);
-            s.Add(Def.Move.Right);
+            s.Add(Def.Direction.Down);
+            s.Add(Def.Direction.Right);
             Assert.AreEqual(s.GetHashCode(), 7);
             
             s.Clear();
-            s.Add(Def.Move.Left);
-            s.Add(Def.Move.Up);
+            s.Add(Def.Direction.Left);
+            s.Add(Def.Direction.Up);
             Assert.AreEqual(s.GetHashCode(), 8);
             s.Clear();
-            s.Add(Def.Move.Left);
-            s.Add(Def.Move.Down);
+            s.Add(Def.Direction.Left);
+            s.Add(Def.Direction.Down);
             Assert.AreEqual(s.GetHashCode(), 9);
             s.Clear();
-            s.Add(Def.Move.Left);
-            s.Add(Def.Move.Left);
+            s.Add(Def.Direction.Left);
+            s.Add(Def.Direction.Left);
             Assert.AreEqual(s.GetHashCode(), 10);
             s.Clear();
-            s.Add(Def.Move.Left);
-            s.Add(Def.Move.Right);
+            s.Add(Def.Direction.Left);
+            s.Add(Def.Direction.Right);
             Assert.AreEqual(s.GetHashCode(), 11);
 
             s.Clear();
-            s.Add(Def.Move.Right);
-            s.Add(Def.Move.Up);
+            s.Add(Def.Direction.Right);
+            s.Add(Def.Direction.Up);
             Assert.AreEqual(s.GetHashCode(), 12);
             s.Clear();
-            s.Add(Def.Move.Right);
-            s.Add(Def.Move.Down);
+            s.Add(Def.Direction.Right);
+            s.Add(Def.Direction.Down);
             Assert.AreEqual(s.GetHashCode(), 13);
             s.Clear();
-            s.Add(Def.Move.Right);
-            s.Add(Def.Move.Left);
+            s.Add(Def.Direction.Right);
+            s.Add(Def.Direction.Left);
             Assert.AreEqual(s.GetHashCode(), 14);
             s.Clear();
-            s.Add(Def.Move.Right);
-            s.Add(Def.Move.Right);
+            s.Add(Def.Direction.Right);
+            s.Add(Def.Direction.Right);
             Assert.AreEqual(s.GetHashCode(), 15);
         }
     }

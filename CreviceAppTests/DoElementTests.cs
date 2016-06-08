@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.Config.Tests
+namespace CreviceApp.DSL.Tests
 {
     [TestClass()]
     public class DoElementTests

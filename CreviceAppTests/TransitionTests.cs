@@ -17,23 +17,23 @@ namespace CreviceApp.Core.FSM.Tests
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.WheelUp,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelUp,
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.WheelDown,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelDown,
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.MiddleButton,
-                    Config.Def.Constant.WheelLeft,
+                    DSL.Def.Constant.MiddleButton,
+                    DSL.Def.Constant.WheelLeft,
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.MiddleButton,
-                    Config.Def.Constant.WheelRight,
+                    DSL.Def.Constant.MiddleButton,
+                    DSL.Def.Constant.WheelRight,
                     () => { }),
             };
             var Gen0 = Transition.Gen0(gestureDef)
@@ -45,13 +45,13 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.IsTrue(Gen0.Keys.Contains(Def.Constant.MiddleButtonDown));
             {
                 var gDef = Gen0[Def.Constant.RightButtonDown];
-                Assert.AreEqual(gDef[0].ifButton, Config.Def.Constant.WheelUp);
-                Assert.AreEqual(gDef[1].ifButton, Config.Def.Constant.WheelDown);
+                Assert.AreEqual(gDef[0].ifButton, DSL.Def.Constant.WheelUp);
+                Assert.AreEqual(gDef[1].ifButton, DSL.Def.Constant.WheelDown);
             }
             {
                 var gDef = Gen0[Def.Constant.MiddleButtonDown];
-                Assert.AreEqual(gDef[0].ifButton, Config.Def.Constant.WheelLeft);
-                Assert.AreEqual(gDef[1].ifButton, Config.Def.Constant.WheelRight);
+                Assert.AreEqual(gDef[0].ifButton, DSL.Def.Constant.WheelLeft);
+                Assert.AreEqual(gDef[1].ifButton, DSL.Def.Constant.WheelRight);
             }
         }
 
@@ -61,18 +61,18 @@ namespace CreviceApp.Core.FSM.Tests
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    new Def.Stroke(new List<Def.Move>() { Def.Move.Up }),
+                    DSL.Def.Constant.RightButton,
+                    new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.WheelUp,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelUp,
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.LeftButton,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.LeftButton,
                     () => { }),
             };
             var Gen1 = Transition.Gen1(gestureDef)
@@ -81,7 +81,7 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(Gen1.Keys.Count, 1);
             {
                 var gDef = Gen1[Def.Constant.LeftButtonDown];
-                Assert.AreEqual(gDef[0].onButton, Config.Def.Constant.RightButton);
+                Assert.AreEqual(gDef[0].onButton, DSL.Def.Constant.RightButton);
             }
         }
 
@@ -91,18 +91,18 @@ namespace CreviceApp.Core.FSM.Tests
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    new Def.Stroke(new List<Def.Move>() { Def.Move.Up }),
+                    DSL.Def.Constant.RightButton,
+                    new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.WheelUp,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelUp,
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.LeftButton,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.LeftButton,
                     () => { }),
             };
             var Gen2 = Transition.Gen2(gestureDef)
@@ -111,7 +111,7 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(Gen2.Keys.Count, 1);
             {
                 var gDef = Gen2[Def.Constant.WheelUp];
-                Assert.AreEqual(gDef[0].onButton, Config.Def.Constant.RightButton);
+                Assert.AreEqual(gDef[0].onButton, DSL.Def.Constant.RightButton);
             }
         }
 
@@ -121,18 +121,18 @@ namespace CreviceApp.Core.FSM.Tests
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    new Def.Stroke(new List<Def.Move>() { Def.Move.Up }),
+                    DSL.Def.Constant.RightButton,
+                    new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.WheelUp,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelUp,
                     () => { }),
                  new ButtonGestureDefinition(
                     () => { return false; },
-                    Config.Def.Constant.RightButton,
-                    Config.Def.Constant.LeftButton,
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.LeftButton,
                     () => { }),
             };
             var Gen3 = Transition.Gen3(gestureDef)
@@ -140,8 +140,8 @@ namespace CreviceApp.Core.FSM.Tests
 
             Assert.AreEqual(Gen3.Keys.Count, 1);
             {
-                var gDef = Gen3[new Def.Stroke(new List<Def.Move>() { Def.Move.Up })];
-                Assert.AreEqual(gDef[0].onButton, Config.Def.Constant.RightButton);
+                var gDef = Gen3[new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up })];
+                Assert.AreEqual(gDef[0].onButton, DSL.Def.Constant.RightButton);
             }
         }
     }

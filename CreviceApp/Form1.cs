@@ -13,78 +13,32 @@ using System.Windows.Forms;
 
 namespace CreviceApp
 {
+
     public partial class Form1 : Form
     {
-        readonly WindowsApplication winApp;
-        readonly LowLevelMouseHook hook;
-        Core.Stroke.StrokeWatcher strokeWatcher;
+        readonly Core.FSM.GestureMachine GestureMachine;
 
         public Form1()
         {
-            winApp = new WindowsApplication();
-            hook = new LowLevelMouseHook(MouseProc);
-            hook.SetHook();
+            var inputSender = new SingleInputSender();
 
-            Task.Run(() => {
-                var inputSender = new SingleInputSender();
+            var gestureDef = new List<Core.FSM.GestureDefinition>() {
+                new Core.FSM.ButtonGestureDefinition(
+                    () => { return true; },
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelUp,
+                    () => 
+                    {
+                        inputSender.ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL);
+                        inputSender.ExtendedKeyDown(InputSender.VirtualKeys.VK_SHIFT);
+                        inputSender.ExtendedKeyDown(InputSender.VirtualKeys.VK_TAB);
+                        inputSender.ExtendedKeyUp(InputSender.VirtualKeys.VK_TAB);
+                        inputSender.ExtendedKeyUp(InputSender.VirtualKeys.VK_SHIFT);
+                        inputSender.ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL);
+                    })
+            };
 
-                Thread.Sleep(5000);
-                /*
-                inputSender.LeftDown();
-                inputSender.LeftUp();
-                inputSender.RightDown();
-                inputSender.RightUp();
-                */
-
-                ushort VK_MENU    = 0x12;
-                ushort VK_TAB     = 0x09;
-                ushort VK_CONTROL = 0x11;
-                ushort N_0        = 0x30;
-                ushort VK_LWIN    = 0x5B;
-
-                /*
-                inputSender.ExtendedKeyDown(N_0);
-                inputSender.ExtendedKeyUp(N_0);
-
-                Thread.Sleep(1000);
-
-                inputSender.ExtendedKeyDown(VK_CONTROL);
-                Thread.Sleep(1000);
-                inputSender.ExtendedKeyDown(VK_TAB);
-                Thread.Sleep(1000);
-                inputSender.ExtendedKeyUp(VK_TAB);
-                Thread.Sleep(1000);
-                inputSender.ExtendedKeyUp(VK_CONTROL);
-
-                inputSender.ExtendedKeyDown(N_0);
-                inputSender.ExtendedKeyUp(N_0);
-
-                */
-
-                /*
-                new InputSequenceBuilder()
-                  .KeyDownWithScanCode(VK_CONTROL)
-                  .KeyDownWithScanCode(VK_TAB)
-                  .KeyUpWithScanCode(VK_TAB)
-                  .KeyUpWithScanCode(VK_CONTROL)
-                  .Send();
-                */
-
-                /*
-                Thread.Sleep(5000);
-                inputSender.KeyDown(VK_LWIN);
-                inputSender.KeyUp(VK_LWIN);
-                Thread.Sleep(5000);
-                inputSender.ExtendedKeyDown(VK_LWIN);
-                inputSender.ExtendedKeyUp(VK_LWIN);
-                Thread.Sleep(5000);
-                inputSender.ExtendedKeyDownWithScanCode(VK_LWIN);
-                inputSender.ExtendedKeyUpWithScanCode(VK_LWIN);
-                */
-
-                //inputSender.UnicodeKeyStroke("🍣🍣🍣🍣");
-                inputSender.Wheel(2400);
-            });
+            GestureMachine = new Core.FSM.GestureMachine(gestureDef);
 
             InitializeComponent();
         }
@@ -111,6 +65,7 @@ namespace CreviceApp
 
         public LowLevelMouseHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
+
             /*
             var app = winApp.GetOnCursor(data.pt.x, data.pt.y);
             Debug.Print("process path: {0}", app.path);
@@ -120,7 +75,7 @@ namespace CreviceApp
             Debug.Print("time: {0}", data.time);
             Debug.Print("fromCreviceApp: {0}", data.fromCreviceApp);
             Debug.Print("fromTablet: {0}", data.fromTablet);
-            */
+            
 
             if (strokeWatcher != null)
             {
@@ -130,7 +85,7 @@ namespace CreviceApp
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    strokeWatcher = new Core.Stroke.StrokeWatcher(10, 20, 10, 10);
+                    strokeWatcher = new Core.Stroke.StrokeWatcher(new TaskFactory(new Threading.SingleThreadScheduler()), 10, 20, 10, 10);
                     break;
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
                     Debug.Print("Stroke: {0}", strokeWatcher.GetStorke());
@@ -138,6 +93,7 @@ namespace CreviceApp
                     strokeWatcher = null;
                     break;
             }
+            */
 
             /*
             switch (evnt)

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.Config.Tests
+namespace CreviceApp.DSL.Tests
 {
     [TestClass()]
     public class AppElementTests
@@ -14,7 +14,7 @@ namespace CreviceApp.Config.Tests
         [TestMethod()]
         public void onTest()
         {
-            var root = new DSL.Root();
+            var root = new Root();
             var appElement = root.@when(() => true);
             Assert.AreEqual(root.whenElements[0].onElements.Count, 0);
             appElement.@on(new Def.RightButton());
@@ -24,7 +24,7 @@ namespace CreviceApp.Config.Tests
         [TestMethod()]
         public void funcTest()
         {
-            var root = new DSL.Root();
+            var root = new Root();
             var appElement = root.when(() => true);
             Assert.IsTrue(root.whenElements[0].func());
         }

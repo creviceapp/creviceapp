@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.Config.Tests
+namespace CreviceApp.DSL.Tests
 {
     [TestClass()]
     public class IfStrokeElementTests
@@ -14,7 +14,7 @@ namespace CreviceApp.Config.Tests
         [TestMethod()]
         public void doTest()
         {
-            var root = new DSL.Root();
+            var root = new Root();
             var appElement = root.@when(() => true);
             var onElement = appElement.@on(new Def.RightButton());
             var ifElement = onElement.@if(new Def.MoveDown(), new Def.MoveRight());
