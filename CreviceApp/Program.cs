@@ -315,58 +315,356 @@ namespace CreviceApp
 
         namespace Stroke
         {
-            public class StorkeDrawer
-            {
-
-            }
-            
-            public class Stroke
+            public abstract class Stroke
             {
                 public readonly Def.Move Move;
-                internal readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
+                internal readonly int NewStrokeThreshold;
+                internal readonly int StrokeExtensionThreshold;
+                internal readonly double DirectionCornerTheta;
 
-                public Stroke(Def.Move move, LowLevelMouseHook.POINT point)
+                private readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
+
+                protected Stroke(
+                    Def.Move move,
+                    int strokeChangeThreshold,
+                    int strokeExtensionThreshold,
+                    double directionCornerTheta)
                 {
                     this.Move = move;
-                    points.Add(point);
+                    this.NewStrokeThreshold = strokeChangeThreshold;
+                    this.StrokeExtensionThreshold = strokeExtensionThreshold;
+                    this.DirectionCornerTheta = directionCornerTheta;
                 }
 
-                public void Extend(LowLevelMouseHook.POINT point)
+                public virtual Stroke Input(List<LowLevelMouseHook.POINT> input)
                 {
-                    points.Add(point);
+                    var p0 = input.First();
+                    var p1 = input.Last();
+                    var dx = Math.Abs(p0.x - p1.x);
+                    var dy = Math.Abs(p0.y - p1.y);
+                    var angle = GetAngle(p0, p1);
+                    Debug.Print("Input | p0({0}, {1}), p1({2},{3}), dx: {4} dy: {5} angle: {6}", p0.x, p0.y, p1.x, p1.y, dx, dy, angle);
+
+                    if (dx > NewStrokeThreshold || dy > NewStrokeThreshold)
+                    {
+                        var m = NextDirection(angle);
+                        if (m == Move)
+                        {
+                            Debug.Print(" -> Same Direction");
+                            Absorb(input);
+                            return this;
+                        }
+
+                        Debug.Print(" -> New Direction");
+                        return Create(m);
+                    }
+
+                    if (dx > StrokeExtensionThreshold || dy > StrokeExtensionThreshold)
+                    {
+                        if (IsExtensionable(angle))
+                        {
+                            Debug.Print(" -> Extensionable");
+                            Absorb(input);
+                        }
+                    }
+                return this;
+                }
+
+                public void Absorb(List<LowLevelMouseHook.POINT> points)
+                {
+                    this.points.AddRange(points);
+                    points.Clear();
+                }
+                
+                protected abstract Def.Move NextDirection(double angle);
+                protected abstract bool IsExtensionable(double angle);
+
+                public Stroke Create(Def.Move move)
+                {
+                    switch (move)
+                    {
+                        case Def.Move.Up:
+                            return new Up(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
+                        case Def.Move.Right:
+                            return new Right(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
+                        case Def.Move.Down:
+                            return new Down(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
+                        default: // case Def.Move.Left:
+                            return new Left(NewStrokeThreshold, StrokeExtensionThreshold, DirectionCornerTheta);
+                    }
+                }
+
+                public static Stroke Create(
+                    int initialStrokeThreshold,
+                    int strokeChangeThreshold,
+                    int strokeExtensionThreshold,
+                    double directionCornerTheta,
+                    List<LowLevelMouseHook.POINT> input)
+                {
+                    var p0 = input.First();
+                    var p1 = input.Last();
+                    var dx = Math.Abs(p0.x - p1.x);
+                    var dy = Math.Abs(p0.y - p1.y);
+                    var angle = GetAngle(p0, p1);
+                    Debug.Print("Create | p0({0}, {1}), p1({2},{3}), dx: {4} dy: {5} angle: {6}", p0.x, p0.y, p1.x, p1.y, dx, dy, angle);
+
+                    if (dx > initialStrokeThreshold || dy > initialStrokeThreshold)
+                    {
+                        if (-135 <= angle && angle < -45)
+                        {
+                            var s = new Up(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
+                            s.Input(input);
+                            return s;
+                        }
+                        else if (-45 <= angle && angle < 45)
+                        {
+                            var s = new Right(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
+                            s.Input(input);
+                            return s;
+                        }
+                        else if (45 <= angle && angle < 135)
+                        {
+                            var s = new Down(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
+                            s.Input(input);
+                            return s;
+                        }
+                        else // if (135 <= angle || angle < -135)
+                        {
+                            var s = new Left(strokeChangeThreshold, strokeExtensionThreshold, directionCornerTheta);
+                            s.Input(input);
+                            return s;
+                        }
+                    }
+                    return null;
+                }
+
+                private static double GetAngle(LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
+                {
+                    return Math.Atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+                }
+
+
+                public class Up : Stroke
+                {
+                    public Up(
+                        int strokeChangeThreshold,
+                        int strokeExtensionThreshold,
+                        double directionCornerTheta)
+                        : base(
+                              Def.Move.Up,
+                              strokeChangeThreshold,
+                              strokeExtensionThreshold,
+                              directionCornerTheta)
+                    {
+
+                    }
+
+                    protected override Def.Move NextDirection(double angle)
+                    {
+                        if (-135 - (DirectionCornerTheta / 2) <= angle && angle < -45 + (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Up;
+                        }
+                        else if (-45 + (DirectionCornerTheta / 2) <= angle && angle < 45)
+                        {
+                            return Def.Move.Right;
+                        }
+                        else if (45 <= angle && angle < 135)
+                        {
+                            return Def.Move.Down;
+                        }
+                        else // if (135 <= angle || angle < -135 - (CornerTheta / 2))
+                        {
+                            return Def.Move.Left;
+                        }
+                    }
+
+                    protected override bool IsExtensionable(double angle)
+                    {
+                        return -135 - (DirectionCornerTheta / 2) <= angle && angle < -45 + (DirectionCornerTheta / 2);
+                    }
+                }
+
+                public class Right : Stroke
+                {
+                    public Right(
+                        int strokeChangeThreshold,
+                        int strokeExtensionThreshold,
+                        double directionCornerTheta)
+                        : base(
+                              Def.Move.Right,
+                              strokeChangeThreshold,
+                              strokeExtensionThreshold,
+                              directionCornerTheta)
+                    {
+
+                    }
+
+                    protected override Def.Move NextDirection(double angle)
+                    {
+                        if (-135 <= angle && angle < -45 - (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Up;
+                        }
+                        else if (-45 - (DirectionCornerTheta / 2) <= angle && angle < 45 + (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Right;
+                        }
+                        else if (45 + (DirectionCornerTheta / 2) <= angle && angle < 135)
+                        {
+                            return Def.Move.Down;
+                        }
+                        else // if (135 <= angle || angle < -135)
+                        {
+                            return Def.Move.Left;
+                        }
+                    }
+
+                    protected override bool IsExtensionable(double angle)
+                    {
+                        return -45 - (DirectionCornerTheta / 2) <= angle && angle < 45 + (DirectionCornerTheta / 2);
+                    }
+                }
+
+                public class Down : Stroke
+                {
+                    public Down(
+                       int strokeChangeThreshold,
+                       int strokeExtensionThreshold,
+                       double directionCornerTheta)
+                       : base(
+                             Def.Move.Down,
+                             strokeChangeThreshold,
+                             strokeExtensionThreshold,
+                             directionCornerTheta)
+                    {
+
+                    }
+
+                    protected override Def.Move NextDirection(double angle)
+                    {
+                        if (-135 <= angle && angle < -45)
+                        {
+                            return Def.Move.Up;
+                        }
+                        else if (-45 <= angle && angle < 45 - (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Right;
+                        }
+                        else if (45 - (DirectionCornerTheta / 2) <= angle && angle < 135 + (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Down;
+                        }
+                        else // if (135 + (DirectionCornerTheta / 2) <= angle || angle < -135)
+                        {
+                            return Def.Move.Left;
+                        }
+                    }
+
+                    protected override bool IsExtensionable(double angle)
+                    {
+                        return 45 - (DirectionCornerTheta / 2) <= angle && angle < 135 + (DirectionCornerTheta / 2);
+                    }
+                }
+
+                public class Left : Stroke
+                {
+                    public Left(
+                        int strokeChangeThreshold,
+                        int strokeExtensionThreshold,
+                        double directionCornerTheta)
+                        : base(
+                              Def.Move.Left,
+                              strokeChangeThreshold,
+                              strokeExtensionThreshold,
+                              directionCornerTheta)
+                    {
+
+                    }
+
+                    protected override Def.Move NextDirection(double angle)
+                    {
+                        if (-135 + (DirectionCornerTheta / 2) <= angle && angle < -45)
+                        {
+                            return Def.Move.Up;
+                        }
+                        else if (-45 <= angle && angle < 45)
+                        {
+                            return Def.Move.Right;
+                        }
+                        else if (45 <= angle && angle < 135 - (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Down;
+                        }
+                        else // if (135 - (DirectionCornerTheta / 2) <= angle || angle < -135 + (DirectionCornerTheta / 2))
+                        {
+                            return Def.Move.Left;
+                        }
+                    }
+
+                    protected override bool IsExtensionable(double angle)
+                    {
+                        return 135 - (DirectionCornerTheta / 2) <= angle || angle < -135 + (DirectionCornerTheta / 2);
+                    }
                 }
             }
 
-            public class StrokeWatcher : IDisposable
+            public abstract class PointProcessor
+            {
+                internal readonly int WatchInterval;
+
+                internal long lastProcessTime = 0;
+                internal LowLevelMouseHook.POINT lastProcess;
+
+                public PointProcessor(int watchInterval)
+                {
+                    this.WatchInterval = watchInterval;
+                }
+
+
+                internal bool MustBeProcessed(uint currentTime)
+                {
+                    if (lastProcessTime + WatchInterval < currentTime)
+                    {
+                        lastProcessTime = currentTime;
+                        return true;
+                    }
+                    else if (lastProcessTime > currentTime)
+                    {
+                        lastProcessTime = uint.MaxValue - lastProcessTime;
+                        return MustBeProcessed(currentTime);
+                    }
+                    return false;
+                }
+            }
+
+            public class StrokeWatcher : PointProcessor, IDisposable
             {
                 [DllImport("winmm.dll")]
                 private static extern uint timeGetTime();
 
-                internal readonly LowLevelMouseHook.POINT InitialPoint;
-                internal readonly int NewStrokeThreshold;
+                internal readonly int InitialStrokeThreshold;
+                internal readonly int StrokeChangeThreshold;
                 internal readonly int StrokeExtensionThreshold;
-                internal readonly int DirectionCornerTheta;
-                internal readonly int WatchInterval;
+                internal readonly double DirectionCornerTheta;
 
                 internal readonly List<Stroke> strokes = new List<Stroke>();
                 internal readonly BlockingCollection<LowLevelMouseHook.POINT> queue = new BlockingCollection<LowLevelMouseHook.POINT>();
-                internal readonly Thread worker;
+                internal readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
+                internal readonly Task task;
 
                 public StrokeWatcher(
-                    LowLevelMouseHook.POINT initialPoint,
-                    int newStrokeThreshold, 
+                    int initialStrokeThreshold,
+                    int strokeChangeThreshold, 
                     int strokeExtensionThreshold,
-                    int directionCornerTheta,
-                    int watchInterval)
+                    double directionCornerTheta,
+                    int watchInterval) : base(watchInterval)
                 {
-                    this.InitialPoint = initialPoint;
-                    this.NewStrokeThreshold = newStrokeThreshold;
+                    this.InitialStrokeThreshold = initialStrokeThreshold;
+                    this.StrokeChangeThreshold = strokeChangeThreshold;
                     this.StrokeExtensionThreshold = strokeExtensionThreshold;
                     this.DirectionCornerTheta = directionCornerTheta;
-                    this.WatchInterval = watchInterval;
-                    this.worker = new Thread(Work);
-
-                    worker.Start();
+                    this.task = Start();
                 }
                 
                 public void Queue(LowLevelMouseHook.POINT point)
@@ -377,178 +675,57 @@ namespace CreviceApp
                     }
                 }
 
-                private void Work()
-                {
-                    try
-                    {
-                        foreach (var p1 in queue.GetConsumingEnumerable())
-                        {
-                            if (strokes.Count > 0)
-                            {
-                                var stroke = strokes.Last();
-                                var p0 = stroke.points.Last();
-                                var dx = p0.x - p1.x;
-                                var dy = p0.y - p1.y;
-                                if (Math.Abs(dx) > NewStrokeThreshold || Math.Abs(dy) > NewStrokeThreshold)
-                                {
-                                    var angle = GetAngle(p0, p1);
-                                    switch (stroke.Move)
-                                    {
-                                        case Def.Move.Up:
-                                            if (-45 + (DirectionCornerTheta / 2) <= angle && angle < 45) // R
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Right, p1));
-                                            }
-                                            else if (45 <= angle && angle < 135) // D
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Down, p1));
-                                            }
-                                            else if (135 <= angle || angle < -135 - (DirectionCornerTheta / 2)) // L
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Left, p1));
-                                            }
-                                            break;
-                                        case Def.Move.Right:
-                                            if (-135 <= angle && angle < -45 - (DirectionCornerTheta / 2)) // U
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Up, p1));
-                                            }
-                                            else if (45 + (DirectionCornerTheta / 2) <= angle && angle < 135) // D
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Down, p1));
-                                            }
-                                            else if (135 <= angle || angle < -135) // L
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Left, p1));
-                                            }
-                                            break;
-                                        case Def.Move.Down:
-                                            if (-135 <= angle && angle < -45) // U
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Up, p1));
-                                            }
-                                            else if (-45 <= angle && angle < 45 - (DirectionCornerTheta / 2)) // R
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Right, p1));
-                                            }
-                                            else if (135 + (DirectionCornerTheta / 2) <= angle || angle < -135) // L
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Left, p1));
-                                            }
-                                            break;
-                                        case Def.Move.Left:
-                                            if (-135 + (DirectionCornerTheta / 2) <= angle && angle < -45) // U
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Up, p1));
-                                            }
-                                            else if (-45 <= angle && angle < 45) // R
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Right, p1));
-                                            }
-                                            else if (45 <= angle && angle < 135 - (DirectionCornerTheta / 2)) // D
-                                            {
-                                                strokes.Add(new Stroke(Def.Move.Down, p1));
-                                            }
-                                            break;
+                private readonly List<LowLevelMouseHook.POINT> buffer = new List<LowLevelMouseHook.POINT>();
 
-                                    }
-                                }
-                                else if (Math.Abs(dx) > StrokeExtensionThreshold || Math.Abs(dy) > StrokeExtensionThreshold)
+                private Task Start()
+                {
+                    return Task.Factory.StartNew(() =>
+                    {
+                        foreach (var point in queue.GetConsumingEnumerable())
+                        {
+                            buffer.Add(point);
+                            if (buffer.Count < 2)
+                            {
+                                continue;
+                            }
+                            if (strokes.Count == 0)
+                            {
+                                var res = Stroke.Create(InitialStrokeThreshold, StrokeChangeThreshold, StrokeExtensionThreshold, DirectionCornerTheta, buffer);
+                                if (res != null)
                                 {
-                                    var angle = GetAngle(p0, p1);
-                                    switch (stroke.Move)
-                                    {
-                                        case Def.Move.Up:
-                                            if (-135 - (DirectionCornerTheta / 2) <= angle && angle < -45 + (DirectionCornerTheta / 2))
-                                            {
-                                                stroke.Extend(p1);
-                                            }
-                                            break;
-                                        case Def.Move.Right:
-                                            if (-45 - (DirectionCornerTheta / 2) <= angle && angle < 45 + (DirectionCornerTheta / 2))
-                                            {
-                                                stroke.Extend(p1);
-                                            }
-                                            break;
-                                        case Def.Move.Down:
-                                            if (45 - (DirectionCornerTheta / 2) <= angle && angle < 135 + (DirectionCornerTheta / 2))
-                                            {
-                                                stroke.Extend(p1);
-                                            }
-                                            break;
-                                        case Def.Move.Left:
-                                            if (135 - (DirectionCornerTheta / 2) <= angle || angle < -315 + (DirectionCornerTheta / 2))
-                                            {
-                                                stroke.Extend(p1);
-                                            }
-                                            break;
-                                    }
+                                    strokes.Add(res);
                                 }
                             }
                             else
                             {
-                                var p0 = InitialPoint;
-                                var dx = p0.x - p1.x;
-                                var dy = p0.y - p1.y;
-                                if (Math.Abs(dx) > NewStrokeThreshold || Math.Abs(dy) > NewStrokeThreshold)
+                                var s = strokes.Last();
+                                var res = s.Input(buffer);
+                                if (s != res)
                                 {
-                                    var angle = GetAngle(p0, p1);
-                                    if (-135 <= angle && angle < -45) // U
-                                    {
-                                        strokes.Add(new Stroke(Def.Move.Up, p1));
-                                    }
-                                    else if (-45 <= angle && angle < 45) // R
-                                    {
-                                        strokes.Add(new Stroke(Def.Move.Right, p1));
-                                    }
-                                    else if (45 <= angle & angle < 135) // D
-                                    {
-                                        strokes.Add(new Stroke(Def.Move.Down, p1));
-                                    }
-                                    else if (135 <= angle || angle < -135) // L
-                                    {
-                                        strokes.Add(new Stroke(Def.Move.Left, p1));
-                                    }
+                                    strokes.Add(res);
                                 }
                             }
                         }
-                    }
-                    catch (ThreadAbortException) { }
-
+                    });
                 }
 
-                private double GetAngle(LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
+                private void Stop()
                 {
-                    Debug.Print("p0: {0}, p1: {1}, angle: {2}", p0, p1, (Math.Atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI));
-                    return (Math.Atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI);
+                    tokenSource.Cancel();
                 }
                 
                 public Def.Stroke GetStorke()
                 {
+                    queue.CompleteAdding();
+                    task.Wait();
                     return new Def.Stroke(strokes.Select(x => x.Move));
                 }
                 
-                internal long lastProcessed = 0;
-
-                internal bool MustBeProcessed(uint currentTime)
-                {
-                    if (lastProcessed + WatchInterval < currentTime)
-                    {
-                        lastProcessed = currentTime;
-                        return true;
-                    }
-                    else if (lastProcessed > currentTime)
-                    {
-                        lastProcessed = uint.MaxValue - lastProcessed;
-                        return MustBeProcessed(currentTime);
-                    }
-                    return false;
-                }
-
                 public void Dispose()
                 {
                     GC.SuppressFinalize(this);
-                    worker.Abort();
+                    Stop();
+                    tokenSource.Dispose();
                 }
 
                 ~StrokeWatcher()
