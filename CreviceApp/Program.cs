@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 
 namespace CreviceApp
@@ -32,22 +33,39 @@ namespace CreviceApp
 
     namespace Threading
     {
+        public class MessageLoop
+        {
+            private readonly Thread thread;
+            
+            public MessageLoop(Action action)
+            {
+                this.thread = new Thread(() =>
+                {
+                    action();
+                    var dispatcherFrame = new DispatcherFrame(true);
+                    Dispatcher.PushFrame(dispatcherFrame);
+                });
+                this.thread.SetApartmentState(ApartmentState.STA);
+                this.thread.Start();
+            }
+        }
+
         // http://www.codeguru.com/csharp/article.php/c18931/Understanding-the-NET-Task-Parallel-Library-TaskScheduler.htm
         public class SingleThreadScheduler : TaskScheduler, IDisposable
         {
-            private BlockingCollection<Task> _tasks = new BlockingCollection<Task>();
-            private Thread _main = null;
+            private readonly BlockingCollection<Task> tasks = new BlockingCollection<Task>();
+            private readonly Thread thread;
 
             public SingleThreadScheduler()
             {
-                this._main = new Thread(new ThreadStart(Main));
-                this._main.Start();
+                this.thread = new Thread(new ThreadStart(Main));
+                this.thread.Start();
             }
 
             private void Main()
             {
                 Debug.Print("SingleThreadScheduler(thread id: {0}) started", Thread.CurrentThread.ManagedThreadId);
-                foreach (var t in _tasks.GetConsumingEnumerable())
+                foreach (var t in tasks.GetConsumingEnumerable())
                 {
                     TryExecuteTask(t);
                 }
@@ -55,12 +73,12 @@ namespace CreviceApp
 
             protected override IEnumerable<Task> GetScheduledTasks()
             {
-                return _tasks.ToArray();
+                return tasks.ToArray();
             }
 
             protected override void QueueTask(Task task)
             {
-                _tasks.Add(task);
+                tasks.Add(task);
             }
 
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
@@ -70,7 +88,13 @@ namespace CreviceApp
 
             public void Dispose()
             {
-                _tasks.CompleteAdding();
+                GC.SuppressFinalize(this);
+                tasks.CompleteAdding();
+            }
+
+            ~SingleThreadScheduler()
+            {
+                Dispose();
             }
         }
     }
@@ -703,13 +727,30 @@ namespace CreviceApp
                 // Transition 7
                 // State2 -> State0
                 // Transition from the state(S2) to the state(S0) holding no double action mouse button. This event happends when 
-                // primary double action is released in irregular order as a trigger. After this transition, previous secondary 
+                // primary double action mouse button is released in irregular order as a trigger. After this transition, previous secondary 
                 // double action mouse button left holding is marked as irreggularly holding by the user, and the next release 
                 // event of it will be ignored.
 
+                // Transition 8
+                // State0 -> State0
+                // Transition from the state(S0) to the state(S0) forcedly reseted. This event happens when a `reset` command given.
+                // This transition have no side effect.
+
+                // Transition 9
+                // State1 -> State0
+                // Transition from the state(S1) to the state(S0) forcedly reseted. This event happens when a `reset` command given.
+                // After this transition, previous primary double action mouse button left holding is marked as irregularly holding by the user,
+                // and the next release event of it will be ignored.
+
+                // Transition 10
+                // State2 -> State0
+                // Transition from the state(S2) to the state(S0) forcedly reseted. This event happens when a `reset` command given.
+                // After this transition, previous primary and secondly double action mouse button left holding is marked as irregularly 
+                // holding by the user, and the next release event of it will be ignored.
+
                 // Special side effects
                 // 1. Transition any state to the State(S1) are reset the gesture stroke. Transition 0, 2 and 6 correspond this condition.
-                // 2. Input given to the State(S1) is translated to the gesture stroke.
+                // 2. Input given to the State(S1) is intepreted as a gesture stroke.
                 #endregion
             }
 
@@ -717,6 +758,8 @@ namespace CreviceApp
             {
                 public GlobalValues Global;
                 public IState State;
+
+                private object lockObject = new object();
 
                 public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
                 {
@@ -726,9 +769,20 @@ namespace CreviceApp
 
                 public bool Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
-                    var result = State.Input(trigger, pt);
-                    State = result.NextState;
-                    return result.Trigger.IsConsumed;
+                    lock(lockObject)
+                    {
+                        var res = State.Input(trigger, pt);
+                        State = res.NextState;
+                        return res.Trigger.IsConsumed;
+                    }
+                }
+
+                public void Reset()
+                {
+                    lock(lockObject)
+                    {
+                        State = State.Reset();
+                    }
                 }
             }
 
@@ -799,6 +853,7 @@ namespace CreviceApp
             public interface IState
             {
                 Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt);
+                IState Reset();
             }
 
 
@@ -843,6 +898,11 @@ namespace CreviceApp
                 {
                     return Result.TriggerIsRemaining(nextState: this);
                 }
+
+                public virtual IState Reset()
+                {
+                    throw new InvalidOperationException();
+                }
             }
             
             public class State0 : State
@@ -879,6 +939,12 @@ namespace CreviceApp
                         }
                     }
                     return base.Input(trigger, pt);
+                }
+
+                public override IState Reset()
+                {
+                    // Transition 8
+                    return this;
                 }
 
                 internal static IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
@@ -987,6 +1053,13 @@ namespace CreviceApp
                     return base.Input(trigger, pt);
                 }
                 
+                public override IState Reset()
+                {
+                    // Transition 9
+                    Global.IgnoreNext.Add(primaryTrigger.GetPair());
+                    return S0;
+                }
+
                 internal void RestorePrimaryTrigger()
                 {
                     if (primaryTrigger == Def.Constant.LeftButtonDown)
@@ -1067,6 +1140,14 @@ namespace CreviceApp
                         }
                     }
                     return base.Input(trigger, pt);
+                }
+
+                public override IState Reset()
+                {
+                    // Transition 10
+                    Global.IgnoreNext.Add(primaryTrigger.GetPair());
+                    Global.IgnoreNext.Add(secondaryTrigger.GetPair());
+                    return S0;
                 }
             }
 
