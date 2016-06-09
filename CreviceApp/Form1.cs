@@ -16,12 +16,13 @@ namespace CreviceApp
 
     public partial class Form1 : Form
     {
+        const int WM_DISPLAYCHANGE = 0x007E;
+
+        readonly LowLevelMouseHook MouseHook;
         readonly Core.FSM.GestureMachine GestureMachine;
 
         public Form1()
         {
-            var inputSender = new SingleInputSender();
-
             var gestureDef = new List<Core.FSM.GestureDefinition>() {
                 new Core.FSM.ButtonGestureDefinition(
                     () => { return true; },
@@ -29,96 +30,119 @@ namespace CreviceApp
                     DSL.Def.Constant.WheelUp,
                     () => 
                     {
-                        inputSender.ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL);
-                        inputSender.ExtendedKeyDown(InputSender.VirtualKeys.VK_SHIFT);
-                        inputSender.ExtendedKeyDown(InputSender.VirtualKeys.VK_TAB);
-                        inputSender.ExtendedKeyUp(InputSender.VirtualKeys.VK_TAB);
-                        inputSender.ExtendedKeyUp(InputSender.VirtualKeys.VK_SHIFT);
-                        inputSender.ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL);
+                        new InputSequenceBuilder()
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL)
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_SHIFT)
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_TAB)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_TAB)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_SHIFT)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
+                            .Send();
                     })
             };
 
-            GestureMachine = new Core.FSM.GestureMachine(gestureDef);
+            this.FormClosing += OnClosing;
+            this.MouseHook = new LowLevelMouseHook(MouseProc);
+            this.GestureMachine = new Core.FSM.GestureMachine(gestureDef);
+
+            this.MouseHook.SetHook();
 
             InitializeComponent();
         }
 
-        /**
-         * 
-         * APP     : App((x) => {})  ( ON )
-         * 
-         * ON      : @on(BUTTON)     ( DO | IF | STROKE )
-         * 
-         * IF      : @if(BUTTON)     ( DO )
-         * 
-         * DO      : @do((x) => {}) 
-         * 
-         * STROKE  : @stroke(MOVE *) ( BY )
-         * 
-         * BY      : @by(BUTTON)     ( DO )
-         * 
-         * BUTTON  : L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
-         * 
-         * MOVE    : MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
-         *
-         */
+        protected override void WndProc(ref Message m)
+        {
+            switch(m.Msg)
+            {
+                case WM_DISPLAYCHANGE:
+                    GestureMachine.Reset();
+                    break;
+            }
+            base.WndProc(ref m);
+        }
 
         public LowLevelMouseHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
-
-            /*
-            var app = winApp.GetOnCursor(data.pt.x, data.pt.y);
-            Debug.Print("process path: {0}", app.path);
-            Debug.Print("process name: {0}", app.name);
-
-            Debug.Print("dwExtraInfo: {0}", BitConverter.ToString(BitConverter.GetBytes(data.dwExtraInfo.ToUInt64())));
-            Debug.Print("time: {0}", data.time);
-            Debug.Print("fromCreviceApp: {0}", data.fromCreviceApp);
-            Debug.Print("fromTablet: {0}", data.fromTablet);
-            
-
-            if (strokeWatcher != null)
+            if (data.fromCreviceApp)
             {
-                strokeWatcher.Queue(data.pt);
+                Debug.Print("{0} ignored because this event has the signature of CreviceApp", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
+                return WindowsHook.Result.Determine;
             }
 
-            switch (evnt)
-            {
-                case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    strokeWatcher = new Core.Stroke.StrokeWatcher(new TaskFactory(new Threading.SingleThreadScheduler()), 10, 20, 10, 10);
-                    break;
-                case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    Debug.Print("Stroke: {0}", strokeWatcher.GetStorke());
-                    strokeWatcher.Dispose();
-                    strokeWatcher = null;
-                    break;
-            }
-            */
+            Debug.Print("{0}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
 
-            /*
-            switch (evnt)
+            switch(evnt)
             {
-                case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
-                case LowLevelMouseHook.Event.WM_LBUTTONUP:
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
+                    return Convert(GestureMachine.Input(Core.Def.Constant.Move, data.pt));
+                case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
+                    return Convert(GestureMachine.Input(Core.Def.Constant.LeftButtonDown, data.pt));
+                case LowLevelMouseHook.Event.WM_LBUTTONUP:
+                    return Convert(GestureMachine.Input(Core.Def.Constant.LeftButtonUp, data.pt));
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
+                    return Convert(GestureMachine.Input(Core.Def.Constant.RightButtonDown, data.pt));
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    Debug.Print("{0}: x={1}, y={2}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.pt.x, data.pt.y);
-                    break;
+                    return Convert(GestureMachine.Input(Core.Def.Constant.RightButtonUp, data.pt));
+                case LowLevelMouseHook.Event.WM_MBUTTONDOWN:
+                    return Convert(GestureMachine.Input(Core.Def.Constant.MiddleButtonDown, data.pt));
+                case LowLevelMouseHook.Event.WM_MBUTTONUP:
+                    return Convert(GestureMachine.Input(Core.Def.Constant.MiddleButtonUp, data.pt));
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
-                case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
-                    Debug.Print("{0}: delta={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.asWheelDelta.delta);
-                    break;
+                    if (data.mouseData.asWheelDelta.delta < 0)
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelDown, data.pt));
+                    }
+                    else
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelUp, data.pt));
+                    }
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
+                    if (data.mouseData.asXButton.isXButton1)
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X1ButtonDown, data.pt));
+                    }
+                    else
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X2ButtonDown, data.pt));
+                    }
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
-                    Debug.Print("{0}: type={1}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt), data.mouseData.asXButton.type);
-                    break;
-                default:
-                    Debug.Print("{0}", evnt);
-                    break;
+                    if (data.mouseData.asXButton.isXButton1)
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X1ButtonUp, data.pt));
+                    }
+                    else
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X2ButtonUp, data.pt));
+                    }
+                case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
+                    if (data.mouseData.asWheelDelta.delta < 0)
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelRight, data.pt));
+                    }
+                    else
+                    {
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelLeft, data.pt));
+                    }
             }
-            */
             return LowLevelMouseHook.Result.Transfer;
         } 
+
+        private LowLevelMouseHook.Result Convert(bool consumed)
+        {
+            if (consumed)
+            {
+                return LowLevelMouseHook.Result.Cancel;
+            }
+            else
+            {
+                return LowLevelMouseHook.Result.Transfer;
+            }
+        }
+
+        public void OnClosing(object sender, CancelEventArgs e)
+        {
+            MouseHook.Unhook();
+            GestureMachine.Dispose();
+        }
     }
 }

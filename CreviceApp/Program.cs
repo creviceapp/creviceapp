@@ -33,23 +33,6 @@ namespace CreviceApp
 
     namespace Threading
     {
-        public class MessageLoop
-        {
-            private readonly Thread thread;
-            
-            public MessageLoop(Action action)
-            {
-                this.thread = new Thread(() =>
-                {
-                    action();
-                    var dispatcherFrame = new DispatcherFrame(true);
-                    Dispatcher.PushFrame(dispatcherFrame);
-                });
-                this.thread.SetApartmentState(ApartmentState.STA);
-                this.thread.Start();
-            }
-        }
-
         // http://www.codeguru.com/csharp/article.php/c18931/Understanding-the-NET-Task-Parallel-Library-TaskScheduler.htm
         public class SingleThreadScheduler : TaskScheduler, IDisposable
         {
@@ -577,6 +560,12 @@ namespace CreviceApp
                 
                 public void Queue(LowLevelMouseHook.POINT point)
                 {
+                    if (queue.IsAddingCompleted)
+                    {
+                        Debug.Print("queue.IsAddingCompleted == true");
+                        return;
+                    }
+
                     if (MustBeProcessed(currentTime: timeGetTime()))
                     {
                         queue.Add(point);
@@ -754,7 +743,7 @@ namespace CreviceApp
                 #endregion
             }
 
-            public class GestureMachine
+            public class GestureMachine : IDisposable
             {
                 public GlobalValues Global;
                 public IState State;
@@ -763,8 +752,8 @@ namespace CreviceApp
 
                 public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
                 {
-                    this.Global = new GlobalValues();
-                    this.State = new State0(Global, Transition.Gen0(gestureDef));
+                    Global = new GlobalValues();
+                    State = new State0(Global, Transition.Gen0(gestureDef));
                 }
 
                 public bool Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
@@ -784,16 +773,30 @@ namespace CreviceApp
                         State = State.Reset();
                     }
                 }
+
+                public void Dispose()
+                {
+                    GC.SuppressFinalize(this);
+                    lock (lockObject)
+                    {
+                        Global.Dispose();
+                    }
+                }
+
+                ~GestureMachine()
+                {
+                    Dispose();
+                }
             }
 
             public class Result
             {
                 public class TriggerResult
                 {
-                    public bool IsConsumed { get; private set; }
+                    public readonly bool IsConsumed;
                     public TriggerResult(bool consumed)
                     {
-                        this.IsConsumed = consumed;
+                        IsConsumed = consumed;
                     }
                 }
                 public TriggerResult Trigger;
@@ -816,8 +819,10 @@ namespace CreviceApp
                 }
             }
 
-            public class GlobalValues
+            public class GlobalValues : IDisposable
             {
+                private readonly Threading.SingleThreadScheduler Scheduler0;
+                private readonly Threading.SingleThreadScheduler Scheduler1;
                 public readonly TaskFactory Factory0;
                 public readonly TaskFactory Factory1;
 
@@ -829,9 +834,11 @@ namespace CreviceApp
 
                 public GlobalValues()
                 {
-                    this.Factory0 = new TaskFactory(new Threading.SingleThreadScheduler());
-                    this.Factory1 = new TaskFactory(new Threading.SingleThreadScheduler());
-                    this.Config = new Config.UserConfig();
+                    Scheduler0 = new Threading.SingleThreadScheduler();
+                    Scheduler1 = new Threading.SingleThreadScheduler();
+                    Factory0 = new TaskFactory(Scheduler0);
+                    Factory1 = new TaskFactory(Scheduler1);
+                    Config = new Config.UserConfig();
                 }
 
                 public void InitializeStrokeWatcher()
@@ -847,6 +854,18 @@ namespace CreviceApp
                             Config.Gesture.StrokeDirectionChangeThreshold,
                             Config.Gesture.StrokeExtensionThreshold,
                             Config.Gesture.WatchInterval);
+                }
+                
+                public void Dispose()
+                {
+                    GC.SuppressFinalize(this);
+                    Scheduler0.Dispose();
+                    Scheduler1.Dispose();
+                }
+
+                ~GlobalValues()
+                {
+                    Dispose();
                 }
             }
 
@@ -932,7 +951,7 @@ namespace CreviceApp
                             var gestureDef = FilterByWhenClause(T0[t]);
                             if (gestureDef.Count() > 0)
                             {
-                                // Transition 0
+                                Debug.Print("Transition 0; State0 -> State1");
                                 Global.InitializeStrokeWatcher();
                                 return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef));
                             }
@@ -943,7 +962,7 @@ namespace CreviceApp
 
                 public override IState Reset()
                 {
-                    // Transition 8
+                    Debug.Print("Transition 8; State0 -> State0");
                     return this;
                 }
 
@@ -1003,7 +1022,7 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.IDoubleActionSet;
                         if (T1.Keys.Contains(t))
                         {
-                            // Transition 1
+                            Debug.Print("Transition 1; State1 -> State2");
                             PrimaryTriggerIsRestorable = false;
                             return Result.TriggerIsConsumed(nextState: new State2(Global, S0, this, primaryTrigger, t, T1));
                         }
@@ -1013,7 +1032,7 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.ISingleAction;
                         if (T2.Keys.Contains(t))
                         {
-                            // Transition 2
+                            Debug.Print("Transition 2; State1 -> State1");
                             PrimaryTriggerIsRestorable = false;
                             Global.Factory1.StartNew(() => {
                                 foreach (var gDef in T2[t])
@@ -1033,7 +1052,7 @@ namespace CreviceApp
                             var stroke = Global.StrokeWatcher.GetStorke();
                             if (T3.Keys.Contains(stroke))
                             {
-                                // Transition 3
+                                Debug.Print("Transition 3; State1 -> State0");
                                 Global.Factory1.StartNew(() => {
                                     foreach (var gDef in T3[stroke])
                                     {
@@ -1041,11 +1060,14 @@ namespace CreviceApp
                                     }
                                 });
                             }
-                            // Transition 4 and 5
                             if (PrimaryTriggerIsRestorable && stroke.Count == 0)
                             {
-                                // Side effect of Transition 4
+                                Debug.Print("Transition 4; State1 -> State0");
                                 RestorePrimaryTrigger();
+                            }
+                            else
+                            {
+                                Debug.Print("Transition 5; State1 -> State0");
                             }
                             return Result.TriggerIsConsumed(nextState: S0);
                         }
@@ -1055,7 +1077,7 @@ namespace CreviceApp
                 
                 public override IState Reset()
                 {
-                    // Transition 9
+                    Debug.Print("Transition 9; State1 -> State0");
                     Global.IgnoreNext.Add(primaryTrigger.GetPair());
                     return S0;
                 }
@@ -1121,7 +1143,7 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.IDoubleActionRelease;
                         if (t == secondaryTrigger.GetPair())
                         {
-                            // Transtion 6
+                            Debug.Print("Transition 6; State2 -> State1");
                             Task.Run(() => {
                                 foreach (var gDef in T1[secondaryTrigger])
                                 {
@@ -1133,8 +1155,8 @@ namespace CreviceApp
                         }
                         else if (t == primaryTrigger.GetPair())
                         {
-                            // Transition 7
-                            // Add the release event of secondary trigger to ignore list.
+                            Debug.Print("Transition 7; State1 -> State0");
+                            // Add the release event of secondary trigger to ignore list as a side effect.
                             Global.IgnoreNext.Add(secondaryTrigger.GetPair());
                             return Result.TriggerIsConsumed(nextState: S0);
                         }
@@ -1144,7 +1166,7 @@ namespace CreviceApp
 
                 public override IState Reset()
                 {
-                    // Transition 10
+                    Debug.Print("Transition 10; State2 -> State0");
                     Global.IgnoreNext.Add(primaryTrigger.GetPair());
                     Global.IgnoreNext.Add(secondaryTrigger.GetPair());
                     return S0;
