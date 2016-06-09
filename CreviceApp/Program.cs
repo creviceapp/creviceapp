@@ -560,12 +560,6 @@ namespace CreviceApp
                 
                 public void Queue(LowLevelMouseHook.POINT point)
                 {
-                    if (queue.IsAddingCompleted)
-                    {
-                        Debug.Print("queue.IsAddingCompleted == true");
-                        return;
-                    }
-
                     if (MustBeProcessed(currentTime: timeGetTime()))
                     {
                         queue.Add(point);
@@ -580,7 +574,6 @@ namespace CreviceApp
                     {
                         foreach (var point in queue.GetConsumingEnumerable())
                         {
-                            Debug.Print("x: {0}, y: {1}", point.x, point.y);
                             buffer.Add(point);
                             if (buffer.Count < 2)
                             {
@@ -591,7 +584,7 @@ namespace CreviceApp
                                 var res = Stroke.Create(InitialStrokeThreshold, StrokeDirectionChangeThreshold, StrokeExtensionThreshold, buffer);
                                 if (res != null)
                                 {
-                                    Debug.Print("Initial Stroke({0}) is determined", Enum.GetName(typeof(Def.Direction), res.Direction));
+                                    Debug.Print("Stroke[0]: {0}", Enum.GetName(typeof(Def.Direction), res.Direction));
                                     strokes.Add(res);
                                 }
                             }
@@ -601,7 +594,7 @@ namespace CreviceApp
                                 var res = s.Input(buffer);
                                 if (s != res)
                                 {
-                                    Debug.Print("Stroke({0}) is determined", Enum.GetName(typeof(Def.Direction), res.Direction));
+                                    Debug.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(Def.Direction), res.Direction));
                                     strokes.Add(res);
                                 }
                             }
@@ -609,22 +602,15 @@ namespace CreviceApp
                     });
                 }
 
-                private void Stop()
-                {
-                    queue.CompleteAdding();
-                }
-                
                 public Def.Stroke GetStorke()
                 {
-                    Stop();
-                    task.Wait();
                     return new Def.Stroke(strokes.Select(x => x.Direction));
                 }
                 
                 public void Dispose()
                 {
                     GC.SuppressFinalize(this);
-                    Stop();
+                    queue.CompleteAdding();
                 }
 
                 ~StrokeWatcher()
@@ -758,9 +744,13 @@ namespace CreviceApp
 
                 public bool Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
                 {
-                    lock(lockObject)
+                    lock (lockObject)
                     {
-                        var res = State.Input(trigger, pt);
+                        var res = State.Input(trigger, pt);   
+                        if (State.GetType() != res.NextState.GetType())
+                        {
+                            Debug.Print("StateChange: {0} -> {1}", State.GetType().Name, res.NextState.GetType().Name);
+                        }
                         State = res.NextState;
                         return res.Trigger.IsConsumed;
                     }
@@ -768,7 +758,7 @@ namespace CreviceApp
 
                 public void Reset()
                 {
-                    lock(lockObject)
+                    lock (lockObject)
                     {
                         State = State.Reset();
                     }
@@ -804,8 +794,8 @@ namespace CreviceApp
 
                 private Result(bool consumed, IState nextState)
                 {
-                    this.Trigger = new TriggerResult(consumed);
-                    this.NextState = nextState;
+                    Trigger = new TriggerResult(consumed);
+                    NextState = nextState;
                 }
 
                 public static Result TriggerIsConsumed(IState nextState)
@@ -823,44 +813,56 @@ namespace CreviceApp
             {
                 private readonly Threading.SingleThreadScheduler Scheduler0;
                 private readonly Threading.SingleThreadScheduler Scheduler1;
+                private readonly Threading.SingleThreadScheduler Scheduler2;
                 public readonly TaskFactory Factory0;
                 public readonly TaskFactory Factory1;
+                public readonly TaskFactory Factory2;
 
                 public readonly Config.UserConfig Config;
 
                 public readonly HashSet<Def.Trigger.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
                 
-                public Stroke.StrokeWatcher StrokeWatcher { get; private set; } = null;
+                public Stroke.StrokeWatcher StrokeWatcher { get; private set; }
 
                 public GlobalValues()
                 {
                     Scheduler0 = new Threading.SingleThreadScheduler();
                     Scheduler1 = new Threading.SingleThreadScheduler();
+                    Scheduler2 = new Threading.SingleThreadScheduler();
                     Factory0 = new TaskFactory(Scheduler0);
                     Factory1 = new TaskFactory(Scheduler1);
+                    Factory2 = new TaskFactory(Scheduler2);
                     Config = new Config.UserConfig();
+                    StrokeWatcher = NewStrokeWatcher();
                 }
 
-                public void InitializeStrokeWatcher()
+                private Stroke.StrokeWatcher NewStrokeWatcher()
                 {
-                    if (StrokeWatcher != null)
-                    {
-                        StrokeWatcher.Dispose();
-                    }
-                    StrokeWatcher
-                        = new Stroke.StrokeWatcher(
-                            Factory0,
-                            Config.Gesture.InitialStrokeThreshold,
-                            Config.Gesture.StrokeDirectionChangeThreshold,
-                            Config.Gesture.StrokeExtensionThreshold,
-                            Config.Gesture.WatchInterval);
+                    return new Stroke.StrokeWatcher(
+                        Factory0,
+                        Config.Gesture.InitialStrokeThreshold,
+                        Config.Gesture.StrokeDirectionChangeThreshold,
+                        Config.Gesture.StrokeExtensionThreshold,
+                        Config.Gesture.WatchInterval);
+                }
+
+                public void ResetStrokeWatcher()
+                {
+                    var _StrokeWatcher = StrokeWatcher;
+                    StrokeWatcher = NewStrokeWatcher();
+                    Debug.Print("StrokeWatcher was updated from {0} to {1}", _StrokeWatcher.GetHashCode(), StrokeWatcher.GetHashCode());
+                    Factory1.StartNew(() => {
+                        _StrokeWatcher.Dispose();
+                    });
                 }
                 
                 public void Dispose()
                 {
                     GC.SuppressFinalize(this);
+                    StrokeWatcher.Dispose();
                     Scheduler0.Dispose();
                     Scheduler1.Dispose();
+                    Scheduler2.Dispose();
                 }
 
                 ~GlobalValues()
@@ -922,6 +924,30 @@ namespace CreviceApp
                 {
                     throw new InvalidOperationException();
                 }
+
+                public void ExecuteSafely(Action action)
+                {
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Print("{0} occured when executing an action assosiated to a gesture. This will automatically be recovered.", 
+                            ex.GetType().Name);
+                        
+                        if (ex is ThreadAbortException)
+                        {
+                            Thread.ResetAbort();
+                        }
+                    }
+                }
+                
+                public void IgnoreNext(Def.Trigger.IDoubleActionRelease trigger)
+                {
+                    Debug.Print("{0} added to global ignore list. This event will be ignored next time.", trigger.GetType().Name);
+                    Global.IgnoreNext.Add(trigger);
+                }
             }
             
             public class State0 : State
@@ -951,8 +977,8 @@ namespace CreviceApp
                             var gestureDef = FilterByWhenClause(T0[t]);
                             if (gestureDef.Count() > 0)
                             {
-                                Debug.Print("Transition 0; State0 -> State1");
-                                Global.InitializeStrokeWatcher();
+                                Debug.Print("Transition 0");
+                                Global.ResetStrokeWatcher();
                                 return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef));
                             }
                         }
@@ -962,7 +988,7 @@ namespace CreviceApp
 
                 public override IState Reset()
                 {
-                    Debug.Print("Transition 8; State0 -> State0");
+                    Debug.Print("Transition 8");
                     return this;
                 }
 
@@ -1014,7 +1040,7 @@ namespace CreviceApp
                     {
                         return Result.TriggerIsConsumed(nextState: this);
                     }
-
+                    
                     Global.StrokeWatcher.Queue(pt);
 
                     if (trigger is Def.Trigger.IDoubleActionSet)
@@ -1022,7 +1048,7 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.IDoubleActionSet;
                         if (T1.Keys.Contains(t))
                         {
-                            Debug.Print("Transition 1; State1 -> State2");
+                            Debug.Print("Transition 1");
                             PrimaryTriggerIsRestorable = false;
                             return Result.TriggerIsConsumed(nextState: new State2(Global, S0, this, primaryTrigger, t, T1));
                         }
@@ -1032,15 +1058,15 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.ISingleAction;
                         if (T2.Keys.Contains(t))
                         {
-                            Debug.Print("Transition 2; State1 -> State1");
+                            Debug.Print("Transition 2");
                             PrimaryTriggerIsRestorable = false;
-                            Global.Factory1.StartNew(() => {
+                            Global.Factory2.StartNew(() => {
                                 foreach (var gDef in T2[t])
                                 {
-                                    gDef.doFunc();
+                                    ExecuteSafely(gDef.doFunc);
                                 }
                             });
-                            Global.InitializeStrokeWatcher();
+                            Global.ResetStrokeWatcher();
                             return Result.TriggerIsConsumed(nextState: this);
                         }
                     }
@@ -1050,24 +1076,28 @@ namespace CreviceApp
                         if (t == primaryTrigger.GetPair())
                         {
                             var stroke = Global.StrokeWatcher.GetStorke();
+                            Debug.Print("Stroke: {0}", stroke.ToString());
                             if (T3.Keys.Contains(stroke))
                             {
-                                Debug.Print("Transition 3; State1 -> State0");
-                                Global.Factory1.StartNew(() => {
+                                Debug.Print("Transition 3");
+                                Global.Factory2.StartNew(() => {
                                     foreach (var gDef in T3[stroke])
                                     {
-                                        gDef.doFunc();
+                                        ExecuteSafely(gDef.doFunc);
                                     }
                                 });
                             }
-                            if (PrimaryTriggerIsRestorable && stroke.Count == 0)
-                            {
-                                Debug.Print("Transition 4; State1 -> State0");
-                                RestorePrimaryTrigger();
-                            }
                             else
                             {
-                                Debug.Print("Transition 5; State1 -> State0");
+                                if (PrimaryTriggerIsRestorable && stroke.Count == 0)
+                                {
+                                    Debug.Print("Transition 4");
+                                    RestorePrimaryTrigger();
+                                }
+                                else
+                                {
+                                    Debug.Print("Transition 5");
+                                }
                             }
                             return Result.TriggerIsConsumed(nextState: S0);
                         }
@@ -1077,8 +1107,8 @@ namespace CreviceApp
                 
                 public override IState Reset()
                 {
-                    Debug.Print("Transition 9; State1 -> State0");
-                    Global.IgnoreNext.Add(primaryTrigger.GetPair());
+                    Debug.Print("Transition 9");
+                    IgnoreNext(primaryTrigger.GetPair());
                     return S0;
                 }
 
@@ -1143,21 +1173,20 @@ namespace CreviceApp
                         var t = trigger as Def.Trigger.IDoubleActionRelease;
                         if (t == secondaryTrigger.GetPair())
                         {
-                            Debug.Print("Transition 6; State2 -> State1");
-                            Task.Run(() => {
+                            Debug.Print("Transition 6");
+                            Global.Factory2.StartNew(() => {
                                 foreach (var gDef in T1[secondaryTrigger])
                                 {
-                                    gDef.doFunc();
+                                    ExecuteSafely(gDef.doFunc);
                                 }
                             });
-                            Global.InitializeStrokeWatcher();
+                            Global.ResetStrokeWatcher();
                             return Result.TriggerIsConsumed(nextState: S1);
                         }
                         else if (t == primaryTrigger.GetPair())
                         {
-                            Debug.Print("Transition 7; State1 -> State0");
-                            // Add the release event of secondary trigger to ignore list as a side effect.
-                            Global.IgnoreNext.Add(secondaryTrigger.GetPair());
+                            Debug.Print("Transition 7");
+                            IgnoreNext(secondaryTrigger.GetPair());
                             return Result.TriggerIsConsumed(nextState: S0);
                         }
                     }
@@ -1166,9 +1195,9 @@ namespace CreviceApp
 
                 public override IState Reset()
                 {
-                    Debug.Print("Transition 10; State2 -> State0");
-                    Global.IgnoreNext.Add(primaryTrigger.GetPair());
-                    Global.IgnoreNext.Add(secondaryTrigger.GetPair());
+                    Debug.Print("Transition 10");
+                    IgnoreNext(primaryTrigger.GetPair());
+                    IgnoreNext(secondaryTrigger.GetPair());
                     return S0;
                 }
             }

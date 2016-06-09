@@ -38,14 +38,49 @@ namespace CreviceApp
                             .ExtendedKeyUp(InputSender.VirtualKeys.VK_SHIFT)
                             .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
                             .Send();
+                    }),
+                new Core.FSM.ButtonGestureDefinition(
+                    () => { return true; },
+                    DSL.Def.Constant.RightButton,
+                    DSL.Def.Constant.WheelDown,
+                    () =>
+                    {
+                        new InputSequenceBuilder()
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL)
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_TAB)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_TAB)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
+                            .Send();
+                    }),
+                new Core.FSM.StrokeGestureDefinition(
+                    () => { return true; },
+                    DSL.Def.Constant.RightButton,
+                    new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Up }),
+                    () =>
+                    {
+                        new InputSequenceBuilder()
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_HOME)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_HOME)
+                            .Send();
+                    }),
+                new Core.FSM.StrokeGestureDefinition(
+                    () => { return true; },
+                    DSL.Def.Constant.RightButton,
+                    new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Down }),
+                    () =>
+                    {
+                        new InputSequenceBuilder()
+                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_END)
+                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_END)
+                            .Send();
                     })
             };
 
-            this.FormClosing += OnClosing;
-            this.MouseHook = new LowLevelMouseHook(MouseProc);
-            this.GestureMachine = new Core.FSM.GestureMachine(gestureDef);
+            FormClosing += OnClosing;
+            MouseHook = new LowLevelMouseHook(MouseProc);
+            GestureMachine = new Core.FSM.GestureMachine(gestureDef);
 
-            this.MouseHook.SetHook();
+            MouseHook.SetHook();
 
             InitializeComponent();
         }
@@ -68,8 +103,6 @@ namespace CreviceApp
                 Debug.Print("{0} ignored because this event has the signature of CreviceApp", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
                 return WindowsHook.Result.Determine;
             }
-
-            Debug.Print("{0}", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
 
             switch(evnt)
             {
