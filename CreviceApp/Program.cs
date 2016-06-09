@@ -738,7 +738,7 @@ namespace CreviceApp
                 // holding by the user, and the next release event of it will be ignored.
 
                 // Special side effects
-                // 1. Transition any state to the State(S1) are reset the gesture stroke. Transition 0, 2 and 6 correspond this condition.
+                // 1. Transition any state to the State(S1) will reset the gesture stroke. Transition 0, 2 and 6 correspond this condition.
                 // 2. Input given to the State(S1) is intepreted as a gesture stroke.
                 #endregion
             }
@@ -1974,7 +1974,7 @@ namespace CreviceApp
             return mouseInput;
         }
 
-        protected MOUSEINPUT MouseWheelEvent(int delta)
+        protected MOUSEINPUT MouseVerticalWheelEvent(int delta)
         {
             var mouseInput = GetCreviceMouseInput();
             mouseInput.dwFlags = MOUSEEVENTF_WHEEL;
@@ -1984,12 +1984,30 @@ namespace CreviceApp
 
         protected MOUSEINPUT MouseWheelDownEvent()
         {
-            return MouseWheelEvent(-120);
+            return MouseVerticalWheelEvent(-120);
         }
 
         protected MOUSEINPUT MouseWheelUpEvent()
         {
-            return MouseWheelEvent(120);
+            return MouseVerticalWheelEvent(120);
+        }
+        
+        protected MOUSEINPUT MouseHorizontalWheelEvent(int delta)
+        {
+            var mouseInput = GetCreviceMouseInput();
+            mouseInput.dwFlags = MOUSEEVENTF_HWHEEL;
+            mouseInput.mouseData.asWheelDelta.delta = delta;
+            return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseWheelRightEvent()
+        {
+            return MouseHorizontalWheelEvent(-120);
+        }
+
+        protected MOUSEINPUT MouseWheelLeftEvent()
+        {
+            return MouseHorizontalWheelEvent(120);
         }
 
         private MOUSEINPUT MouseXUpEvent(int type)
@@ -2206,21 +2224,36 @@ namespace CreviceApp
             Send(MouseMiddleDownEvent(), MouseMiddleUpEvent());
         }
 
-        public void Wheel(short delta)
+        public void VerticalWheel(short delta)
         {
-            Send(MouseWheelEvent(delta));
+            Send(MouseVerticalWheelEvent(delta));
         }
 
         public void WheelDown()
         {
-            Send(MouseWheelEvent(120));
+            Send(MouseVerticalWheelEvent(120));
         }
 
         public void WheelUp()
         {
-            Send(MouseWheelEvent(-120));
+            Send(MouseVerticalWheelEvent(-120));
         }
         
+        public void HorizontalWheel(short delta)
+        {
+            Send(MouseHorizontalWheelEvent(delta));
+        }
+
+        public void WheelLeft()
+        {
+            Send(MouseHorizontalWheelEvent(120));
+        }
+
+        public void WheelRight()
+        {
+            Send(MouseHorizontalWheelEvent(-120));
+        }
+
         public void X1Down()
         {
             Send(MouseX1DownEvent());
@@ -2396,19 +2429,34 @@ namespace CreviceApp
             return NewInstance(MouseMiddleDownEvent(), MouseMiddleUpEvent());
         }
 
-        public InputSequenceBuilder Wheel(short delta)
+        public InputSequenceBuilder VerticalWheel(short delta)
         {
-            return NewInstance(MouseWheelEvent(delta));
+            return NewInstance(MouseVerticalWheelEvent(delta));
         }
 
         public InputSequenceBuilder WheelDown()
         {
-            return NewInstance(MouseWheelEvent(120));
+            return NewInstance(MouseVerticalWheelEvent(120));
         }
 
         public InputSequenceBuilder WheelUp()
         {
-            return NewInstance(MouseWheelEvent(-120));
+            return NewInstance(MouseVerticalWheelEvent(-120));
+        }
+
+        public InputSequenceBuilder HorizontalWheel(short delta)
+        {
+            return NewInstance(MouseHorizontalWheelEvent(delta));
+        }
+
+        public InputSequenceBuilder WheelLeft()
+        {
+            return NewInstance(MouseHorizontalWheelEvent(120));
+        }
+
+        public InputSequenceBuilder WheelRight()
+        {
+            return NewInstance(MouseHorizontalWheelEvent(-120));
         }
 
         public InputSequenceBuilder X1Down()
