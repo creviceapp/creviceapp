@@ -85,7 +85,7 @@ namespace CreviceApp
         }
     }
 
-    namespace Config
+    namespace User
     {
         public class UserConfig
         {
@@ -94,11 +94,88 @@ namespace CreviceApp
 
         public class GestureConfig
         {
-            public int InitialStrokeThreshold         { get; set; } = 10;
-            public int StrokeDirectionChangeThreshold { get; set; } = 20;
-            public int StrokeExtensionThreshold       { get; set; } = 10;
-            public int WatchInterval                  { get; set; } = 10;
+            private int initialStrokeThreshold         = 10;
+            private int strokeDirectionChangeThreshold = 20;
+            private int strokeExtensionThreshold       = 10;
+            private int watchInterval                  = 10;
+
+            public int InitialStrokeThreshold
+            {
+                get
+                {
+                    return initialStrokeThreshold;
+                }
+                set
+                {
+                    if (value < 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    initialStrokeThreshold = value;
+                }
+            }
+
+            public int StrokeDirectionChangeThreshold
+            {
+                get
+                {
+                    return strokeDirectionChangeThreshold;
+                }
+                set
+                {
+                    if (value < 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    strokeDirectionChangeThreshold = value;
+                }
+            }
+
+            public int StrokeExtensionThreshold
+            {
+                get
+                {
+                    return strokeExtensionThreshold;
+                }
+                set
+                {
+                    if (value < 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    strokeExtensionThreshold = value;
+                }
+            }
+
+            public int WatchInterval
+            {
+                get
+                {
+                    return watchInterval;
+                }
+                set
+                {
+                    if (value < 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    watchInterval = value;
+                }
+            }
         }
+        
+        public class UserActionExecutionContext
+        {
+            /*
+            public WindowsApplicationInfo App;
+
+            public UserActionExecutionContext()
+            {
+                this.App = WindowsApplication.
+            }
+            */
+        }
+
     }
 
     namespace Core
@@ -909,7 +986,7 @@ namespace CreviceApp
                 public readonly TaskFactory LowPriorityTaskFactory;
                 public readonly TaskFactory UserActionTaskFactory;
 
-                public readonly Config.UserConfig Config;
+                public readonly User.UserConfig Config;
 
                 public readonly HashSet<Def.Event.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Event.IDoubleActionRelease>();
                 
@@ -923,7 +1000,7 @@ namespace CreviceApp
                     this.StrokeWatcherTaskFactory = new TaskFactory(StrokeWatcherScheduler);
                     this.LowPriorityTaskFactory = new TaskFactory(LowPriorityScheduler);
                     this.UserActionTaskFactory = new TaskFactory(UserActionScheduler);
-                    this.Config = new Config.UserConfig();
+                    this.Config = new User.UserConfig();
                     this.StrokeWatcher = NewStrokeWatcher();
                 }
 
@@ -2670,77 +2747,194 @@ namespace CreviceApp
         }
     }
 
-    public class WindowsApplication
+    namespace WinAPI
     {
-        [DllImport("user32.dll")]
-        public static extern IntPtr WindowFromPoint(int x, int y);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
-
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
-
-        [DllImport("kernel32.dll")]
-        private static extern bool CloseHandle(IntPtr hHandle);
-
-        [DllImport("kernel32.dll")]
-        static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, out int lpdwSize);
-
-        private const int PROCESS_VM_READ           = 0x0010;
-        private const int PROCESS_QUERY_INFORMATION = 0x0400;
-
-        private const int maxPathSize = 1024;
-        private readonly StringBuilder buffer = new StringBuilder(maxPathSize);
-
-        public WindowsApplicationInfo GetForeground()
+        namespace Application
         {
-            IntPtr hWindow = GetForegroundWindow();
-            return FindFromWindowHandle(hWindow);
-        }
-
-        public WindowsApplicationInfo GetOnCursor(int x, int y)
-        {
-            IntPtr hWindow = WindowFromPoint(x, y);
-            return FindFromWindowHandle(hWindow);
-        }
-
-        private WindowsApplicationInfo FindFromWindowHandle(IntPtr hWindow)
-        {
-            int pid = 0;
-            int tid = GetWindowThreadProcessId(hWindow, out pid);
-            Debug.Print("tid: 0x{0:X}", tid);
-            Debug.Print("pid: 0x{0:X}", pid);
-            IntPtr hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, pid);
-            Debug.Print("hProcess: 0x{0:X}", hProcess.ToInt64());
-            int lpdwSize = maxPathSize;
-            try
+            public static class Window
             {
-                QueryFullProcessImageName(hProcess, 0, buffer, out lpdwSize);
+                [DllImport("user32.dll")]
+                public static extern IntPtr WindowFromPoint(int x, int y);
+
+                [DllImport("user32.dll")]
+                public static extern IntPtr GetForegroundWindow();
+
+                [DllImport("user32.dll")]
+                private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+                [DllImport("kernel32.dll")]
+                private static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+                [DllImport("kernel32.dll")]
+                private static extern bool CloseHandle(IntPtr hHandle);
+
+                [DllImport("kernel32.dll")]
+                private static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, out int lpdwSize);
+
+                private const int PROCESS_VM_READ = 0x0010;
+                private const int PROCESS_QUERY_INFORMATION = 0x0400;
+
+                private const int maxPathSize = 1024;
+
+                [DllImport("user32.dll")]
+                private static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
+
+                private const int GWL_ID = -12;
+                
+                [DllImport("user32.dll")]
+                private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+                
+                [DllImport("user32.dll")]
+                private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+                [DllImport("user32.dll")]
+                public static extern IntPtr GetParent(IntPtr hWnd);
+
+
+                public static IntPtr GetWindowId(IntPtr hWnd)
+                {
+                    return GetWindowLong(hWnd, GWL_ID);
+                }
+
+                public static Tuple<int, int> GetThreadProcessId(IntPtr hWnd)
+                {
+                    int pid = 0;
+                    int tid = GetWindowThreadProcessId(hWnd, out pid);
+                    Debug.Print("tid: 0x{0:X}", tid);
+                    Debug.Print("pid: 0x{0:X}", pid);
+                    return Tuple.Create(tid, pid);
+                }
+
+                public static string GetWindowText(IntPtr hWnd)
+                {
+                    StringBuilder buffer = new StringBuilder(maxPathSize);
+                    GetWindowText(hWnd, buffer, maxPathSize);
+                    return buffer.ToString();
+                }
+
+                public static string GetClassName(IntPtr hWnd)
+                {
+                    StringBuilder buffer = new StringBuilder(maxPathSize);
+                    GetClassName(hWnd, buffer, maxPathSize);
+                    return buffer.ToString();
+                }
+
+                public static string GetPath(int pid)
+                {
+                    StringBuilder buffer = new StringBuilder(maxPathSize);
+                    IntPtr hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, pid);
+                    Debug.Print("hProcess: 0x{0:X}", hProcess.ToInt64());
+                    int lpdwSize = maxPathSize;
+                    try
+                    {
+                        QueryFullProcessImageName(hProcess, 0, buffer, out lpdwSize);
+                    }
+                    finally
+                    {
+                        CloseHandle(hProcess);
+                    }
+                    return buffer.ToString();
+                }
+
+                public static string GetName(string path)
+                {
+                    return path.Substring(path.LastIndexOf("\\") + 1);
+                }
             }
-            finally
+            
+            public class ModuleFileInfo
             {
-                CloseHandle(hProcess);
+                private WindowInfo info;
+
+                private Lazy<string> path;
+                public string Path { get { return path.Value; } }
+
+                private Lazy<string> name;
+                public string Name { get { return name.Value; } }
+
+                public ModuleFileInfo(WindowInfo info)
+                {
+                    this.info = info;
+                    this.path = new Lazy<string>(() =>
+                    {
+                        return Window.GetPath(info.ProcessId);
+                    });
+                    this.name = new Lazy<string>(() =>
+                    {
+                        return Window.GetName(path.Value);
+                    });
+                }
             }
-            String path = buffer.ToString();
-            String name = path.Substring(path.LastIndexOf("\\")+1);
-            return new WindowsApplicationInfo(path, name);
+
+            public class WindowInfo
+            {
+                public readonly IntPtr Handle;
+
+                private readonly Lazy<Tuple<int, int>> threadProcessId;
+                public int ThreadId  { get { return threadProcessId.Value.Item1; } }
+                public int ProcessId { get { return threadProcessId.Value.Item2; } }
+
+                private readonly Lazy<IntPtr> id;
+                public IntPtr Id { get { return id.Value; } }
+
+                private readonly Lazy<string> text;
+                public string Text { get { return text.Value; } }
+
+                private readonly Lazy<string> className;
+                public string ClassName { get { return className.Value; } }
+
+                private readonly Lazy<WindowInfo> parent;
+                public WindowInfo Parent { get { return parent.Value; } }
+
+                public readonly ModuleFileInfo Module;
+                
+                public WindowInfo(IntPtr handle)
+                {
+                    this.Handle = handle;
+                    this.threadProcessId = new Lazy<Tuple<int, int>>(() =>
+                    {
+                        return Window.GetThreadProcessId(Handle);
+                    });
+                    this.id = new Lazy<IntPtr>(() =>
+                    {
+                        return Window.GetWindowId(Handle);
+                    });
+                    this.text = new Lazy<string>(() =>
+                    {
+                        return Window.GetWindowText(Handle);
+                    });
+                    this.className = new Lazy<string>(() =>
+                    {
+                        return Window.GetClassName(Handle);
+                    });
+                    this.parent = new Lazy<WindowInfo>(() =>
+                    {
+                        var res = Window.GetParent(Handle);
+                        if (res == null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new WindowInfo(res);
+                        }
+                    });
+                    this.Module = new ModuleFileInfo(this);
+                }
+            }
+
+            public class ForegroundWindowInfo : WindowInfo
+            {
+                public ForegroundWindowInfo() : base(Window.GetForegroundWindow()) { }
+            }
+            
+            public class OnCursorWindowInfo : WindowInfo
+            {
+                public OnCursorWindowInfo(int x, int y) : base(Window.WindowFromPoint(x, y)) { }
+            }
         }
     }
 
-    public class WindowsApplicationInfo
-    {
-        public readonly String path;
-        public readonly String name;
-        public WindowsApplicationInfo(String path, String name)
-        {
-            this.path = path;
-            this.name = name;
-        }
-    }
 
     public class WindowsHook : IDisposable
     {

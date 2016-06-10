@@ -104,6 +104,21 @@ namespace CreviceApp
                 return WindowsHook.Result.Determine;
             }
 
+            foreach (var window in new List<WinAPI.Application.WindowInfo>() {
+                new WinAPI.Application.ForegroundWindowInfo(),
+                new WinAPI.Application.OnCursorWindowInfo(data.pt.x, data.pt.y) })
+            {
+                Debug.Print("{0}", window.GetType().Name);
+                Debug.Print("Handle: {0}", window.Handle.ToInt64());
+                Debug.Print("Id: {0}", window.Id);
+                Debug.Print("Parent: {0}", window.Parent);
+                Debug.Print("Process id: {0}", window.ProcessId);
+                Debug.Print("Thread id: {0}", window.ThreadId);
+                Debug.Print("Text: {0}", window.Text);
+                Debug.Print("Name: {0}", window.Module.Name);
+                Debug.Print("Path: {0}", window.Module.Path);
+            }
+
             switch(evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:

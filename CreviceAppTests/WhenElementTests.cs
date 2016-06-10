@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.Config;
+using CreviceApp.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
