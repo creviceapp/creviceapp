@@ -1093,7 +1093,7 @@ namespace CreviceApp
                     throw new InvalidOperationException();
                 }
 
-                public void ExecuteSafely(Action action)
+                public static void ExecuteSafely(Action action)
                 {
                     try
                     {
@@ -1101,16 +1101,25 @@ namespace CreviceApp
                     }
                     catch (Exception ex)
                     {
-                        Debug.Print("{0} occured when executing an action assosiated to a gesture. This will automatically be recovered.", 
+                        Debug.Print("{0} occured when executing a DoFunc of a gesture. This error may automatically be recovered.", 
                             ex.GetType().Name);
-                        
-                        if (ex is ThreadAbortException)
-                        {
-                            Thread.ResetAbort();
-                        }
                     }
                 }
-                
+
+                public static bool EvaluateSafely(DSL.Def.WhenFunc func)
+                {
+                    try
+                    {
+                        return func();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Print("{0} occured when evaluating a WhenFunc of a gesture. This error may automatically be recovered.",
+                            ex.GetType().Name);
+                    }
+                    return false;
+                }
+
                 public void IgnoreNext(Def.Event.IDoubleActionRelease evnt)
                 {
                     Debug.Print("{0} added to global ignore list. The `release` event of it will be ignored next time.", evnt.GetType().Name);
@@ -1167,7 +1176,7 @@ namespace CreviceApp
                     var cache = gestureDef
                         .Select(x => x.whenFunc)
                         .Distinct()
-                        .ToDictionary(x => x, x => x());
+                        .ToDictionary(x => x, x => EvaluateSafely(x));
 
                     return gestureDef
                         .Where(x => cache[x.whenFunc] == true)
