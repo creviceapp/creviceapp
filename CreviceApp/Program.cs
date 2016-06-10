@@ -539,9 +539,10 @@ namespace CreviceApp
                 internal readonly int InitialStrokeThreshold;
                 internal readonly int StrokeDirectionChangeThreshold;
                 internal readonly int StrokeExtensionThreshold;
-
+                
                 internal readonly List<Stroke> strokes = new List<Stroke>();
                 internal readonly BlockingCollection<LowLevelMouseHook.POINT> queue = new BlockingCollection<LowLevelMouseHook.POINT>();
+                internal readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
                 internal readonly Task task;
 
                 public StrokeWatcher(
@@ -572,7 +573,7 @@ namespace CreviceApp
                 {
                     return Factory.StartNew(() =>
                     {
-                        foreach (var point in queue.GetConsumingEnumerable())
+                        foreach (var point in queue.GetConsumingEnumerable(tokenSource.Token))
                         {
                             buffer.Add(point);
                             if (buffer.Count < 2)
@@ -607,10 +608,26 @@ namespace CreviceApp
                     return new Def.Stroke(strokes.Select(x => x.Direction));
                 }
                 
+                private async void AsyncDispose()
+                {
+                    try
+                    {
+                        tokenSource.Cancel();
+                        await task;
+                    }
+                    catch (OperationCanceledException) { }
+                    finally
+                    {
+                        tokenSource.Dispose();
+                        queue.Dispose();
+                        Debug.Print("StrokeWatcher was released: {0}", GetHashCode());
+                    }
+                }
+
                 public void Dispose()
                 {
                     GC.SuppressFinalize(this);
-                    queue.CompleteAdding();
+                    AsyncDispose();
                 }
 
                 ~StrokeWatcher()
@@ -624,10 +641,28 @@ namespace CreviceApp
         {
             public static class Transition
             {
+                #region State
+                // S0
+                //
+                // Inital state.
+
+                // S1
+                //
+                // The state holding primary double action mouse button.
+
+                // S2
+                //
+                // The state holding primary and secondary double action mouse buttons.
+                #endregion
+
                 #region Transition Definition
-                // Transition 0
+                // Transition 0 (gesture start)
+                //
                 // State0 -> State1
-                // Transition from initilal state(S0) to the state(S1) holding primary double action mouse button.
+                //
+                // Transition from the state(S0) to the state(S1).
+                // This transition happends when `set` event of double action mouse button is given.
+                // This transition has no side effect.
                 public static IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>
                     Gen0(IEnumerable<GestureDefinition> gestureDef)
                 {
@@ -636,9 +671,13 @@ namespace CreviceApp
                         .ToDictionary(x => x.Key, x => x.Select(y => y));
                 }
 
-                // Transition 1
+                // Transition 01 (button gesture)
+                //
                 // State1 -> State2
-                // Transition from the state(S1) to the state(S2) holding primary and secondary double action mouse buttons.
+                //
+                // Transition from the state(S1) to the state(S2).
+                // This transition happends when `set` event of double action mouse button is given.
+                // This transition has no side effect.
                 public static IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>>
                     Gen1(IEnumerable<GestureDefinition> gestureDef)
                 {
@@ -650,11 +689,14 @@ namespace CreviceApp
                         .ToDictionary(x => x.Key as Def.Trigger.IDoubleActionSet, x => x.Select(y => y));
                 }
 
-                // Transition 2
+                // Transition 02 (execute single trigger gesture action)
+                //
                 // State1 -> State1
-                // Transition from the state(S1) to the state(S1), in other words, no tansition. However, functions given as
-                // the parameter of `@do` clause of ButtonGestureDefinition are executed. This event happens when a single 
-                // action mouse button is pressed.
+                //
+                // Transition from the state(S1) to the state(S1). 
+                // This transition happends when `fire` event of single action mouse button is given.
+                // This transition has one side effect.
+                // 1. Functions given as the parameter of `@do` clause of ButtonGestureDefinition are executed.
                 public static IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>>
                     Gen2(IEnumerable<GestureDefinition> gestureDef)
                 {
@@ -666,11 +708,15 @@ namespace CreviceApp
                         .ToDictionary(x => x.Key as Def.Trigger.ISingleAction, x => x.Select(y => y));
                 }
 
-                // Transition 3
+                // Transition 03 (execute stroke gesture action)
+                //
                 // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse button, and functions given as
-                // the parameter of `@do` clause of StrokeGestureDefinition are executed. This event happens when primary double 
-                // action mouse button is released.
+                //
+                // Transition from the state(S1) to the state(S0).
+                // This transition happends when `release` event of primary double action mouse button
+                // and a gesture stroke existing in StrokeGestureDefinition are given.
+                // This transition has one side effect.
+                // 1. Functions given as the parameter of `@do` clause of StrokeGestureDefinition are executed.
                 public static IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>>
                     Gen3(IEnumerable<GestureDefinition> gestureDef)
                 {
@@ -681,51 +727,77 @@ namespace CreviceApp
                         .ToDictionary(x => x.Key, x => x.Select(y => y));
                 }
 
-                // Transition 4
+                // Transition 04 (normal end)
+                //
                 // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse button with only one side effect
-                // that primary double action mouse button will be restored. This event happens whenprimary double action mouse 
-                // button is released.
+                //
+                // Transition from the state(S1) to the state(S0).
+                // This transition happends when `release` event of primary double action mouse button is given.
+                // This transition has one side effect.
+                // 1. Primary double action mouse button will be restored.
 
 
-                // Transition 5
+                // Transition 05 (normal end)
+                //
                 // State1 -> State0
-                // Transition from the state(S1) to the state(S0) holding no double action mouse buttion with no side effect.
-                // This event happens when primary double action mouse button is released.
+                //
+                // Transition from the state(S1) to the state(S0).
+                // This transition happends when `release` event of primary double action mouse button is given.
+                // This transition has no side effect.
 
-                // Transition 6
+                // Transition 06 (execute double trigger gesture action)
+                //
                 // State2 -> State1
-                // Transition from the state(S2) to the state(S1) holding primary double action mouse button, and functions 
-                // given as the parameter of `@do` clause of ButtonGestureDefinition are executed. This event happens when
-                // secondary double action mouse button is released.
+                //
+                // Transition from the state(S2) to the state(S1).
+                // This transition happends when `release` event of secondary double action mouse button is given.
+                // This transition has one side effect.
+                // 1. Functions given as the parameter of `@do` clause of ButtonGestureDefinition are executed. 
 
-                // Transition 7
+                // Transition 07 (irregular end)
+                //
                 // State2 -> State0
-                // Transition from the state(S2) to the state(S0) holding no double action mouse button. This event happends when 
-                // primary double action mouse button is released in irregular order as a trigger. After this transition, previous secondary 
-                // double action mouse button left holding is marked as irreggularly holding by the user, and the next release 
-                // event of it will be ignored.
+                //
+                // Transition from the state(S2) to the state(S0).
+                // This transition happends when primary double action mouse button is released in irregular order. 
+                // This transition has one side effect.
+                // 1. Secondary double action mouse button left holding will be marked as irreggularly holding by the user.
 
-                // Transition 8
+                // Transition 08 (forced reset)
+                //
                 // State0 -> State0
-                // Transition from the state(S0) to the state(S0) forcedly reseted. This event happens when a `reset` command given.
+                // 
+                // Transition from the state(S0) to the state(S0).
+                // This event happens when a `reset` command given.
                 // This transition have no side effect.
 
-                // Transition 9
+                // Transition 09 (forced reset)
+                //
                 // State1 -> State0
-                // Transition from the state(S1) to the state(S0) forcedly reseted. This event happens when a `reset` command given.
-                // After this transition, previous primary double action mouse button left holding is marked as irregularly holding by the user,
-                // and the next release event of it will be ignored.
+                //
+                // Transition from the state(S1) to the state(S0). 
+                // This event happens when a `reset` command given.
+                // This transition has one side effect.
+                // 1. Primary double action mouse button left holding is marked as irregularly holding by the user,
 
-                // Transition 10
+                // Transition 10 (forced reset)
+                //
                 // State2 -> State0
-                // Transition from the state(S2) to the state(S0) forcedly reseted. This event happens when a `reset` command given.
-                // After this transition, previous primary and secondly double action mouse button left holding is marked as irregularly 
-                // holding by the user, and the next release event of it will be ignored.
+                //
+                // Transition from the state(S2) to the state(S0).
+                // This event happens when a `reset` command given.
+                // This transition has one side effects.
+                // 1. Primary and secondly double action mouse buttons left holding is marked as irregularly 
+                // holding by the user.
 
                 // Special side effects
-                // 1. Transition any state to the State(S1) will reset the gesture stroke. Transition 0, 2 and 6 correspond this condition.
+                //
+                // 1. Transition any state to the State(S1) will reset the gesture stroke.
                 // 2. Input given to the State(S1) is intepreted as a gesture stroke.
+                // 3. Each state will remove the mark of irregularly holding from double action mouse button when 
+                //    `set` event of it is given.
+                // 4. Each state will remove the mark of irregularly holding from double action mouse button and ignore it when 
+                //    `release` event of it is given.
                 #endregion
             }
 
@@ -749,7 +821,11 @@ namespace CreviceApp
                         var res = State.Input(trigger, pt);   
                         if (State.GetType() != res.NextState.GetType())
                         {
-                            Debug.Print("StateChange: {0} -> {1}", State.GetType().Name, res.NextState.GetType().Name);
+                            Debug.Print("The state of GestureMachine was changed: {0} -> {1}", State.GetType().Name, res.NextState.GetType().Name);
+                        }
+                        if (res.StrokeWatcher.IsResetRequested)
+                        {
+                            Global.ResetStrokeWatcher();
                         }
                         State = res.NextState;
                         return res.Trigger.IsConsumed;
@@ -789,23 +865,35 @@ namespace CreviceApp
                         IsConsumed = consumed;
                     }
                 }
+
+                public class StrokeWatcherResult
+                {
+                    public readonly bool IsResetRequested;
+                    public StrokeWatcherResult(bool resetRequested)
+                    {
+                        IsResetRequested = resetRequested;
+                    }
+                }
+
                 public TriggerResult Trigger;
+                public StrokeWatcherResult StrokeWatcher;
                 public IState NextState { get; private set; }
 
-                private Result(bool consumed, IState nextState)
+                private Result(bool consumed, IState nextState, bool resetStrokeWatcher)
                 {
-                    Trigger = new TriggerResult(consumed);
-                    NextState = nextState;
+                    this.Trigger = new TriggerResult(consumed);
+                    this.StrokeWatcher = new StrokeWatcherResult(resetStrokeWatcher);
+                    this.NextState = nextState;
                 }
 
-                public static Result TriggerIsConsumed(IState nextState)
+                public static Result TriggerIsConsumed(IState nextState, bool resetStrokeWatcher = false)
                 {
-                    return new Result(true, nextState);
+                    return new Result(true, nextState, resetStrokeWatcher);
                 }
 
-                public static Result TriggerIsRemaining(IState nextState)
+                public static Result TriggerIsRemaining(IState nextState, bool resetStrokeWatcher = false)
                 {
-                    return new Result(false, nextState);
+                    return new Result(false, nextState, resetStrokeWatcher);
                 }
             }
 
@@ -850,7 +938,7 @@ namespace CreviceApp
                 {
                     var _StrokeWatcher = StrokeWatcher;
                     StrokeWatcher = NewStrokeWatcher();
-                    Debug.Print("StrokeWatcher was updated from {0} to {1}", _StrokeWatcher.GetHashCode(), StrokeWatcher.GetHashCode());
+                    Debug.Print("StrokeWatcher was reset: {0} to {1}", _StrokeWatcher.GetHashCode(), StrokeWatcher.GetHashCode());
                     Factory1.StartNew(() => {
                         _StrokeWatcher.Dispose();
                     });
@@ -978,8 +1066,7 @@ namespace CreviceApp
                             if (gestureDef.Count() > 0)
                             {
                                 Debug.Print("Transition 0");
-                                Global.ResetStrokeWatcher();
-                                return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef));
+                                return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef), resetStrokeWatcher:  true);
                             }
                         }
                     }
@@ -1066,8 +1153,7 @@ namespace CreviceApp
                                     ExecuteSafely(gDef.doFunc);
                                 }
                             });
-                            Global.ResetStrokeWatcher();
-                            return Result.TriggerIsConsumed(nextState: this);
+                            return Result.TriggerIsConsumed(nextState: this, resetStrokeWatcher: true);
                         }
                     }
                     else if (trigger is Def.Trigger.IDoubleActionRelease)
@@ -1180,8 +1266,7 @@ namespace CreviceApp
                                     ExecuteSafely(gDef.doFunc);
                                 }
                             });
-                            Global.ResetStrokeWatcher();
-                            return Result.TriggerIsConsumed(nextState: S1);
+                            return Result.TriggerIsConsumed(nextState: S1, resetStrokeWatcher: true);
                         }
                         else if (t == primaryTrigger.GetPair())
                         {
