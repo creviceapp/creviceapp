@@ -23,6 +23,9 @@ namespace CreviceApp
 
         public Form1()
         {
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
+
             var gestureDef = new List<Core.FSM.GestureDefinition>() {
                 new Core.FSM.ButtonGestureDefinition(
                     () => { return true; },
@@ -104,6 +107,7 @@ namespace CreviceApp
                 return WindowsHook.Result.Determine;
             }
 
+            /*
             foreach (var window in new List<WinAPI.Application.WindowInfo>() {
                 new WinAPI.Application.ForegroundWindowInfo(),
                 new WinAPI.Application.OnCursorWindowInfo(data.pt.x, data.pt.y) })
@@ -119,6 +123,7 @@ namespace CreviceApp
                 Debug.Print("Name: {0}", window.Module.Name);
                 Debug.Print("Path: {0}", window.Module.Path);
             }
+            */
 
             switch(evnt)
             {
