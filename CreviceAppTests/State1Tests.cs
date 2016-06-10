@@ -77,7 +77,7 @@ namespace CreviceApp.Core.FSM.Tests
             S1.Global.ResetStrokeWatcher();
             var res = S1.Input(Def.Constant.LeftButtonDown, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
-            Assert.IsFalse(S1.PrimaryTriggerIsRestorable);
+            Assert.IsFalse(S1.PrimaryEventIsRestorable);
             Assert.IsTrue(res.NextState is State2);
         }
 
@@ -97,7 +97,7 @@ namespace CreviceApp.Core.FSM.Tests
             S1.Global.ResetStrokeWatcher();
             var res = S1.Input(Def.Constant.WheelUp, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
-            Assert.IsFalse(S1.PrimaryTriggerIsRestorable);
+            Assert.IsFalse(S1.PrimaryEventIsRestorable);
             Assert.IsTrue(executed);
             Assert.IsTrue(res.NextState is State1);
         }
@@ -121,7 +121,7 @@ namespace CreviceApp.Core.FSM.Tests
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
             var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
-            S1.PrimaryTriggerIsRestorable = true;
+            S1.PrimaryEventIsRestorable = true;
             var res = S1.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
             Assert.IsTrue(res.NextState is State0);
@@ -143,7 +143,7 @@ namespace CreviceApp.Core.FSM.Tests
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
             var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
-            S1.PrimaryTriggerIsRestorable = false;
+            S1.PrimaryEventIsRestorable = false;
             var res = S1.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
             Assert.IsTrue(res.NextState is State0);
@@ -175,7 +175,7 @@ namespace CreviceApp.Core.FSM.Tests
 
             Assert.AreEqual(S1.Global, S0.Global);
             Assert.AreEqual(S1.S0, S0);
-            Assert.AreEqual(S1.primaryTrigger, Def.Constant.RightButtonDown);
+            Assert.AreEqual(S1.primaryEvent, Def.Constant.RightButtonDown);
             Assert.AreEqual(S1.T1.Count, 1);
             Assert.AreEqual(S1.T2.Count, 1);
             Assert.AreEqual(S1.T3.Count, 1);
@@ -192,7 +192,7 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(S1.Global.IgnoreNext.Count, 1);
 
             var res = S1.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
-            Assert.IsTrue(res.Trigger.IsConsumed);
+            Assert.IsTrue(res.Event.IsConsumed);
             Assert.AreEqual(S1.Global.IgnoreNext.Count, 0);
         }
 
@@ -208,7 +208,7 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(S1.Global.IgnoreNext.Count, 1);
 
             var res = S1.Input(Def.Constant.RightButtonDown, new LowLevelMouseHook.POINT());
-            Assert.IsFalse(res.Trigger.IsConsumed);
+            Assert.IsFalse(res.Event.IsConsumed);
             Assert.AreEqual(S1.Global.IgnoreNext.Count, 0);
         }
 
@@ -221,7 +221,7 @@ namespace CreviceApp.Core.FSM.Tests
                 var S1 = new State1(S0.Global, S0, Def.Constant.LeftButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
-                S1.RestorePrimaryTrigger();
+                S1.RestorePrimaryEvent();
                 Assert.AreEqual(mouseEvents.Count, 2);
                 Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
                 Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
@@ -230,7 +230,7 @@ namespace CreviceApp.Core.FSM.Tests
                 var S1 = new State1(S0.Global, S0, Def.Constant.MiddleButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
-                S1.RestorePrimaryTrigger();
+                S1.RestorePrimaryEvent();
                 Assert.AreEqual(mouseEvents.Count, 2);
                 Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
                 Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
@@ -239,7 +239,7 @@ namespace CreviceApp.Core.FSM.Tests
                 var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
-                S1.RestorePrimaryTrigger();
+                S1.RestorePrimaryEvent();
                 Assert.AreEqual(mouseEvents.Count, 2);
                 Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
                 Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
@@ -248,7 +248,7 @@ namespace CreviceApp.Core.FSM.Tests
                 var S1 = new State1(S0.Global, S0, Def.Constant.X1ButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
-                S1.RestorePrimaryTrigger();
+                S1.RestorePrimaryEvent();
                 Assert.AreEqual(mouseEvents.Count, 2);
                 Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
                 Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
@@ -259,7 +259,7 @@ namespace CreviceApp.Core.FSM.Tests
                 var S1 = new State1(S0.Global, S0, Def.Constant.X2ButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
-                S1.RestorePrimaryTrigger();
+                S1.RestorePrimaryEvent();
                 Assert.AreEqual(mouseEvents.Count, 2);
                 Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
                 Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);

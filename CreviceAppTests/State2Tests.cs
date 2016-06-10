@@ -95,8 +95,8 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(S2.Global, S1.Global);
             Assert.AreEqual(S2.S0, S0);
             Assert.AreEqual(S2.S1, S1);
-            Assert.AreEqual(S2.primaryTrigger, Def.Constant.RightButtonDown);
-            Assert.AreEqual(S2.secondaryTrigger, Def.Constant.LeftButtonDown);
+            Assert.AreEqual(S2.primaryEvent, Def.Constant.RightButtonDown);
+            Assert.AreEqual(S2.secondaryEvent, Def.Constant.LeftButtonDown);
             Assert.AreEqual(S2.T1.Count, 1);
         }
 
@@ -112,7 +112,7 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 1);
 
             var res = S2.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
-            Assert.IsTrue(res.Trigger.IsConsumed);
+            Assert.IsTrue(res.Event.IsConsumed);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 0);
         }
 
@@ -128,7 +128,7 @@ namespace CreviceApp.Core.FSM.Tests
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 1);
 
             var res = S2.Input(Def.Constant.RightButtonDown, new LowLevelMouseHook.POINT());
-            Assert.IsFalse(res.Trigger.IsConsumed);
+            Assert.IsFalse(res.Event.IsConsumed);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 0);
         }
     }

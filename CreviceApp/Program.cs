@@ -39,9 +39,12 @@ namespace CreviceApp
             private readonly BlockingCollection<Task> tasks = new BlockingCollection<Task>();
             private readonly Thread thread;
 
-            public SingleThreadScheduler()
+            public SingleThreadScheduler() : this(ThreadPriority.Normal) { }
+            
+            public SingleThreadScheduler(ThreadPriority priority)
             {
                 this.thread = new Thread(new ThreadStart(Main));
+                this.thread.Priority = priority;
                 this.thread.Start();
             }
 
@@ -102,11 +105,11 @@ namespace CreviceApp
     {
         public static class Def
         {
-            public static class Trigger
+            public static class Event
             {
-                public interface ITrigger { }
+                public interface IEvent { }
                 
-                public class Move             : ITrigger { }
+                public class Move             : IEvent { }
 
                 public interface IDoubleActionSet
                 {
@@ -118,52 +121,52 @@ namespace CreviceApp
                 }
                 public interface ISingleAction { }
 
-                public class LeftButtonDown   : ITrigger, IDoubleActionSet
+                public class LeftButtonDown   : IEvent, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.LeftButtonUp; }
                 }
-                public class LeftButtonUp     : ITrigger, IDoubleActionRelease
+                public class LeftButtonUp     : IEvent, IDoubleActionRelease
                 {
                     public IDoubleActionSet GetPair() { return Constant.LeftButtonDown; }
                 }
 
-                public class MiddleButtonDown : ITrigger, IDoubleActionSet
+                public class MiddleButtonDown : IEvent, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.MiddleButtonUp; }
                 }
-                public class MiddleButtonUp   : ITrigger, IDoubleActionRelease
+                public class MiddleButtonUp   : IEvent, IDoubleActionRelease
                 {
                     public IDoubleActionSet GetPair() { return Constant.MiddleButtonDown; }
                 }
 
-                public class RightButtonDown  : ITrigger, IDoubleActionSet
+                public class RightButtonDown  : IEvent, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.RightButtonUp; }
                 }
-                public class RightButtonUp    : ITrigger, IDoubleActionRelease
+                public class RightButtonUp    : IEvent, IDoubleActionRelease
                 {
                     public IDoubleActionSet GetPair() { return Constant.RightButtonDown; }
                 }
 
-                public class WheelDown        : ITrigger, ISingleAction { }
-                public class WheelUp          : ITrigger, ISingleAction { }
-                public class WheelLeft        : ITrigger, ISingleAction { }
-                public class WheelRight       : ITrigger, ISingleAction { }
+                public class WheelDown        : IEvent, ISingleAction { }
+                public class WheelUp          : IEvent, ISingleAction { }
+                public class WheelLeft        : IEvent, ISingleAction { }
+                public class WheelRight       : IEvent, ISingleAction { }
 
-                public class X1ButtonDown     : ITrigger, IDoubleActionSet
+                public class X1ButtonDown     : IEvent, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.X1ButtonUp; }
                 }
-                public class X1ButtonUp       : ITrigger, IDoubleActionRelease
+                public class X1ButtonUp       : IEvent, IDoubleActionRelease
                 {
                     public IDoubleActionSet GetPair() { return Constant.X1ButtonDown; }
                 }
 
-                public class X2ButtonDown     : ITrigger, IDoubleActionSet
+                public class X2ButtonDown     : IEvent, IDoubleActionSet
                 {
                     public IDoubleActionRelease GetPair() { return Constant.X2ButtonUp; }
                 }
-                public class X2ButtonUp       : ITrigger, IDoubleActionRelease
+                public class X2ButtonUp       : IEvent, IDoubleActionRelease
                 {
                     public IDoubleActionSet GetPair() { return Constant.X2ButtonDown; }
                 }
@@ -282,7 +285,7 @@ namespace CreviceApp
                 return new Stroke(moves.Select(m => FromDSL(m)));
             }
 
-            public static Trigger.IDoubleActionSet Convert(DSL.Def.AcceptableInOnClause onButton)
+            public static Event.IDoubleActionSet Convert(DSL.Def.AcceptableInOnClause onButton)
             {
                 if (onButton is DSL.Def.LeftButton)
                 {
@@ -310,7 +313,7 @@ namespace CreviceApp
                 }
             }
 
-            public static Trigger.ITrigger Convert(DSL.Def.AcceptableInIfButtonClause ifButton)
+            public static Event.IEvent Convert(DSL.Def.AcceptableInIfButtonClause ifButton)
             {
                 if (ifButton is DSL.Def.LeftButton)
                 {
@@ -363,21 +366,21 @@ namespace CreviceApp
             {
                 private static ConstantSingleton singleton = new ConstantSingleton();
 
-                public readonly Trigger.Move             Move             = new Trigger.Move();
-                public readonly Trigger.LeftButtonDown   LeftButtonDown   = new Trigger.LeftButtonDown();
-                public readonly Trigger.LeftButtonUp     LeftButtonUp     = new Trigger.LeftButtonUp();
-                public readonly Trigger.MiddleButtonDown MiddleButtonDown = new Trigger.MiddleButtonDown();
-                public readonly Trigger.MiddleButtonUp   MiddleButtonUp   = new Trigger.MiddleButtonUp();
-                public readonly Trigger.RightButtonDown  RightButtonDown  = new Trigger.RightButtonDown();
-                public readonly Trigger.RightButtonUp    RightButtonUp    = new Trigger.RightButtonUp();
-                public readonly Trigger.WheelDown        WheelDown        = new Trigger.WheelDown();
-                public readonly Trigger.WheelUp          WheelUp          = new Trigger.WheelUp();
-                public readonly Trigger.WheelLeft        WheelLeft        = new Trigger.WheelLeft();
-                public readonly Trigger.WheelRight       WheelRight       = new Trigger.WheelRight();
-                public readonly Trigger.X1ButtonDown     X1ButtonDown     = new Trigger.X1ButtonDown();
-                public readonly Trigger.X1ButtonUp       X1ButtonUp       = new Trigger.X1ButtonUp();
-                public readonly Trigger.X2ButtonDown     X2ButtonDown     = new Trigger.X2ButtonDown();
-                public readonly Trigger.X2ButtonUp       X2ButtonUp       = new Trigger.X2ButtonUp();
+                public readonly Event.Move             Move             = new Event.Move();
+                public readonly Event.LeftButtonDown   LeftButtonDown   = new Event.LeftButtonDown();
+                public readonly Event.LeftButtonUp     LeftButtonUp     = new Event.LeftButtonUp();
+                public readonly Event.MiddleButtonDown MiddleButtonDown = new Event.MiddleButtonDown();
+                public readonly Event.MiddleButtonUp   MiddleButtonUp   = new Event.MiddleButtonUp();
+                public readonly Event.RightButtonDown  RightButtonDown  = new Event.RightButtonDown();
+                public readonly Event.RightButtonUp    RightButtonUp    = new Event.RightButtonUp();
+                public readonly Event.WheelDown        WheelDown        = new Event.WheelDown();
+                public readonly Event.WheelUp          WheelUp          = new Event.WheelUp();
+                public readonly Event.WheelLeft        WheelLeft        = new Event.WheelLeft();
+                public readonly Event.WheelRight       WheelRight       = new Event.WheelRight();
+                public readonly Event.X1ButtonDown     X1ButtonDown     = new Event.X1ButtonDown();
+                public readonly Event.X1ButtonUp       X1ButtonUp       = new Event.X1ButtonUp();
+                public readonly Event.X2ButtonDown     X2ButtonDown     = new Event.X2ButtonDown();
+                public readonly Event.X2ButtonUp       X2ButtonUp       = new Event.X2ButtonUp();
 
                 public static ConstantSingleton GetInstance()
                 {
@@ -396,8 +399,8 @@ namespace CreviceApp
             public class Stroke
             {
                 public readonly Def.Direction Direction;
-                internal readonly int StrokeDirectionChangeThreshold;
-                internal readonly int StrokeExtensionThreshold;
+                internal readonly int strokeDirectionChangeThreshold;
+                internal readonly int strokeExtensionThreshold;
 
                 private readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
 
@@ -407,8 +410,8 @@ namespace CreviceApp
                     int strokeExtensionThreshold)
                 {
                     this.Direction = dir;
-                    this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
-                    this.StrokeExtensionThreshold = strokeExtensionThreshold;
+                    this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+                    this.strokeExtensionThreshold = strokeExtensionThreshold;
                 }
 
                 public virtual Stroke Input(List<LowLevelMouseHook.POINT> input)
@@ -418,7 +421,7 @@ namespace CreviceApp
                     var dx = Math.Abs(p0.x - p1.x);
                     var dy = Math.Abs(p0.y - p1.y);
                     var angle = GetAngle(p0, p1);
-                    if (dx > StrokeDirectionChangeThreshold || dy > StrokeDirectionChangeThreshold)
+                    if (dx > strokeDirectionChangeThreshold || dy > strokeDirectionChangeThreshold)
                     {
                         var move = NextDirection(angle);
                         if (move == Direction)
@@ -429,7 +432,7 @@ namespace CreviceApp
                         return Create(move);
                     }
 
-                    if (dx > StrokeExtensionThreshold || dy > StrokeExtensionThreshold)
+                    if (dx > strokeExtensionThreshold || dy > strokeExtensionThreshold)
                     {
                         if (IsExtensionable(angle))
                         {
@@ -472,7 +475,7 @@ namespace CreviceApp
 
                 private Stroke Create(Def.Direction dir)
                 {
-                    return new Stroke(dir, StrokeDirectionChangeThreshold, StrokeExtensionThreshold);
+                    return new Stroke(dir, strokeDirectionChangeThreshold, strokeExtensionThreshold);
                 }
 
                 public static Stroke Create(
@@ -503,20 +506,20 @@ namespace CreviceApp
 
             public abstract class PointProcessor
             {
-                internal readonly int WatchInterval;
+                internal readonly int watchInterval;
 
                 internal long lastProcessTime = 0;
                 internal LowLevelMouseHook.POINT lastProcess;
 
                 public PointProcessor(int watchInterval)
                 {
-                    this.WatchInterval = watchInterval;
+                    this.watchInterval = watchInterval;
                 }
 
 
                 internal bool MustBeProcessed(uint currentTime)
                 {
-                    if (lastProcessTime + WatchInterval < currentTime)
+                    if (lastProcessTime + watchInterval < currentTime)
                     {
                         lastProcessTime = currentTime;
                         return true;
@@ -535,10 +538,10 @@ namespace CreviceApp
                 [DllImport("winmm.dll")]
                 private static extern uint timeGetTime();
                 
-                internal readonly TaskFactory Factory;
-                internal readonly int InitialStrokeThreshold;
-                internal readonly int StrokeDirectionChangeThreshold;
-                internal readonly int StrokeExtensionThreshold;
+                internal readonly TaskFactory factory;
+                internal readonly int initialStrokeThreshold;
+                internal readonly int strokeDirectionChangeThreshold;
+                internal readonly int strokeExtensionThreshold;
                 
                 internal readonly List<Stroke> strokes = new List<Stroke>();
                 internal readonly BlockingCollection<LowLevelMouseHook.POINT> queue = new BlockingCollection<LowLevelMouseHook.POINT>();
@@ -552,10 +555,10 @@ namespace CreviceApp
                     int strokeExtensionThreshold,
                     int watchInterval) : base(watchInterval)
                 {
-                    this.Factory = factory;
-                    this.InitialStrokeThreshold = initialStrokeThreshold;
-                    this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
-                    this.StrokeExtensionThreshold = strokeExtensionThreshold;
+                    this.factory = factory;
+                    this.initialStrokeThreshold = initialStrokeThreshold;
+                    this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+                    this.strokeExtensionThreshold = strokeExtensionThreshold;
                     this.task = Start();
                 }
                 
@@ -571,7 +574,7 @@ namespace CreviceApp
 
                 private Task Start()
                 {
-                    return Factory.StartNew(() =>
+                    return factory.StartNew(() =>
                     {
                         foreach (var point in queue.GetConsumingEnumerable(tokenSource.Token))
                         {
@@ -582,7 +585,7 @@ namespace CreviceApp
                             }
                             if (strokes.Count == 0)
                             {
-                                var res = Stroke.Create(InitialStrokeThreshold, StrokeDirectionChangeThreshold, StrokeExtensionThreshold, buffer);
+                                var res = Stroke.Create(initialStrokeThreshold, strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
                                 if (res != null)
                                 {
                                     Debug.Print("Stroke[0]: {0}", Enum.GetName(typeof(Def.Direction), res.Direction));
@@ -663,7 +666,7 @@ namespace CreviceApp
                 // Transition from the state(S0) to the state(S1).
                 // This transition happends when `set` event of double action mouse button is given.
                 // This transition has no side effect.
-                public static IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>
+                public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>>
                     Gen0(IEnumerable<GestureDefinition> gestureDef)
                 {
                     return gestureDef
@@ -671,25 +674,25 @@ namespace CreviceApp
                         .ToDictionary(x => x.Key, x => x.Select(y => y));
                 }
 
-                // Transition 01 (button gesture)
+                // Transition 01 (double action gesture start)
                 //
                 // State1 -> State2
                 //
                 // Transition from the state(S1) to the state(S2).
                 // This transition happends when `set` event of double action mouse button is given.
                 // This transition has no side effect.
-                public static IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>>
+                public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>>
                     Gen1(IEnumerable<GestureDefinition> gestureDef)
                 {
                     return gestureDef
                         .Select(x => x as ButtonGestureDefinition)
                         .Where(x => x != null)
                         .ToLookup(x => Def.Convert(x.ifButton))
-                        .Where(x => x.Key is Def.Trigger.IDoubleActionSet)
-                        .ToDictionary(x => x.Key as Def.Trigger.IDoubleActionSet, x => x.Select(y => y));
+                        .Where(x => x.Key is Def.Event.IDoubleActionSet)
+                        .ToDictionary(x => x.Key as Def.Event.IDoubleActionSet, x => x.Select(y => y));
                 }
 
-                // Transition 02 (execute single trigger gesture action)
+                // Transition 02 (single action gesture)
                 //
                 // State1 -> State1
                 //
@@ -697,18 +700,18 @@ namespace CreviceApp
                 // This transition happends when `fire` event of single action mouse button is given.
                 // This transition has one side effect.
                 // 1. Functions given as the parameter of `@do` clause of ButtonGestureDefinition are executed.
-                public static IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>>
+                public static IDictionary<Def.Event.ISingleAction, IEnumerable<ButtonGestureDefinition>>
                     Gen2(IEnumerable<GestureDefinition> gestureDef)
                 {
                     return gestureDef
                         .Select(x => x as ButtonGestureDefinition)
                         .Where(x => x != null)
                         .ToLookup(x => Def.Convert(x.ifButton))
-                        .Where(x => x.Key is Def.Trigger.ISingleAction)
-                        .ToDictionary(x => x.Key as Def.Trigger.ISingleAction, x => x.Select(y => y));
+                        .Where(x => x.Key is Def.Event.ISingleAction)
+                        .ToDictionary(x => x.Key as Def.Event.ISingleAction, x => x.Select(y => y));
                 }
 
-                // Transition 03 (execute stroke gesture action)
+                // Transition 03 (stroke gesture)
                 //
                 // State1 -> State0
                 //
@@ -727,7 +730,7 @@ namespace CreviceApp
                         .ToDictionary(x => x.Key, x => x.Select(y => y));
                 }
 
-                // Transition 04 (normal end)
+                // Transition 04 (cancel gesture)
                 //
                 // State1 -> State0
                 //
@@ -737,7 +740,7 @@ namespace CreviceApp
                 // 1. Primary double action mouse button will be restored.
 
 
-                // Transition 05 (normal end)
+                // Transition 05 (gesture end)
                 //
                 // State1 -> State0
                 //
@@ -745,7 +748,7 @@ namespace CreviceApp
                 // This transition happends when `release` event of primary double action mouse button is given.
                 // This transition has no side effect.
 
-                // Transition 06 (execute double trigger gesture action)
+                // Transition 06 (double action gesture end)
                 //
                 // State2 -> State1
                 //
@@ -810,15 +813,15 @@ namespace CreviceApp
 
                 public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
                 {
-                    Global = new GlobalValues();
-                    State = new State0(Global, Transition.Gen0(gestureDef));
+                    this.Global = new GlobalValues();
+                    this.State = new State0(Global, Transition.Gen0(gestureDef));
                 }
 
-                public bool Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
+                public bool Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
                 {
                     lock (lockObject)
                     {
-                        var res = State.Input(trigger, pt);   
+                        var res = State.Input(evnt, point);   
                         if (State.GetType() != res.NextState.GetType())
                         {
                             Debug.Print("The state of GestureMachine was changed: {0} -> {1}", State.GetType().Name, res.NextState.GetType().Name);
@@ -828,7 +831,7 @@ namespace CreviceApp
                             Global.ResetStrokeWatcher();
                         }
                         State = res.NextState;
-                        return res.Trigger.IsConsumed;
+                        return res.Event.IsConsumed;
                     }
                 }
 
@@ -857,10 +860,10 @@ namespace CreviceApp
 
             public class Result
             {
-                public class TriggerResult
+                public class EventResult
                 {
                     public readonly bool IsConsumed;
-                    public TriggerResult(bool consumed)
+                    public EventResult(bool consumed)
                     {
                         IsConsumed = consumed;
                     }
@@ -875,23 +878,23 @@ namespace CreviceApp
                     }
                 }
 
-                public TriggerResult Trigger;
+                public EventResult Event;
                 public StrokeWatcherResult StrokeWatcher;
                 public IState NextState { get; private set; }
 
                 private Result(bool consumed, IState nextState, bool resetStrokeWatcher)
                 {
-                    this.Trigger = new TriggerResult(consumed);
+                    this.Event = new EventResult(consumed);
                     this.StrokeWatcher = new StrokeWatcherResult(resetStrokeWatcher);
                     this.NextState = nextState;
                 }
 
-                public static Result TriggerIsConsumed(IState nextState, bool resetStrokeWatcher = false)
+                public static Result EventIsConsumed(IState nextState, bool resetStrokeWatcher = false)
                 {
                     return new Result(true, nextState, resetStrokeWatcher);
                 }
 
-                public static Result TriggerIsRemaining(IState nextState, bool resetStrokeWatcher = false)
+                public static Result EventIsRemaining(IState nextState, bool resetStrokeWatcher = false)
                 {
                     return new Result(false, nextState, resetStrokeWatcher);
                 }
@@ -899,35 +902,35 @@ namespace CreviceApp
 
             public class GlobalValues : IDisposable
             {
-                private readonly Threading.SingleThreadScheduler Scheduler0;
-                private readonly Threading.SingleThreadScheduler Scheduler1;
-                private readonly Threading.SingleThreadScheduler Scheduler2;
-                public readonly TaskFactory Factory0;
-                public readonly TaskFactory Factory1;
-                public readonly TaskFactory Factory2;
+                private readonly Threading.SingleThreadScheduler StrokeWatcherScheduler;
+                private readonly Threading.SingleThreadScheduler LowPriorityScheduler;
+                private readonly Threading.SingleThreadScheduler UserActionScheduler;
+                public readonly TaskFactory StrokeWatcherTaskFactory;
+                public readonly TaskFactory LowPriorityTaskFactory;
+                public readonly TaskFactory UserActionTaskFactory;
 
                 public readonly Config.UserConfig Config;
 
-                public readonly HashSet<Def.Trigger.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Trigger.IDoubleActionRelease>();
+                public readonly HashSet<Def.Event.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Event.IDoubleActionRelease>();
                 
                 public Stroke.StrokeWatcher StrokeWatcher { get; private set; }
 
                 public GlobalValues()
                 {
-                    Scheduler0 = new Threading.SingleThreadScheduler();
-                    Scheduler1 = new Threading.SingleThreadScheduler();
-                    Scheduler2 = new Threading.SingleThreadScheduler();
-                    Factory0 = new TaskFactory(Scheduler0);
-                    Factory1 = new TaskFactory(Scheduler1);
-                    Factory2 = new TaskFactory(Scheduler2);
-                    Config = new Config.UserConfig();
-                    StrokeWatcher = NewStrokeWatcher();
+                    this.StrokeWatcherScheduler = new Threading.SingleThreadScheduler(ThreadPriority.AboveNormal);
+                    this.LowPriorityScheduler = new Threading.SingleThreadScheduler(ThreadPriority.Lowest);
+                    this.UserActionScheduler = new Threading.SingleThreadScheduler();
+                    this.StrokeWatcherTaskFactory = new TaskFactory(StrokeWatcherScheduler);
+                    this.LowPriorityTaskFactory = new TaskFactory(LowPriorityScheduler);
+                    this.UserActionTaskFactory = new TaskFactory(UserActionScheduler);
+                    this.Config = new Config.UserConfig();
+                    this.StrokeWatcher = NewStrokeWatcher();
                 }
 
                 private Stroke.StrokeWatcher NewStrokeWatcher()
                 {
                     return new Stroke.StrokeWatcher(
-                        Factory0,
+                        StrokeWatcherTaskFactory,
                         Config.Gesture.InitialStrokeThreshold,
                         Config.Gesture.StrokeDirectionChangeThreshold,
                         Config.Gesture.StrokeExtensionThreshold,
@@ -939,7 +942,7 @@ namespace CreviceApp
                     var _StrokeWatcher = StrokeWatcher;
                     StrokeWatcher = NewStrokeWatcher();
                     Debug.Print("StrokeWatcher was reset: {0} to {1}", _StrokeWatcher.GetHashCode(), StrokeWatcher.GetHashCode());
-                    Factory1.StartNew(() => {
+                    LowPriorityTaskFactory.StartNew(() => {
                         _StrokeWatcher.Dispose();
                     });
                 }
@@ -948,9 +951,9 @@ namespace CreviceApp
                 {
                     GC.SuppressFinalize(this);
                     StrokeWatcher.Dispose();
-                    Scheduler0.Dispose();
-                    Scheduler1.Dispose();
-                    Scheduler2.Dispose();
+                    StrokeWatcherScheduler.Dispose();
+                    LowPriorityScheduler.Dispose();
+                    UserActionScheduler.Dispose();
                 }
 
                 ~GlobalValues()
@@ -961,7 +964,7 @@ namespace CreviceApp
 
             public interface IState
             {
-                Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt);
+                Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point);
                 IState Reset();
             }
 
@@ -975,25 +978,25 @@ namespace CreviceApp
                     this.Global = Global;
                 }
 
-                // Check whether given trigger must be ignored or not.
-                // Return true if given trigger is in the ignore list, and remove it from ignore list.
-                // Return false if the pair of given trigger is in the ignore list, and remove it from ignore list.
+                // Check whether given event must be ignored or not.
+                // Return true if given event is in the ignore list, and remove it from ignore list.
+                // Return false if the pair of given event is in the ignore list, and remove it from ignore list.
                 // Otherwise return false.
-                public bool MustBeIgnored(Def.Trigger.ITrigger trigger)
+                public bool MustBeIgnored(Def.Event.IEvent evnt)
                 {
-                    if (trigger is Def.Trigger.IDoubleActionRelease)
+                    if (evnt is Def.Event.IDoubleActionRelease)
                     {
-                        var t = trigger as Def.Trigger.IDoubleActionRelease;
-                        if (Global.IgnoreNext.Contains(t))
+                        var ev = evnt as Def.Event.IDoubleActionRelease;
+                        if (Global.IgnoreNext.Contains(ev))
                         {
-                            Global.IgnoreNext.Remove(t);
+                            Global.IgnoreNext.Remove(ev);
                             return true;
                         }
                     }
-                    else if (trigger is Def.Trigger.IDoubleActionSet)
+                    else if (evnt is Def.Event.IDoubleActionSet)
                     {
-                        var t = trigger as Def.Trigger.IDoubleActionSet;
-                        var p = t.GetPair();
+                        var ev = evnt as Def.Event.IDoubleActionSet;
+                        var p = ev.GetPair();
                         if (Global.IgnoreNext.Contains(p))
                         {
                             Global.IgnoreNext.Remove(p);
@@ -1003,9 +1006,9 @@ namespace CreviceApp
                     return false;
                 }
 
-                public virtual Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
+                public virtual Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
                 {
-                    return Result.TriggerIsRemaining(nextState: this);
+                    return Result.EventIsRemaining(nextState: this);
                 }
 
                 public virtual IState Reset()
@@ -1031,46 +1034,46 @@ namespace CreviceApp
                     }
                 }
                 
-                public void IgnoreNext(Def.Trigger.IDoubleActionRelease trigger)
+                public void IgnoreNext(Def.Event.IDoubleActionRelease evnt)
                 {
-                    Debug.Print("{0} added to global ignore list. This event will be ignored next time.", trigger.GetType().Name);
-                    Global.IgnoreNext.Add(trigger);
+                    Debug.Print("{0} added to global ignore list. The `release` event of it will be ignored next time.", evnt.GetType().Name);
+                    Global.IgnoreNext.Add(evnt);
                 }
             }
             
             public class State0 : State
             {
-                internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
+                internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>> T0;
                 
                 public State0(
-                    GlobalValues globalValues,
-                    IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>> T0) 
-                    : base(globalValues)
+                    GlobalValues Global,
+                    IDictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>> T0) 
+                    : base(Global)
                 {
                     this.T0 = T0;
                 }
 
-                public override Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
+                public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
                 {
-                    if (MustBeIgnored(trigger))
+                    if (MustBeIgnored(evnt))
                     {
-                        return Result.TriggerIsConsumed(nextState: this);
+                        return Result.EventIsConsumed(nextState: this);
                     }
 
-                    if (trigger is Def.Trigger.IDoubleActionSet)
+                    if (evnt is Def.Event.IDoubleActionSet)
                     {
-                        var t = trigger as Def.Trigger.IDoubleActionSet;
-                        if (T0.Keys.Contains(t))
+                        var ev = evnt as Def.Event.IDoubleActionSet;
+                        if (T0.Keys.Contains(ev))
                         {
-                            var gestureDef = FilterByWhenClause(T0[t]);
+                            var gestureDef = FilterByWhenClause(T0[ev]);
                             if (gestureDef.Count() > 0)
                             {
                                 Debug.Print("Transition 0");
-                                return Result.TriggerIsConsumed(nextState: new State1(Global, this, t, gestureDef), resetStrokeWatcher:  true);
+                                return Result.EventIsConsumed(nextState: new State1(Global, this, ev, gestureDef), resetStrokeWatcher:  true);
                             }
                         }
                     }
-                    return base.Input(trigger, pt);
+                    return base.Input(evnt, point);
                 }
 
                 public override IState Reset()
@@ -1098,75 +1101,75 @@ namespace CreviceApp
             public class State1 : State
             {
                 internal readonly State0 S0;
-                internal readonly Def.Trigger.IDoubleActionSet primaryTrigger;
-                internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
-                internal readonly IDictionary<Def.Trigger.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
+                internal readonly Def.Event.IDoubleActionSet primaryEvent;
+                internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
+                internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
                 internal readonly IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3;
 
-                private readonly SingleInputSender inputSender = new SingleInputSender();
+                private readonly SingleInputSender InputSender = new SingleInputSender();
 
-                internal bool PrimaryTriggerIsRestorable { get; set; } = true;
+                internal bool PrimaryEventIsRestorable { get; set; } = true;
 
                 public State1(
                     GlobalValues Global,
                     State0 S0,
-                    Def.Trigger.IDoubleActionSet primaryTrigger,
+                    Def.Event.IDoubleActionSet primaryEvent,
                     IEnumerable<GestureDefinition> gestureDef
                     ) : base(Global)
                 {
                     this.S0 = S0;
-                    this.primaryTrigger = primaryTrigger;
+                    this.primaryEvent = primaryEvent;
                     this.T1 = Transition.Gen1(gestureDef);
                     this.T2 = Transition.Gen2(gestureDef);
                     this.T3 = Transition.Gen3(gestureDef);
                 }
 
-                public override Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
+                public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
                 {
-                    if (MustBeIgnored(trigger))
+                    if (MustBeIgnored(evnt))
                     {
-                        return Result.TriggerIsConsumed(nextState: this);
+                        return Result.EventIsConsumed(nextState: this);
                     }
                     
-                    Global.StrokeWatcher.Queue(pt);
+                    Global.StrokeWatcher.Queue(point);
 
-                    if (trigger is Def.Trigger.IDoubleActionSet)
+                    if (evnt is Def.Event.IDoubleActionSet)
                     {
-                        var t = trigger as Def.Trigger.IDoubleActionSet;
-                        if (T1.Keys.Contains(t))
+                        var ev = evnt as Def.Event.IDoubleActionSet;
+                        if (T1.Keys.Contains(ev))
                         {
                             Debug.Print("Transition 1");
-                            PrimaryTriggerIsRestorable = false;
-                            return Result.TriggerIsConsumed(nextState: new State2(Global, S0, this, primaryTrigger, t, T1));
+                            PrimaryEventIsRestorable = false;
+                            return Result.EventIsConsumed(nextState: new State2(Global, S0, this, primaryEvent, ev, T1));
                         }
                     }
-                    else if (trigger is Def.Trigger.ISingleAction)
+                    else if (evnt is Def.Event.ISingleAction)
                     {
-                        var t = trigger as Def.Trigger.ISingleAction;
-                        if (T2.Keys.Contains(t))
+                        var ev = evnt as Def.Event.ISingleAction;
+                        if (T2.Keys.Contains(ev))
                         {
                             Debug.Print("Transition 2");
-                            PrimaryTriggerIsRestorable = false;
-                            Global.Factory2.StartNew(() => {
-                                foreach (var gDef in T2[t])
+                            PrimaryEventIsRestorable = false;
+                            Global.UserActionTaskFactory.StartNew(() => {
+                                foreach (var gDef in T2[ev])
                                 {
                                     ExecuteSafely(gDef.doFunc);
                                 }
                             });
-                            return Result.TriggerIsConsumed(nextState: this, resetStrokeWatcher: true);
+                            return Result.EventIsConsumed(nextState: this, resetStrokeWatcher: true);
                         }
                     }
-                    else if (trigger is Def.Trigger.IDoubleActionRelease)
+                    else if (evnt is Def.Event.IDoubleActionRelease)
                     {
-                        var t = trigger as Def.Trigger.IDoubleActionRelease;
-                        if (t == primaryTrigger.GetPair())
+                        var ev = evnt as Def.Event.IDoubleActionRelease;
+                        if (ev == primaryEvent.GetPair())
                         {
                             var stroke = Global.StrokeWatcher.GetStorke();
                             Debug.Print("Stroke: {0}", stroke.ToString());
                             if (T3.Keys.Contains(stroke))
                             {
                                 Debug.Print("Transition 3");
-                                Global.Factory2.StartNew(() => {
+                                Global.UserActionTaskFactory.StartNew(() => {
                                     foreach (var gDef in T3[stroke])
                                     {
                                         ExecuteSafely(gDef.doFunc);
@@ -1175,50 +1178,50 @@ namespace CreviceApp
                             }
                             else
                             {
-                                if (PrimaryTriggerIsRestorable && stroke.Count == 0)
+                                if (PrimaryEventIsRestorable && stroke.Count == 0)
                                 {
                                     Debug.Print("Transition 4");
-                                    RestorePrimaryTrigger();
+                                    RestorePrimaryEvent();
                                 }
                                 else
                                 {
                                     Debug.Print("Transition 5");
                                 }
                             }
-                            return Result.TriggerIsConsumed(nextState: S0);
+                            return Result.EventIsConsumed(nextState: S0);
                         }
                     }
-                    return base.Input(trigger, pt);
+                    return base.Input(evnt, point);
                 }
                 
                 public override IState Reset()
                 {
                     Debug.Print("Transition 9");
-                    IgnoreNext(primaryTrigger.GetPair());
+                    IgnoreNext(primaryEvent.GetPair());
                     return S0;
                 }
 
-                internal void RestorePrimaryTrigger()
+                internal void RestorePrimaryEvent()
                 {
-                    if (primaryTrigger == Def.Constant.LeftButtonDown)
+                    if (primaryEvent == Def.Constant.LeftButtonDown)
                     {
-                        inputSender.LeftClick();
+                        InputSender.LeftClick();
                     }
-                    else if (primaryTrigger == Def.Constant.MiddleButtonDown)
+                    else if (primaryEvent == Def.Constant.MiddleButtonDown)
                     {
-                        inputSender.MiddleClick();
+                        InputSender.MiddleClick();
                     }
-                    else if (primaryTrigger == Def.Constant.RightButtonDown)
+                    else if (primaryEvent == Def.Constant.RightButtonDown)
                     {
-                        inputSender.RightClick();
+                        InputSender.RightClick();
                     }
-                    else if (primaryTrigger == Def.Constant.X1ButtonDown)
+                    else if (primaryEvent == Def.Constant.X1ButtonDown)
                     {
-                        inputSender.X1Click();
+                        InputSender.X1Click();
                     }
-                    else if (primaryTrigger == Def.Constant.X2ButtonDown)
+                    else if (primaryEvent == Def.Constant.X2ButtonDown)
                     {
-                        inputSender.X2Click();
+                        InputSender.X2Click();
                     }
                 }
             }
@@ -1227,62 +1230,62 @@ namespace CreviceApp
             {
                 internal readonly State0 S0;
                 internal readonly State1 S1;
-                internal readonly Def.Trigger.IDoubleActionSet primaryTrigger;
-                internal readonly Def.Trigger.IDoubleActionSet secondaryTrigger;
-                internal readonly IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
+                internal readonly Def.Event.IDoubleActionSet primaryEvent;
+                internal readonly Def.Event.IDoubleActionSet secondaryEvent;
+                internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
 
                 public State2(
                     GlobalValues Global,
                     State0 S0,
                     State1 S1,
-                    Def.Trigger.IDoubleActionSet primaryTrigger,
-                    Def.Trigger.IDoubleActionSet secondaryTrigger,
-                    IDictionary<Def.Trigger.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
+                    Def.Event.IDoubleActionSet primaryEvent,
+                    Def.Event.IDoubleActionSet secondaryEvent,
+                    IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
                     ) : base(Global)
                 {
                     this.S0 = S0;
                     this.S1 = S1;
-                    this.primaryTrigger = primaryTrigger;
-                    this.secondaryTrigger = secondaryTrigger;
+                    this.primaryEvent = primaryEvent;
+                    this.secondaryEvent = secondaryEvent;
                     this.T1 = T1;
                 }
 
-                public override Result Input(Def.Trigger.ITrigger trigger, LowLevelMouseHook.POINT pt)
+                public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
                 {
-                    if (MustBeIgnored(trigger))
+                    if (MustBeIgnored(evnt))
                     {
-                        return Result.TriggerIsConsumed(nextState: this);
+                        return Result.EventIsConsumed(nextState: this);
                     }
                     
-                    if (trigger is Def.Trigger.IDoubleActionRelease)
+                    if (evnt is Def.Event.IDoubleActionRelease)
                     {
-                        var t = trigger as Def.Trigger.IDoubleActionRelease;
-                        if (t == secondaryTrigger.GetPair())
+                        var ev = evnt as Def.Event.IDoubleActionRelease;
+                        if (ev == secondaryEvent.GetPair())
                         {
                             Debug.Print("Transition 6");
-                            Global.Factory2.StartNew(() => {
-                                foreach (var gDef in T1[secondaryTrigger])
+                            Global.UserActionTaskFactory.StartNew(() => {
+                                foreach (var gDef in T1[secondaryEvent])
                                 {
                                     ExecuteSafely(gDef.doFunc);
                                 }
                             });
-                            return Result.TriggerIsConsumed(nextState: S1, resetStrokeWatcher: true);
+                            return Result.EventIsConsumed(nextState: S1, resetStrokeWatcher: true);
                         }
-                        else if (t == primaryTrigger.GetPair())
+                        else if (ev == primaryEvent.GetPair())
                         {
                             Debug.Print("Transition 7");
-                            IgnoreNext(secondaryTrigger.GetPair());
-                            return Result.TriggerIsConsumed(nextState: S0);
+                            IgnoreNext(secondaryEvent.GetPair());
+                            return Result.EventIsConsumed(nextState: S0);
                         }
                     }
-                    return base.Input(trigger, pt);
+                    return base.Input(evnt, point);
                 }
 
                 public override IState Reset()
                 {
                     Debug.Print("Transition 10");
-                    IgnoreNext(primaryTrigger.GetPair());
-                    IgnoreNext(secondaryTrigger.GetPair());
+                    IgnoreNext(primaryEvent.GetPair());
+                    IgnoreNext(secondaryEvent.GetPair());
                     return S0;
                 }
             }

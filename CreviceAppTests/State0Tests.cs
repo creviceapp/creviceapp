@@ -14,14 +14,14 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void State0MustHaveCleanGlobalValuesTest()
         {
-            var S0 = new State0(new GlobalValues(), new Dictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>());
+            var S0 = new State0(new GlobalValues(), new Dictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>>());
             Assert.AreEqual(S0.Global.IgnoreNext.Count, 0);
         }
 
         [TestMethod()]
         public void State0MustHaveGivenT0Test()
         {
-            var T0 = new Dictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>();
+            var T0 = new Dictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>>();
             var S0 = new State0(new GlobalValues(), T0);
             Assert.AreEqual(S0.T0, T0);
         }
@@ -29,24 +29,24 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void InputMustReturnConsumedResultWhenGivenTriggerIsInIgnoreListTest()
         {
-            var S0 = new State0(new GlobalValues(), new Dictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>());
+            var S0 = new State0(new GlobalValues(), new Dictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>>());
             S0.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S0.Global.IgnoreNext.Count, 1);
 
             var res = S0.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
-            Assert.IsTrue(res.Trigger.IsConsumed);
+            Assert.IsTrue(res.Event.IsConsumed);
             Assert.AreEqual(S0.Global.IgnoreNext.Count, 0);
         }
         
         [TestMethod()]
         public void InputMustResetIgnoreListWhenGivenTriggerIsPairOfTriggerInIgnoreListTest()
         {
-            var S0 = new State0(new GlobalValues(), new Dictionary<Def.Trigger.IDoubleActionSet, IEnumerable<GestureDefinition>>());
+            var S0 = new State0(new GlobalValues(), new Dictionary<Def.Event.IDoubleActionSet, IEnumerable<GestureDefinition>>());
             S0.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S0.Global.IgnoreNext.Count, 1);
 
             var res = S0.Input(Def.Constant.RightButtonDown, new LowLevelMouseHook.POINT());
-            Assert.IsFalse(res.Trigger.IsConsumed);
+            Assert.IsFalse(res.Event.IsConsumed);
             Assert.AreEqual(S0.Global.IgnoreNext.Count, 0);
         }
 
