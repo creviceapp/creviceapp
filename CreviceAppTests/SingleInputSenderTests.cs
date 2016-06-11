@@ -12,6 +12,9 @@ using System.Windows.Forms;
 
 namespace CreviceApp.Tests
 {
+    using WinAPI.WindowsHook;
+    using WinAPI.InputSender;
+
     [TestClass()]
     public class SingleInputSenderTests
     {

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM.Tests
 {
+    using WinAPI.WindowsHook;
+
     [TestClass()]
     public class State2Tests
     {

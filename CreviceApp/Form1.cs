@@ -13,6 +13,8 @@ using System.Windows.Forms;
 
 namespace CreviceApp
 {
+    using WinAPI.WindowsHook;
+    using WinAPI.InputSender;
 
     public partial class Form1 : Form
     {
@@ -26,8 +28,8 @@ namespace CreviceApp
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
 
-            var gestureDef = new List<Core.FSM.GestureDefinition>() {
-                new Core.FSM.ButtonGestureDefinition(
+            var gestureDef = new List<Core.GestureDefinition>() {
+                new Core.ButtonGestureDefinition(
                     () => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
@@ -42,7 +44,7 @@ namespace CreviceApp
                             .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
                             .Send();
                     }),
-                new Core.FSM.ButtonGestureDefinition(
+                new Core.ButtonGestureDefinition(
                     () => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelDown,
@@ -55,7 +57,7 @@ namespace CreviceApp
                             .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
                             .Send();
                     }),
-                new Core.FSM.StrokeGestureDefinition(
+                new Core.StrokeGestureDefinition(
                     () => { return true; },
                     DSL.Def.Constant.RightButton,
                     new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Up }),
@@ -66,7 +68,7 @@ namespace CreviceApp
                             .ExtendedKeyUp(InputSender.VirtualKeys.VK_HOME)
                             .Send();
                     }),
-                new Core.FSM.StrokeGestureDefinition(
+                new Core.StrokeGestureDefinition(
                     () => { return true; },
                     DSL.Def.Constant.RightButton,
                     new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Down }),
