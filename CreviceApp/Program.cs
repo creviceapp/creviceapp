@@ -22,20 +22,4 @@ namespace CreviceApp
             Application.Run(new Form1());
         }
     }
-
-    namespace User
-    {
-        public class UserActionExecutionContext
-        {
-            /*
-            public WindowsApplicationInfo App;
-
-            public UserActionExecutionContext()
-            {
-                this.App = WindowsApplication.
-            }
-            */
-        }
-
-    }
 }

@@ -14,6 +14,8 @@ namespace CreviceApp.Core.FSM.Tests
     [TestClass()]
     public class State0Tests
     {
+        readonly User.UserActionExecutionContext ctx = new User.UserActionExecutionContext(0, 0);
+
         [TestMethod()]
         public void State0MustHaveCleanGlobalValuesTest()
         {
@@ -59,10 +61,10 @@ namespace CreviceApp.Core.FSM.Tests
             // todo: round robin test
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
             var res = S0.Input(Def.Constant.LeftButtonDown, new LowLevelMouseHook.POINT());
@@ -74,10 +76,10 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
             var res = S0.Input(Def.Constant.RightButtonDown, new LowLevelMouseHook.POINT());
@@ -89,17 +91,17 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.LeftButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { })
+                    (ctx) => { })
             };
-            var filtered = State0.FilterByWhenClause(gestureDef).ToList();
+            var filtered = State0.FilterByWhenClause(ctx, gestureDef).ToList();
             Assert.AreEqual(filtered.Count(), 1);
             Assert.AreEqual(filtered[0].onButton, DSL.Def.Constant.LeftButton);
         }

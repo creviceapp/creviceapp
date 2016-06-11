@@ -21,7 +21,7 @@ namespace CreviceApp.DSL.Tests
             var called = false;
             var doEmenent = ifElement.@do(() => { called = true; });
             Assert.IsFalse(called);
-            root.whenElements[0].onElements[0].ifStrokeElements[0].doElements[0].func();
+            root.whenElements[0].onElements[0].ifStrokeElements[0].doElements[0].func(new UserActionExecutionContext(0, 0));
             Assert.IsTrue(called);
         }
     }

@@ -108,10 +108,5 @@ namespace CreviceApp.Core
                 throw new ArgumentException();
             }
         }
-
-        public static Action Convert(DSL.Def.DoFunc doFunc)
-        {
-            return Delegate.CreateDelegate(typeof(Action), doFunc.Method) as Action;
-        }
     }
 }

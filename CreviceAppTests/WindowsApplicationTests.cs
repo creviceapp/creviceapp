@@ -11,6 +11,7 @@ namespace CreviceApp.Tests
     [TestClass()]
     public class WindowsApplicationTests
     {
+        /*
         [TestMethod()]
         public void GetForegroundTest()
         {
@@ -26,5 +27,6 @@ namespace CreviceApp.Tests
             var result = app.GetOnCursor(0, 0);
             Assert.IsNotNull(result);
         }
+        */
     }
 }

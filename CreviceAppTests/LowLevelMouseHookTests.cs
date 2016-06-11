@@ -35,7 +35,7 @@ namespace CreviceApp.Tests
             {
                 hook.SetHook();
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 return;
             }
@@ -56,7 +56,7 @@ namespace CreviceApp.Tests
             {
                 hook.Unhook();
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 return;
             }

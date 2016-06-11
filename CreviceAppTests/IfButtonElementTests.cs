@@ -19,7 +19,7 @@ namespace CreviceApp.DSL.Tests
             var onElement = appElement.@on(new Def.RightButton());
             var ifElement = onElement.@if(new Def.WheelUp());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements[0].doElements.Count, 0);
-            ifElement.@do(() => { });
+            ifElement.@do((ctx) => { });
             Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements[0].doElements.Count, 1);
         }
     }

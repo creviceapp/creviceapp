@@ -14,6 +14,8 @@ namespace CreviceApp.Core.FSM.Tests
     [TestClass()]
     public class State2Tests
     {
+        readonly User.UserActionExecutionContext ctx = new User.UserActionExecutionContext(0, 0);
+
         [TestMethod()]
         public void InputMustExecuteNoTransitionTest()
         {
@@ -21,14 +23,14 @@ namespace CreviceApp.Core.FSM.Tests
             var executed = false;
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { executed = true; })
+                    (ctx) => { executed = true; })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
-            var S2 = new State2(S1.Global, S0, S1, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
+            var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
             var res = S2.Input(Def.Constant.MiddleButtonDown, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
             Assert.IsFalse(executed);
@@ -41,14 +43,14 @@ namespace CreviceApp.Core.FSM.Tests
             var executed = false;
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { executed = true; })
+                    (ctx) => { executed = true; })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
-            var S2 = new State2(S1.Global, S0, S1, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
+            var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 0);
             var res = S2.Input(Def.Constant.LeftButtonUp, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
@@ -63,14 +65,14 @@ namespace CreviceApp.Core.FSM.Tests
             var executed = false;
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { executed = true; })
+                    (ctx) => { executed = true; })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
-            var S2 = new State2(S1.Global, S0, S1, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
+            var S1 = new State1(S0.Global, S0, ctx,Def.Constant.RightButtonDown, gestureDef);
+            var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 0);
             var res = S2.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
@@ -85,14 +87,14 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
-            var S2 = new State2(S1.Global, S0, S1, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
+            var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
 
             Assert.AreEqual(S2.Global, S1.Global);
             Assert.AreEqual(S2.S0, S0);
@@ -107,8 +109,8 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>();
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.LeftButtonDown, gestureDef);
-            var S2 = new State2(S1.Global, S0, S1, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.LeftButtonDown, gestureDef);
+            var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
 
             S2.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 1);
@@ -123,8 +125,8 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>();
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.LeftButtonDown, gestureDef);
-            var S2 = new State2(S1.Global, S0, S1, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.LeftButtonDown, gestureDef);
+            var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S1.T1);
 
             S2.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 1);

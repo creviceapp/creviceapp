@@ -33,11 +33,12 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionSet;
                 if (T0.Keys.Contains(ev))
                 {
-                    var gestureDef = FilterByWhenClause(T0[ev]);
+                    var ctx = new User.UserActionExecutionContext(point.x, point.y);
+                    var gestureDef = FilterByWhenClause(ctx, T0[ev]);
                     if (gestureDef.Count() > 0)
                     {
                         Debug.Print("Transition 0");
-                        return Result.EventIsConsumed(nextState: new State1(Global, this, ev, gestureDef), resetStrokeWatcher: true);
+                        return Result.EventIsConsumed(nextState: new State1(Global, this, ctx, ev, gestureDef), resetStrokeWatcher: true);
                     }
                 }
             }
@@ -50,15 +51,16 @@ namespace CreviceApp.Core.FSM
             return this;
         }
 
-        internal static IEnumerable<GestureDefinition> FilterByWhenClause(IEnumerable<GestureDefinition> gestureDef)
+        internal static IEnumerable<GestureDefinition> FilterByWhenClause(
+            User.UserActionExecutionContext ctx, 
+            IEnumerable<GestureDefinition> gestureDef)
         {
             // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
             // but executing it in sequential order here for simplicity.
-
             var cache = gestureDef
                 .Select(x => x.whenFunc)
                 .Distinct()
-                .ToDictionary(x => x, x => EvaluateSafely(x));
+                .ToDictionary(x => x, x => EvaluateSafely(ctx, x));
 
             return gestureDef
                 .Where(x => cache[x.whenFunc] == true)

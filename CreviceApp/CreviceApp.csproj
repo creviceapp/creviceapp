@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Core.ConfigDSLTreeParser.cs" />
     <Compile Include="Core.Def.cs" />
+    <Compile Include="Core.Helper.cs" />
     <Compile Include="Core.FSM.GestureMachine.cs" />
     <Compile Include="Core.FSM.GlobalValues.cs" />
     <Compile Include="Core.FSM.Result.cs" />

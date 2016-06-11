@@ -30,10 +30,10 @@ namespace CreviceApp
 
             var gestureDef = new List<Core.GestureDefinition>() {
                 new Core.ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => 
+                    (ctx) => 
                     {
                         new InputSequenceBuilder()
                             .ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL)
@@ -45,10 +45,10 @@ namespace CreviceApp
                             .Send();
                     }),
                 new Core.ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelDown,
-                    () =>
+                    (ctx) =>
                     {
                         new InputSequenceBuilder()
                             .ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL)
@@ -58,10 +58,10 @@ namespace CreviceApp
                             .Send();
                     }),
                 new Core.StrokeGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Up }),
-                    () =>
+                    (ctx) =>
                     {
                         new InputSequenceBuilder()
                             .ExtendedKeyDown(InputSender.VirtualKeys.VK_HOME)
@@ -69,10 +69,10 @@ namespace CreviceApp
                             .Send();
                     }),
                 new Core.StrokeGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Down }),
-                    () =>
+                    (ctx) =>
                     {
                         new InputSequenceBuilder()
                             .ExtendedKeyDown(InputSender.VirtualKeys.VK_END)

@@ -13,6 +13,7 @@ namespace CreviceApp.Core.FSM
     public class State1 : State
     {
         internal readonly State0 S0;
+        internal readonly User.UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
         internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
@@ -25,11 +26,13 @@ namespace CreviceApp.Core.FSM
         public State1(
             GlobalValues Global,
             State0 S0,
+            User.UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             IEnumerable<GestureDefinition> gestureDef
             ) : base(Global)
         {
             this.S0 = S0;
+            this.ctx = ctx;
             this.primaryEvent = primaryEvent;
             this.T1 = Transition.Gen1(gestureDef);
             this.T2 = Transition.Gen2(gestureDef);
@@ -52,7 +55,7 @@ namespace CreviceApp.Core.FSM
                 {
                     Debug.Print("Transition 1");
                     PrimaryEventIsRestorable = false;
-                    return Result.EventIsConsumed(nextState: new State2(Global, S0, this, primaryEvent, ev, T1));
+                    return Result.EventIsConsumed(nextState: new State2(Global, S0, this, ctx, primaryEvent, ev, T1));
                 }
             }
             else if (evnt is Def.Event.ISingleAction)
@@ -65,7 +68,7 @@ namespace CreviceApp.Core.FSM
                     Global.UserActionTaskFactory.StartNew(() => {
                         foreach (var gDef in T2[ev])
                         {
-                            ExecuteSafely(gDef.doFunc);
+                            ExecuteSafely(ctx, gDef.doFunc);
                         }
                     });
                     return Result.EventIsConsumed(nextState: this, resetStrokeWatcher: true);
@@ -84,7 +87,7 @@ namespace CreviceApp.Core.FSM
                         Global.UserActionTaskFactory.StartNew(() => {
                             foreach (var gDef in T3[stroke])
                             {
-                                ExecuteSafely(gDef.doFunc);
+                                ExecuteSafely(ctx, gDef.doFunc);
                             }
                         });
                     }

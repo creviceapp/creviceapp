@@ -32,5 +32,10 @@ namespace CreviceApp.DSL
         {
             return new DoElement(value, func);
         }
+
+        public DoElement @do(Action func)
+        {
+            return @do((ctx) => func());
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace CreviceApp.Core.FSM
     {
         internal readonly State0 S0;
         internal readonly State1 S1;
+        internal readonly User.UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly Def.Event.IDoubleActionSet secondaryEvent;
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
@@ -21,13 +22,15 @@ namespace CreviceApp.Core.FSM
             GlobalValues Global,
             State0 S0,
             State1 S1,
+            User.UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             Def.Event.IDoubleActionSet secondaryEvent,
-            IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
+        IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
             ) : base(Global)
         {
             this.S0 = S0;
             this.S1 = S1;
+            this.ctx = ctx;
             this.primaryEvent = primaryEvent;
             this.secondaryEvent = secondaryEvent;
             this.T1 = T1;
@@ -49,7 +52,7 @@ namespace CreviceApp.Core.FSM
                     Global.UserActionTaskFactory.StartNew(() => {
                         foreach (var gDef in T1[secondaryEvent])
                         {
-                            ExecuteSafely(gDef.doFunc);
+                            ExecuteSafely(ctx, gDef.doFunc);
                         }
                     });
                     return Result.EventIsConsumed(nextState: S1, resetStrokeWatcher: true);

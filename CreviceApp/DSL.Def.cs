@@ -32,9 +32,9 @@ namespace CreviceApp.DSL
 
     public static class Def
     {
-        public delegate bool WhenFunc();
-        public delegate void DoFunc();
-            
+        public delegate bool WhenFunc(User.UserActionExecutionContext ctx);
+        public delegate void DoFunc(User.UserActionExecutionContext ctx);
+
         public interface AcceptableInOnClause { }
         public interface AcceptableInIfButtonClause { }
         public class LeftButton   : AcceptableInOnClause, AcceptableInIfButtonClause { }

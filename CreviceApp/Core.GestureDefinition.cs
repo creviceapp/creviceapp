@@ -27,12 +27,12 @@ namespace CreviceApp.Core
     public class ButtonGestureDefinition : GestureDefinition
     {
         public readonly DSL.Def.AcceptableInIfButtonClause ifButton;
-        public readonly Action doFunc;
+        public readonly DSL.Def.DoFunc doFunc;
         public ButtonGestureDefinition(
             DSL.Def.WhenFunc whenFunc,
             DSL.Def.AcceptableInOnClause onButton,
             DSL.Def.AcceptableInIfButtonClause ifButton,
-            Action doFunc
+            DSL.Def.DoFunc doFunc
             ) : base(whenFunc, onButton)
         {
             this.ifButton = ifButton;
@@ -53,12 +53,12 @@ namespace CreviceApp.Core
     public class StrokeGestureDefinition : GestureDefinition
     {
         public readonly Def.Stroke stroke;
-        public readonly Action doFunc;
+        public readonly DSL.Def.DoFunc doFunc;
         public StrokeGestureDefinition(
             DSL.Def.WhenFunc whenFunc,
             DSL.Def.AcceptableInOnClause onButton,
             Def.Stroke stroke,
-            Action doFunc
+            DSL.Def.DoFunc doFunc
             ) : base(whenFunc, onButton)
         {
             this.stroke = stroke;

@@ -26,7 +26,7 @@ namespace CreviceApp.DSL.Tests
         {
             var root = new Root();
             var appElement = root.when(() => true);
-            Assert.IsTrue(root.whenElements[0].func());
+            Assert.IsTrue(root.whenElements[0].func(new UserActionExecutionContext(0, 0)));
         }
 
     }

@@ -42,7 +42,8 @@ namespace CreviceApp.Core.FSM.Tests
             mouseEvents.Clear();
         }
 
-
+        readonly User.UserActionExecutionContext ctx = new User.UserActionExecutionContext(0, 0);
+            
         [TestMethod()]
         public void InputMustExecuteNoTransitionTest()
         {
@@ -50,13 +51,13 @@ namespace CreviceApp.Core.FSM.Tests
             var executed = false;
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { executed = true; })
+                    (ctx) => { executed = true; })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
             var res = S1.Input(Def.Constant.LeftButtonDown, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
@@ -69,13 +70,13 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
             var res = S1.Input(Def.Constant.LeftButtonDown, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
@@ -89,13 +90,13 @@ namespace CreviceApp.Core.FSM.Tests
             var executed = false;
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { executed = true; })
+                    (ctx) => { executed = true; })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
             var res = S1.Input(Def.Constant.WheelUp, new LowLevelMouseHook.POINT());
             Thread.Sleep(100);
@@ -115,13 +116,13 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
             S1.PrimaryEventIsRestorable = true;
             var res = S1.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
@@ -137,13 +138,13 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
             S1.PrimaryEventIsRestorable = false;
             var res = S1.Input(Def.Constant.RightButtonUp, new LowLevelMouseHook.POINT());
@@ -157,23 +158,23 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return true; },
+                    (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { }),
+                    (ctx) => { }),
                 new StrokeGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
-                    () => { })
+                    (ctx) => { })
             };
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
 
             Assert.AreEqual(S1.Global, S0.Global);
             Assert.AreEqual(S1.S0, S0);
@@ -188,7 +189,7 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>();
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.LeftButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.LeftButtonDown, gestureDef);
 
             S1.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S1.Global.IgnoreNext.Count, 1);
@@ -203,7 +204,7 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>();
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
-            var S1 = new State1(S0.Global, S0, Def.Constant.LeftButtonDown, gestureDef);
+            var S1 = new State1(S0.Global, S0, ctx, Def.Constant.LeftButtonDown, gestureDef);
             S1.Global.ResetStrokeWatcher();
 
             S1.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
@@ -220,7 +221,7 @@ namespace CreviceApp.Core.FSM.Tests
             var gestureDef = new List<GestureDefinition>();
             var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
             {
-                var S1 = new State1(S0.Global, S0, Def.Constant.LeftButtonDown, gestureDef);
+                var S1 = new State1(S0.Global, S0, ctx, Def.Constant.LeftButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
                 S1.RestorePrimaryEvent();
@@ -229,7 +230,7 @@ namespace CreviceApp.Core.FSM.Tests
                 Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
             }
             {
-                var S1 = new State1(S0.Global, S0, Def.Constant.MiddleButtonDown, gestureDef);
+                var S1 = new State1(S0.Global, S0, ctx, Def.Constant.MiddleButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
                 S1.RestorePrimaryEvent();
@@ -238,7 +239,7 @@ namespace CreviceApp.Core.FSM.Tests
                 Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
             }
             {
-                var S1 = new State1(S0.Global, S0, Def.Constant.RightButtonDown, gestureDef);
+                var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
                 S1.RestorePrimaryEvent();
@@ -247,7 +248,7 @@ namespace CreviceApp.Core.FSM.Tests
                 Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
             }
             {
-                var S1 = new State1(S0.Global, S0, Def.Constant.X1ButtonDown, gestureDef);
+                var S1 = new State1(S0.Global, S0, ctx, Def.Constant.X1ButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
                 S1.RestorePrimaryEvent();
@@ -258,7 +259,7 @@ namespace CreviceApp.Core.FSM.Tests
                 Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton1);
             }
             {
-                var S1 = new State1(S0.Global, S0, Def.Constant.X2ButtonDown, gestureDef);
+                var S1 = new State1(S0.Global, S0, ctx, Def.Constant.X2ButtonDown, gestureDef);
                 mouseEvents.Clear();
                 Assert.AreEqual(mouseEvents.Count, 0);
                 S1.RestorePrimaryEvent();

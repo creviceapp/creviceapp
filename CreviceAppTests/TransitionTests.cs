@@ -16,25 +16,25 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelDown,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.MiddleButton,
                     DSL.Def.Constant.WheelLeft,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.MiddleButton,
                     DSL.Def.Constant.WheelRight,
-                    () => { }),
+                    (ctx) => { }),
             };
             var Gen0 = Transition.Gen0(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.Select(y => y as ButtonGestureDefinition))
@@ -60,20 +60,20 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { }),
+                    (ctx) => { }),
             };
             var Gen1 = Transition.Gen1(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
@@ -90,20 +90,20 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { }),
+                    (ctx) => { }),
             };
             var Gen2 = Transition.Gen2(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
@@ -120,20 +120,20 @@ namespace CreviceApp.Core.FSM.Tests
         {
             var gestureDef = new List<GestureDefinition>() {
                 new StrokeGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    () => { }),
+                    (ctx) => { }),
                  new ButtonGestureDefinition(
-                    () => { return false; },
+                    (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    () => { }),
+                    (ctx) => { }),
             };
             var Gen3 = Transition.Gen3(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());

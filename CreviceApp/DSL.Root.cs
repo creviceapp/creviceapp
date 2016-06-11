@@ -14,5 +14,10 @@ namespace CreviceApp.DSL
         {
             return new WhenElement(this, func);
         }
+
+        public WhenElement @when(Func<bool> func)
+        {
+            return @when((ctx) => func());
+        }
     }
 }

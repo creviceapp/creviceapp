@@ -76,11 +76,11 @@ namespace CreviceApp.Core.FSM
             throw new InvalidOperationException();
         }
 
-        public static void ExecuteSafely(Action action)
+        public static void ExecuteSafely(User.UserActionExecutionContext ctx, DSL.Def.DoFunc func)
         {
             try
             {
-                action();
+                func(ctx);
             }
             catch (Exception ex)
             {
@@ -89,11 +89,11 @@ namespace CreviceApp.Core.FSM
             }
         }
 
-        public static bool EvaluateSafely(DSL.Def.WhenFunc func)
+        public static bool EvaluateSafely(User.UserActionExecutionContext ctx, DSL.Def.WhenFunc func)
         {
             try
             {
-                return func();
+                return func(ctx);
             }
             catch (Exception ex)
             {
