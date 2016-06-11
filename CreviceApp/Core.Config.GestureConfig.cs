@@ -4,13 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.User
+namespace CreviceApp.Core.Config
 {
-    public class Config
-    {
-        public readonly GestureConfig Gesture = new GestureConfig();
-    }
-
     public class GestureConfig
     {
         public int InitialStrokeThreshold         { get; set; } = 10;

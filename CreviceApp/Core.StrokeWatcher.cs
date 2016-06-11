@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.Stroke
 {
-    using WinAPI.WindowsHook;
+    using WinAPI.WindowsHookEx;
 
     public abstract class PointProcessor
     {

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    using WinAPI.WindowsHook;
+    using WinAPI.WindowsHookEx;
 
     public class State2 : State
     {
         internal readonly State0 S0;
         internal readonly State1 S1;
-        internal readonly User.UserActionExecutionContext ctx;
+        internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly Def.Event.IDoubleActionSet secondaryEvent;
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
@@ -22,7 +22,7 @@ namespace CreviceApp.Core.FSM
             GlobalValues Global,
             State0 S0,
             State1 S1,
-            User.UserActionExecutionContext ctx,
+            UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             Def.Event.IDoubleActionSet secondaryEvent,
         IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
@@ -48,7 +48,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionRelease;
                 if (ev == secondaryEvent.GetPair())
                 {
-                    Debug.Print("Transition 6");
+                    Debug.Print("[Transition 6]");
                     Global.UserActionTaskFactory.StartNew(() => {
                         foreach (var gDef in T1[secondaryEvent])
                         {
@@ -59,7 +59,7 @@ namespace CreviceApp.Core.FSM
                 }
                 else if (ev == primaryEvent.GetPair())
                 {
-                    Debug.Print("Transition 7");
+                    Debug.Print("[Transition 7]");
                     IgnoreNext(secondaryEvent.GetPair());
                     return Result.EventIsConsumed(nextState: S0);
                 }
@@ -69,7 +69,7 @@ namespace CreviceApp.Core.FSM
 
         public override IState Reset()
         {
-            Debug.Print("Transition 10");
+            Debug.Print("[Transition 10]");
             IgnoreNext(primaryEvent.GetPair());
             IgnoreNext(secondaryEvent.GetPair());
             return S0;

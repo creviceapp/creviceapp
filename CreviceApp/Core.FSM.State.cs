@@ -21,7 +21,7 @@ namespace CreviceApp.Core.FSM
     // The state holding primary and secondary double action mouse buttons.
     #endregion
         
-    using WinAPI.WindowsHook;
+    using WinAPI.WindowsHookEx;
     
     public interface IState
     {
@@ -76,7 +76,7 @@ namespace CreviceApp.Core.FSM
             throw new InvalidOperationException();
         }
 
-        public static void ExecuteSafely(User.UserActionExecutionContext ctx, DSL.Def.DoFunc func)
+        public static void ExecuteSafely(UserActionExecutionContext ctx, DSL.Def.DoFunc func)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace CreviceApp.Core.FSM
             }
         }
 
-        public static bool EvaluateSafely(User.UserActionExecutionContext ctx, DSL.Def.WhenFunc func)
+        public static bool EvaluateSafely(UserActionExecutionContext ctx, DSL.Def.WhenFunc func)
         {
             try
             {

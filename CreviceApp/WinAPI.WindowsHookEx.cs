@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI.WindowsHook
+namespace CreviceApp.WinAPI.WindowsHookEx
 {
 	public class WindowsHook : IDisposable
     {
@@ -83,12 +83,15 @@ namespace CreviceApp.WinAPI.WindowsHook
                 }
 
                 var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
-                Debug.Print("Calling a native method SetWindowsHookEx({0}); hInstance: 0x{0:X}, hHook: 0x{0:X}", 
+                Debug.Print("Calling a native method SetWindowsHookEx({0}); hInstance: 0x{1:X}", 
                     Enum.GetName(typeof(HookType), hookType),
-                    hInstance.ToInt64(),
-                    hHook.ToInt64());
+                    hInstance.ToInt64());
                 hHook = SetWindowsHookEx((int)hookType, this.systemCallback, hInstance, 0);
-                if (!IsActivated)
+                if (IsActivated)
+                {
+                    Debug.Print("Success; hHook: 0x{0:X}", hHook.ToInt64());
+                }
+                else 
                 {
                     Helper.ThrowLastWin32Error();
                 }
@@ -103,10 +106,15 @@ namespace CreviceApp.WinAPI.WindowsHook
                 {
                     throw new InvalidOperationException();
                 }
-                Debug.Print("Calling a native method UnhookWindowsHookEx({0}); hHook: 0x{0:X}", 
+                Debug.Print("Calling a native method UnhookWindowsHookEx({0}); hHook: 0x{1:X}", 
                     Enum.GetName(typeof(HookType), hookType),
                     hHook);
-                if (!UnhookWindowsHookEx(hHook))
+
+                if (UnhookWindowsHookEx(hHook))
+                {
+                    Debug.Print("Success");
+                }
+                else
                 {
                     Helper.ThrowLastWin32Error();
                 }

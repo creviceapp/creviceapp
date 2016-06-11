@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core
 {
-    public static class ConfigDSLTreeParser
+    public static class DSLTreeParser
     {
         public static IEnumerable<GestureDefinition> TreeToGestureDefinition(DSL.Root root)
         {

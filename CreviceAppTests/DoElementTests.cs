@@ -14,14 +14,15 @@ namespace CreviceApp.DSL.Tests
         [TestMethod()]
         public void funcTest()
         {
-            var root = new DSL.Root();
+            var ctx = new Core.UserActionExecutionContext(0, 0);
+            var root = new Root();
             var appElement = root.@when(() => true);
             var onElement = appElement.@on(new Def.RightButton());
             var ifElement = onElement.@if(new Def.MoveDown(), new Def.MoveRight());
             var called = false;
             var doEmenent = ifElement.@do(() => { called = true; });
             Assert.IsFalse(called);
-            root.whenElements[0].onElements[0].ifStrokeElements[0].doElements[0].func(new UserActionExecutionContext(0, 0));
+            root.whenElements[0].onElements[0].ifStrokeElements[0].doElements[0].func(ctx);
             Assert.IsTrue(called);
         }
     }

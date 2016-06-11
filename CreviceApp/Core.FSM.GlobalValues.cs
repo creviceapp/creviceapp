@@ -17,7 +17,7 @@ namespace CreviceApp.Core.FSM
         public readonly TaskFactory LowPriorityTaskFactory;
         public readonly TaskFactory UserActionTaskFactory;
 
-        public readonly User.Config Config;
+        public readonly Config.UserConfig Config;
 
         public readonly HashSet<Def.Event.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Event.IDoubleActionRelease>();
                 
@@ -31,7 +31,7 @@ namespace CreviceApp.Core.FSM
             this.StrokeWatcherTaskFactory = new TaskFactory(StrokeWatcherScheduler);
             this.LowPriorityTaskFactory = new TaskFactory(LowPriorityScheduler);
             this.UserActionTaskFactory = new TaskFactory(UserActionScheduler);
-            this.Config = new User.Config();
+            this.Config = new Config.UserConfig();
             this.StrokeWatcher = NewStrokeWatcher();
         }
 

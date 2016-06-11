@@ -107,7 +107,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core.ConfigDSLTreeParser.cs" />
+    <Compile Include="Core.Config.GestureConfig.cs" />
+    <Compile Include="Core.DSLTreeParser.cs" />
     <Compile Include="Core.Def.cs" />
     <Compile Include="Core.Helper.cs" />
     <Compile Include="Core.FSM.GestureMachine.cs" />
@@ -139,9 +140,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Threading.cs" />
-    <Compile Include="User.Config.cs" />
+    <Compile Include="Core.Config.UserConfig.cs" />
+    <Compile Include="Core.UserActionExecutionContext.cs" />
+    <Compile Include="UserConfig.cs" />
     <Compile Include="WinAPI.Helper.cs" />
-    <Compile Include="WinAPI.InputSender.cs" />
+    <Compile Include="WinAPI.SendInput.Constant.cs" />
+    <Compile Include="WinAPI.SendInput.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -161,7 +165,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="WinAPI.Window.cs" />
-    <Compile Include="WinAPI.WindowsHook.cs" />
+    <Compile Include="WinAPI.WindowsHookEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

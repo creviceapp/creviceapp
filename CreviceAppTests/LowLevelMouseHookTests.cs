@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Tests
 {
-    using WinAPI.WindowsHook;
-    using WinAPI.InputSender;
+    using WinAPI.WindowsHookEx;
+    using WinAPI.SendInput;
 
     [TestClass()]
     public class LowLevelMouseHookTests

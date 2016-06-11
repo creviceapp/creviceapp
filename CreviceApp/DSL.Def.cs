@@ -32,8 +32,8 @@ namespace CreviceApp.DSL
 
     public static class Def
     {
-        public delegate bool WhenFunc(User.UserActionExecutionContext ctx);
-        public delegate void DoFunc(User.UserActionExecutionContext ctx);
+        public delegate bool WhenFunc(Core.UserActionExecutionContext ctx);
+        public delegate void DoFunc(Core.UserActionExecutionContext ctx);
 
         public interface AcceptableInOnClause { }
         public interface AcceptableInIfButtonClause { }
@@ -64,9 +64,14 @@ namespace CreviceApp.DSL
             public readonly WheelUp      WheelUp         = new WheelUp();
             public readonly WheelLeft    WheelLeft       = new WheelLeft();
             public readonly WheelRight   WheelRight      = new WheelRight();
-            public readonly X1Button     X1ButtonDown    = new X1Button();
-            public readonly X2Button     X2ButtonDown    = new X2Button();
-                
+            public readonly X1Button     X1Button        = new X1Button();
+            public readonly X2Button     X2Button        = new X2Button();
+
+            public readonly MoveUp    MoveUp    = new MoveUp();
+            public readonly MoveDown  MoveDown  = new MoveDown();
+            public readonly MoveLeft  MoveLeft  = new MoveLeft();
+            public readonly MoveRight MoveRight = new MoveRight();
+
             public static ConstantSingleton GetInstance()
             {
                 return singleton;

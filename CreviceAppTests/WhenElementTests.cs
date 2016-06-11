@@ -24,9 +24,10 @@ namespace CreviceApp.DSL.Tests
         [TestMethod()]
         public void funcTest()
         {
+            var ctx = new Core.UserActionExecutionContext(0, 0);
             var root = new Root();
             var appElement = root.when(() => true);
-            Assert.IsTrue(root.whenElements[0].func(new UserActionExecutionContext(0, 0)));
+            Assert.IsTrue(root.whenElements[0].func(ctx));
         }
 
     }

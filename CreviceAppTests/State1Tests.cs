@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM.Tests
 {
-    using WinAPI.WindowsHook;
+    using WinAPI.WindowsHookEx;
 
     [TestClass()]
     public class State1Tests
@@ -42,7 +42,7 @@ namespace CreviceApp.Core.FSM.Tests
             mouseEvents.Clear();
         }
 
-        readonly User.UserActionExecutionContext ctx = new User.UserActionExecutionContext(0, 0);
+        readonly UserActionExecutionContext ctx = new UserActionExecutionContext(0, 0);
             
         [TestMethod()]
         public void InputMustExecuteNoTransitionTest()

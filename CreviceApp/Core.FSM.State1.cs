@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    using WinAPI.WindowsHook;
-    using WinAPI.InputSender;
+    using WinAPI.WindowsHookEx;
+    using WinAPI.SendInput;
 
     public class State1 : State
     {
         internal readonly State0 S0;
-        internal readonly User.UserActionExecutionContext ctx;
+        internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
         internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
@@ -26,7 +26,7 @@ namespace CreviceApp.Core.FSM
         public State1(
             GlobalValues Global,
             State0 S0,
-            User.UserActionExecutionContext ctx,
+            UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             IEnumerable<GestureDefinition> gestureDef
             ) : base(Global)
@@ -53,7 +53,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionSet;
                 if (T1.Keys.Contains(ev))
                 {
-                    Debug.Print("Transition 1");
+                    Debug.Print("[Transition 1]");
                     PrimaryEventIsRestorable = false;
                     return Result.EventIsConsumed(nextState: new State2(Global, S0, this, ctx, primaryEvent, ev, T1));
                 }
@@ -63,7 +63,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.ISingleAction;
                 if (T2.Keys.Contains(ev))
                 {
-                    Debug.Print("Transition 2");
+                    Debug.Print("[Transition 2]");
                     PrimaryEventIsRestorable = false;
                     Global.UserActionTaskFactory.StartNew(() => {
                         foreach (var gDef in T2[ev])
@@ -83,7 +83,7 @@ namespace CreviceApp.Core.FSM
                     Debug.Print("Stroke: {0}", stroke.ToString());
                     if (T3.Keys.Contains(stroke))
                     {
-                        Debug.Print("Transition 3");
+                        Debug.Print("[Transition 3]");
                         Global.UserActionTaskFactory.StartNew(() => {
                             foreach (var gDef in T3[stroke])
                             {
@@ -95,12 +95,12 @@ namespace CreviceApp.Core.FSM
                     {
                         if (PrimaryEventIsRestorable && stroke.Count == 0)
                         {
-                            Debug.Print("Transition 4");
+                            Debug.Print("[Transition 4]");
                             RestorePrimaryEvent();
                         }
                         else
                         {
-                            Debug.Print("Transition 5");
+                            Debug.Print("[Transition 5]");
                         }
                     }
                     return Result.EventIsConsumed(nextState: S0);
@@ -111,7 +111,7 @@ namespace CreviceApp.Core.FSM
 
         public override IState Reset()
         {
-            Debug.Print("Transition 9");
+            Debug.Print("[Transition 9]");
             IgnoreNext(primaryEvent.GetPair());
             return S0;
         }

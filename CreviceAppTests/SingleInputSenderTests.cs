@@ -12,8 +12,9 @@ using System.Windows.Forms;
 
 namespace CreviceApp.Tests
 {
-    using WinAPI.WindowsHook;
-    using WinAPI.InputSender;
+    using WinAPI.WindowsHookEx;
+    using WinAPI.SendInput;
+    using WinAPI.SendInput.Constant;
 
     [TestClass()]
     public class SingleInputSenderTests
@@ -281,10 +282,10 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void KeyDownTest()
         {
-            sender.KeyDown(SingleInputSender.VirtualKeys.VK_A);
-            sender.KeyUp(SingleInputSender.VirtualKeys.VK_A);
+            sender.KeyDown(VirtualKeys.VK_A);
+            sender.KeyUp(VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
-            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, SingleInputSender.VirtualKeys.VK_A);
+            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x00U);
             Assert.IsFalse(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -292,10 +293,10 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void KeyUpTest()
         {
-            sender.KeyDown(SingleInputSender.VirtualKeys.VK_A);
-            sender.KeyUp(SingleInputSender.VirtualKeys.VK_A);
+            sender.KeyDown(VirtualKeys.VK_A);
+            sender.KeyUp(VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
-            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, SingleInputSender.VirtualKeys.VK_A);
+            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x00U);
             Assert.IsFalse(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -303,10 +304,10 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void ExtendedKeyDownTest()
         {
-            sender.ExtendedKeyDown(SingleInputSender.VirtualKeys.VK_A);
-            sender.ExtendedKeyUp(SingleInputSender.VirtualKeys.VK_A);
+            sender.ExtendedKeyDown(VirtualKeys.VK_A);
+            sender.ExtendedKeyUp(VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
-            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, SingleInputSender.VirtualKeys.VK_A);
+            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x00U);
             Assert.IsTrue(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -314,10 +315,10 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void ExtendedKeyUpTest()
         {
-            sender.ExtendedKeyDown(SingleInputSender.VirtualKeys.VK_A);
-            sender.ExtendedKeyUp(SingleInputSender.VirtualKeys.VK_A);
+            sender.ExtendedKeyDown(VirtualKeys.VK_A);
+            sender.ExtendedKeyUp(VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
-            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, SingleInputSender.VirtualKeys.VK_A);
+            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x00U);
             Assert.IsTrue(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -325,10 +326,10 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void KeyDownWithScanCodeTest()
         {
-            sender.KeyDownWithScanCode(SingleInputSender.VirtualKeys.VK_A);
-            sender.KeyUpWithScanCode(SingleInputSender.VirtualKeys.VK_A);
+            sender.KeyDownWithScanCode(VirtualKeys.VK_A);
+            sender.KeyUpWithScanCode(VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
-            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, SingleInputSender.VirtualKeys.VK_A);
+            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x1EU);
             Assert.IsFalse(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -336,10 +337,10 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void KeyUpWithScanCodeTest()
         {
-            sender.KeyDownWithScanCode(SingleInputSender.VirtualKeys.VK_A);
-            sender.KeyUpWithScanCode(SingleInputSender.VirtualKeys.VK_A);
+            sender.KeyDownWithScanCode(VirtualKeys.VK_A);
+            sender.KeyUpWithScanCode(VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
-            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, SingleInputSender.VirtualKeys.VK_A);
+            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
             Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x1EU);
             Assert.IsFalse(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -347,22 +348,22 @@ namespace CreviceApp.Tests
         [TestMethod()]
         public void ExtendedKeyDownWithScanCodeTest()
         {
-            sender.ExtendedKeyDownWithScanCode(SingleInputSender.VirtualKeys.VK_LWIN);
-            sender.ExtendedKeyUpWithScanCode(SingleInputSender.VirtualKeys.VK_LWIN);
+            sender.ExtendedKeyDownWithScanCode(VirtualKeys.VK_LWIN);
+            sender.ExtendedKeyUpWithScanCode(VirtualKeys.VK_LWIN);
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
-            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, SingleInputSender.VirtualKeys.VK_LWIN);
-            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, (uint)SingleInputSender.VirtualKeys.VK_LWIN);
+            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_LWIN);
+            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, (uint)VirtualKeys.VK_LWIN);
             Assert.IsTrue(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
         [TestMethod()]
         public void ExtendedKeyUpWithScanCodeTest()
         {
-            sender.ExtendedKeyDownWithScanCode(SingleInputSender.VirtualKeys.VK_LWIN);
-            sender.ExtendedKeyUpWithScanCode(SingleInputSender.VirtualKeys.VK_LWIN);
+            sender.ExtendedKeyDownWithScanCode(VirtualKeys.VK_LWIN);
+            sender.ExtendedKeyUpWithScanCode(VirtualKeys.VK_LWIN);
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
-            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, SingleInputSender.VirtualKeys.VK_LWIN);
-            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, (uint)SingleInputSender.VirtualKeys.VK_LWIN);
+            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_LWIN);
+            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, (uint)VirtualKeys.VK_LWIN);
             Assert.IsTrue(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 

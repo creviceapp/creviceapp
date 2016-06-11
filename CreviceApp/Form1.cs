@@ -13,79 +13,27 @@ using System.Windows.Forms;
 
 namespace CreviceApp
 {
-    using WinAPI.WindowsHook;
-    using WinAPI.InputSender;
+    using WinAPI.WindowsHookEx;
 
     public partial class Form1 : Form
     {
-        const int WM_DISPLAYCHANGE = 0x007E;
+        private const int WM_DISPLAYCHANGE = 0x007E;
 
-        readonly LowLevelMouseHook MouseHook;
-        readonly Core.FSM.GestureMachine GestureMachine;
-
+        private readonly LowLevelMouseHook mouseHook;
+        private readonly User.UserConfig config;
+        private readonly Core.FSM.GestureMachine GestureMachine;
+        
         public Form1()
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
 
-            var gestureDef = new List<Core.GestureDefinition>() {
-                new Core.ButtonGestureDefinition(
-                    (ctx) => { return true; },
-                    DSL.Def.Constant.RightButton,
-                    DSL.Def.Constant.WheelUp,
-                    (ctx) => 
-                    {
-                        new InputSequenceBuilder()
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL)
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_SHIFT)
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_TAB)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_TAB)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_SHIFT)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
-                            .Send();
-                    }),
-                new Core.ButtonGestureDefinition(
-                    (ctx) => { return true; },
-                    DSL.Def.Constant.RightButton,
-                    DSL.Def.Constant.WheelDown,
-                    (ctx) =>
-                    {
-                        new InputSequenceBuilder()
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_CONTROL)
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_TAB)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_TAB)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_CONTROL)
-                            .Send();
-                    }),
-                new Core.StrokeGestureDefinition(
-                    (ctx) => { return true; },
-                    DSL.Def.Constant.RightButton,
-                    new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Up }),
-                    (ctx) =>
-                    {
-                        new InputSequenceBuilder()
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_HOME)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_HOME)
-                            .Send();
-                    }),
-                new Core.StrokeGestureDefinition(
-                    (ctx) => { return true; },
-                    DSL.Def.Constant.RightButton,
-                    new Core.Def.Stroke(new List<Core.Def.Direction>() { Core.Def.Direction.Down }),
-                    (ctx) =>
-                    {
-                        new InputSequenceBuilder()
-                            .ExtendedKeyDown(InputSender.VirtualKeys.VK_END)
-                            .ExtendedKeyUp(InputSender.VirtualKeys.VK_END)
-                            .Send();
-                    })
-            };
+            this.FormClosing += OnClosing;
+            this.mouseHook = new LowLevelMouseHook(MouseProc);
+            this.config = new User.UserConfig();
+            this.GestureMachine = new Core.FSM.GestureMachine(this.config.GetGestureDefinition());
 
-            FormClosing += OnClosing;
-            MouseHook = new LowLevelMouseHook(MouseProc);
-            GestureMachine = new Core.FSM.GestureMachine(gestureDef);
-
-            MouseHook.SetHook();
+            this.mouseHook.SetHook();
 
             InitializeComponent();
         }
@@ -105,27 +53,9 @@ namespace CreviceApp
         {
             if (data.fromCreviceApp)
             {
-                Debug.Print("{0} ignored because this event has the signature of CreviceApp", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
+                Debug.Print("{0} was ignored because this event has the signature of CreviceApp", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
                 return WindowsHook.Result.Determine;
             }
-
-            /*
-            foreach (var window in new List<WinAPI.Application.WindowInfo>() {
-                new WinAPI.Application.ForegroundWindowInfo(),
-                new WinAPI.Application.OnCursorWindowInfo(data.pt.x, data.pt.y) })
-            {
-                Debug.Print("{0}", window.GetType().Name);
-                Debug.Print("Handle: 0x{0:X}", window.Handle.ToInt64());
-                Debug.Print("Id: 0x{0:X}", window.Id);
-                Debug.Print("Class name: {0}", window.ClassName);
-                //Debug.Print("Parent: {0}", window.Parent);
-                Debug.Print("Process id: 0x{0:X}", window.ProcessId);
-                Debug.Print("Thread id: 0x{0:X}", window.ThreadId);
-                Debug.Print("Text: {0}", window.Text);
-                Debug.Print("Name: {0}", window.Module.Name);
-                Debug.Print("Path: {0}", window.Module.Path);
-            }
-            */
 
             switch(evnt)
             {
@@ -197,7 +127,7 @@ namespace CreviceApp
 
         public void OnClosing(object sender, CancelEventArgs e)
         {
-            MouseHook.Unhook();
+            mouseHook.Unhook();
             GestureMachine.Dispose();
         }
     }

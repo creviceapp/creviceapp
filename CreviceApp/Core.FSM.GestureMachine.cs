@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    using WinAPI.WindowsHook;
+    using WinAPI.WindowsHookEx;
 
     public class GestureMachine : IDisposable
     {
