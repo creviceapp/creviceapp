@@ -58,8 +58,6 @@ namespace CreviceApp.WinAPI.Window
         {
             int pid = 0;
             int tid = GetWindowThreadProcessId(hWnd, out pid);
-            Debug.Print("Thread ID: 0x{0:X}", tid);
-            Debug.Print("Process ID: 0x{0:X}", pid);
             return Tuple.Create(tid, pid);
         }
 
@@ -81,7 +79,6 @@ namespace CreviceApp.WinAPI.Window
         {
             StringBuilder buffer = new StringBuilder(maxPathSize);
             IntPtr hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, pid);
-            Debug.Print("Process handle: 0x{0:X}", hProcess.ToInt64());
             int lpdwSize = maxPathSize;
             try
             {

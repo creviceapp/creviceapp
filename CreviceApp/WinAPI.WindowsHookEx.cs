@@ -88,7 +88,7 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 hHook = SetWindowsHookEx((int)hookType, this.systemCallback, hInstance, 0);
                 if (IsActivated)
                 {
-                    sb.AppendFormat("Success");
+                    sb.AppendFormat("Success\n");
                     sb.AppendFormat("hHook: 0x{0:X}", hHook.ToInt64());
                     Debug.Print(sb.ToString());
                 }
@@ -111,7 +111,7 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 }
                 var sb = new StringBuilder();
                 sb.AppendFormat("Calling a native method UnhookWindowsHookEx({0})", Enum.GetName(typeof(HookType), hookType));
-                sb.AppendFormat("hHook: 0x{1:X}", hHook);
+                sb.AppendFormat("hHook: 0x{0:X}", hHook);
                 if (UnhookWindowsHookEx(hHook))
                 {
                     sb.AppendFormat("Success");
