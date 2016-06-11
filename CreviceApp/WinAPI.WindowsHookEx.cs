@@ -81,18 +81,21 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 {
                     throw new InvalidOperationException();
                 }
-
+                var sb = new StringBuilder();
                 var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
-                Debug.Print("Calling a native method SetWindowsHookEx({0}); hInstance: 0x{1:X}", 
-                    Enum.GetName(typeof(HookType), hookType),
-                    hInstance.ToInt64());
+                sb.AppendFormat("Calling a native method SetWindowsHookEx({0})\n", Enum.GetName(typeof(HookType), hookType));
+                sb.AppendFormat("hInstance: 0x{0:X}\n", hInstance.ToInt64());
                 hHook = SetWindowsHookEx((int)hookType, this.systemCallback, hInstance, 0);
                 if (IsActivated)
                 {
-                    Debug.Print("Success; hHook: 0x{0:X}", hHook.ToInt64());
+                    sb.AppendFormat("Success");
+                    sb.AppendFormat("hHook: 0x{0:X}", hHook.ToInt64());
+                    Debug.Print(sb.ToString());
                 }
-                else 
+                else
                 {
+                    sb.AppendFormat("Failed");
+                    Debug.Print(sb.ToString());
                     Helper.ThrowLastWin32Error();
                 }
             }
@@ -106,16 +109,18 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 {
                     throw new InvalidOperationException();
                 }
-                Debug.Print("Calling a native method UnhookWindowsHookEx({0}); hHook: 0x{1:X}", 
-                    Enum.GetName(typeof(HookType), hookType),
-                    hHook);
-
+                var sb = new StringBuilder();
+                sb.AppendFormat("Calling a native method UnhookWindowsHookEx({0})", Enum.GetName(typeof(HookType), hookType));
+                sb.AppendFormat("hHook: 0x{1:X}", hHook);
                 if (UnhookWindowsHookEx(hHook))
                 {
-                    Debug.Print("Success");
+                    sb.AppendFormat("Success");
+                    Debug.Print(sb.ToString());
                 }
                 else
                 {
+                    sb.AppendFormat("Failed");
+                    Debug.Print(sb.ToString());
                     Helper.ThrowLastWin32Error();
                 }
                 hHook = IntPtr.Zero;
