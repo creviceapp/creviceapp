@@ -20,7 +20,7 @@ namespace CreviceApp.Core.FSM
             Gen0(IEnumerable<GestureDefinition> gestureDef)
         {
             return gestureDef
-                .ToLookup(x => Def.Convert(x.onButton))
+                .ToLookup(x => Helper.Convert(x.onButton))
                 .ToDictionary(x => x.Key, x => x.Select(y => y));
         }
 
@@ -37,7 +37,7 @@ namespace CreviceApp.Core.FSM
             return gestureDef
                 .Select(x => x as ButtonGestureDefinition)
                 .Where(x => x != null)
-                .ToLookup(x => Def.Convert(x.ifButton))
+                .ToLookup(x => Helper.Convert(x.ifButton))
                 .Where(x => x.Key is Def.Event.IDoubleActionSet)
                 .ToDictionary(x => x.Key as Def.Event.IDoubleActionSet, x => x.Select(y => y));
         }
@@ -56,7 +56,7 @@ namespace CreviceApp.Core.FSM
             return gestureDef
                 .Select(x => x as ButtonGestureDefinition)
                 .Where(x => x != null)
-                .ToLookup(x => Def.Convert(x.ifButton))
+                .ToLookup(x => Helper.Convert(x.ifButton))
                 .Where(x => x.Key is Def.Event.ISingleAction)
                 .ToDictionary(x => x.Key as Def.Event.ISingleAction, x => x.Select(y => y));
         }

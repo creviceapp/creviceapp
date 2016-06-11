@@ -36,12 +36,12 @@ namespace CreviceApp.Core
                         }
                         foreach (var doElement in ifButtonElement.doElements)
                         {
-                            gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, Def.Convert(doElement.func)));
+                            gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, Helper.Convert(doElement.func)));
                         }
                     }
                     foreach (var ifStrokeElement in onElement.ifStrokeElements)
                     {
-                        var stroke = Def.Convert(ifStrokeElement.moves);
+                        var stroke = Helper.Convert(ifStrokeElement.moves);
                         if (ifStrokeElement.doElements.Count == 0)
                         {
                             gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, null));
@@ -49,7 +49,7 @@ namespace CreviceApp.Core
                         }
                         foreach (var doElement in ifStrokeElement.doElements)
                         {
-                            gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, Def.Convert(doElement.func)));
+                            gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, Helper.Convert(doElement.func)));
                         }
                     }
                 }
