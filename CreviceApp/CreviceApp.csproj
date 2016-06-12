@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core.Config.GestureConfig.cs" />
+    <Compile Include="Core.Config.UserInterfaceConfig.cs" />
     <Compile Include="Core.DSLTreeParser.cs" />
     <Compile Include="Core.Def.cs" />
     <Compile Include="Core.Helper.cs" />
@@ -130,11 +131,11 @@
     <Compile Include="DSL.OnElement.cs" />
     <Compile Include="DSL.Root.cs" />
     <Compile Include="DSL.WhenElement.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Logging.cs" />
     <Compile Include="Program.cs" />
@@ -142,10 +143,14 @@
     <Compile Include="Threading.cs" />
     <Compile Include="Core.Config.UserConfig.cs" />
     <Compile Include="Core.UserActionExecutionContext.cs" />
+    <Compile Include="UI.cs" />
     <Compile Include="UserConfig.cs" />
     <Compile Include="WinAPI.Helper.cs" />
     <Compile Include="WinAPI.SendInput.Constant.cs" />
     <Compile Include="WinAPI.SendInput.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -164,6 +169,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="WinAPI.WaveVolume.cs" />
     <Compile Include="WinAPI.Window.cs" />
     <Compile Include="WinAPI.WindowsHookEx.cs" />
   </ItemGroup>

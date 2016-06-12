@@ -106,34 +106,9 @@ namespace CreviceApp.WinAPI.Window
         }
     }
             
-    public class ModuleFileInfo
-    {
-        private WindowInfo info;
-
-        private Lazy<string> path;
-        public string Path { get { return path.Value; } }
-
-        private Lazy<string> name;
-        public string Name { get { return name.Value; } }
-
-        public ModuleFileInfo(WindowInfo info)
-        {
-            this.info = info;
-            this.path = new Lazy<string>(() =>
-            {
-                return Window.GetPath(info.ProcessId);
-            });
-            this.name = new Lazy<string>(() =>
-            {
-                return Window.GetName(path.Value);
-            });
-        }
-    }
-
     public class WindowInfo
     {
         public readonly IntPtr Handle;
-        public readonly ModuleFileInfo Module;
         
         private readonly Lazy<Tuple<int, int>> threadProcessId;
         public int ThreadId  { get { return threadProcessId.Value.Item1; } }
@@ -150,6 +125,12 @@ namespace CreviceApp.WinAPI.Window
 
         private readonly Lazy<WindowInfo> parent;
         public WindowInfo Parent { get { return parent.Value; } }
+
+        private Lazy<string> modulePath;
+        public string ModulePath { get { return modulePath.Value; } }
+
+        private Lazy<string> moduleName;
+        public string ModuleName { get { return moduleName.Value; } }
 
 
         public WindowInfo(IntPtr handle)
@@ -183,7 +164,14 @@ namespace CreviceApp.WinAPI.Window
                     return new WindowInfo(res);
                 }
             });
-            this.Module = new ModuleFileInfo(this);
+            this.modulePath = new Lazy<string>(() =>
+            {
+                return Window.GetPath(ProcessId);
+            });
+            this.moduleName = new Lazy<string>(() =>
+            {
+                return Window.GetName(ModulePath);
+            });
         }
 
         public bool BringWindowToTop()

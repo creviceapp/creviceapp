@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,8 @@ namespace CreviceApp.User
         {
             var Chrome = @when((ctx) =>
             {
-                return ctx.Window.Foreground.Module.Name == "chrome.exe";
+                Debug.Print(ctx.Window.Foreground.ClassName);
+                return ctx.Window.Foreground.ModuleName == "chrome.exe";
             });
 
             Chrome.
@@ -83,6 +85,37 @@ namespace CreviceApp.User
                 ExtendedKeyUp(VK_W).
                 ExtendedKeyUp(VK_CONTROL).
                 Send();
+            });
+
+            var Explorer = @when((ctx) =>
+            {
+                Debug.Print(ctx.Window.Foreground.ClassName);
+                return ctx.Window.Foreground.ModuleName == "explorer.exe" &&
+                       ctx.Window.Foreground.ClassName == "Shell_SecondaryTrayWnd";
+            });
+
+            Explorer.
+            @on(RightButton).
+            @if(WheelUp).
+            @do((ctx) =>
+            {
+                var current = Volume.Value + 0.02f;
+                Debug.Print("Volume: {0}", current);
+                var next = (current > 1 ? 1 : current);
+                Volume.Value = next;
+                Tooltip(string.Format("Volume: {0}", next));
+            });
+
+            Explorer.
+            @on(RightButton).
+            @if(WheelDown).
+            @do((ctx) =>
+            {
+                var current = Volume.Value - 0.02f;
+                Debug.Print("Volume: {0}", current);
+                var next = (current < 0 ? 0 : current);
+                Volume.Value = next;
+                Tooltip(string.Format("Volume: {0}", next));
             });
         }
     }

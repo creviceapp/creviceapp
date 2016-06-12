@@ -84,8 +84,11 @@ namespace CreviceApp.Core.FSM
             }
             catch (Exception ex)
             {
-                Debug.Print("{0} occured when executing a DoFunc of a gesture. This error may automatically be recovered.", 
-                    ex.GetType().Name);
+                Debug.Print(
+                    "An exception was thrown when executing a DoFunc of a gesture. " +
+                    "This error may automatically be recovered.\n{0} :\n{1}", 
+                    ex.GetType().Name,
+                    ex.StackTrace);
             }
         }
 
@@ -97,8 +100,11 @@ namespace CreviceApp.Core.FSM
             }
             catch (Exception ex)
             {
-                Debug.Print("{0} occured when evaluating a WhenFunc of a gesture. This error may automatically be recovered.",
-                    ex.GetType().Name);
+                Debug.Print(
+                    "An exception was thrown when executing a DoFunc of a gesture. " +
+                    "This error may automatically be recovered.\n{0} :\n{1}",
+                    ex.GetType().Name,
+                    ex.StackTrace);
             }
             return false;
         }
