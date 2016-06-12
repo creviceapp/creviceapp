@@ -4,14 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CreviceApp.Core.Config
 {
     public class UserConfig
     {
         public readonly GestureConfig Gesture = new GestureConfig();
+        public readonly UserInterfaceConfig UI = new UserInterfaceConfig();
 
-        protected readonly DSL.Root root = new DSL.Root();
+        private readonly DSL.Root root = new DSL.Root();
 
         protected readonly DSL.Def.LeftButton   LeftButton   = DSL.Def.Constant.LeftButton;
         protected readonly DSL.Def.MiddleButton MiddleButton = DSL.Def.Constant.MiddleButton;
@@ -29,7 +31,7 @@ namespace CreviceApp.Core.Config
         protected readonly DSL.Def.MoveRight MoveRight = DSL.Def.Constant.MoveRight;
 
         protected readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
-        
+
         public IEnumerable<GestureDefinition> GetGestureDefinition()
         {
             return DSLTreeParser.TreeToGestureDefinition(root)
@@ -45,6 +47,16 @@ namespace CreviceApp.Core.Config
         public DSL.WhenElement @when(Func<bool> func)
         {
             return root.@when(func);
+        }
+        
+        public void Tooltip(string text)
+        {
+            MainForm.Instance.ShowTooltip(text, UI.TooltipPositionBinding(Cursor.Position), UI.TooltipTimeout);
+        }
+
+        public void Baloon(string text)
+        {
+            MainForm.Instance.ShowBaloon(text, UI.BaloonTimeout);
         }
     }
 }

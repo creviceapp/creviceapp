@@ -49,7 +49,7 @@ namespace CreviceApp.Core.FSM
         {
             var _StrokeWatcher = StrokeWatcher;
             StrokeWatcher = NewStrokeWatcher();
-            Debug.Print("StrokeWatcher was reset; {0} to {1}", _StrokeWatcher.GetHashCode(), StrokeWatcher.GetHashCode());
+            Debug.Print("StrokeWatcher was reset; {0} -> {1}", _StrokeWatcher.GetHashCode(), StrokeWatcher.GetHashCode());
             LowPriorityTaskFactory.StartNew(() => {
                 _StrokeWatcher.Dispose();
             });

@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,25 +14,43 @@ namespace CreviceApp
 {
     using WinAPI.WindowsHookEx;
 
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
+        private static readonly MainForm instance = new MainForm();
+        public static MainForm Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
         private const int WM_DISPLAYCHANGE = 0x007E;
 
         private readonly LowLevelMouseHook mouseHook;
-        private readonly User.UserConfig config;
         private readonly Core.FSM.GestureMachine GestureMachine;
-        
-        public Form1()
+
+        private readonly UI.TooltipNotifier tooltip;
+
+        public MainForm()
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
 
             this.FormClosing += OnClosing;
+            this.tooltip = new UI.TooltipNotifier(this);
             this.mouseHook = new LowLevelMouseHook(MouseProc);
-            this.config = new User.UserConfig();
-            this.GestureMachine = new Core.FSM.GestureMachine(this.config.GetGestureDefinition());
+            this.GestureMachine = new Core.FSM.GestureMachine(new User.UserConfig().GetGestureDefinition());
 
-            this.mouseHook.SetHook();
+            try
+            {
+                mouseHook.SetHook();
+            }
+            catch(Win32Exception)
+            {
+                MessageBox.Show("Fatal error: SetWindowsHookEX(WH_MOUSE_LL) was failed.");
+                Application.Exit();
+            }
 
             InitializeComponent();
         }
@@ -57,7 +74,7 @@ namespace CreviceApp
                 return WindowsHook.Result.Determine;
             }
 
-            switch(evnt)
+            switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
                     return Convert(GestureMachine.Input(Core.Def.Constant.Move, data.pt));
@@ -129,6 +146,37 @@ namespace CreviceApp
         {
             mouseHook.Unhook();
             GestureMachine.Dispose();
+        }
+
+        private void InvokeProperly(MethodInvoker invoker)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(invoker);
+            }
+            else
+            {
+                invoker.Invoke();
+            }
+        }
+
+        public void ShowTooltip(string text, Point point, int duration)
+        {
+            var invoker = (MethodInvoker)delegate()
+            {
+                tooltip.Show(text, point, duration);
+            };
+            InvokeProperly(invoker);
+        }
+
+        public void ShowBaloon(string text, int timeout)
+        {
+            var invoker = (MethodInvoker)delegate ()
+            {
+                notifyIcon1.BalloonTipText = text;
+                notifyIcon1.ShowBalloonTip(timeout);
+            };
+            InvokeProperly(invoker);
         }
     }
 }

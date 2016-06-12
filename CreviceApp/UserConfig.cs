@@ -31,6 +31,8 @@ namespace CreviceApp.User
                 ExtendedKeyUp(VK_SHIFT).
                 ExtendedKeyUp(VK_CONTROL).
                 Send();
+
+                Tooltip("Previous Tab");
             });
 
             Chrome.
@@ -45,7 +47,6 @@ namespace CreviceApp.User
                 ExtendedKeyUp(VK_CONTROL).
                 Send();
             });
-
 
             Chrome.
             @on(RightButton).
