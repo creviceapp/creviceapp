@@ -137,8 +137,7 @@ namespace CreviceApp.WinAPI.SendInput
 
         protected void Send(INPUT[] input)
         {
-            var sb = new StringBuilder();
-            sb.AppendFormat("Calling a native method SendInput");
+            var log = new CallLogger("SendInput");
             foreach (var item in input.Select((v, i) => new { v, i}))
             {
                 var inputType = (InputType)item.v.type;            
@@ -147,40 +146,39 @@ namespace CreviceApp.WinAPI.SendInput
                     var data = item.v.data.asMouseInput;
                     var eventType = (MouseEventType)data.dwFlags;
 
-                    sb.AppendFormat("MouseEvent[{0}]:\n", item.i);
-                    sb.AppendFormat("dx: {0}, dy: {0}\n", data.dx, data.dy);
-                    sb.AppendFormat("dwFlags: {0} | {1}\n", eventType, ToHexString(data.dwFlags));
+                    log.Add("MouseEvent[{0}]:", item.i);
+                    log.Add("dx: {0}", data.dx);
+                    log.Add("dy: {0}", data.dy);
+                    log.Add("dwFlags: {0} | {1}", eventType, ToHexString(data.dwFlags));
                     if (eventType.HasFlag(MouseEventType.MOUSEEVENTF_XDOWN | MouseEventType.MOUSEEVENTF_XUP))
                     {
-                        sb.AppendFormat("mouseData: {0} | {1}\n", (XButtonType)data.mouseData.asXButton.type, ToHexString((uint)data.mouseData.asXButton.type));
+                        log.Add("mouseData: {0} | {1}", (XButtonType)data.mouseData.asXButton.type, ToHexString((uint)data.mouseData.asXButton.type));
                     } 
                     else if (eventType.HasFlag(MouseEventType.MOUSEEVENTF_WHEEL | MouseEventType.MOUSEEVENTF_HWHEEL))
                     {
-                        sb.AppendFormat("mouseData: {0} | {1}\n", data.mouseData.asWheelDelta.delta, ToHexString((uint)data.mouseData.asWheelDelta.delta));
+                        log.Add("mouseData: {0} | {1}", data.mouseData.asWheelDelta.delta, ToHexString((uint)data.mouseData.asWheelDelta.delta));
                     }
-                    sb.AppendFormat("dwExtraInfo: {0}\n", ToHexString(data.dwExtraInfo.ToUInt64()));
+                    log.Add("dwExtraInfo: {0}", ToHexString(data.dwExtraInfo.ToUInt64()));
                 }
                 else if (inputType.HasFlag(InputType.INPUT_KEYBOARD))
                 {
                     var data = item.v.data.asKeyboardInput;
                     var eventType = (KeyboardEventType)data.dwFlags;
-                    sb.AppendFormat("KeyboardEvent[{0}]:\n", item.i);
-                    sb.AppendFormat("wVk: {0}\n", data.wVk);
-                    sb.AppendFormat("wScan: {0}\n", data.wScan);
-                    sb.AppendFormat("dwFlags: {0} | {1}\n", eventType, ToHexString(data.dwFlags));
-                    sb.AppendFormat("dwExtraInfo: {0}\n", ToHexString(data.dwExtraInfo.ToUInt64()));
+                    log.Add("KeyboardEvent[{0}]:", item.i);
+                    log.Add("wVk: {0}", data.wVk);
+                    log.Add("wScan: {0}", data.wScan);
+                    log.Add("dwFlags: {0} | {1}", eventType, ToHexString(data.dwFlags));
+                    log.Add("dwExtraInfo: {0}", ToHexString(data.dwExtraInfo.ToUInt64()));
                 }
             }
             if (SendInput((uint)input.Length, input, Marshal.SizeOf(input[0])) > 0)
             {
-                sb.AppendFormat("Success");
+                log.Success();
             }
             else
             {
-                int errorCode = Marshal.GetLastWin32Error();
-                sb.AppendFormat("SendInput was failed; ErrorCode: {0}", errorCode);
+                log.FailWithErrorCode();
             }
-            Debug.Print(sb.ToString());
         }
 
         private string ToHexString(ulong data)

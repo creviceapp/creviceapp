@@ -81,22 +81,20 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 {
                     throw new InvalidOperationException();
                 }
-                var sb = new StringBuilder();
+                var log = new CallLogger("SetWindowsHookEx");
+                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), hookType));
                 var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
-                sb.AppendFormat("Calling a native method SetWindowsHookEx({0})\n", Enum.GetName(typeof(HookType), hookType));
-                sb.AppendFormat("hInstance: 0x{0:X}\n", hInstance.ToInt64());
-                hHook = SetWindowsHookEx((int)hookType, this.systemCallback, hInstance, 0);
+
+                log.Add("hInstance: 0x{0:X}", hInstance.ToInt64());
+                hHook = SetWindowsHookEx((int)hookType, systemCallback, hInstance, 0);
                 if (IsActivated)
                 {
-                    sb.AppendFormat("Success\n");
-                    sb.AppendFormat("hHook: 0x{0:X}", hHook.ToInt64());
-                    Debug.Print(sb.ToString());
+                    log.Add("hHook: 0x{0:X}", hHook.ToInt64());
+                    log.Success();
                 }
                 else
                 {
-                    sb.AppendFormat("Failed");
-                    Debug.Print(sb.ToString());
-                    Helper.ThrowLastWin32Error();
+                    log.FailWithErrorCode();
                 }
             }
         }
@@ -109,19 +107,16 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 {
                     throw new InvalidOperationException();
                 }
-                var sb = new StringBuilder();
-                sb.AppendFormat("Calling a native method UnhookWindowsHookEx({0})", Enum.GetName(typeof(HookType), hookType));
-                sb.AppendFormat("hHook: 0x{0:X}", hHook);
+                var log = new CallLogger("UnhookWindowsHookEx");
+                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), hookType));
+                log.Add("hHook: 0x{0:X}", hHook);
                 if (UnhookWindowsHookEx(hHook))
                 {
-                    sb.AppendFormat("Success");
-                    Debug.Print(sb.ToString());
+                    log.Success();
                 }
                 else
                 {
-                    sb.AppendFormat("Failed");
-                    Debug.Print(sb.ToString());
-                    Helper.ThrowLastWin32Error();
+                    log.FailWithErrorCode();
                 }
                 hHook = IntPtr.Zero;
             }

@@ -47,6 +47,15 @@ namespace CreviceApp.WinAPI.Window
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetParent(IntPtr hWnd);
+        
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool BringWindowToTop(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern long SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public extern static bool PostMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
 
 
         public static IntPtr GetWindowId(IntPtr hWnd)
@@ -124,7 +133,8 @@ namespace CreviceApp.WinAPI.Window
     public class WindowInfo
     {
         public readonly IntPtr Handle;
-
+        public readonly ModuleFileInfo Module;
+        
         private readonly Lazy<Tuple<int, int>> threadProcessId;
         public int ThreadId  { get { return threadProcessId.Value.Item1; } }
         public int ProcessId { get { return threadProcessId.Value.Item2; } }
@@ -141,8 +151,7 @@ namespace CreviceApp.WinAPI.Window
         private readonly Lazy<WindowInfo> parent;
         public WindowInfo Parent { get { return parent.Value; } }
 
-        public readonly ModuleFileInfo Module;
-                
+
         public WindowInfo(IntPtr handle)
         {
             this.Handle = handle;
@@ -175,6 +184,21 @@ namespace CreviceApp.WinAPI.Window
                 }
             });
             this.Module = new ModuleFileInfo(this);
+        }
+
+        public bool BringWindowToTop()
+        {
+            return Window.BringWindowToTop(Handle);
+        }
+
+        public long SendMessage(uint Msg, uint wParam, uint lParam)
+        {
+            return Window.SendMessage(Handle, Msg, wParam, lParam);
+        }
+
+        public bool PostMessage(uint Msg, uint wParam, uint lParam)
+        {
+            return Window.PostMessage(Handle, Msg, wParam, lParam);
         }
     }
 
