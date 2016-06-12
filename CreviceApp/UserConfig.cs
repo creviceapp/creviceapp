@@ -46,6 +46,8 @@ namespace CreviceApp.User
                 ExtendedKeyUp(VK_TAB).
                 ExtendedKeyUp(VK_CONTROL).
                 Send();
+
+                Baloon("Next Tab");
             });
 
             Chrome.

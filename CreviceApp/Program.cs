@@ -17,6 +17,9 @@ namespace CreviceApp
         [STAThread]
         static void Main()
         {
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(MainForm.Instance);

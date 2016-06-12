@@ -27,31 +27,15 @@ namespace CreviceApp
 
         private const int WM_DISPLAYCHANGE = 0x007E;
 
+        private readonly UI.TooltipNotifier tooltip;
         private readonly LowLevelMouseHook mouseHook;
         private readonly Core.FSM.GestureMachine GestureMachine;
 
-        private readonly UI.TooltipNotifier tooltip;
-
         public MainForm()
         {
-            Trace.Listeners.Clear();
-            Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
-
-            this.FormClosing += OnClosing;
             this.tooltip = new UI.TooltipNotifier(this);
             this.mouseHook = new LowLevelMouseHook(MouseProc);
             this.GestureMachine = new Core.FSM.GestureMachine(new User.UserConfig().GetGestureDefinition());
-
-            try
-            {
-                mouseHook.SetHook();
-            }
-            catch(Win32Exception)
-            {
-                MessageBox.Show("Fatal error: SetWindowsHookEX(WH_MOUSE_LL) was failed.");
-                Application.Exit();
-            }
-
             InitializeComponent();
         }
 
@@ -141,10 +125,39 @@ namespace CreviceApp
                 return LowLevelMouseHook.Result.Transfer;
             }
         }
-
-        public void OnClosing(object sender, CancelEventArgs e)
+        
+        protected override void OnLoad(EventArgs e)
         {
-            mouseHook.Unhook();
+            base.OnLoad(e);
+            try
+            {
+                mouseHook.SetHook();
+            }
+            catch (Win32Exception)
+            {
+                MessageBox.Show("SetWindowsHookEX(WH_MOUSE_LL) was failed.",
+                    "Fatal error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                Application.Exit();
+            }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            try
+            {
+                mouseHook.Unhook();
+            }
+            catch(Win32Exception)
+            {
+                MessageBox.Show("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.",
+                    "Fatal error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            tooltip.Dispose();
             GestureMachine.Dispose();
         }
 
@@ -171,7 +184,7 @@ namespace CreviceApp
 
         public void ShowBaloon(string text, int timeout)
         {
-            var invoker = (MethodInvoker)delegate ()
+            var invoker = (MethodInvoker)delegate()
             {
                 notifyIcon1.BalloonTipText = text;
                 notifyIcon1.ShowBalloonTip(timeout);

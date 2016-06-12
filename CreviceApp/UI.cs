@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace CreviceApp.UI
 {
-    public class TooltipNotifier
+    public class TooltipNotifier : IDisposable
     {
         private const int Absolute = 0x0002;
 
@@ -33,6 +33,17 @@ namespace CreviceApp.UI
             SetTrackPosition.Invoke(tooltip, new object[] { point.X, point.Y });
             SetTool.Invoke(tooltip, new object[] { win, text, Absolute, point });
             StartTimer.Invoke(tooltip, new object[] { win, duration });
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            tooltip.Dispose();
+        }
+
+        ~TooltipNotifier()
+        {
+            Dispose();
         }
     }
 }
