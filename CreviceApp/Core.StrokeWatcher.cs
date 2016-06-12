@@ -94,18 +94,18 @@ namespace CreviceApp.Core.Stroke
                         }
                         if (strokes.Count == 0)
                         {
-                            var res = Stroke.Create(initialStrokeThreshold, strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
-                            if (res != null)
+                            if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
                             {
-                                Debug.Print("Stroke[0]: {0}", Enum.GetName(typeof(Def.Direction), res.Direction));
-                                strokes.Add(res);
+                                var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
+                                Debug.Print("Stroke[0]: {0}", Enum.GetName(typeof(Def.Direction), stroke.Direction));
+                                strokes.Add(stroke);
                             }
                         }
                         else
                         {
-                            var s = strokes.Last();
-                            var res = s.Input(buffer);
-                            if (s != res)
+                            var stroke = strokes.Last();
+                            var res = stroke.Input(buffer);
+                            if (stroke != res)
                             {
                                 Debug.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(Def.Direction), res.Direction));
                                 strokes.Add(res);
@@ -134,7 +134,7 @@ namespace CreviceApp.Core.Stroke
             {
                 tokenSource.Dispose();
                 queue.Dispose();
-                Debug.Print("StrokeWatcher was released: {0}", GetHashCode());
+                Debug.Print("StrokeWatcher(0x{0:X}) was released", GetHashCode());
             }
         }
 

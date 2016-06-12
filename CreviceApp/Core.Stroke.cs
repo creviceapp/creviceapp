@@ -17,13 +17,24 @@ namespace CreviceApp.Core.Stroke
         private readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
 
         public Stroke(
-            Def.Direction dir,
             int strokeDirectionChangeThreshold,
-            int strokeExtensionThreshold)
+            int strokeExtensionThreshold,
+            Def.Direction dir)
         {
             this.Direction = dir;
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
             this.strokeExtensionThreshold = strokeExtensionThreshold;
+        }
+
+        public Stroke(
+            int strokeDirectionChangeThreshold,
+            int strokeExtensionThreshold,
+            List<LowLevelMouseHook.POINT> input)
+        {
+            this.Direction = NextDirection(GetAngle(input.First(), input.Last()));
+            this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            this.strokeExtensionThreshold = strokeExtensionThreshold;
+            Absorb(input);
         }
 
         public virtual Stroke Input(List<LowLevelMouseHook.POINT> input)
@@ -35,13 +46,15 @@ namespace CreviceApp.Core.Stroke
             var angle = GetAngle(p0, p1);
             if (dx > strokeDirectionChangeThreshold || dy > strokeDirectionChangeThreshold)
             {
-                var move = NextDirection(angle);
-                if (move == Direction)
+                var dir = NextDirection(angle);
+                if (IsSameDirection(dir))
                 {
                     Absorb(input);
                     return this;
                 }
-                return Create(move);
+                var stroke = CreateNew(dir);
+                stroke.Absorb(input);
+                return stroke;
             }
 
             if (dx > strokeExtensionThreshold || dy > strokeExtensionThreshold)
@@ -80,34 +93,30 @@ namespace CreviceApp.Core.Stroke
             }
         }
 
+        private bool IsSameDirection(Def.Direction dir)
+        {
+            return dir == Direction;
+        }
+
         private bool IsExtensionable(double angle)
         {
             return Direction == NextDirection(angle);
         }
 
-        private Stroke Create(Def.Direction dir)
+        private Stroke CreateNew(Def.Direction dir)
         {
-            return new Stroke(dir, strokeDirectionChangeThreshold, strokeExtensionThreshold);
+            return new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, dir);
         }
 
-        public static Stroke Create(
-            int initialStrokeThreshold,
-            int strokeChangeThreshold,
-            int strokeExtensionThreshold,
-            List<LowLevelMouseHook.POINT> input)
+        public static bool CanCreate(int initialStrokeThreshold, LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
         {
-            var p0 = input.First();
-            var p1 = input.Last();
             var dx = Math.Abs(p0.x - p1.x);
             var dy = Math.Abs(p0.y - p1.y);
-            var angle = GetAngle(p0, p1);
             if (dx > initialStrokeThreshold || dy > initialStrokeThreshold)
             {
-                var s = new Stroke(NextDirection(angle), strokeChangeThreshold, strokeExtensionThreshold);
-                s.Input(input);
-                return s;
+                return true;
             }
-            return null;
+            return false;
         }
 
         private static double GetAngle(LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
