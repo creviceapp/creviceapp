@@ -20,7 +20,7 @@ namespace CreviceApp.Core.Config
             this.TooltipPositionBinding = (point) =>
             {
                 var rect = Screen.FromPoint(point).WorkingArea;
-                return new Point(rect.X + rect.Width, rect.Y + rect.Height);
+                return new Point(rect.X + rect.Width - 10, rect.Y + rect.Height - 10);
             };
         }
     }
