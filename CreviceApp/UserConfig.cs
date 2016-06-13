@@ -89,9 +89,10 @@ namespace CreviceApp.User
 
             var Explorer = @when((ctx) =>
             {
+                Debug.Print(ctx.Window.OnCursor.ClassName);
                 Debug.Print(ctx.Window.Foreground.ClassName);
-                return ctx.Window.Foreground.ModuleName == "explorer.exe" &&
-                       ctx.Window.Foreground.ClassName == "Shell_SecondaryTrayWnd";
+                return ctx.Window.OnCursor.ModuleName == "explorer.exe" &&
+                       ctx.Window.OnCursor.ClassName == "MSTaskListWClass";
             });
 
             Explorer.
@@ -100,10 +101,10 @@ namespace CreviceApp.User
             @do((ctx) =>
             {
                 var current = Volume.Value + 0.02f;
-                Debug.Print("Volume: {0}", current);
                 var next = (current > 1 ? 1 : current);
+                Debug.Print("Volume: {0:f3}", (int)(next * 100));
                 Volume.Value = next;
-                Tooltip(string.Format("Volume: {0}", next));
+                Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
             });
 
             Explorer.
@@ -112,10 +113,10 @@ namespace CreviceApp.User
             @do((ctx) =>
             {
                 var current = Volume.Value - 0.02f;
-                Debug.Print("Volume: {0}", current);
                 var next = (current < 0 ? 0 : current);
+                Debug.Print("Volume: {0:f3}", (int)(next * 100));
                 Volume.Value = next;
-                Tooltip(string.Format("Volume: {0}", next));
+                Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
             });
         }
     }
