@@ -205,7 +205,7 @@ namespace CreviceApp.WinAPI.WaveVolume
             
         }
 
-        public float Value
+        public float MasterVolume
         {
             get
             {

@@ -100,10 +100,10 @@ namespace CreviceApp.User
             @if(WheelUp).
             @do((ctx) =>
             {
-                var current = Volume.Value + 0.02f;
+                var current = Wave.MasterVolume + 0.02f;
                 var next = (current > 1 ? 1 : current);
                 Debug.Print("Volume: {0:f3}", (int)(next * 100));
-                Volume.Value = next;
+                Wave.MasterVolume = next;
                 Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
             });
 
@@ -112,10 +112,10 @@ namespace CreviceApp.User
             @if(WheelDown).
             @do((ctx) =>
             {
-                var current = Volume.Value - 0.02f;
+                var current = Wave.MasterVolume - 0.02f;
                 var next = (current < 0 ? 0 : current);
                 Debug.Print("Volume: {0:f3}", (int)(next * 100));
-                Volume.Value = next;
+                Wave.MasterVolume = next;
                 Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
             });
         }
