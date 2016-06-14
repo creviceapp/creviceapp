@@ -44,11 +44,6 @@ namespace CreviceApp.Core.Config
         {
             return root.@when(func);
         }
-
-        public DSL.WhenElement @when(Func<bool> func)
-        {
-            return root.@when(func);
-        }
         
         public void Tooltip(string text)
         {

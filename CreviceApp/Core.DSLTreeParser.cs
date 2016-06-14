@@ -15,28 +15,42 @@ namespace CreviceApp.Core
             Debug.Print("Parsing tree of GestureConfig.DSL");
             foreach (var whenElement in root.whenElements)
             {
-                if (whenElement.onElements.Count == 0)
+                if (whenElement.onElements.Count == 0 && whenElement.ifButtonElements.Count == 0)
                 {
-                    gestureDef.Add(new GestureDefinition(whenElement.func, null));
+                    gestureDef.Add(new GestureDefinition(whenElement.func));
                     continue;
                 }
+
+                foreach (var ifButtonElement in whenElement.ifButtonElements)
+                {
+                    if (ifButtonElement.doElements.Count == 0)
+                    {
+                        gestureDef.Add(new IfButtonGestureDefinition(whenElement.func, ifButtonElement.button, null));
+                        continue;
+                    }
+                    foreach (var doElement in ifButtonElement.doElements)
+                    {
+                        gestureDef.Add(new IfButtonGestureDefinition(whenElement.func, ifButtonElement.button, doElement.func));
+                    }
+                }
+
                 foreach (var onElement in whenElement.onElements)
                 {
                     if (onElement.ifButtonElements.Count == 0 && onElement.ifStrokeElements.Count == 0)
                     {
-                        gestureDef.Add(new GestureDefinition(whenElement.func, onElement.button));
+                        gestureDef.Add(new OnButtonGestureDefinition(whenElement.func, onElement.button));
                         continue;
                     }
                     foreach (var ifButtonElement in onElement.ifButtonElements)
                     {
                         if (ifButtonElement.doElements.Count == 0)
                         {
-                            gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, null));
+                            gestureDef.Add(new OnButtonIfButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, null));
                             continue;
                         }
                         foreach (var doElement in ifButtonElement.doElements)
                         {
-                            gestureDef.Add(new ButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, doElement.func));
+                            gestureDef.Add(new OnButtonIfButtonGestureDefinition(whenElement.func, onElement.button, ifButtonElement.button, doElement.func));
                         }
                     }
                     foreach (var ifStrokeElement in onElement.ifStrokeElements)
@@ -44,12 +58,12 @@ namespace CreviceApp.Core
                         var stroke = Helper.Convert(ifStrokeElement.moves);
                         if (ifStrokeElement.doElements.Count == 0)
                         {
-                            gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, null));
+                            gestureDef.Add(new OnButtonIfStrokeGestureDefinition(whenElement.func, onElement.button, stroke, null));
                             continue;
                         }
                         foreach (var doElement in ifStrokeElement.doElements)
                         {
-                            gestureDef.Add(new StrokeGestureDefinition(whenElement.func, onElement.button, stroke, doElement.func));
+                            gestureDef.Add(new OnButtonIfStrokeGestureDefinition(whenElement.func, onElement.button, stroke, doElement.func));
                         }
                     }
                 }

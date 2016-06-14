@@ -15,9 +15,10 @@ namespace CreviceApp.Core.FSM
         internal readonly State0 S0;
         internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
-        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
-        internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<ButtonGestureDefinition>> T2;
-        internal readonly IDictionary<Def.Stroke, IEnumerable<StrokeGestureDefinition>> T3;
+        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonIfButtonGestureDefinition>> T3;
+        internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonIfButtonGestureDefinition>> T2;
+        internal readonly IDictionary<Def.Stroke, IEnumerable<OnButtonIfStrokeGestureDefinition>> T4;
+        internal readonly IEnumerable<IfButtonGestureDefinition> T5;
 
         private readonly SingleInputSender InputSender = new SingleInputSender();
 
@@ -28,15 +29,17 @@ namespace CreviceApp.Core.FSM
             State0 S0,
             UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
-            IEnumerable<GestureDefinition> gestureDef
+            IEnumerable<OnButtonGestureDefinition> T1,
+            IEnumerable<IfButtonGestureDefinition> T5
             ) : base(Global)
         {
             this.S0 = S0;
             this.ctx = ctx;
             this.primaryEvent = primaryEvent;
-            this.T1 = Transition.Gen1(gestureDef);
-            this.T2 = Transition.Gen2(gestureDef);
-            this.T3 = Transition.Gen3(gestureDef);
+            this.T2 = Transition.Gen2(T1);
+            this.T3 = Transition.Gen3(T1);
+            this.T4 = Transition.Gen4(T1);
+            this.T5 = T5;
         }
 
         public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
@@ -48,30 +51,25 @@ namespace CreviceApp.Core.FSM
 
             Global.StrokeWatcher.Queue(point);
 
-            if (evnt is Def.Event.IDoubleActionSet)
-            {
-                var ev = evnt as Def.Event.IDoubleActionSet;
-                if (T1.Keys.Contains(ev))
-                {
-                    Debug.Print("[Transition 1]");
-                    PrimaryEventIsRestorable = false;
-                    return Result.EventIsConsumed(nextState: new State2(Global, S0, this, ctx, primaryEvent, ev, T1));
-                }
-            }
-            else if (evnt is Def.Event.ISingleAction)
+            if (evnt is Def.Event.ISingleAction)
             {
                 var ev = evnt as Def.Event.ISingleAction;
                 if (T2.Keys.Contains(ev))
                 {
-                    Debug.Print("[Transition 2]");
+                    Debug.Print("[Transition 02]");
                     PrimaryEventIsRestorable = false;
-                    Global.UserActionTaskFactory.StartNew(() => {
-                        foreach (var gDef in T2[ev])
-                        {
-                            ExecuteSafely(ctx, gDef.doFunc);
-                        }
-                    });
+                    ExecuteUserActionInBackground(ctx, T2[ev]);
                     return Result.EventIsConsumed(nextState: this, resetStrokeWatcher: true);
+                }
+            }
+            else if (evnt is Def.Event.IDoubleActionSet)
+            {
+                var ev = evnt as Def.Event.IDoubleActionSet;
+                if (T3.Keys.Contains(ev))
+                {
+                    Debug.Print("[Transition 03]");
+                    PrimaryEventIsRestorable = false;
+                    return Result.EventIsConsumed(nextState: new State2(Global, S0, this, ctx, primaryEvent, ev, T3[ev]));
                 }
             }
             else if (evnt is Def.Event.IDoubleActionRelease)
@@ -80,29 +78,34 @@ namespace CreviceApp.Core.FSM
                 if (ev == primaryEvent.GetPair())
                 {
                     var stroke = Global.StrokeWatcher.GetStorke();
-                    Debug.Print("Stroke: {0}", stroke.ToString());
-                    if (T3.Keys.Contains(stroke))
+                    if (stroke.Count() > 0)
                     {
-                        Debug.Print("[Transition 3]");
-                        Global.UserActionTaskFactory.StartNew(() => {
-                            foreach (var gDef in T3[stroke])
-                            {
-                                ExecuteSafely(ctx, gDef.doFunc);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        if (PrimaryEventIsRestorable && stroke.Count == 0)
+                        Debug.Print("Stroke: {0}", stroke.ToString());
+                        PrimaryEventIsRestorable = false;
+                        if (T4.Keys.Contains(stroke))
                         {
-                            Debug.Print("[Transition 4]");
-                            RestorePrimaryEvent();
+                            Debug.Print("[Transition 04]");
+                            ExecuteUserActionInBackground(ctx, T4[stroke]);
+                        }
+                    }
+                    if (PrimaryEventIsRestorable)
+                    {
+                        if (T5.Count() > 0)
+                        {
+                            Debug.Print("[Transition 05]");
+                            ExecuteUserActionInBackground(ctx, T5);
                         }
                         else
                         {
-                            Debug.Print("[Transition 5]");
+                            Debug.Print("[Transition 06]");
+                            RestorePrimaryEvent();
                         }
                     }
+                    else
+                    {
+                        Debug.Print("[Transition 07]");
+                    }
+                    
                     return Result.EventIsConsumed(nextState: S0);
                 }
             }
@@ -111,7 +114,7 @@ namespace CreviceApp.Core.FSM
 
         public override IState Reset()
         {
-            Debug.Print("[Transition 9]");
+            Debug.Print("[Transition 11]");
             IgnoreNext(primaryEvent.GetPair());
             return S0;
         }

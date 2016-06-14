@@ -15,29 +15,29 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen0Test()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new ButtonGestureDefinition(
+                new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelDown,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.MiddleButton,
                     DSL.Def.Constant.WheelLeft,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.MiddleButton,
                     DSL.Def.Constant.WheelRight,
                     (ctx) => { }),
             };
-            var Gen0 = Transition.Gen0(gestureDef)
-                .ToDictionary(x => x.Key, x => x.Value.Select(y => y as ButtonGestureDefinition))
+            var Gen0 = Transition.Gen1(gestureDef)
+                .ToDictionary(x => x.Key, x => x.Value.Select(y => y as OnButtonIfButtonGestureDefinition))
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
             Assert.AreEqual(Gen0.Keys.Count, 2);
@@ -59,17 +59,17 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen1MustAcceptOnlyButtonGestureDefinitionHavingIDoubleActionAsIfButtonTest()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new StrokeGestureDefinition(
+                new OnButtonIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
@@ -78,7 +78,7 @@ namespace CreviceApp.Core.FSM.Tests
             var Gen1 = Transition.Gen1(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
-            Assert.AreEqual(Gen1.Keys.Count, 1);
+            Assert.AreEqual((int)Gen1.Keys.Count, 1);
             {
                 var gDef = Gen1[Def.Constant.LeftButtonDown];
                 Assert.AreEqual(gDef[0].onButton, DSL.Def.Constant.RightButton);
@@ -89,17 +89,17 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen2MustAcceptOnlyButtonGestureDefinitionHavingISingleActionAsIfButtonTest()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new StrokeGestureDefinition(
+                new OnButtonIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
@@ -108,7 +108,7 @@ namespace CreviceApp.Core.FSM.Tests
             var Gen2 = Transition.Gen2(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
-            Assert.AreEqual(Gen2.Keys.Count, 1);
+            Assert.AreEqual((int)Gen2.Keys.Count, 1);
             {
                 var gDef = Gen2[Def.Constant.WheelUp];
                 Assert.AreEqual(gDef[0].onButton, DSL.Def.Constant.RightButton);
@@ -119,17 +119,17 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen3MustAcceptOnlyStrokeGestureDefinitionTest()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new StrokeGestureDefinition(
+                new OnButtonIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
@@ -138,7 +138,7 @@ namespace CreviceApp.Core.FSM.Tests
             var Gen3 = Transition.Gen3(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
-            Assert.AreEqual(Gen3.Keys.Count, 1);
+            Assert.AreEqual((int)Gen3.Keys.Count, 1);
             {
                 var gDef = Gen3[new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up })];
                 Assert.AreEqual(gDef[0].onButton, DSL.Def.Constant.RightButton);

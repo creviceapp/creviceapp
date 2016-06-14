@@ -96,7 +96,6 @@ namespace CreviceApp.User
             });
 
             Explorer.
-            @on(RightButton).
             @if(WheelUp).
             @do((ctx) =>
             {
@@ -108,7 +107,6 @@ namespace CreviceApp.User
             });
 
             Explorer.
-            @on(RightButton).
             @if(WheelDown).
             @do((ctx) =>
             {

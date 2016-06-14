@@ -60,13 +60,13 @@ namespace CreviceApp.Core.FSM.Tests
         {
             // todo: round robin test
             var gestureDef = new List<GestureDefinition>() {
-                new ButtonGestureDefinition(
+                new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { })
             };
-            var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
+            var S0 = new State0(new GlobalValues(), Transition.Gen1(gestureDef));
             var res = S0.Input(Def.Constant.LeftButtonDown, new LowLevelMouseHook.POINT());
             Assert.IsTrue(res.NextState is State0);
         }
@@ -75,13 +75,13 @@ namespace CreviceApp.Core.FSM.Tests
         public void InputMustExecuteTransition0Test()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new ButtonGestureDefinition(
+                new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { })
             };
-            var S0 = new State0(new GlobalValues(), Transition.Gen0(gestureDef));
+            var S0 = new State0(new GlobalValues(), Transition.Gen1(gestureDef));
             var res = S0.Input(Def.Constant.RightButtonDown, new LowLevelMouseHook.POINT());
             Assert.IsTrue(res.NextState is State1);
        }
@@ -90,12 +90,12 @@ namespace CreviceApp.Core.FSM.Tests
         public void FilterByWhenClauseTest()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new ButtonGestureDefinition(
+                new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return true; },
                     DSL.Def.Constant.LeftButton,
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { }),
-                 new ButtonGestureDefinition(
+                 new OnButtonIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,

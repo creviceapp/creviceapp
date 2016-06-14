@@ -19,7 +19,7 @@ namespace CreviceApp.Core.FSM
         public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
         {
             this.Global = new GlobalValues();
-            this.State = new State0(Global, Transition.Gen0(gestureDef));
+            this.State = new State0(Global, gestureDef);
         }
 
         public bool Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)

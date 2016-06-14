@@ -8,8 +8,10 @@ namespace CreviceApp.DSL
 {
     public class IfStrokeElement
     {
-        public class Value : IfElement.Value
+        public class Value
         {
+            public readonly List<DoElement.Value> doElements = new List<DoElement.Value>();
+
             public readonly IEnumerable<Def.AcceptableInIfStrokeClause> moves;
 
             public Value(IEnumerable<Def.AcceptableInIfStrokeClause> moves)
@@ -17,25 +19,18 @@ namespace CreviceApp.DSL
                 this.moves = moves;
             }
         }
-
-        private readonly OnElement.Value parent;
+        
         private readonly Value value;
 
-        public IfStrokeElement(OnElement.Value parent, params Def.AcceptableInIfStrokeClause[] moves)
+        public IfStrokeElement(List<Value> parent, params Def.AcceptableInIfStrokeClause[] moves)
         {
-            this.parent = parent;
             this.value = new Value(moves);
-            this.parent.ifStrokeElements.Add(this.value);
+            parent.Add(this.value);
         }
 
         public DoElement @do(Def.DoFunc func)
         {
-            return new DoElement(value, func);
-        }
-
-        public DoElement @do(Action func)
-        {
-            return @do((ctx) => func());
+            return new DoElement(value.doElements, func);
         }
     }
 }

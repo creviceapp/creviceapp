@@ -8,8 +8,10 @@ namespace CreviceApp.DSL
 {
     public class IfButtonElement
     {
-        public class Value : IfElement.Value
+        public class Value
         {
+            public readonly List<DoElement.Value> doElements = new List<DoElement.Value>();
+
             public readonly Def.AcceptableInIfButtonClause button;
 
             public Value(Def.AcceptableInIfButtonClause button)
@@ -17,20 +19,18 @@ namespace CreviceApp.DSL
                 this.button = button;
             }
         }
-
-        private readonly OnElement.Value parent;
+        
         private readonly Value value;
 
-        public IfButtonElement(OnElement.Value parent, Def.AcceptableInIfButtonClause button)
+        public IfButtonElement(List<Value> parent, Def.AcceptableInIfButtonClause button)
         {
-            this.parent = parent;
             this.value = new Value(button);
-            this.parent.ifButtonElements.Add(this.value);
+            parent.Add(this.value);
         }
 
         public DoElement @do(Def.DoFunc func)
         {
-            return new DoElement(value, func);
+            return new DoElement(value.doElements, func);
         }
     }
 }

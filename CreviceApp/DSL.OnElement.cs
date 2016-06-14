@@ -19,25 +19,23 @@ namespace CreviceApp.DSL
                 this.button = button;
             }
         }
-
-        private readonly WhenElement.Value parent;
+        
         private readonly Value value;
 
-        public OnElement(WhenElement.Value parent, Def.AcceptableInOnClause button)
+        public OnElement(List<Value> parent, Def.AcceptableInOnClause button)
         {
-            this.parent = parent;
             this.value = new Value(button);
-            this.parent.onElements.Add(this.value);
+            parent.Add(this.value);
         }
 
         public IfButtonElement @if(Def.AcceptableInIfButtonClause button)
         {
-            return new IfButtonElement(value, button);
+            return new IfButtonElement(value.ifButtonElements, button);
         }
 
         public IfStrokeElement @if(params Def.AcceptableInIfStrokeClause[] moves)
         {
-            return new IfStrokeElement(value, moves);
+            return new IfStrokeElement(value.ifStrokeElements, moves);
         }
     }
 }

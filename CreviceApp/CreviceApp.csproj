@@ -126,7 +126,6 @@
     <Compile Include="DSL.Def.cs" />
     <Compile Include="DSL.DoElement.cs" />
     <Compile Include="DSL.IfButtonElement.cs" />
-    <Compile Include="DSL.IfElement.cs" />
     <Compile Include="DSL.IfStrokeElement.cs" />
     <Compile Include="DSL.OnElement.cs" />
     <Compile Include="DSL.Root.cs" />

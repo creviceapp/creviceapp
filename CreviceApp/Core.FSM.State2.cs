@@ -16,7 +16,7 @@ namespace CreviceApp.Core.FSM
         internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly Def.Event.IDoubleActionSet secondaryEvent;
-        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1;
+        internal readonly IEnumerable<OnButtonIfButtonGestureDefinition> T3;
 
         public State2(
             GlobalValues Global,
@@ -25,7 +25,7 @@ namespace CreviceApp.Core.FSM
             UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             Def.Event.IDoubleActionSet secondaryEvent,
-        IDictionary<Def.Event.IDoubleActionSet, IEnumerable<ButtonGestureDefinition>> T1
+            IEnumerable<OnButtonIfButtonGestureDefinition> T3
             ) : base(Global)
         {
             this.S0 = S0;
@@ -33,7 +33,7 @@ namespace CreviceApp.Core.FSM
             this.ctx = ctx;
             this.primaryEvent = primaryEvent;
             this.secondaryEvent = secondaryEvent;
-            this.T1 = T1;
+            this.T3 = T3;
         }
 
         public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
@@ -48,18 +48,13 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionRelease;
                 if (ev == secondaryEvent.GetPair())
                 {
-                    Debug.Print("[Transition 6]");
-                    Global.UserActionTaskFactory.StartNew(() => {
-                        foreach (var gDef in T1[secondaryEvent])
-                        {
-                            ExecuteSafely(ctx, gDef.doFunc);
-                        }
-                    });
+                    Debug.Print("[Transition 08]");
+                    ExecuteUserActionInBackground(ctx, T3);
                     return Result.EventIsConsumed(nextState: S1, resetStrokeWatcher: true);
                 }
                 else if (ev == primaryEvent.GetPair())
                 {
-                    Debug.Print("[Transition 7]");
+                    Debug.Print("[Transition 09]");
                     IgnoreNext(secondaryEvent.GetPair());
                     return Result.EventIsConsumed(nextState: S0);
                 }
@@ -69,7 +64,7 @@ namespace CreviceApp.Core.FSM
 
         public override IState Reset()
         {
-            Debug.Print("[Transition 10]");
+            Debug.Print("[Transition 12]");
             IgnoreNext(primaryEvent.GetPair());
             IgnoreNext(secondaryEvent.GetPair());
             return S0;

@@ -31,7 +31,7 @@ namespace CreviceApp.Core.FSM
     
     public abstract class State : IState
     {
-        internal readonly GlobalValues Global;
+        protected internal readonly GlobalValues Global;
 
         public State(GlobalValues Global)
         {
@@ -76,40 +76,19 @@ namespace CreviceApp.Core.FSM
             throw new InvalidOperationException();
         }
 
-        public static void ExecuteSafely(UserActionExecutionContext ctx, DSL.Def.DoFunc func)
+        protected internal void ExecuteUserActionInBackground(
+            UserActionExecutionContext ctx, 
+            IEnumerable<IDoExecutable> gestureDef)
         {
-            try
-            {
-                func(ctx);
-            }
-            catch (Exception ex)
-            {
-                Debug.Print(
-                    "An exception was thrown when executing a DoFunc of a gesture. " +
-                    "This error may automatically be recovered.\n{0} :\n{1}", 
-                    ex.GetType().Name,
-                    ex.StackTrace);
-            }
+            Global.UserActionTaskFactory.StartNew(() => {
+                foreach (var gDef in gestureDef)
+                {
+                    gDef.Execute(ctx);
+                }
+            });
         }
-
-        public static bool EvaluateSafely(UserActionExecutionContext ctx, DSL.Def.WhenFunc func)
-        {
-            try
-            {
-                return func(ctx);
-            }
-            catch (Exception ex)
-            {
-                Debug.Print(
-                    "An exception was thrown when executing a DoFunc of a gesture. " +
-                    "This error may automatically be recovered.\n{0} :\n{1}",
-                    ex.GetType().Name,
-                    ex.StackTrace);
-            }
-            return false;
-        }
-
-        public void IgnoreNext(Def.Event.IDoubleActionRelease evnt)
+        
+        protected internal void IgnoreNext(Def.Event.IDoubleActionRelease evnt)
         {
             Debug.Print("{0} added to global ignore list. The `release` event of it will be ignored next time.", evnt.GetType().Name);
             Global.IgnoreNext.Add(evnt);
