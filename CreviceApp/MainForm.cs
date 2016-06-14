@@ -54,61 +54,65 @@ namespace CreviceApp
         {
             if (data.fromCreviceApp)
             {
-                Debug.Print("{0} was ignored because this event has the signature of CreviceApp", Enum.GetName(typeof(LowLevelMouseHook.Event), evnt));
+                Debug.Print("{0} was ignored because this event has the signature of CreviceApp", 
+                    Enum.GetName(typeof(LowLevelMouseHook.Event), 
+                    evnt));
                 return WindowsHook.Result.Determine;
             }
+
+            var point = new Point(data.pt.x, data.pt.y);
 
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.Move, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.Move, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.LeftButtonDown, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.LeftButtonDown, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.LeftButtonUp, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.LeftButtonUp, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.RightButtonDown, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.RightButtonDown, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.RightButtonUp, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.RightButtonUp, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONDOWN:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.MiddleButtonDown, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.MiddleButtonDown, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONUP:
-                    return Convert(GestureMachine.Input(Core.Def.Constant.MiddleButtonUp, data.pt));
+                    return Convert(GestureMachine.Input(Core.Def.Constant.MiddleButtonUp, point));
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelDown, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelDown, point));
                     }
                     else
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelUp, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelUp, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
                     if (data.mouseData.asXButton.isXButton1)
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.X1ButtonDown, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X1ButtonDown, point));
                     }
                     else
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.X2ButtonDown, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X2ButtonDown, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
                     if (data.mouseData.asXButton.isXButton1)
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.X1ButtonUp, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X1ButtonUp, point));
                     }
                     else
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.X2ButtonUp, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.X2ButtonUp, point));
                     }
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelRight, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelRight, point));
                     }
                     else
                     {
-                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelLeft, data.pt));
+                        return Convert(GestureMachine.Input(Core.Def.Constant.WheelLeft, point));
                     }
             }
             return LowLevelMouseHook.Result.Transfer;

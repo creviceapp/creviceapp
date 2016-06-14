@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    using WinAPI.WindowsHookEx;
-
     public class State2 : State
     {
         internal readonly State0 S0;
@@ -36,7 +35,7 @@ namespace CreviceApp.Core.FSM
             this.T3 = T3;
         }
 
-        public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
+        public override Result Input(Def.Event.IEvent evnt, Point point)
         {
             if (MustBeIgnored(evnt))
             {

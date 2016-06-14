@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,26 +12,24 @@ namespace CreviceApp.Core
     {
         public readonly CachedWindowInfo Window;
 
-        public UserActionExecutionContext(int x, int y)
+        public UserActionExecutionContext(Point point)
         {
-            this.Window = new CachedWindowInfo(x, y);
+            this.Window = new CachedWindowInfo(point);
         }
 
         public class CachedWindowInfo : WinAPI.Window.ForegroundWindowInfo
         {
-            private readonly int x;
-            private readonly int y;
-            public CachedWindowInfo(int x, int y) : base()
+            private readonly Point point;
+            public CachedWindowInfo(Point point) : base()
             {
-                this.x = x;
-                this.y = y;
+                this.point = point;
             }
 
             public WinAPI.Window.OnCursorWindowInfo OnCursor
             {
                 get
                 {
-                    return new WinAPI.Window.OnCursorWindowInfo(x, y);
+                    return new WinAPI.Window.OnCursorWindowInfo(point);
                 }
             }
 
@@ -39,7 +38,7 @@ namespace CreviceApp.Core
                 get
                 {
                     var pos = Cursor.Position;
-                    return new CachedWindowInfo(pos.X, pos.Y);
+                    return new CachedWindowInfo(point);
                 }
             }
         }

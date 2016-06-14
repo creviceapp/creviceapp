@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    using WinAPI.WindowsHookEx;
-
     public class GestureMachine : IDisposable
     {
         public GlobalValues Global;
@@ -22,7 +21,7 @@ namespace CreviceApp.Core.FSM
             this.State = new State0(Global, gestureDef);
         }
 
-        public bool Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
+        public bool Input(Def.Event.IEvent evnt, Point point)
         {
             lock (lockObject)
             {

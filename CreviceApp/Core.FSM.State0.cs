@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    using WinAPI.WindowsHookEx;
-
     public class State0 : State
     {
         internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<IfButtonGestureDefinition>> T0;
@@ -25,7 +24,7 @@ namespace CreviceApp.Core.FSM
             this.T5 = Transition.Gen5(gestureDef);
         }
 
-        public override Result Input(Def.Event.IEvent evnt, LowLevelMouseHook.POINT point)
+        public override Result Input(Def.Event.IEvent evnt, Point point)
         {
             if (MustBeIgnored(evnt))
             {
@@ -37,7 +36,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.ISingleAction;
                 if (T0.Keys.Contains(ev))
                 {
-                    var ctx = new UserActionExecutionContext(point.x, point.y);
+                    var ctx = new UserActionExecutionContext(point);
                     var _T0 = FilterByWhenClause(ctx, T0[ev]);
                     if (_T0.Count() > 0)
                     {
@@ -53,7 +52,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionSet;
                 if (T1.Keys.Contains(ev) || T5.Keys.Contains(ev))
                 {
-                    var ctx = new UserActionExecutionContext(point.x, point.y);
+                    var ctx = new UserActionExecutionContext(point);
                     var cache = new Dictionary<DSL.Def.WhenFunc, bool>();
                     var _T1 = T1.Keys.Contains(ev) ? FilterByWhenClause(ctx, T1[ev], cache) : new List<OnButtonGestureDefinition>();
                     var _T5 = T5.Keys.Contains(ev) ? FilterByWhenClause(ctx, T5[ev], cache) : new List<IfButtonGestureDefinition>();

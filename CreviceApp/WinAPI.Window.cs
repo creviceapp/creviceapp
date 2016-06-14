@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -197,6 +198,6 @@ namespace CreviceApp.WinAPI.Window
             
     public class OnCursorWindowInfo : WindowInfo
     {
-        public OnCursorWindowInfo(int x, int y) : base(Window.WindowFromPoint(x, y)) { }
+        public OnCursorWindowInfo(Point point) : base(Window.WindowFromPoint(point.X, point.Y)) { }
     }
 }

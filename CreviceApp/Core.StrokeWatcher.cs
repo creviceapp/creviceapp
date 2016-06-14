@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,14 +11,12 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.Stroke
 {
-    using WinAPI.WindowsHookEx;
-
     public abstract class PointProcessor
     {
         internal readonly int watchInterval;
 
         internal long lastProcessTime = 0;
-        internal LowLevelMouseHook.POINT lastProcess;
+        internal Point lastProcess;
 
         public PointProcessor(int watchInterval)
         {
@@ -51,7 +50,7 @@ namespace CreviceApp.Core.Stroke
         internal readonly int strokeExtensionThreshold;
                 
         internal readonly List<Stroke> strokes = new List<Stroke>();
-        internal readonly BlockingCollection<LowLevelMouseHook.POINT> queue = new BlockingCollection<LowLevelMouseHook.POINT>();
+        internal readonly BlockingCollection<Point> queue = new BlockingCollection<Point>();
         internal readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
         internal readonly Task task;
 
@@ -69,7 +68,7 @@ namespace CreviceApp.Core.Stroke
             this.task = Start();
         }
                 
-        public void Queue(LowLevelMouseHook.POINT point)
+        public void Queue(Point point)
         {
             if (MustBeProcessed(currentTime: timeGetTime()))
             {
@@ -77,7 +76,7 @@ namespace CreviceApp.Core.Stroke
             }
         }
 
-        private readonly List<LowLevelMouseHook.POINT> buffer = new List<LowLevelMouseHook.POINT>();
+        private readonly List<Point> buffer = new List<Point>();
 
         private Task Start()
         {

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CreviceApp.Core.Stroke
 {
-    using WinAPI.WindowsHookEx;
-
     public class Stroke
     {
         public readonly Def.Direction Direction;
         internal readonly int strokeDirectionChangeThreshold;
         internal readonly int strokeExtensionThreshold;
 
-        private readonly List<LowLevelMouseHook.POINT> points = new List<LowLevelMouseHook.POINT>();
+        private readonly List<Point> points = new List<Point>();
 
         public Stroke(
             int strokeDirectionChangeThreshold,
@@ -29,7 +28,7 @@ namespace CreviceApp.Core.Stroke
         public Stroke(
             int strokeDirectionChangeThreshold,
             int strokeExtensionThreshold,
-            List<LowLevelMouseHook.POINT> input)
+            List<Point> input)
         {
             this.Direction = NextDirection(GetAngle(input.First(), input.Last()));
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
@@ -37,12 +36,12 @@ namespace CreviceApp.Core.Stroke
             Absorb(input);
         }
 
-        public virtual Stroke Input(List<LowLevelMouseHook.POINT> input)
+        public virtual Stroke Input(List<Point> input)
         {
             var p0 = input.First();
             var p1 = input.Last();
-            var dx = Math.Abs(p0.x - p1.x);
-            var dy = Math.Abs(p0.y - p1.y);
+            var dx = Math.Abs(p0.X - p1.X);
+            var dy = Math.Abs(p0.Y - p1.Y);
             var angle = GetAngle(p0, p1);
             if (dx > strokeDirectionChangeThreshold || dy > strokeDirectionChangeThreshold)
             {
@@ -67,7 +66,7 @@ namespace CreviceApp.Core.Stroke
             return this;
         }
 
-        public void Absorb(List<LowLevelMouseHook.POINT> points)
+        public void Absorb(List<Point> points)
         {
             this.points.AddRange(points);
             points.Clear();
@@ -108,10 +107,10 @@ namespace CreviceApp.Core.Stroke
             return new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, dir);
         }
 
-        public static bool CanCreate(int initialStrokeThreshold, LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
+        public static bool CanCreate(int initialStrokeThreshold, Point p0, Point p1)
         {
-            var dx = Math.Abs(p0.x - p1.x);
-            var dy = Math.Abs(p0.y - p1.y);
+            var dx = Math.Abs(p0.X - p1.X);
+            var dy = Math.Abs(p0.Y - p1.Y);
             if (dx > initialStrokeThreshold || dy > initialStrokeThreshold)
             {
                 return true;
@@ -119,9 +118,9 @@ namespace CreviceApp.Core.Stroke
             return false;
         }
 
-        private static double GetAngle(LowLevelMouseHook.POINT p0, LowLevelMouseHook.POINT p1)
+        private static double GetAngle(Point p0, Point p1)
         {
-            return Math.Atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+            return Math.Atan2(p1.Y - p0.Y, p1.X - p0.X) * 180 / Math.PI;
         }
     }
 }
