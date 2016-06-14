@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI.WaveVolume
+namespace CreviceApp.WinAPI.CoreAudioAPI
 {
-    public class WaveVolume
+    public class VolumeControl : IDisposable
     {
         // http://www.pinvoke.net/default.aspx/Enums/CLSCTX.html
         [Flags]
@@ -178,61 +178,66 @@ namespace CreviceApp.WinAPI.WaveVolume
             int GetVolumeRange(out float pflVolumeMindB, out float pflVolumeMaxdB, out float pflVolumeIncrementdB);
         }
 
+        private readonly IMMDeviceEnumerator enumerator;
+
+        public VolumeControl()
+        {
+            enumerator = (IMMDeviceEnumerator)Activator.CreateInstance(Type.GetTypeFromCLSID(MMDeviceEnumerator));
+        }
+
         internal IAudioEndpointVolume GetAudioEndpointVolume()
         {
-            IMMDeviceEnumerator enumerator = (IMMDeviceEnumerator)Activator.CreateInstance(Type.GetTypeFromCLSID(MMDeviceEnumerator));
+            IMMDevice speakers;
+            Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia, out speakers));
             try
             {
-                IMMDevice speakers;
-                Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia, out speakers));
-                try
-                {
-                    object endpoint;
-                    Marshal.ThrowExceptionForHR(speakers.Activate(ref IID_IAudioEndpointVolume, (int)CLSCTX.CLSCTX_ALL, IntPtr.Zero, out endpoint));    
-                    return endpoint as IAudioEndpointVolume;
-                }
-                finally
-                {
-                    Marshal.ReleaseComObject(enumerator);
-                }
-
+                object endpoint;
+                Marshal.ThrowExceptionForHR(speakers.Activate(ref IID_IAudioEndpointVolume, (int)CLSCTX.CLSCTX_ALL, IntPtr.Zero, out endpoint));    
+                return endpoint as IAudioEndpointVolume;
             }
             finally
             {
-                Marshal.ReleaseComObject(enumerator);
-
+                Marshal.ReleaseComObject(speakers);
             }
-            
+        }
+        
+        public float GetMasterVolume()
+        {
+            var endpoint = GetAudioEndpointVolume();
+            try
+            {
+                float level;
+                Marshal.ThrowExceptionForHR(endpoint.GetMasterVolumeLevelScalar(out level));
+                return level;
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(endpoint);
+            }
         }
 
-        public float MasterVolume
+        public void SetMasterVolume(float value)
         {
-            get
+            var endpoint = GetAudioEndpointVolume();
+            try
             {
-                var endpoint = GetAudioEndpointVolume();
-                try
-                {
-                    float level;
-                    Marshal.ThrowExceptionForHR(endpoint.GetMasterVolumeLevelScalar(out level));
-                    return level;
-                }
-                finally
-                {
-                    Marshal.ReleaseComObject(endpoint);
-                }
+                Marshal.ThrowExceptionForHR(endpoint.SetMasterVolumeLevelScalar(value, Guid.Empty));
             }
-            set
+            finally
             {
-                var endpoint = GetAudioEndpointVolume();
-                try
-                {
-                    Marshal.ThrowExceptionForHR(endpoint.SetMasterVolumeLevelScalar(value, Guid.Empty));
-                }
-                finally
-                {
-                    Marshal.ReleaseComObject(endpoint);
-                }
+                Marshal.ReleaseComObject(endpoint);
             }
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Marshal.ReleaseComObject(enumerator);
+        }
+
+        ~VolumeControl()
+        {
+            Dispose();
         }
     }
 }

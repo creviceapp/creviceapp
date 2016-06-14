@@ -31,7 +31,7 @@ namespace CreviceApp.Core.Config
         protected readonly DSL.Def.MoveRight MoveRight = DSL.Def.Constant.MoveRight;
 
         protected readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
-        protected readonly WinAPI.WaveVolume.WaveVolume Wave = new WinAPI.WaveVolume.WaveVolume();
+        protected readonly WinAPI.CoreAudioAPI.VolumeControl WaveVolume = new WinAPI.CoreAudioAPI.VolumeControl();
 
         public IEnumerable<GestureDefinition> GetGestureDefinition()
         {
