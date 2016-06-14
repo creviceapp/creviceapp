@@ -16,8 +16,8 @@ namespace CreviceApp.User
         {
             var Chrome = @when((ctx) =>
             {
-                Debug.Print(ctx.Window.Foreground.ClassName);
-                return ctx.Window.Foreground.ModuleName == "chrome.exe";
+                Debug.Print(ctx.Window.ClassName);
+                return ctx.Window.ModuleName == "chrome.exe";
             });
 
             Chrome.
@@ -89,8 +89,8 @@ namespace CreviceApp.User
 
             var Explorer = @when((ctx) =>
             {
+                Debug.Print(ctx.Window.ClassName);
                 Debug.Print(ctx.Window.OnCursor.ClassName);
-                Debug.Print(ctx.Window.Foreground.ClassName);
                 return ctx.Window.OnCursor.ModuleName == "explorer.exe" &&
                        ctx.Window.OnCursor.ClassName == "MSTaskListWClass";
             });

@@ -9,36 +9,39 @@ namespace CreviceApp.Core
 {
     public class UserActionExecutionContext
     {
-        public readonly WindowInfo Window;
+        public readonly CachedWindowInfo Window;
 
         public UserActionExecutionContext(int x, int y)
         {
-            this.Window = new WindowInfo(x, y);
+            this.Window = new CachedWindowInfo(x, y);
         }
-        
-        public class WindowInfo
-        {
-            public readonly WinAPI.Window.ForegroundWindowInfo Foreground;
-            public readonly WinAPI.Window.OnCursorWindowInfo OnCursor;
 
-            public WindowInfo(int x, int y)
+        public class CachedWindowInfo : WinAPI.Window.ForegroundWindowInfo
+        {
+            private readonly int x;
+            private readonly int y;
+            public CachedWindowInfo(int x, int y) : base()
             {
-                this.Foreground = new WinAPI.Window.ForegroundWindowInfo();
-                this.OnCursor = new WinAPI.Window.OnCursorWindowInfo(x, y);
+                this.x = x;
+                this.y = y;
             }
-        }
 
-        public class CachedWindowInfo : WindowInfo
-        {
-            public WindowInfo Now
+            public WinAPI.Window.OnCursorWindowInfo OnCursor
+            {
+                get
+                {
+                    return new WinAPI.Window.OnCursorWindowInfo(x, y);
+                }
+            }
+
+            public CachedWindowInfo Now
             {
                 get
                 {
                     var pos = Cursor.Position;
-                    return new WindowInfo(pos.X, pos.Y);
+                    return new CachedWindowInfo(pos.X, pos.Y);
                 }
             }
-            public CachedWindowInfo(int x, int y) : base(x, y) { }
         }
     }
 }
