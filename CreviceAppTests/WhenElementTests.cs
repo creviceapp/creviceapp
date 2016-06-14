@@ -2,6 +2,7 @@
 using CreviceApp.User;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace CreviceApp.DSL.Tests
         public void onTest()
         {
             var root = new Root();
-            var appElement = root.@when(() => true);
+            var appElement = root.@when(_ => true);
             Assert.AreEqual(root.whenElements[0].onElements.Count, 0);
             appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements.Count, 1);
@@ -24,9 +25,9 @@ namespace CreviceApp.DSL.Tests
         [TestMethod()]
         public void funcTest()
         {
-            var ctx = new Core.UserActionExecutionContext(0, 0);
+            var ctx = new Core.UserActionExecutionContext(new Point());
             var root = new Root();
-            var appElement = root.when(() => true);
+            var appElement = root.when(_ => true);
             Assert.IsTrue(root.whenElements[0].func(ctx));
         }
 

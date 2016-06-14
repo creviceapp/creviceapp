@@ -15,7 +15,7 @@ namespace CreviceApp.DSL.Tests
         public void ifButtonTest()
         {
             var root = new Root();
-            var appElement = root.@when(() => true);
+            var appElement = root.@when(_ => true);
             var onElement = appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements.Count, 0);
             onElement.@if(new Def.WheelUp());
@@ -26,7 +26,7 @@ namespace CreviceApp.DSL.Tests
         public void ifStrokeTest()
         {
             var root = new Root();
-            var appElement = root.@when(() => true);
+            var appElement = root.@when(_ => true);
             var onElement = appElement.@on(new Def.RightButton());
             Assert.AreEqual(root.whenElements[0].onElements[0].ifStrokeElements.Count, 0);
             onElement.@if(new Def.MoveDown(), new Def.MoveRight());

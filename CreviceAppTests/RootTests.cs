@@ -16,7 +16,7 @@ namespace CreviceApp.User.Tests
         {
             var root = new DSL.Root();
             Assert.AreEqual(root.whenElements.Count, 0);
-            var appElement = root.@when(() => true);
+            var appElement = root.@when(_ => true);
             Assert.AreEqual(root.whenElements.Count, 1);
         }
     }
