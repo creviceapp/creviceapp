@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.User
 {
-    using static WinAPI.SendInput.Constant.VirtualKeys;
+    using static WinAPI.SendInput.VirtualKeys;
 
     class UserConfig : Core.Config.UserConfig
     {
