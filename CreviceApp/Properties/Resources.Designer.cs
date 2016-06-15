@@ -59,5 +59,15 @@ namespace CreviceApp.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] DefaultUserScript {
+            get {
+                object obj = ResourceManager.GetObject("DefaultUserScript", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

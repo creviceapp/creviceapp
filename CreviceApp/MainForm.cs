@@ -13,6 +13,8 @@ using System.Windows.Forms;
 
 namespace CreviceApp
 {
+    using Microsoft.CodeAnalysis.Scripting;
+    using Microsoft.CodeAnalysis.CSharp.Scripting;
     using WinAPI.WindowsHookEx;
 
     public partial class MainForm : Form
@@ -78,13 +80,36 @@ namespace CreviceApp
 
         private readonly UI.TooltipNotifier tooltip;
         private readonly LowLevelMouseHook mouseHook;
+        private readonly Core.Config.UserConfig userConfig;
         private readonly Core.FSM.GestureMachine GestureMachine;
+
+        private string GetDefaultUserScript()
+        {
+            return Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript);
+        }
+
+        public async void EvaluateUserScript(Core.UserScriptExecutionContext ctx)
+        {
+            var script = CSharpScript.Create(
+                GetDefaultUserScript(), 
+                ScriptOptions.Default
+                    .WithImports("System.Diagnostics")
+                    .WithReferences(typeof(object).Assembly),
+                globalsType: typeof(Core.UserScriptExecutionContext));
+            Debug.Print("compiled");
+            await script.RunAsync(ctx);
+            Debug.Print("evaluated");
+        }
 
         public MainForm()
         {
             this.tooltip = new UI.TooltipNotifier(this);
             this.mouseHook = new LowLevelMouseHook(MouseProc);
-            this.GestureMachine = new Core.FSM.GestureMachine(new User.UserConfig().GetGestureDefinition());
+            this.userConfig = new Core.Config.UserConfig();
+            var ctx = new Core.UserScriptExecutionContext(this.userConfig);
+            EvaluateUserScript(ctx);
+            this.GestureMachine = new Core.FSM.GestureMachine(ctx.GetGestureDefinition());
+            //this.GestureMachine = new Core.FSM.GestureMachine(new User.UserConfig().GetGestureDefinition());
             InitializeComponent();
         }
 
@@ -248,6 +273,16 @@ namespace CreviceApp
             }
         }
 
+        public void ShowTooltip(string text)
+        {
+            ShowTooltip(text, userConfig.UI.TooltipPositionBinding(Cursor.Position));
+        }
+        
+        public void ShowTooltip(string text, Point point)
+        {
+            ShowTooltip(text, point, userConfig.UI.TooltipTimeout);
+        }
+
         public void ShowTooltip(string text, Point point, int duration)
         {
             var invoker = (MethodInvoker)delegate()
@@ -255,6 +290,11 @@ namespace CreviceApp
                 tooltip.Show(text, point, duration);
             };
             InvokeProperly(invoker);
+        }
+        
+        public void ShowBaloon(string text)
+        {
+            ShowBaloon(text, userConfig.UI.BaloonTimeout);
         }
 
         public void ShowBaloon(string text, int timeout)
