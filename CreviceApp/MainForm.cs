@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,14 +17,62 @@ namespace CreviceApp
 
     public partial class MainForm : Form
     {
-        private static readonly MainForm instance = new MainForm();
+        private static readonly Lazy<MainForm> instance = new Lazy<MainForm>(() => 
+        {
+            return new MainForm(); }
+        );
         public static MainForm Instance
         {
             get
             {
-                return instance;
+                return instance.Value;
             }
         }
+
+        private static Microsoft.Win32.RegistryKey AutorunRegistry()
+        {
+            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+        }
+        private static bool AutoRun
+        {
+            get
+            {
+                var registry = AutorunRegistry();
+                try
+                {
+                    var res = registry.GetValue(Application.ProductName);
+                    return res != null &&
+                           (string)res == Application.ExecutablePath;
+                }
+                finally
+                {
+                    registry.Close();
+                }
+            }
+            set
+            {
+                if (value)
+                {
+                    var registry = AutorunRegistry();
+                    registry.SetValue(Application.ProductName, Application.ExecutablePath);
+                    Debug.Print("Autorun was set to true");
+                    registry.Close();
+                }
+                else
+                {
+                    var registry = AutorunRegistry();
+                    try
+                    {
+                        registry.DeleteValue(Application.ProductName);
+                        Debug.Print("Autorun was set to false");
+                    }
+                    catch (ArgumentException) { }
+                    registry.Close();
+                }
+            }
+        }
+
+        private const string url = "https://github.com/rubyu/CreviceApp";
 
         private const int WM_DISPLAYCHANGE = 0x007E;
 
@@ -133,6 +182,15 @@ namespace CreviceApp
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            label1.Text = "Product Name: " + Application.ProductName;
+            label2.Text = "Product Version: " + Application.ProductVersion;
+            label3.Text = "Company Name: " + Application.CompanyName;
+            label4.Text = ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false)).Copyright;
+            label5.Text = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyDescriptionAttribute), false)).Description;
+
+            checkBox1.Checked = AutoRun;
+
             try
             {
                 mouseHook.SetHook();
@@ -145,6 +203,19 @@ namespace CreviceApp
                     MessageBoxIcon.Error);
                 Application.Exit();
             }
+        }
+
+        private bool closeRequest = false;
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (!closeRequest)
+            {
+                e.Cancel = true;
+                WindowState = FormWindowState.Minimized;
+                return;
+            }
+            base.OnClosing(e);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -194,6 +265,28 @@ namespace CreviceApp
                 notifyIcon1.ShowBalloonTip(timeout);
             };
             InvokeProperly(invoker);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            closeRequest = true;
+            AutoRun = checkBox1.Checked;
+            Close();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(url);
+        }
+
+        private void notifyIcon1_Click(object sender, EventArgs e)
+        {
+            Opacity = 0;
+            WindowState = FormWindowState.Normal;
+            var rect = Screen.PrimaryScreen.Bounds;
+            Left = (rect.Width - Width) / 2;
+            Top = (rect.Height - Height) / 2;
+            Opacity = 1;
         }
     }
 }
