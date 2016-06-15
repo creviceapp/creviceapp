@@ -63,7 +63,7 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(40, 180);
+            this.linkLabel1.Location = new System.Drawing.Point(45, 187);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(198, 12);
             this.linkLabel1.TabIndex = 1;
@@ -73,22 +73,20 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(56, 38);
+            this.panel1.Location = new System.Drawing.Point(61, 33);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(165, 139);
+            this.panel1.Size = new System.Drawing.Size(165, 91);
             this.panel1.TabIndex = 2;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 100);
+            this.label5.Location = new System.Drawing.Point(12, 141);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 12);
+            this.label5.Size = new System.Drawing.Size(260, 46);
             this.label5.TabIndex = 4;
             this.label5.Text = "label5";
             // 
@@ -143,6 +141,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.checkBox1);

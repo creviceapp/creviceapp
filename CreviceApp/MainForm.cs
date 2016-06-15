@@ -276,7 +276,7 @@ namespace CreviceApp
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(url);
+            Process.Start(url);
         }
 
         private void notifyIcon1_Click(object sender, EventArgs e)
