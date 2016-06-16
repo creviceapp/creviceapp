@@ -69,5 +69,44 @@ namespace CreviceApp.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   &lt;html&gt;
+        ///&lt;head&gt;
+        ///&lt;style type=&quot;text/css&quot;&gt;
+        /// 	html 
+        /// 	{{ 
+        /// 		line-height: 1.8; 
+        /// 	}}
+        /// 	.header1 
+        /// 	{{ 
+        /// 		font-size: 140%; 
+        /// 		font-weight: bold; 
+        /// 	}}
+        /// 	.header2 
+        /// 	{{ 
+        /// 		font-size: 90%; 
+        /// 	}}
+        /// 	.header3 
+        /// 	{{ 
+        /// 		font-size: 80%; 
+        /// 	}}
+        /// 	.center 
+        /// 	{{ 
+        /// 		text-align: center; 
+        /// 	}}
+        ///&lt;/style&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;div class=&quot;center header1&quot;&gt;{0}&lt;/div&gt;
+        ///	&lt;div class=&quot;center header3&quot;&gt;Version: {1}&lt;/div&gt;
+        ///	&lt;div class=&quot;center header2&quot;&gt;{2}&lt;/div&gt;
+        ///	&lt;div class=&quot;center header3&quot;&gt;&lt;a href=&quot;{3}&quot;&gt;{4}&lt;/a&gt;&lt; [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ProductInfo {
+            get {
+                return ResourceManager.GetString("ProductInfo", resourceCulture);
+            }
+        }
     }
 }

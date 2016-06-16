@@ -95,6 +95,7 @@
       <HintPath>packages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -130,11 +131,20 @@
     <Compile Include="DSL.OnElement.cs" />
     <Compile Include="DSL.Root.cs" />
     <Compile Include="DSL.WhenElement.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Form.MouseGestureForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Form.ProductInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form.ProductInfoForm.Designer.cs">
+      <DependentUpon>Form.ProductInfoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form.MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form.MainForm.Designer.cs">
+      <DependentUpon>Form.MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Logging.cs" />
     <Compile Include="Program.cs" />
@@ -143,12 +153,14 @@
     <Compile Include="Core.Config.UserConfig.cs" />
     <Compile Include="Core.UserActionExecutionContext.cs" />
     <Compile Include="UI.cs" />
-    <Compile Include="UserConfig.cs" />
     <Compile Include="WinAPI.Helper.cs" />
     <Compile Include="WinAPI.SendInput.VirtualKeys.cs" />
     <Compile Include="WinAPI.SendInput.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="Form.ProductInfoForm.resx">
+      <DependentUpon>Form.ProductInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form.MainForm.resx">
+      <DependentUpon>Form.MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -193,6 +205,9 @@
   <ItemGroup>
     <Analyzer Include="packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ProductInfo.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

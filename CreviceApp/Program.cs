@@ -22,7 +22,19 @@ namespace CreviceApp
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(MainForm.Instance);
+            var Global = new AppGlobal();
+            Application.Run(Global.MainForm);
+        }
+    }
+
+    public class AppGlobal {
+        public readonly Core.Config.UserConfig UserConfig;
+        public readonly MainForm MainForm;
+
+        public AppGlobal()
+        {
+            this.UserConfig = new Core.Config.UserConfig();
+            this.MainForm = new MainForm(this);
         }
     }
 }

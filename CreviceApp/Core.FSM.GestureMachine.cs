@@ -10,8 +10,9 @@ namespace CreviceApp.Core.FSM
 {
     public class GestureMachine : IDisposable
     {
-        public GlobalValues Global;
-        public IState State;
+        public GlobalValues Global { get; private set; }
+        public IState State { get; private set; }
+        public IEnumerable<GestureDefinition> GestureDefinition { get; private set; }
 
         private object lockObject = new object();
 
@@ -19,6 +20,7 @@ namespace CreviceApp.Core.FSM
         {
             this.Global = new GlobalValues();
             this.State = new State0(Global, gestureDef);
+            this.GestureDefinition = gestureDef;
         }
 
         public bool Input(Def.Event.IEvent evnt, Point point)

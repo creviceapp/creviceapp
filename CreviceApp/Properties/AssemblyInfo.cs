@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("CreviceApp")]
-[assembly: AssemblyDescription("A simple and reliable implementation of mouse gesture utility for Windows written in C#.")]
+[assembly: AssemblyDescription("An implementation of mouse gesture utility developed to give the best performance and reliability.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Crevice")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("Copyright @ruby_U 2016")]
 [assembly: AssemblyTrademark("")]
