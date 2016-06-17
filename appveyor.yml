@@ -9,11 +9,11 @@
   version: 1.0.{build}
   
   init:
-    - ps : >-
-      if ($env:appveyor_repo_tag -eq "true")
-      {
-        Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
-      }
+    - ps: >-
+        if ($env:appveyor_repo_tag -eq "true")
+        {
+          Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
+        }
   
   assembly_info:
     patch: true
@@ -31,8 +31,8 @@
 
   before_build:
     - cmd: >-
-      cd "CreviceApp"
-      nuget restore
+        cd "CreviceApp"
+        nuget restore
 
   build:
     project: CreviceApp.sln
@@ -40,21 +40,21 @@
     verbosity: minimal
 
   after_test:
-    - ps : >-
-      $artifact = "crevice"
-      mkdir "dist"
-      copy "bin" "dist"
-      cd "dist"
-      del /s "*.xml"
-      del /s "*.pdb"
-      mkdir "$artifact"
-      copy "bin\Release\*" "$artifact"
-      7z -a "$artifact.zip" "$artifact"
-      Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName LatestRelease
-      if ($env:appveyor_repo_tag -eq "true")
-      {
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$env:appveyor_repo_tag_name.zip" -DeploymentName TagRelease
-      }
+    - ps: >-
+        $artifact = "crevice"
+        mkdir "dist"
+        copy "bin" "dist"
+        cd "dist"
+        del /s "*.xml"
+        del /s "*.pdb"
+        mkdir "$artifact"
+        copy "bin\Release\*" "$artifact"
+        7z -a "$artifact.zip" "$artifact"
+        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName LatestRelease
+        if ($env:appveyor_repo_tag -eq "true")
+        {
+          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$env:appveyor_repo_tag_name.zip" -DeploymentName TagRelease
+        }
 
 #  deploy:
 #    - provider: GitHub
