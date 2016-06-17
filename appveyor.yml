@@ -55,7 +55,7 @@
         cd "dist"
         Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
         Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-        Copy-Item -Path "bin\$conf" -Destination "$artifact" -Recurse
+        Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
         7z a "$artifact.zip" "$artifact"
         Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
         if ($tag -eq "true")
