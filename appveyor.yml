@@ -45,12 +45,12 @@
         cd "CreviceApp"
         $artifact = "crevice"
         New-Item -Path "dist"
-        Copy-Item -Path "bin" -Destination "dist" -Recurse
+        Copy-Item -Path "bin" -Destination "dist\" -Recurse
         cd "dist"
         Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
         Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
         New-Item -Path "$artifact"
-        Copy-Item -Path "bin\Release\*" -Destination "$artifact"
+        Copy-Item -Path "bin\Release\*" -Destination "$artifact\"
         7z a "$artifact.zip" "$artifact"
         Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "LatestRelease"
         if ($env:appveyor_repo_tag -eq "true")
