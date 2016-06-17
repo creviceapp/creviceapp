@@ -44,19 +44,20 @@
     - ps: |
         cd "CreviceApp"
         $artifact = "crevice"
-        mkdir "dist"
-        copy "bin" "dist"
+        New-Item -Path "dist"
+        Copy-Item -Path "bin" -Destination "dist" -Recurse
         cd "dist"
-        del /s "*.xml"
-        del /s "*.pdb"
-        mkdir "$artifact"
-        copy "bin\Release\*" "$artifact"
-        7z -a "$artifact.zip" "$artifact"
+        Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
+        Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
+        New-Item -Path "$artifact"
+        Copy-Item -Path "bin\Release\*" -Destination "$artifact"
+        7z a "$artifact.zip" "$artifact"
         Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "LatestRelease"
         if ($env:appveyor_repo_tag -eq "true")
         {
           Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$env:appveyor_repo_tag_name.zip" -DeploymentName "TagRelease"
         }
+        cd ..
 
 #  deploy:
 #    - provider: GitHub
