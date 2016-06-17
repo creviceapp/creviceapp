@@ -33,9 +33,10 @@
     - cmd: |
         cd "CreviceApp"
         nuget restore
+        cd ..
 
   build:
-    project: "CreviceApp.sln"
+    project: CreviceApp\CreviceApp.sln
     parallel: false
     verbosity: minimal
 
