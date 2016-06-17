@@ -9,7 +9,7 @@
   version: 1.0.{build}
   
   init:
-    - ps: >-
+    - ps: |
         if ($env:appveyor_repo_tag -eq "true")
         {
           Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
@@ -30,7 +30,7 @@
     - Release
 
   before_build:
-    - cmd: >-
+    - cmd: |
         cd "CreviceApp"
         nuget restore
 
@@ -40,7 +40,7 @@
     verbosity: minimal
 
   after_test:
-    - ps: >-
+    - ps: |
         $artifact = "crevice"
         mkdir "dist"
         copy "bin" "dist"
