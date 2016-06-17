@@ -43,24 +43,24 @@
   after_test:
     - ps: |
         cd "CreviceApp"
+        $config  = $env:configuration
+        $tag     = $env:appveyor_repo_tag
+        $tagname = $env:appveyor_repo_tag_name
         $artifact = "crevice"
-        $config = $env:configuration
         if ($config -ne "Release")
         {
           $artifact = "$artifact.$config".ToLower()
         }
-        New-Item -Path "dist"
         Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
         cd "dist"
         Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
         Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-        New-Item -Path "$artifact"
-        Copy-Item -Path "bin\Release\*" -Destination "$artifact\"
+        Copy-Item -Path "bin\Release" -Destination "$artifact"
         7z a "$artifact.zip" "$artifact"
         Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
-        if ($env:appveyor_repo_tag -eq "true")
+        if ($tag -eq "true")
         {
-          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$env:appveyor_repo_tag_name.zip" -DeploymentName "Tag$config"
+          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag$config"
         }
         cd ..
 
