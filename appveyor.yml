@@ -35,12 +35,13 @@
         nuget restore
 
   build:
-    project: CreviceApp.sln
+    project: "CreviceApp\CreviceApp.sln"
     parallel: false
     verbosity: minimal
 
   after_test:
     - ps: |
+        cd "CreviceApp"
         $artifact = "crevice"
         mkdir "dist"
         copy "bin" "dist"
@@ -50,10 +51,10 @@
         mkdir "$artifact"
         copy "bin\Release\*" "$artifact"
         7z -a "$artifact.zip" "$artifact"
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName LatestRelease
+        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "LatestRelease"
         if ($env:appveyor_repo_tag -eq "true")
         {
-          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$env:appveyor_repo_tag_name.zip" -DeploymentName TagRelease
+          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$env:appveyor_repo_tag_name.zip" -DeploymentName "TagRelease"
         }
 
 #  deploy:
