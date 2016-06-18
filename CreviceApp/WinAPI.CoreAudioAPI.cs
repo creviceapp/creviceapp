@@ -221,13 +221,26 @@ namespace CreviceApp.WinAPI.CoreAudioAPI
             var endpoint = GetAudioEndpointVolume();
             try
             {
-                Marshal.ThrowExceptionForHR(endpoint.SetMasterVolumeLevelScalar(value, Guid.Empty));
+                Marshal.ThrowExceptionForHR(endpoint.SetMasterVolumeLevelScalar(NormalizeVolume(value), Guid.Empty));
             }
             finally
             {
                 Marshal.ReleaseComObject(endpoint);
             }
         }
+
+        private float NormalizeVolume(float value)
+        {
+            if (value > 1)
+            {
+                return 1;
+            }
+            else if (value < 0)
+            {
+                return 0;
+            }
+            return value;
+    }
 
         public void Dispose()
         {
