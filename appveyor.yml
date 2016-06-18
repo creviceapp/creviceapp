@@ -61,5 +61,5 @@ after_test:
 #    secure: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #  artifact: TagRelease
 #  on:
-#    CONFIGURATION: Release
-#    APPVEYOR_REPO_TAG: true
+#    configuration: Release
+#    appveyor_repo_tag: true
