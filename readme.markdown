@@ -11,7 +11,7 @@ This software requires Windows7 or later, and .Net Framework 4.6.
 
 ## Edit config csx file
 
-After first starting of `CreviceApp.exe`, move to `%APPDATA%Crevice\CreviceApp`, and you could find `default.csx`. It's the config file. Please open it with a text editor and look through it. 
+After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the config file. Please open it with a text editor and look through it. 
 
 ## Mouse gesture DSL
 
