@@ -19,17 +19,17 @@ namespace CreviceApp.Core
 
         public class CachedWindowInfo : WinAPI.Window.ForegroundWindowInfo
         {
-            private readonly Point point;
+            private readonly WinAPI.Window.OnCursorWindowInfo onCursor;
             public CachedWindowInfo(Point point) : base()
             {
-                this.point = point;
+                this.onCursor = new WinAPI.Window.OnCursorWindowInfo(point);
             }
 
             public WinAPI.Window.OnCursorWindowInfo OnCursor
             {
                 get
                 {
-                    return new WinAPI.Window.OnCursorWindowInfo(point);
+                    return onCursor;
                 }
             }
 
@@ -37,8 +37,7 @@ namespace CreviceApp.Core
             {
                 get
                 {
-                    var pos = Cursor.Position;
-                    return new CachedWindowInfo(point);
+                    return new CachedWindowInfo(Cursor.Position);
                 }
             }
         }
