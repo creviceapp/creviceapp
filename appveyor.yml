@@ -6,13 +6,6 @@ image: Visual Studio 2015
 
 version: 1.0.{build}
 
-init:
-  - ps: |
-      if ($env:appveyor_repo_tag -eq "true")
-      {
-        Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
-      }
-
 assembly_info:
   patch: true
   file: AssemblyInfo.*
