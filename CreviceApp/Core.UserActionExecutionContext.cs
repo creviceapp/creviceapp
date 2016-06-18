@@ -33,12 +33,9 @@ namespace CreviceApp.Core
                 }
             }
 
-            public CachedWindowInfo Now
+            public CachedWindowInfo Now()
             {
-                get
-                {
-                    return new CachedWindowInfo(Cursor.Position);
-                }
+                return new CachedWindowInfo(Cursor.Position);
             }
         }
     }

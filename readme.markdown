@@ -101,7 +101,7 @@ The window which was on the foreground when a gesture started. This provides `Ha
 
 The window which was under the cursor when a gesture started.
 
-#### ExecutionContext.Window.Now
+#### ExecutionContext.Window.Now()
 
 If you would like to get current `Window`, `Window.Now` provides it.
 
@@ -119,7 +119,7 @@ SendInput.ExtendedKeyUp(VK_LWIN);
 
 ```
 
-#### SendInput.Muptiple.XXXX
+#### SendInput.Muptiple().XXXX
 
 ```cs
 SendInput.Multiple().
