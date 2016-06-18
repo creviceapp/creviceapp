@@ -1,146 +1,72 @@
 
--
-  branches:
-    only:
-      - master
+skip_tags: false
+skip_non_tags: false
 
-  skip_tags: false
-  skip_non_tags: false
+image: Visual Studio 2015
 
-  image: Visual Studio 2015
+version: 1.0.{build}
 
-  version: 1.0.{build}
-  
-  init:
-    - ps: |
-        if ($env:appveyor_repo_tag -eq "true")
-        {
-          Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
-        }
-  
-  assembly_info:
-    patch: true
-    file: AssemblyInfo.*
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+init:
+  - ps: |
+      if ($env:appveyor_repo_tag -eq "true")
+      {
+        Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
+      }
 
-  platform:
-    - Any CPU
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
 
-  configuration:
-    - Debug
-    - Release
+platform:
+  - Any CPU
 
-  before_build:
-    - cmd: |
-        cd "CreviceApp"
-        nuget restore
-        cd ..
+configuration:
+  - Debug
+  - Release
 
-  build:
-    project: CreviceApp\CreviceApp.sln
-    parallel: false
-    verbosity: minimal
+before_build:
+  - cmd: |
+      cd "CreviceApp"
+      nuget restore
+      cd ..
 
-  after_test:
-    - ps: |
-        cd "CreviceApp"
-        $config  = $env:configuration
-        $tag     = $env:appveyor_repo_tag
-        $tagname = $env:appveyor_repo_tag_name
-        $artifact = "crevice"
-        if ($config -ne "Release")
-        {
-          $artifact = "$artifact.$config".ToLower()
-        }
-        Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
-        cd "dist"
-        Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
-        Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-        Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
-        7z a "$artifact.zip" "$artifact"
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
-        if ($tag -eq "true")
-        {
-          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag$config"
-        }
-        cd ..
+build:
+  project: CreviceApp\CreviceApp.sln
+  parallel: false
+  verbosity: minimal
 
-#  deploy:
-#  - provider: GitHub
-#    auth_token:
-#      secure: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-#    artifact: TagRelease
-#    on:
-#      branch: master
-#      CONFIGURATION: Release
-#      APPVEYOR_REPO_TAG: true
+after_test:
+  - ps: |
+      cd "CreviceApp"
+      $config  = $env:configuration
+      $tag     = $env:appveyor_repo_tag
+      $tagname = $env:appveyor_repo_tag_name
+      $artifact = "crevice"
+      if ($config -ne "Release")
+      {
+        $artifact = "$artifact.$config".ToLower()
+      }
+      Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
+      cd "dist"
+      Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
+      Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
+      Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
+      7z a "$artifact.zip" "$artifact"
+      Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
+      if ($tag -eq "true")
+      {
+        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag$config"
+      }
+      cd ..
 
--
-  branches:
-    only:
-      - develop
-
-  skip_tags: false
-  skip_non_tags: false
-
-  image: Visual Studio 2015
-
-  version: 1.0.{build}
-  
-  init:
-    - ps: |
-        if ($env:appveyor_repo_tag -eq "true")
-        {
-          Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
-        }
-  
-  assembly_info:
-    patch: true
-    file: AssemblyInfo.*
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
-
-  platform:
-    - Any CPU
-
-  configuration:
-    - Debug
-    - Release
-
-  before_build:
-    - cmd: |
-        cd "CreviceApp"
-        nuget restore
-        cd ..
-
-  build:
-    project: CreviceApp\CreviceApp.sln
-    parallel: false
-    verbosity: minimal
-
-  after_test:
-    - ps: |
-        cd "CreviceApp"
-        $config  = $env:configuration
-        $tag     = $env:appveyor_repo_tag
-        $tagname = $env:appveyor_repo_tag_name
-        $artifact = "crevice"
-        if ($config -ne "Release")
-        {
-          $artifact = "$artifact.$config".ToLower()
-        }
-        Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
-        cd "dist"
-        Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
-        Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-        Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
-        7z a "$artifact.zip" "$artifact"
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
-        if ($tag -eq "true")
-        {
-          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag$config"
-        }
-        cd ..
+#deploy:
+#- provider: GitHub
+#  auth_token:
+#    secure: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#  artifact: TagRelease
+#  on:
+#    CONFIGURATION: Release
+#    APPVEYOR_REPO_TAG: true
