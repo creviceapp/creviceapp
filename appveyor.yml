@@ -65,8 +65,70 @@
         cd ..
 
 #  deploy:
-#    - provider: GitHub
-#      articact: TagRelease
-#      on:
-#        branch: master
-#        appveyor_repo_tag: true
+#  - provider: GitHub
+#    auth_token:
+#      secure: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#    artifact: TagRelease
+#    on:
+#      branch: master
+#      CONFIGURATION: Release
+#      APPVEYOR_REPO_TAG: true
+
+-
+  branches:
+    only:
+      - develop
+
+  image: Visual Studio 2015
+
+  version: 1.0.{build}-dev
+  
+  init:
+    - ps: |
+        if ($env:appveyor_repo_tag -eq "true")
+        {
+          Update-AppveyorBuild -Version $env:appveyor_repo_tag_name
+        }
+  
+  assembly_info:
+    patch: true
+    file: AssemblyInfo.*
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
+
+  platform:
+    - Any CPU
+
+  configuration:
+    - Debug
+    - Release
+
+  before_build:
+    - cmd: |
+        cd "CreviceApp"
+        nuget restore
+        cd ..
+
+  build:
+    project: CreviceApp\CreviceApp.sln
+    parallel: false
+    verbosity: minimal
+
+  after_test:
+    - ps: |
+        cd "CreviceApp"
+        $config  = $env:configuration
+        $artifact = "crevice"
+        if ($config -ne "Release")
+        {
+          $artifact = "$artifact.$config".ToLower()
+        }
+        Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
+        cd "dist"
+        Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
+        Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
+        Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
+        7z a "$artifact.zip" "$artifact"
+        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
+        cd ..
