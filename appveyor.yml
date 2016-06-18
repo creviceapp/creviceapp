@@ -81,7 +81,7 @@
 
   image: Visual Studio 2015
 
-  version: 1.0.{build}-dev
+  version: 1.0.{build}
   
   init:
     - ps: |
@@ -119,6 +119,8 @@
     - ps: |
         cd "CreviceApp"
         $config  = $env:configuration
+        $tag     = $env:appveyor_repo_tag
+        $tagname = $env:appveyor_repo_tag_name
         $artifact = "crevice"
         if ($config -ne "Release")
         {
@@ -131,4 +133,8 @@
         Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
         7z a "$artifact.zip" "$artifact"
         Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
+        if ($tag -eq "true")
+        {
+          Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag$config"
+        }
         cd ..
