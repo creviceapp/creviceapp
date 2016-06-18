@@ -83,10 +83,10 @@ Chrome.
 @do((ctx) =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_MENU).
+    ExtendedKeyDown(VK_LMENU).
     ExtendedKeyDown(VK_LEFT).
     ExtendedKeyUp(VK_LEFT).
-    ExtendedKeyUp(VK_MENU).
+    ExtendedKeyUp(VK_LMENU).
     Send(); // Send Alt+Left to Chrome
 });
 ```
