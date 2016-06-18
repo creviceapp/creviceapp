@@ -1,10 +1,13 @@
 ﻿
-var Chrome = @when((ctx) =>
+var Browser = @when((ctx) =>
 {
-    return ctx.Window.ModuleName == "chrome.exe";
+    return ctx.Window.ModuleName == "chrome.exe" ||
+           ctx.Window.ModuleName == "firefox.exe" ||
+           ctx.Window.ModuleName == "opera.exe" ||
+           ctx.Window.ModuleName == "iexplore.exe";
 });
 
-Chrome.
+Browser.
 @on(RightButton).
 @if(WheelUp).
 @do((ctx) =>
@@ -16,12 +19,10 @@ Chrome.
     ExtendedKeyUp(VK_TAB).
     ExtendedKeyUp(VK_SHIFT).
     ExtendedKeyUp(VK_CONTROL).
-    Send();
-
-    Tooltip("Previous Tab");
+    Send(); // Previous tab
 });
 
-Chrome.
+Browser.
 @on(RightButton).
 @if(WheelDown).
 @do((ctx) =>
@@ -31,12 +32,10 @@ Chrome.
     ExtendedKeyDown(VK_TAB).
     ExtendedKeyUp(VK_TAB).
     ExtendedKeyUp(VK_CONTROL).
-    Send();
-
-    Baloon("Next Tab");
+    Send(); // Next tab
 });
 
-Chrome.
+Browser.
 @on(RightButton).
 @if(MoveUp).
 @do((ctx) =>
@@ -44,10 +43,10 @@ Chrome.
     SendInput.Multiple().
     ExtendedKeyDown(VK_HOME).
     ExtendedKeyUp(VK_HOME).
-    Send();
+    Send(); // Scroll to top
 });
 
-Chrome.
+Browser.
 @on(RightButton).
 @if(MoveDown).
 @do((ctx) =>
@@ -55,10 +54,47 @@ Chrome.
     SendInput.Multiple().
     ExtendedKeyDown(VK_END).
     ExtendedKeyUp(VK_END).
-    Send();
+    Send(); // Scroll to bottom
 });
 
-Chrome.
+Browser.
+@on(RightButton).
+@if(MoveLeft).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_MENU).
+    ExtendedKeyDown(VK_LEFT).
+    ExtendedKeyUp(VK_LEFT).
+    ExtendedKeyUp(VK_MENU).
+    Send(); // Go back
+});
+
+Browser.
+@on(RightButton).
+@if(MoveRight).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_MENU).
+    ExtendedKeyDown(VK_LEFT).
+    ExtendedKeyUp(VK_LEFT).
+    ExtendedKeyUp(VK_MENU).
+    Send(); // Go next
+});
+
+Browser.
+@on(RightButton).
+@if(MoveUp, MoveDown).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_F5).
+    ExtendedKeyUp(VK_F5).
+    Send(); // Reload tab
+});
+
+Browser.
 @on(RightButton).
 @if(MoveDown, MoveRight).
 @do((ctx) =>
@@ -68,13 +104,94 @@ Chrome.
     ExtendedKeyDown(VK_W).
     ExtendedKeyUp(VK_W).
     ExtendedKeyUp(VK_CONTROL).
-    Send();
+    Send(); // Close tab
 });
+
 
 var Explorer = @when((ctx) =>
 {
+    return ctx.Window.ModuleName == "explorer.exe";
+});
+
+Explorer.
+@on(RightButton).
+@if(MoveUp).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_HOME).
+    ExtendedKeyUp(VK_HOME).
+    Send(); // Scroll to top
+});
+
+Explorer.
+@on(RightButton).
+@if(MoveDown).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_END).
+    ExtendedKeyUp(VK_END).
+    Send(); // Scroll to bottom
+});
+
+Explorer.
+@on(RightButton).
+@if(MoveLeft).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_MENU).
+    ExtendedKeyDown(VK_LEFT).
+    ExtendedKeyUp(VK_LEFT).
+    ExtendedKeyUp(VK_MENU).
+    Send(); // Go back
+});
+
+Explorer.
+@on(RightButton).
+@if(MoveRight).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_MENU).
+    ExtendedKeyDown(VK_LEFT).
+    ExtendedKeyUp(VK_LEFT).
+    ExtendedKeyUp(VK_MENU).
+    Send(); // Go next
+});
+
+Explorer.
+@on(RightButton).
+@if(MoveUp, MoveDown).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_F5).
+    ExtendedKeyUp(VK_F5).
+    Send(); // Reflesh window
+});
+
+Explorer.
+@on(RightButton).
+@if(MoveDown, MoveRight).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_CONTROL).
+    ExtendedKeyDown(VK_W).
+    ExtendedKeyUp(VK_W).
+    ExtendedKeyUp(VK_CONTROL).
+    Send(); // Close window
+});
+
+/* Change system master volume by WheelUp and WheelDown events when
+ * the cursor on the taskbar.
+ * 
+var Explorer = @when((ctx) =>
+{
     return ctx.Window.OnCursor.ModuleName == "explorer.exe" &&
-            ctx.Window.OnCursor.ClassName == "MSTaskListWClass";
+           ctx.Window.OnCursor.ClassName == "MSTaskListWClass";
 });
 
 Explorer.
@@ -96,3 +213,4 @@ Explorer.
     WaveVolume.SetMasterVolume(next);
     Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
 });
+*/

@@ -47,7 +47,7 @@ And finally, `@do` clause represents the action of the gesture will be acivated 
 
 ### Stroke gestures
 
-As you know, mouse gestures with strokes, namely, stroke gestures, is the most used and  needed of some kinds of mouse gestures. 
+Mouse gestures with strokes, namely, stroke gestures, is the most used and  needed of some kinds of mouse gestures. 
 CreviceApp naturally supports this.
 `@if` clause takes movements of the mouse, combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`, as it's argument then.
 
@@ -83,10 +83,10 @@ Chrome.
 @do((ctx) =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_ALT).
+    ExtendedKeyDown(VK_MENU).
     ExtendedKeyDown(VK_LEFT).
     ExtendedKeyUp(VK_LEFT).
-    ExtendedKeyUp(VK_ALT).
+    ExtendedKeyUp(VK_MENU).
     Send(); // Send Alt+Left to Chrome
 });
 ```
@@ -96,14 +96,14 @@ Chrome.
 
 #### ExecutionContext.Window
 
-The window which was on the foreground when a gesture started. This provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`, `OnCursor` and `Now`.
+The window which was on the foreground when a gesture started. This provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`, `OnCursor` and `Now()`.
 #### ExecutionContext.Window.OnCursor
 
 The window which was under the cursor when a gesture started.
 
 #### ExecutionContext.Window.Now()
 
-If you would like to get current `Window`, `Window.Now` provides it.
+If you would like to get current `Window`, `Window.Now()` provides it.
 
 ### SendInput
 
@@ -114,7 +114,7 @@ Send mouse and keyboard input events to the foreground window. This API provides
 ```cs
 SendInput.ExtendedKeyDown(VK_LWIN);
 // When D key interrupts here,
-// Win+D will be invoked unintentionally
+// Win+D will be invoked unintentionally.
 SendInput.ExtendedKeyUp(VK_LWIN); 
 
 ```
@@ -125,18 +125,20 @@ SendInput.ExtendedKeyUp(VK_LWIN);
 SendInput.Multiple().
 ExtendedKeyDown(VK_LWIN).
 ExtendedKeyUp(VK_LWIN).
-Send(); // This won't interrupted by any other input
+Send(); // This won't interrupted by any other input.
 ```
 
 ### VK_XXXX
 
 Virtual key codes. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
 
-### Tooltip
+Note: CreviceApp provides VK_0 to VK_9 and VK_A to VK_Z but this is an extension for convenience.
+
+### Tooltip(string text)
 
 Show tooltip message on the right bottom corner of the display on the cusor.
 
-### Baloon
+### Baloon(string text)
 
 Show baloon message.
 
