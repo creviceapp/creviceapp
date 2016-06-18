@@ -17,7 +17,6 @@ platform:
   - Any CPU
 
 configuration:
-  - Debug
   - Release
 
 before_build:
@@ -29,29 +28,24 @@ before_build:
 build:
   project: CreviceApp\CreviceApp.sln
   parallel: false
-  verbosity: minimal
+  verbosity: detailed
 
 after_test:
   - ps: |
       cd "CreviceApp"
-      $config  = $env:configuration
       $tag     = $env:appveyor_repo_tag
       $tagname = $env:appveyor_repo_tag_name
       $artifact = "crevice"
-      if ($config -ne "Release")
-      {
-        $artifact = "$artifact.$config".ToLower()
-      }
       Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
       cd "dist"
       Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
       Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-      Copy-Item -Path "bin\$config" -Destination "$artifact" -Recurse
+      Copy-Item -Path "bin\Release" -Destination "$artifact" -Recurse
       7z a "$artifact.zip" "$artifact"
-      Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest$config"
+      Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest"
       if ($tag -eq "true")
       {
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag$config"
+        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag"
       }
       cd ..
 
@@ -59,7 +53,6 @@ after_test:
 #- provider: GitHub
 #  auth_token:
 #    secure: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-#  artifact: TagRelease
+#  artifact: Tag
 #  on:
-#    configuration: Release
 #    appveyor_repo_tag: true
