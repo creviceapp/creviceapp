@@ -188,13 +188,13 @@ Explorer.
 /* Change system master volume by WheelUp and WheelDown events when
  * the cursor on the taskbar.
  * 
-var Explorer = @when((ctx) =>
+var Taskbar = @when((ctx) =>
 {
     return ctx.Window.OnCursor.ModuleName == "explorer.exe" &&
            ctx.Window.OnCursor.ClassName == "MSTaskListWClass";
 });
 
-Explorer.
+Taskbar.
 @if(WheelUp).
 @do((ctx) =>
 {
@@ -204,7 +204,7 @@ Explorer.
     Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
 });
 
-Explorer.
+Taskbar.
 @if(WheelDown).
 @do((ctx) =>
 {
