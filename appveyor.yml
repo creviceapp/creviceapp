@@ -49,10 +49,13 @@ after_test:
       }
       cd ..
 
-#deploy:
-#- provider: GitHub
-#  auth_token:
-#    secure: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-#  artifact: Tag
-#  on:
-#    appveyor_repo_tag: true
+deploy:
+  - provider: GitHub
+    tag: $(appveyor_repo_tag_name)
+    release: $(appveyor_repo_tag_name).$(appveyor_build_version)
+    description: CreviceApp $(appveyor_repo_tag_name).$(appveyor_build_version)
+    auth_token:
+      secure: rlXYSnSw5pklrVIjalmSFXQO/8RfjbDIpbTlSN2o068LNxFE4WqODJ6uBYjkpFZF
+    artifact: Tag
+    on:
+      appveyor_repo_tag: true
