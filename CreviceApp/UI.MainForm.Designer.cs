@@ -100,6 +100,7 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(300, 196);
             this.Name = "MainForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "CreviceApp";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
