@@ -41,7 +41,6 @@
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "CreviceApp";
-            this.notifyIcon1.Visible = true;
             this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
             // 
             // checkBox1
@@ -101,7 +100,6 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(300, 196);
             this.Name = "MainForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "CreviceApp";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;

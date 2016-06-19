@@ -87,6 +87,7 @@ namespace CreviceApp
                 try
                 {
                     StartCapture();
+                    RegisterNotifyIcon();
                     ShowBaloon(string.Format("{0} gesture definitions were loaded", GestureMachine.GestureDefinition.Count()),
                         string.Format("{0} was started", Application.ProductName),
                         ToolTipIcon.Info, 10000);
@@ -104,6 +105,21 @@ namespace CreviceApp
             {
                 ShowFatalErrorDialog(ex.ToString());
                 Application.Exit();
+            }
+        }
+
+        private void RegisterNotifyIcon()
+        {
+            while (true)
+            {
+                var stopwatch = Stopwatch.StartNew();
+                notifyIcon1.Visible = true;
+                stopwatch.Stop();
+                if (stopwatch.ElapsedMilliseconds < 4000)
+                {
+                    break;
+                }
+                notifyIcon1.Visible = false;
             }
         }
 
