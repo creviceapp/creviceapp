@@ -146,7 +146,7 @@ Show baloon message.
 
 MIT Lisense.
 
-## Latest release (not recommended)
+## Latest releases (not recommended)
 
 | Branch | Status | Download |
 |--------|---------------|--------- |

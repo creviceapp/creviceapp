@@ -28,7 +28,7 @@ before_build:
 build:
   project: CreviceApp\CreviceApp.sln
   parallel: false
-  verbosity: detailed
+  verbosity: minimal
 
 after_test:
   - ps: |
