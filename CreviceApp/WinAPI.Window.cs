@@ -13,10 +13,21 @@ namespace CreviceApp.WinAPI.Window
     public static class Window
     {
         [DllImport("user32.dll")]
-        public static extern IntPtr WindowFromPoint(int x, int y);
+        private static extern IntPtr WindowFromPoint(Point point);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr ChildWindowFromPointEx(IntPtr hWndParent, Point pt, uint uFlags);
+
+        private const int CWP_ALL             = 0x0000;
+        private const int CWP_SKIPINVISIBLE   = 0x0001;
+        private const int CWP_SKIPDISABLED    = 0x0002;
+        private const int CWP_SKIPTRANSPARENT = 0x0004;
 
         [DllImport("user32.dll")]
         private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
@@ -59,6 +70,23 @@ namespace CreviceApp.WinAPI.Window
         public extern static bool PostMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
 
 
+        private static IntPtr GetWindowOnCursor(IntPtr hWnd, Point point)
+        {
+            Point clientPoint = new Point(point.X, point.Y);
+            ScreenToClient(hWnd, ref clientPoint);
+            IntPtr res = ChildWindowFromPointEx(hWnd, clientPoint, CWP_ALL);
+            if (hWnd == res || res == IntPtr.Zero)
+            {
+                return hWnd;
+            }
+            return GetWindowOnCursor(res, point);
+        }
+
+        public static IntPtr GetWindowOnCursor(Point point)
+        {
+            return GetWindowOnCursor(WindowFromPoint(point), point);
+        }
+        
         public static IntPtr GetWindowId(IntPtr hWnd)
         {
             return GetWindowLong(hWnd, GWL_ID);
@@ -198,6 +226,9 @@ namespace CreviceApp.WinAPI.Window
             
     public class OnCursorWindowInfo : WindowInfo
     {
-        public OnCursorWindowInfo(Point point) : base(Window.WindowFromPoint(point.X, point.Y)) { }
+        public OnCursorWindowInfo(Point point) : base(Window.GetWindowOnCursor(point))
+        {
+
+        }
     }
 }
