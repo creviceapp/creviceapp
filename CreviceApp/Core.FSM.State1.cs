@@ -25,7 +25,7 @@ namespace CreviceApp.Core.FSM
         internal bool PrimaryEventIsRestorable { get; set; } = true;
 
         public State1(
-            GlobalValues Global,
+            StateGlobal Global,
             State0 S0,
             UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,

@@ -150,13 +150,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.AppGlobal.cs" />
     <Compile Include="Core.Config.GestureConfig.cs" />
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
     <Compile Include="Core.DSLTreeParser.cs" />
     <Compile Include="Core.Def.cs" />
     <Compile Include="Core.Helper.cs" />
     <Compile Include="Core.FSM.GestureMachine.cs" />
-    <Compile Include="Core.FSM.GlobalValues.cs" />
+    <Compile Include="Core.FSM.StateGlobal.cs" />
     <Compile Include="Core.FSM.Result.cs" />
     <Compile Include="Core.FSM.State.cs" />
     <Compile Include="Core.FSM.State0.cs" />

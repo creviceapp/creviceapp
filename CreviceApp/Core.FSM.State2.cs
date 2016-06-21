@@ -18,7 +18,7 @@ namespace CreviceApp.Core.FSM
         internal readonly IEnumerable<OnButtonIfButtonGestureDefinition> T3;
 
         public State2(
-            GlobalValues Global,
+            StateGlobal Global,
             State0 S0,
             State1 S1,
             UserActionExecutionContext ctx,

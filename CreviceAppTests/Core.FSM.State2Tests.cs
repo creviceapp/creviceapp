@@ -27,7 +27,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { })
             };
-            var S0 = new State0(new GlobalValues(), new List<GestureDefinition>());
+            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
 
@@ -51,7 +51,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { executed = true; })
             };
-            var S0 = new State0(new GlobalValues(), new List<GestureDefinition>());
+            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
             var res = S2.Input(Def.Constant.MiddleButtonDown, new Point());
@@ -71,7 +71,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { executed = true; })
             };
-            var S0 = new State0(new GlobalValues(), new List<GestureDefinition>());
+            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 0);
@@ -93,7 +93,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { executed = true; })
             };
-            var S0 = new State0(new GlobalValues(), new List<GestureDefinition>());
+            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
             Assert.AreEqual(S2.Global.IgnoreNext.Count, 0);
@@ -109,7 +109,7 @@ namespace CreviceApp.Core.FSM.Tests
         public void InputMustReturnConsumedResultWhenGivenTriggerIsInIgnoreListTest()
         {
             var gestureDef = new List<OnButtonIfButtonGestureDefinition>();
-            var S0 = new State0(new GlobalValues(), new List<GestureDefinition>());
+            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
 
@@ -125,7 +125,7 @@ namespace CreviceApp.Core.FSM.Tests
         public void InputMustResetIgnoreListWhenGivenTriggerIsPairOfTriggerInIgnoreListTest()
         {
             var gestureDef = new List<OnButtonIfButtonGestureDefinition>();
-            var S0 = new State0(new GlobalValues(), new List<GestureDefinition>());
+            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = new State2(S1.Global, S0, S1, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
 

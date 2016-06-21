@@ -15,7 +15,7 @@ namespace CreviceApp.Core.FSM
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<IfButtonGestureDefinition>> T5;
 
         public State0(
-            GlobalValues Global,
+            StateGlobal Global,
             IEnumerable<GestureDefinition> gestureDef)
             : base(Global)
         {
@@ -46,8 +46,7 @@ namespace CreviceApp.Core.FSM
                     }
                 }
             }
-
-            if (evnt is Def.Event.IDoubleActionSet)
+            else if (evnt is Def.Event.IDoubleActionSet)
             {
                 var ev = evnt as Def.Event.IDoubleActionSet;
                 if (T1.Keys.Contains(ev) || T5.Keys.Contains(ev))
@@ -74,7 +73,8 @@ namespace CreviceApp.Core.FSM
 
         internal static IEnumerable<T> FilterByWhenClause<T>(
             UserActionExecutionContext ctx,
-            IEnumerable<T> gestureDef) where T : IWhenEvaluatable
+            IEnumerable<T> gestureDef) 
+            where T : IWhenEvaluatable
         {
             return FilterByWhenClause(ctx, gestureDef, new Dictionary<DSL.Def.WhenFunc, bool>());
         }
@@ -82,7 +82,8 @@ namespace CreviceApp.Core.FSM
         internal static IEnumerable<T> FilterByWhenClause<T>(
             UserActionExecutionContext ctx,
             IEnumerable<T> gestureDef,
-            Dictionary<DSL.Def.WhenFunc, bool> cache) where T : IWhenEvaluatable
+            Dictionary<DSL.Def.WhenFunc, bool> cache) 
+            where T : IWhenEvaluatable
         {
             // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
             // but executing it in sequential order here for simplicity.
