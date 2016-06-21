@@ -203,7 +203,7 @@ namespace CreviceApp.WinAPI.Window
             });
         }
 
-        public bool BringWindowToTop()
+        public bool BringToTop()
         {
             return Window.BringWindowToTop(Handle);
         }
