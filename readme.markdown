@@ -159,21 +159,22 @@ Also for the move event of the mouse, `Move(int dx, int dy)` and `MoveTo(int x, 
 
 #### Keyboard event
 
-A keyboard event is synthesized a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
+A keyboard event is synthesized from a key code with two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
 
 ```cs
 SendInput.KeyDown(VK_A);
 SendInput.KeyUp(VK_A); // Send `A` to the foreground application.
 ```
 
-`ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is need to be set.
+`ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is needed to be set.
 
 ```cs
 SendInput.ExetendedKeyDown(VK_LWIN);
 SendInput.ExtentedKeyUp(VK_LWIN); // Send `Win` to the foreground application.
 ```
 
-`KeyDownWithScanCode(ushort keyCode)` and `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
+For the API combined four API above mentioned with `ScanCode` flag,
+`KeyDownWithScanCode(ushort keyCode)`, `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
 
 ```cs
 SendInput.ExtendedKeyDownWithScanCode(VK_LCONTROL);
@@ -182,7 +183,7 @@ SendInput.KeyUpWithScanCode(VK_S);
 SendInput.ExtendedKeyUpWithScanCode(VK_LCONTROL); // Send `Ctrl+S` with scan code to the foreground application.
 ```
 
-And for an other special flag `Unicode`, `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)` and `UnicodeKeyStroke(string str)` are provided.
+And finally, for the API to support an other special `Unicode` flag, `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)` and `UnicodeKeyStroke(string str)` are provided.
 
 ```cs
 SendInput.UnicodeKeyDown('🍣');
