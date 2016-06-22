@@ -159,13 +159,38 @@ Also for the move event of the mouse, `Move(int dx, int dy)` and `MoveTo(int x, 
 
 #### Keyboard event
 
-A keyboard event is synthesized a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. `ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is need to be set. `KeyDownWithScanCode(ushort keyCode)` and `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
+A keyboard event is synthesized a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
+
+```cs
+SendInput.KeyDown(VK_A);
+SendInput.KeyUp(VK_A); // Send `A` to the foreground application.
+```
+
+`ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is need to be set.
+
+```cs
+SendInput.ExetendedKeyDown(VK_LWIN);
+SendInput.ExtentedKeyUp(VK_LWIN); // Send `Win` to the foreground application.
+```
+
+`KeyDownWithScanCode(ushort keyCode)` and `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
+
+```cs
+SendInput.ExtendedKeyDownWithScanCode(VK_LCONTROL);
+SendInput.KeyDownWithScanCode(VK_S);
+SendInput.KeyUpWithScanCode(VK_S);
+SendInput.ExtendedKeyUpWithScanCode(VK_LCONTROL); // Send `Ctrl+S` with scan code to the foreground application.
+```
 
 And for an other special flag `Unicode`, `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)` and `UnicodeKeyStroke(string str)` are provided.
 
-Note 1: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+```cs
+SendInput.UnicodeKeyDown('🍣');
+SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
+```
 
-Note 2: CreviceApp provides `VK_0` to `VK_9` and `VK_A` to `VK_Z` but this is an extension for convenience.
+Note: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+CreviceApp provides virtual keys as `VK_XXXX`, but for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
 
 ### Notification
 
@@ -173,13 +198,21 @@ Note 2: CreviceApp provides `VK_0` to `VK_9` and `VK_A` to `VK_Z` but this is an
 
 Show tooltip message on the right bottom corner of the display on the cusor.
 
+```cs
+Tooptip("This is tooltip.");
+```
+
 #### Baloon(string text)
 
 Show baloon message.
 
+```cs
+Baloon("This is baloon.");
+```
+
 ## Lisence
 
-MIT Lisense.
+MIT Lisense
 
 ## Latest releases (not recommended)
 
