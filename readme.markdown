@@ -126,7 +126,7 @@ A shortcut to win32 API `SendMessage(Handle, Msg, wParam, lParam)`.
 
 #### Window.PostMessage(uint Msg, uint wParam, uint lParam)
 
-A shortcut to win32 API `SendMessage(Handle, Msg, wParam, lParam)`.
+A shortcut to win32 API `PostMessage(Handle, Msg, wParam, lParam)`.
 
 ### SendInput
 
@@ -134,24 +134,14 @@ Send mouse and keyboard input events to the foreground window.
 This API provides single and multiple sending method. 
 The events sent by single sending method is guaranteed to arrive the window in order, but this does not necessarily mean the events will not be interrupted by the other events. 
 Multiple sending method guarantees the events sent by it will not be interrupted by the other events.
-Both methods support the same API for sending mouse events and keyboard events, but for multiple sending method, there is need to explicitly call `Send()` at last.
-
-#### Mouse event
-
-#### Keyboard event
-
-
-#### SendInput.XXXX()
+Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to explicitly be called `Send()` at last.
 
 ```cs
 SendInput.ExtendedKeyDown(VK_LWIN);
 // When D key interrupts here,
 // Win+D will be invoked unintentionally.
 SendInput.ExtendedKeyUp(VK_LWIN); 
-
 ```
-
-#### SendInput.Muptiple().XXXX
 
 ```cs
 SendInput.Multiple().
@@ -160,11 +150,22 @@ ExtendedKeyUp(VK_LWIN).
 Send(); // This won't interrupted by any other input.
 ```
 
-### VK_XXXX
+#### Mouse event
+`Down`, `Up` and `Click` events are supported for the push-release type buttons of mouse devices, `LeftButton`, `MiddleButton`, `RightButton`, `X1Button` and `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()`, `LeftClick()`. 
 
-Virtual key codes. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
-Note: CreviceApp provides VK_0 to VK_9 and VK_A to VK_Z but this is an extension for convenience.
+Also for the move event of the mouse, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are provided.
+
+#### Keyboard event
+
+A keyboard event is synthesized a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. `ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is need to be set. `KeyDownWithScanCode(ushort keyCode)` and `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
+
+And for an other special flag `Unicode`, `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)` and `UnicodeKeyStroke(string str)` are provided.
+
+Note 1: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+
+Note 2: CreviceApp provides `VK_0` to `VK_9` and `VK_A` to `VK_Z` but this is an extension for convenience.
 
 ### Notification
 
