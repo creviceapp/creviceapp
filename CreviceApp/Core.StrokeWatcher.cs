@@ -25,6 +25,11 @@ namespace CreviceApp.Core.Stroke
 
         internal bool MustBeProcessed(uint currentTime)
         {
+            if (watchInterval == 0)
+            {
+                return true;
+            }
+
             if (lastProcessTime + watchInterval < currentTime)
             {
                 lastProcessTime = currentTime;
@@ -76,7 +81,7 @@ namespace CreviceApp.Core.Stroke
             }
         }
 
-        private readonly List<Point> buffer = new List<Point>();
+        internal readonly List<Point> buffer = new List<Point>();
 
         private Task Start()
         {

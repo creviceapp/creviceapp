@@ -16,9 +16,14 @@ namespace CreviceApp.Core.FSM
 
         private object lockObject = new object();
 
-        public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
+        public GestureMachine(IEnumerable<GestureDefinition> gestureDef) : this(new Config.UserConfig(), gestureDef)
         {
-            this.Global = new StateGlobal();
+
+        }
+
+        public GestureMachine(Config.UserConfig userConfig, IEnumerable<GestureDefinition> gestureDef)
+        {
+            this.Global = new StateGlobal(userConfig);
             this.State = new State0(Global, gestureDef);
             this.GestureDefinition = gestureDef;
         }

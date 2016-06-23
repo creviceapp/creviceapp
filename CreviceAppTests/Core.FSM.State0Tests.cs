@@ -73,18 +73,9 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void InputMustExecuteTransition00WhenHavingIfButtonGestureDefinitionAndISingleActionGivenTest()
+        public void Transition00_RRTest()
         {
-            var list = new List<DSL.Def.AcceptableInIfButtonClause>()
-            {
-                DSL.Def.Constant.WheelUp,
-                DSL.Def.Constant.WheelDown,
-                DSL.Def.Constant.WheelLeft,
-                DSL.Def.Constant.WheelRight
-            };
-            Assert.IsTrue(list.TrueForAll(x => TestDef.Constant.AcceptablesInIfButtonClause.Contains(x)));
-
-            foreach (var a in  list)
+            foreach (var a in TestDef.Constant.AcceptablesInIfButtonClause.Where(x => Helper.Convert(x) is Def.Event.ISingleAction))
             {
                 var countDown = new CountdownEvent(1);
                 var gestureDef = new List<GestureDefinition>() {
@@ -114,19 +105,9 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void InputMustExecuteTransition01WhenHavingIfButtonGestureDefinitionAndIDoubleActionGivenTest()
+        public void Transition01_A_RRTest()
         {
-            var list = new List<DSL.Def.AcceptableInIfButtonClause>()
-            {
-                DSL.Def.Constant.LeftButton,
-                DSL.Def.Constant.MiddleButton,
-                DSL.Def.Constant.RightButton,
-                DSL.Def.Constant.X1Button,
-                DSL.Def.Constant.X2Button
-            };
-            Assert.IsTrue(list.TrueForAll(x => TestDef.Constant.AcceptablesInIfButtonClause.Contains(x)));
-
-            foreach (var a in list)
+            foreach (var a in TestDef.Constant.AcceptablesInIfButtonClause.Where(x => Helper.Convert(x) is Def.Event.IDoubleActionSet))
             {
                 var gestureDef = new List<GestureDefinition>() {
                 new IfButtonGestureDefinition(
@@ -154,7 +135,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void InputMustExecuteTransition01WhenHavingOnButtonIfButtonGestureDefinitionAndIDoubleActionGivenTest()
+        public void Transition01_B_RRTest()
         {
             foreach (var a in TestDef.Constant.AcceptablesInOnClause)
             {
@@ -185,7 +166,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
         
         [TestMethod()]
-        public void InputMustExecuteTransition10Test()
+        public void Transition10_Test()
         {
             var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var res = S0.Reset();

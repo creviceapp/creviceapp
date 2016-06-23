@@ -23,7 +23,12 @@ namespace CreviceApp.Core.FSM
                 
         public Stroke.StrokeWatcher StrokeWatcher { get; private set; }
 
-        public StateGlobal()
+        public StateGlobal() : this(new Config.UserConfig())
+        {
+
+        }
+
+        public StateGlobal(Config.UserConfig userConfig)
         {
             this.StrokeWatcherScheduler = new Threading.SingleThreadScheduler(ThreadPriority.AboveNormal);
             this.LowPriorityScheduler = new Threading.SingleThreadScheduler(ThreadPriority.Lowest);
@@ -31,7 +36,7 @@ namespace CreviceApp.Core.FSM
             this.StrokeWatcherTaskFactory = new TaskFactory(StrokeWatcherScheduler);
             this.LowPriorityTaskFactory = new TaskFactory(LowPriorityScheduler);
             this.UserActionTaskFactory = new TaskFactory(UserActionScheduler);
-            this.Config = new Config.UserConfig();
+            this.Config = userConfig;
             this.StrokeWatcher = NewStrokeWatcher();
         }
 
