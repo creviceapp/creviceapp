@@ -11,7 +11,7 @@ namespace CreviceApp.Core.Config
     public class UserInterfaceConfig
     {
         public Func<Point, Point> TooltipPositionBinding;
-        public int TooltipTimeout = 2000;
+        public int TooltipTimeout = 3000;
 
         public int BaloonTimeout = 10000;
         
