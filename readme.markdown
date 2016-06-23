@@ -132,9 +132,9 @@ A shortcut to win32 API `PostMessage(Handle, Msg, wParam, lParam)`.
 
 Send mouse and keyboard input events to the foreground window. 
 This API provides single and multiple sending method. 
-The events sent by single sending method is guaranteed to arrive the window in order, but this does not necessarily mean the events will not be interrupted by the other events. 
-Multiple sending method guarantees the events sent by it will not be interrupted by the other events.
-Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to explicitly be called `Send()` at last.
+The events sent by single sending method is guaranteed to arrive to the window in order, but this does not necessarily mean it will not be interrupted by the other events. 
+Multiple sending method guarantees that the events sent by it will not be interrupted by the other events.
+Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to be called `Send()` at last.
 
 ```cs
 SendInput.ExtendedKeyDown(VK_LWIN);
@@ -155,7 +155,7 @@ Send(); // This won't interrupted by any other input.
 
 For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
-Also for the move event of the mouse, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are provided.
+For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also provided.
 
 #### Keyboard event
 
