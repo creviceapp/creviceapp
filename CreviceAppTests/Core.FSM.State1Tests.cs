@@ -172,15 +172,14 @@ namespace CreviceApp.Core.FSM.Tests
                 foreach (var b in TestDef.Constant.AcceptablesInOnClause)
                 {
                     countDown.Reset();
-                    var Config = new Config.UserConfig();
-                    Config.Gesture.WatchInterval = 0;
-                    using(var Global = new StateGlobal(Config))
+                    using(var Global = new StateGlobal())
                     {
                         var S0 = new State0(Global, new List<GestureDefinition>());
                         var S1 = new State1(Global, S0, ctx, Helper.Convert(a), gestureDef, new List<IfButtonGestureDefinition>());
-                        S1.Input(Def.Constant.Move, new Point(0, 0));
-                        S1.Input(Def.Constant.Move, new Point(0, 200));
-                        Thread.Sleep(100);
+                        Global.StrokeWatcher.strokes.Add(new Stroke.Stroke(
+                            Global.Config.Gesture.StrokeDirectionChangeThreshold, 
+                            Global.Config.Gesture.StrokeExtensionThreshold,
+                            Def.Direction.Down));
                         var ev = Helper.Convert(b).GetPair();
                         var res = S1.Input((Def.Event.IEvent)ev, new Point(0, 400));
                         if (a == b)
