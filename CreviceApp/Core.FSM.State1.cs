@@ -81,29 +81,31 @@ namespace CreviceApp.Core.FSM
                     if (stroke.Count() > 0)
                     {
                         Debug.Print("Stroke: {0}", stroke.ToString());
-                        PrimaryEventIsRestorable = false;
                         if (T4.Keys.Contains(stroke))
                         {
                             Debug.Print("[Transition 04]");
                             ExecuteUserActionInBackground(ctx, T4[stroke]);
                         }
                     }
-                    if (PrimaryEventIsRestorable)
+                    else
                     {
-                        if (T5.Count() > 0)
+                        if (PrimaryEventIsRestorable)
                         {
-                            Debug.Print("[Transition 05]");
-                            ExecuteUserActionInBackground(ctx, T5);
+                            if (T5.Count() > 0)
+                            {
+                                Debug.Print("[Transition 05]");
+                                ExecuteUserActionInBackground(ctx, T5);
+                            }
+                            else
+                            {
+                                Debug.Print("[Transition 06]");
+                                RestorePrimaryEvent();
+                            }
                         }
                         else
                         {
-                            Debug.Print("[Transition 06]");
-                            RestorePrimaryEvent();
+                            Debug.Print("[Transition 07]");
                         }
-                    }
-                    else
-                    {
-                        Debug.Print("[Transition 07]");
                     }
                     
                     return Result.EventIsConsumed(nextState: S0);

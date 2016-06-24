@@ -21,7 +21,7 @@ namespace CreviceApp.Core.FSM
 
         public readonly HashSet<Def.Event.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Event.IDoubleActionRelease>();
                 
-        public Stroke.StrokeWatcher StrokeWatcher { get; private set; }
+        public Stroke.StrokeWatcher StrokeWatcher { get; internal set; }
 
         public StateGlobal() : this(new Config.UserConfig())
         {

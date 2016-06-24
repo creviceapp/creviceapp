@@ -89,6 +89,7 @@ namespace CreviceApp.Core
             public Stroke() : base() { }
             public Stroke(int capacity) : base(capacity) { }
             public Stroke(IEnumerable<Direction> dirs) : base(dirs) { }
+            public Stroke(params Direction[] dirs) : base(dirs) { }
 
             public bool Equals(Stroke that)
             {

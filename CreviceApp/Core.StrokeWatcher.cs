@@ -73,7 +73,7 @@ namespace CreviceApp.Core.Stroke
             this.task = Start();
         }
                 
-        public void Queue(Point point)
+        public virtual void Queue(Point point)
         {
             if (MustBeProcessed(currentTime: timeGetTime()))
             {
