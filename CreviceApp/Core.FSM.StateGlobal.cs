@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.Core.FSM
 {
-    public class GlobalValues : IDisposable
+    public class StateGlobal : IDisposable
     {
         private readonly Threading.SingleThreadScheduler StrokeWatcherScheduler;
         private readonly Threading.SingleThreadScheduler LowPriorityScheduler;
@@ -21,9 +21,14 @@ namespace CreviceApp.Core.FSM
 
         public readonly HashSet<Def.Event.IDoubleActionRelease> IgnoreNext = new HashSet<Def.Event.IDoubleActionRelease>();
                 
-        public Stroke.StrokeWatcher StrokeWatcher { get; private set; }
+        public Stroke.StrokeWatcher StrokeWatcher { get; internal set; }
 
-        public GlobalValues()
+        public StateGlobal() : this(new Config.UserConfig())
+        {
+
+        }
+
+        public StateGlobal(Config.UserConfig userConfig)
         {
             this.StrokeWatcherScheduler = new Threading.SingleThreadScheduler(ThreadPriority.AboveNormal);
             this.LowPriorityScheduler = new Threading.SingleThreadScheduler(ThreadPriority.Lowest);
@@ -31,7 +36,7 @@ namespace CreviceApp.Core.FSM
             this.StrokeWatcherTaskFactory = new TaskFactory(StrokeWatcherScheduler);
             this.LowPriorityTaskFactory = new TaskFactory(LowPriorityScheduler);
             this.UserActionTaskFactory = new TaskFactory(UserActionScheduler);
-            this.Config = new Config.UserConfig();
+            this.Config = userConfig;
             this.StrokeWatcher = NewStrokeWatcher();
         }
 
@@ -64,7 +69,7 @@ namespace CreviceApp.Core.FSM
             UserActionScheduler.Dispose();
         }
 
-        ~GlobalValues()
+        ~StateGlobal()
         {
             Dispose();
         }

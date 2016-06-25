@@ -30,9 +30,9 @@ namespace CreviceApp.Core.FSM
     
     public abstract class State : IState
     {
-        protected internal readonly GlobalValues Global;
+        protected internal readonly StateGlobal Global;
 
-        public State(GlobalValues Global)
+        public State(StateGlobal Global)
         {
             this.Global = Global;
         }
@@ -41,7 +41,7 @@ namespace CreviceApp.Core.FSM
         // Return true if given event is in the ignore list, and remove it from ignore list.
         // Return false if the pair of given event is in the ignore list, and remove it from ignore list.
         // Otherwise return false.
-        public bool MustBeIgnored(Def.Event.IEvent evnt)
+        protected internal bool MustBeIgnored(Def.Event.IEvent evnt)
         {
             if (evnt is Def.Event.IDoubleActionRelease)
             {

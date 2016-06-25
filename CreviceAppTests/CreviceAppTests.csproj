@@ -89,22 +89,23 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Core.FSM.TestDef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="State0Tests.cs" />
-    <Compile Include="State1Tests.cs" />
-    <Compile Include="State2Tests.cs" />
-    <Compile Include="StrokeTests.cs" />
-    <Compile Include="TransitionTests.cs" />
-    <Compile Include="WhenElementTests.cs" />
-    <Compile Include="DoElementTests.cs" />
-    <Compile Include="IfButtonElementTests.cs" />
-    <Compile Include="IfStrokeElementTests.cs" />
-    <Compile Include="LowLevelKeyboardHookTests.cs" />
-    <Compile Include="LowLevelMouseHookTests.cs" />
-    <Compile Include="OnElementTests.cs" />
-    <Compile Include="RootTests.cs" />
-    <Compile Include="SingleInputSenderTests.cs" />
-    <Compile Include="WindowsApplicationTests.cs" />
+    <Compile Include="Core.FSM.State0Tests.cs" />
+    <Compile Include="Core.FSM.State1Tests.cs" />
+    <Compile Include="Core.FSM.State2Tests.cs" />
+    <Compile Include="Core.StrokeTests.cs" />
+    <Compile Include="Core.FSM.TransitionTests.cs" />
+    <Compile Include="DSL.WhenElementTests.cs" />
+    <Compile Include="DSL.DoElementTests.cs" />
+    <Compile Include="DSL.IfButtonElementTests.cs" />
+    <Compile Include="DSL.IfStrokeElementTests.cs" />
+    <Compile Include="WinAPI.WindowsHookEx.LowLevelKeyboardHookTests.cs" />
+    <Compile Include="WinAPI.WindowsHookEx.LowLevelMouseHookTests.cs" />
+    <Compile Include="DSL.OnElementTests.cs" />
+    <Compile Include="DSL.RootTests.cs" />
+    <Compile Include="WinAPI.SendInput.SingleInputSenderTests.cs" />
+    <Compile Include="WinAPI.Window.WindowsApplicationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CreviceApp\CreviceApp.csproj">

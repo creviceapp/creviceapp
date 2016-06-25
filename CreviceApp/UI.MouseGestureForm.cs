@@ -95,7 +95,7 @@ namespace CreviceApp
         {
             var ctx = new Core.UserScriptExecutionContext(Global);
             var gestureDef = EvaluateUserScriptAsync(ctx);
-            this.GestureMachine = new Core.FSM.GestureMachine(gestureDef);
+            this.GestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
         }
 
         protected void StartCapture()

@@ -203,6 +203,11 @@ namespace CreviceApp.Core
         public readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
         public readonly WinAPI.CoreAudioAPI.VolumeControl WaveVolume = new WinAPI.CoreAudioAPI.VolumeControl();
         
+        public Config.UserConfig Config
+        {
+          get { return Global.UserConfig; }
+        }
+
         private readonly DSL.Root root = new DSL.Root();
 
         private readonly AppGlobal Global;

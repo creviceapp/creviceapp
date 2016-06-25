@@ -32,10 +32,10 @@ Chrome.
 @do((ctx) =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_CONTROL).
+    ExtendedKeyDown(VK_LCONTROL).
     KeyDown(VK_W).
     KeyUp(VK_W).
-    ExtendedKeyUp(VK_CONTROL).
+    ExtendedKeyUp(VK_LCONTROL).
     Send(); // Send Ctrl+W to Chrome
 });
 ```
@@ -50,6 +50,22 @@ And finally, `@do` clause represents the action of the gesture will be acivated 
 Mouse gestures with strokes, namely, stroke gestures, is the most used and  needed of some kinds of mouse gestures. 
 CreviceApp naturally supports this.
 `@if` clause takes movements of the mouse, combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`, as it's argument then.
+
+```cs
+Chrome.
+@on(RightButton).
+@if(MoveUp, MoveDown, MoveLeft, MoveRight, ...). // There is no limit on the length.
+@do((ctx) => {
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_LCONTROL).
+    ExtendedKeyDown(VK_LSHIFT).
+    KeyDown(VK_T).
+    KeyUp(VK_T).
+    ExtendedKeyUp(VK_LSHIFT).
+    ExtendedKeyUp(VK_LCONTROL).
+    Send(); // Send Ctrl+Shift+T to Chrome
+});
+```
 
 ### Button gestures
 As you may know, mouse gestures with buttons is called "rocker gestures" around mouse gesture utility communities. 
@@ -91,35 +107,57 @@ Chrome.
 });
 ```
 
+## API
+
 ### ExecutionContext
-`@when` clause and `@do` clause take a function as it's argument, and the function takes an ExecutionContext as it's argument. An ExecutionContext will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
+`@when` clause and `@do` clause take a function as it's argument, and the function takes an ExecutionContext as it's argument. 
+An ExecutionContext will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
 
 #### ExecutionContext.Window
 
-The window which was on the foreground when a gesture started. This provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`, `OnCursor` and `Now()`.
+The window which was on the foreground when a gesture started. 
+This is an instance of `Window`.
+
 #### ExecutionContext.Window.OnCursor
 
-The window which was under the cursor when a gesture started.
+The window which was under the cursor when a gesture started. 
+This is an instance of `Window`.
 
 #### ExecutionContext.Window.Now()
 
-If you would like to get current `Window`, `Window.Now()` provides it.
+If you would like to get current `Window`, `Window.Now()` provides it. 
+This is an instance of `Window`.
+
+### Window
+
+This class provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
+
+#### Window.BringToTop()
+
+A shortcut to win32 API `BringWindowToTop(Handle)`.
+
+#### Window.SendMessage(uint Msg, uint wParam, uint lParam)
+
+A shortcut to win32 API `SendMessage(Handle, Msg, wParam, lParam)`.
+
+#### Window.PostMessage(uint Msg, uint wParam, uint lParam)
+
+A shortcut to win32 API `PostMessage(Handle, Msg, wParam, lParam)`.
 
 ### SendInput
 
-Send mouse and keyboard input events to the foreground window. This API provides single and multiple sending method. The events sent by single sending method is guaranteed to arrive the window in order, but this does not necessarily mean the events will not be interrupted by the other events. Multiple sending method  guarantees the events sent by it will not be interrupted by the other events.
-
-#### SendInput.XXXX
+Send mouse and keyboard input events to the foreground window. 
+This API provides single and multiple sending method. 
+The events sent by single sending method is guaranteed to arrive to the window in order, but this does not necessarily mean it will not be interrupted by the other events. 
+Multiple sending method guarantees that the events sent by it will not be interrupted by the other events.
+Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to be called `Send()` at last.
 
 ```cs
 SendInput.ExtendedKeyDown(VK_LWIN);
 // When D key interrupts here,
 // Win+D will be invoked unintentionally.
 SendInput.ExtendedKeyUp(VK_LWIN); 
-
 ```
-
-#### SendInput.Muptiple().XXXX
 
 ```cs
 SendInput.Multiple().
@@ -128,25 +166,72 @@ ExtendedKeyUp(VK_LWIN).
 Send(); // This won't interrupted by any other input.
 ```
 
-### VK_XXXX
+#### Mouse event
+`Down`, `Up` and `Click` events are supported for the push-release type buttons of mouse devices, `LeftButton`, `MiddleButton`, `RightButton`, `X1Button` and `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()`, `LeftClick()`. 
 
-Virtual key codes. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
-Note: CreviceApp provides VK_0 to VK_9 and VK_A to VK_Z but this is an extension for convenience.
+For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also provided.
 
-### Tooltip(string text)
+#### Keyboard event
+
+A keyboard event is synthesized from a key code with two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
+
+```cs
+SendInput.KeyDown(VK_A);
+SendInput.KeyUp(VK_A); // Send `A` to the foreground application.
+```
+
+`ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is needed to be set.
+
+```cs
+SendInput.ExetendedKeyDown(VK_LWIN);
+SendInput.ExtentedKeyUp(VK_LWIN); // Send `Win` to the foreground application.
+```
+
+For the API combined four API above mentioned with `ScanCode` flag,
+`KeyDownWithScanCode(ushort keyCode)`, `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
+
+```cs
+SendInput.ExtendedKeyDownWithScanCode(VK_LCONTROL);
+SendInput.KeyDownWithScanCode(VK_S);
+SendInput.KeyUpWithScanCode(VK_S);
+SendInput.ExtendedKeyUpWithScanCode(VK_LCONTROL); // Send `Ctrl+S` with scan code to the foreground application.
+```
+
+And finally, for the API to support an other special `Unicode` flag, `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)` and `UnicodeKeyStroke(string str)` are provided.
+
+```cs
+SendInput.UnicodeKeyDown('🍣');
+SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
+```
+
+Note: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+CreviceApp provides virtual keys as `VK_XXXX`, but for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
+
+### Notification
+
+#### Tooltip(string text)
 
 Show tooltip message on the right bottom corner of the display on the cusor.
 
-### Baloon(string text)
+```cs
+Tooptip("This is tooltip.");
+```
+
+#### Baloon(string text)
 
 Show baloon message.
 
+```cs
+Baloon("This is baloon.");
+```
+
 ## Lisence
 
-MIT Lisense.
+MIT Lisense
 
-## Latest release (not recommended)
+## Latest releases (not recommended)
 
 | Branch | Status | Download |
 |--------|---------------|--------- |

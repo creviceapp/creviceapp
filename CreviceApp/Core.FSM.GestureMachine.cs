@@ -10,15 +10,15 @@ namespace CreviceApp.Core.FSM
 {
     public class GestureMachine : IDisposable
     {
-        public GlobalValues Global { get; private set; }
+        public StateGlobal Global { get; private set; }
         public IState State { get; private set; }
         public IEnumerable<GestureDefinition> GestureDefinition { get; private set; }
 
         private object lockObject = new object();
 
-        public GestureMachine(IEnumerable<GestureDefinition> gestureDef)
+        public GestureMachine(Config.UserConfig userConfig, IEnumerable<GestureDefinition> gestureDef)
         {
-            this.Global = new GlobalValues();
+            this.Global = new StateGlobal(userConfig);
             this.State = new State0(Global, gestureDef);
             this.GestureDefinition = gestureDef;
         }
