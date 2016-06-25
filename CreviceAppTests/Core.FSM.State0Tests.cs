@@ -84,21 +84,24 @@ namespace CreviceApp.Core.FSM.Tests
                     a,
                     (ctx) => { countDown.Signal(); })
                 };
-                var S0 = new State0(new StateGlobal(), gestureDef);
-                foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
+                using (var Global = new StateGlobal())
                 {
-                    countDown.Reset();
-                    var ev = Helper.Convert(b);
-                    var res = S0.Input(ev, new Point());
-                    Assert.IsTrue(res.NextState is State0);
-                    Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
-                    if (a == b)
+                    var S0 = new State0(Global, gestureDef);
+                    foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
                     {
-                        Assert.IsTrue(countDown.Wait(50));
-                    }
-                    else
-                    {
-                        Assert.IsFalse(countDown.Wait(50));
+                        countDown.Reset();
+                        var ev = Helper.Convert(b);
+                        var res = S0.Input(ev, new Point());
+                        Assert.IsTrue(res.NextState is State0);
+                        Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
+                        if (a == b)
+                        {
+                            Assert.IsTrue(countDown.Wait(50));
+                        }
+                        else
+                        {
+                            Assert.IsFalse(countDown.Wait(50));
+                        }
                     }
                 }
             }
@@ -115,20 +118,23 @@ namespace CreviceApp.Core.FSM.Tests
                     a,
                     (ctx) => { })
                 };
-                var S0 = new State0(new StateGlobal(), gestureDef);
-                foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
+                using (var Global = new StateGlobal())
                 {
-                    var res = S0.Input(Helper.Convert(b), new Point());
-                    if (a == b)
+                    var S0 = new State0(Global, gestureDef);
+                    foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
                     {
-                        Assert.IsTrue(res.NextState is State1);
-                        Assert.IsTrue(res.StrokeWatcher.IsResetRequested);
-                        Assert.AreEqual(gestureDef[0], ((State1)res.NextState).T5.ToList()[0]);
-                    }
-                    else
-                    {
-                        Assert.IsTrue(res.NextState is State0);
-                        Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
+                        var res = S0.Input(Helper.Convert(b), new Point());
+                        if (a == b)
+                        {
+                            Assert.IsTrue(res.NextState is State1);
+                            Assert.IsTrue(res.StrokeWatcher.IsResetRequested);
+                            Assert.AreEqual(gestureDef[0], ((State1)res.NextState).T5.ToList()[0]);
+                        }
+                        else
+                        {
+                            Assert.IsTrue(res.NextState is State0);
+                            Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
+                        }
                     }
                 }
             }
@@ -146,20 +152,23 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.WheelUp,
                     (ctx) => { })
                 };
-                var S0 = new State0(new StateGlobal(), gestureDef);
-                foreach (var b in TestDef.Constant.AcceptablesInOnClause)
+                using (var Global = new StateGlobal())
                 {
-                    var res = S0.Input((Def.Event.IEvent)Helper.Convert(b), new Point());
-                    if (a == b)
+                    var S0 = new State0(Global, gestureDef);
+                    foreach (var b in TestDef.Constant.AcceptablesInOnClause)
                     {
-                        Assert.IsTrue(res.NextState is State1);
-                        Assert.IsTrue(res.StrokeWatcher.IsResetRequested);
-                        Assert.IsTrue(gestureDef.SequenceEqual(((State1)res.NextState).T2[Def.Constant.WheelUp]));
-                    }
-                    else
-                    {
-                        Assert.IsTrue(res.NextState is State0);
-                        Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
+                        var res = S0.Input((Def.Event.IEvent)Helper.Convert(b), new Point());
+                        if (a == b)
+                        {
+                            Assert.IsTrue(res.NextState is State1);
+                            Assert.IsTrue(res.StrokeWatcher.IsResetRequested);
+                            Assert.IsTrue(gestureDef.SequenceEqual(((State1)res.NextState).T2[Def.Constant.WheelUp]));
+                        }
+                        else
+                        {
+                            Assert.IsTrue(res.NextState is State0);
+                            Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
+                        }
                     }
                 }
             }
@@ -168,9 +177,12 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition10_Test()
         {
-            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
-            var res = S0.Reset();
-            Assert.IsTrue(res is State0);
+            using (var Global = new StateGlobal())
+            {
+                var S0 = new State0(Global, new List<GestureDefinition>());
+                var res = S0.Reset();
+                Assert.IsTrue(res is State0);
+            }
         }
 
         [TestMethod()]
