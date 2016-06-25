@@ -32,10 +32,10 @@ Chrome.
 @do((ctx) =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_CONTROL).
+    ExtendedKeyDown(VK_LCONTROL).
     KeyDown(VK_W).
     KeyUp(VK_W).
-    ExtendedKeyUp(VK_CONTROL).
+    ExtendedKeyUp(VK_LCONTROL).
     Send(); // Send Ctrl+W to Chrome
 });
 ```
@@ -50,6 +50,22 @@ And finally, `@do` clause represents the action of the gesture will be acivated 
 Mouse gestures with strokes, namely, stroke gestures, is the most used and  needed of some kinds of mouse gestures. 
 CreviceApp naturally supports this.
 `@if` clause takes movements of the mouse, combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`, as it's argument then.
+
+```cs
+Chrome.
+@on(RightButton).
+@if(MoveUp, MoveDown, MoveLeft, MoveRight, ...). // There is no limit on the length.
+@do((ctx) => {
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_LCONTROL).
+    ExtendedKeyDown(VK_LSHIFT).
+    KeyDown(VK_T).
+    KeyUp(VK_T).
+    ExtendedKeyUp(VK_LSHIFT).
+    ExtendedKeyUp(VK_LCONTROL).
+    Send(); // Send Ctrl+Shift+T to Chrome
+});
+```
 
 ### Button gestures
 As you may know, mouse gestures with buttons is called "rocker gestures" around mouse gesture utility communities. 
