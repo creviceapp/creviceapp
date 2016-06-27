@@ -77,8 +77,8 @@ Browser.
 {
     SendInput.Multiple().
     ExtendedKeyDown(VK_LMENU).
-    ExtendedKeyDown(VK_LEFT).
-    ExtendedKeyUp(VK_LEFT).
+    ExtendedKeyDown(VK_RIGHT).
+    ExtendedKeyUp(VK_RIGHT).
     ExtendedKeyUp(VK_LMENU).
     Send(); // Go next
 });
@@ -155,8 +155,8 @@ Explorer.
 {
     SendInput.Multiple().
     ExtendedKeyDown(VK_LMENU).
-    ExtendedKeyDown(VK_LEFT).
-    ExtendedKeyUp(VK_LEFT).
+    ExtendedKeyDown(VK_RIGHT).
+    ExtendedKeyUp(VK_RIGHT).
     ExtendedKeyUp(VK_LMENU).
     Send(); // Go next
 });
@@ -201,7 +201,7 @@ Taskbar.
     var current = WaveVolume.GetMasterVolume() + 0.02f;
     var next = (current > 1 ? 1 : current);
     WaveVolume.SetMasterVolume(next);
-    Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
+    Tooltip(string.Format("Volume: {0:D2}", (int)(next * 100)));
 });
 
 Taskbar.
@@ -211,6 +211,6 @@ Taskbar.
     var current = WaveVolume.GetMasterVolume() - 0.02f;
     var next = (current < 0 ? 0 : current);
     WaveVolume.SetMasterVolume(next);
-    Tooltip(string.Format("Volume: {0}", (int)(next * 100)));
+    Tooltip(string.Format("Volume: {0:D2}", (int)(next * 100)));
 });
 */
