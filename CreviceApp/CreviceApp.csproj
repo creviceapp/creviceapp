@@ -155,6 +155,7 @@
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
     <Compile Include="Core.DSLTreeParser.cs" />
     <Compile Include="Core.Def.cs" />
+    <Compile Include="Core.FSM.State2.cs" />
     <Compile Include="Core.Helper.cs" />
     <Compile Include="Core.FSM.GestureMachine.cs" />
     <Compile Include="Core.FSM.StateGlobal.cs" />
@@ -162,7 +163,7 @@
     <Compile Include="Core.FSM.State.cs" />
     <Compile Include="Core.FSM.State0.cs" />
     <Compile Include="Core.FSM.State1.cs" />
-    <Compile Include="Core.FSM.State2.cs" />
+    <Compile Include="Core.FSM.State3.cs" />
     <Compile Include="Core.FSM.Transition.cs" />
     <Compile Include="Core.GestureDefinition.cs" />
     <Compile Include="Core.Stroke.cs" />

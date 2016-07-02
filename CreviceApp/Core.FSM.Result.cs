@@ -17,34 +17,23 @@ namespace CreviceApp.Core.FSM
             }
         }
 
-        public class StrokeWatcherResult
-        {
-            public readonly bool IsResetRequested;
-            public StrokeWatcherResult(bool resetRequested)
-            {
-                IsResetRequested = resetRequested;
-            }
-        }
-
         public EventResult Event;
-        public StrokeWatcherResult StrokeWatcher;
         public IState NextState { get; private set; }
 
-        private Result(bool consumed, IState nextState, bool resetStrokeWatcher)
+        private Result(bool consumed, IState nextState)
         {
             this.Event = new EventResult(consumed);
-            this.StrokeWatcher = new StrokeWatcherResult(resetStrokeWatcher);
             this.NextState = nextState;
         }
 
-        public static Result EventIsConsumed(IState nextState, bool resetStrokeWatcher = false)
+        public static Result EventIsConsumed(IState nextState)
         {
-            return new Result(true, nextState, resetStrokeWatcher);
+            return new Result(true, nextState);
         }
 
-        public static Result EventIsRemaining(IState nextState, bool resetStrokeWatcher = false)
+        public static Result EventIsRemained(IState nextState)
         {
-            return new Result(false, nextState, resetStrokeWatcher);
+            return new Result(false, nextState);
         }
     }
 }

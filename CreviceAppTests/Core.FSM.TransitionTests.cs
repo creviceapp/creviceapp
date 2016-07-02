@@ -36,7 +36,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.WheelRight,
                     (ctx) => { }),
             };
-            var Gen1 = Transition.Gen1(gestureDef)
+            var Gen1 = Transition.Gen0_1(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.Select(y => y as OnButtonIfButtonGestureDefinition))
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
@@ -75,7 +75,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { }),
             };
-            var Gen2 = Transition.Gen2(gestureDef)
+            var Gen2 = Transition.Gen1_0(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
             Assert.AreEqual(Gen2.Keys.Count, 1);
@@ -105,7 +105,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { }),
             };
-            var Gen3 = Transition.Gen3(gestureDef)
+            var Gen3 = Transition.Gen1_1(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
             Assert.AreEqual(Gen3.Keys.Count, 1);
@@ -135,7 +135,7 @@ namespace CreviceApp.Core.FSM.Tests
                     DSL.Def.Constant.LeftButton,
                     (ctx) => { }),
             };
-            var Gen4 = Transition.Gen4(gestureDef)
+            var Gen4 = Transition.Gen1_2(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
             Assert.AreEqual(Gen4.Keys.Count, 1);

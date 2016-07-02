@@ -45,7 +45,7 @@ namespace CreviceApp.Core.FSM.Tests
 
             Assert.AreEqual(S0.T0.Count, 1);
             Assert.AreEqual(S0.T1.Count, 1);
-            Assert.AreEqual(S0.T5.Count, 1);
+            Assert.AreEqual(S0.T2.Count, 1);
         }
 
         [TestMethod()]
@@ -73,7 +73,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void Transition00_RRTest()
+        public void Transition0_0_RRTest()
         {
             foreach (var a in TestDef.Constant.AcceptablesInIfButtonClause.Where(x => Helper.Convert(x) is Def.Event.ISingleAction))
             {
@@ -93,7 +93,6 @@ namespace CreviceApp.Core.FSM.Tests
                         var ev = Helper.Convert(b);
                         var res = S0.Input(ev, new Point());
                         Assert.IsTrue(res.NextState is State0);
-                        Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
                         if (a == b)
                         {
                             Assert.IsTrue(countDown.Wait(50));
@@ -108,7 +107,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void Transition01_A_RRTest()
+        public void Transition0_1_A_RRTest()
         {
             foreach (var a in TestDef.Constant.AcceptablesInIfButtonClause.Where(x => Helper.Convert(x) is Def.Event.IDoubleActionSet))
             {
@@ -127,13 +126,11 @@ namespace CreviceApp.Core.FSM.Tests
                         if (a == b)
                         {
                             Assert.IsTrue(res.NextState is State1);
-                            Assert.IsTrue(res.StrokeWatcher.IsResetRequested);
-                            Assert.AreEqual(gestureDef[0], ((State1)res.NextState).T5.ToList()[0]);
+                            Assert.AreEqual(gestureDef[0], ((State1)res.NextState).T3.ToList()[0]);
                         }
                         else
                         {
                             Assert.IsTrue(res.NextState is State0);
-                            Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
                         }
                     }
                 }
@@ -141,7 +138,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
 
         [TestMethod()]
-        public void Transition01_B_RRTest()
+        public void Transition0_1_B_RRTest()
         {
             foreach (var a in TestDef.Constant.AcceptablesInOnClause)
             {
@@ -161,13 +158,11 @@ namespace CreviceApp.Core.FSM.Tests
                         if (a == b)
                         {
                             Assert.IsTrue(res.NextState is State1);
-                            Assert.IsTrue(res.StrokeWatcher.IsResetRequested);
-                            Assert.IsTrue(gestureDef.SequenceEqual(((State1)res.NextState).T2[Def.Constant.WheelUp]));
+                            Assert.IsTrue(gestureDef.SequenceEqual(((State1)res.NextState).T0[Def.Constant.WheelUp]));
                         }
                         else
                         {
                             Assert.IsTrue(res.NextState is State0);
-                            Assert.IsFalse(res.StrokeWatcher.IsResetRequested);
                         }
                     }
                 }
@@ -175,7 +170,7 @@ namespace CreviceApp.Core.FSM.Tests
         }
         
         [TestMethod()]
-        public void Transition10_Test()
+        public void Transition0_2_Test()
         {
             using (var Global = new StateGlobal())
             {
