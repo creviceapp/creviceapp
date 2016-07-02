@@ -38,11 +38,11 @@ namespace CreviceApp.Core.FSM
                 if (T0.Keys.Contains(ev))
                 {
                     var ctx = new UserActionExecutionContext(point);
-                    var _T0_0 = FilterByWhenClause(ctx, T0[ev]);
-                    if (_T0_0.Count() > 0)
+                    var _T0 = FilterByWhenClause(ctx, T0[ev]);
+                    if (_T0.Count() > 0)
                     {
                         Debug.Print("[Transition 0_0]");
-                        ExecuteUserActionInBackground(ctx, _T0_0);
+                        ExecuteUserActionInBackground(ctx, _T0);
                         return Result.EventIsConsumed(nextState: this);
                     }
                 }
