@@ -89,11 +89,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Core.FSM.State2Tests.cs" />
     <Compile Include="Core.FSM.TestDef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core.FSM.State0Tests.cs" />
     <Compile Include="Core.FSM.State1Tests.cs" />
-    <Compile Include="Core.FSM.State2Tests.cs" />
+    <Compile Include="Core.FSM.State3Tests.cs" />
     <Compile Include="Core.StrokeTests.cs" />
     <Compile Include="Core.FSM.TransitionTests.cs" />
     <Compile Include="DSL.WhenElementTests.cs" />

@@ -15,13 +15,17 @@ namespace CreviceApp.Core.FSM
 
     // S1
     //
-    // The state holding primary double action mouse button.
+    // The state holding primary double action mouse button and the button is restorable.
 
     // S2
     //
+    // The state holding primary double action mouse button and the button is not restorable.
+
+    // S3
+    //
     // The state holding primary and secondary double action mouse buttons.
     #endregion
-    
+
     public interface IState
     {
         Result Input(Def.Event.IEvent evnt, Point point);
@@ -37,9 +41,31 @@ namespace CreviceApp.Core.FSM
             this.Global = Global;
         }
 
+        public virtual Result Input(Def.Event.IEvent evnt, Point point)
+        {
+            return Result.EventIsRemained(nextState: this);
+        }
+
+        public virtual IState Reset()
+        {
+            throw new InvalidOperationException();
+        }
+
+        protected internal void ExecuteUserActionInBackground(
+            UserActionExecutionContext ctx,
+            IEnumerable<IDoExecutable> gestureDef)
+        {
+            Global.UserActionTaskFactory.StartNew(() => {
+                foreach (var gDef in gestureDef)
+                {
+                    gDef.Execute(ctx);
+                }
+            });
+        }
+
         // Check whether given event must be ignored or not.
-        // Return true if given event is in the ignore list, and remove it from ignore list.
-        // Return false if the pair of given event is in the ignore list, and remove it from ignore list.
+        // Return true if given event is in the ignore list, and remove it from the list.
+        // Return false if the pair of given event is in the ignore list, and remove it from the list.
         // Otherwise return false.
         protected internal bool MustBeIgnored(Def.Event.IEvent evnt)
         {
@@ -65,33 +91,10 @@ namespace CreviceApp.Core.FSM
             return false;
         }
 
-        public virtual Result Input(Def.Event.IEvent evnt, Point point)
-        {
-            return Result.EventIsRemaining(nextState: this);
-        }
-
-        public virtual IState Reset()
-        {
-            throw new InvalidOperationException();
-        }
-
-        protected internal void ExecuteUserActionInBackground(
-            UserActionExecutionContext ctx, 
-            IEnumerable<IDoExecutable> gestureDef)
-        {
-            Global.UserActionTaskFactory.StartNew(() => {
-                foreach (var gDef in gestureDef)
-                {
-                    gDef.Execute(ctx);
-                }
-            });
-        }
-        
         protected internal void IgnoreNext(Def.Event.IDoubleActionRelease evnt)
         {
-            Debug.Print("{0} added to global ignore list. The `release` event of it will be ignored next time.", evnt.GetType().Name);
+            Debug.Print("IgnoreNext flag is set for {0}. This event will be ignored next time.", evnt.GetType().Name);
             Global.IgnoreNext.Add(evnt);
         }
     }
-            
 }

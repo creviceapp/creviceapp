@@ -9,7 +9,8 @@ namespace CreviceApp.Core.FSM
     public static class Transition
     {
         #region Transition Definition
-        // Transition 00 (single action gesture established)
+        #region State0
+        // Transition 0_0 (single action gesture established)
         //
         // State0 -> State0
         //
@@ -17,7 +18,7 @@ namespace CreviceApp.Core.FSM
         // This transition has one side effect.
         // 1. Functions given as the parameter of `@do` clause of IfButtonGestureDefinition are executed.
         public static IDictionary<Def.Event.ISingleAction, IEnumerable<IfButtonGestureDefinition>>
-            Gen0(IEnumerable<GestureDefinition> gestureDef)
+            Gen0_0(IEnumerable<GestureDefinition> gestureDef)
         {
             return gestureDef
                 .Select(x => x as IfButtonGestureDefinition)
@@ -27,8 +28,7 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key as Def.Event.ISingleAction, x => x.Select(y => y));
         }
 
-
-        // Transition 01 (gesture with primary double action mouse button start)
+        // Transition 0_1 (gesture with primary double action mouse button start)
         //
         // State0 -> State1
         //
@@ -36,7 +36,7 @@ namespace CreviceApp.Core.FSM
         // This transition happends when `set` event of double action mouse button is given.
         // This transition has no side effect.
         public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonGestureDefinition>>
-            Gen1(IEnumerable<GestureDefinition> gestureDef)
+            Gen0_1(IEnumerable<GestureDefinition> gestureDef)
         {
             return gestureDef
                 .Select(x => x as OnButtonGestureDefinition)
@@ -45,16 +45,26 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key, x => x.Select(y => y));
         }
 
-        // Transition 02 (single action gesture established)
+        // Transition 0_2 (forced reset)
         //
-        // State1 -> State1
+        // State0 -> State0
+        // 
+        // Transition from the state(S0) to the state(S0).
+        // This event happens when a `reset` command given.
+        // This transition have no side effect.
+        #endregion
+
+        #region State1
+        // Transition 1_0 (single action gesture established)
         //
-        // Transition from the state(S1) to the state(S1). 
+        // State1 -> State2
+        //
+        // Transition from the state(S1) to the state(S2). 
         // This transition happends when `fire` event of single action mouse button is given.
         // This transition has one side effect.
         // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed.
         public static IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonIfButtonGestureDefinition>>
-            Gen2(IEnumerable<OnButtonGestureDefinition> gestureDef)
+            Gen1_0(IEnumerable<OnButtonGestureDefinition> gestureDef)
         {
             return gestureDef
                 .Select(x => x as OnButtonIfButtonGestureDefinition)
@@ -64,15 +74,15 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key as Def.Event.ISingleAction, x => x.Select(y => y));
         }
 
-        // Transition 03 (gesture with primary and secondary double action mouse button start)
+        // Transition 1_1 (gesture with primary and secondary double action mouse button start)
         //
-        // State1 -> State2
+        // State1 -> State3
         //
-        // Transition from the state(S1) to the state(S2).
+        // Transition from the state(S1) to the state(S3).
         // This transition happends when `set` event of double action mouse button is given.
         // This transition has no side effect.
         public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonIfButtonGestureDefinition>>
-            Gen3(IEnumerable<OnButtonGestureDefinition> gestureDef)
+            Gen1_1(IEnumerable<OnButtonGestureDefinition> gestureDef)
         {
             return gestureDef
                 .Select(x => x as OnButtonIfButtonGestureDefinition)
@@ -82,7 +92,7 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key as Def.Event.IDoubleActionSet, x => x.Select(y => y));
         }
 
-        // Transition 04 (stroke gesture established)
+        // Transition 1_2 (stroke gesture established)
         //
         // State1 -> State0
         //
@@ -92,7 +102,7 @@ namespace CreviceApp.Core.FSM
         // This transition has one side effect.
         // 1. Functions given as the parameter of `@do` clause of StrokeGestureDefinition are executed.
         public static IDictionary<Def.Stroke, IEnumerable<OnButtonIfStrokeGestureDefinition>>
-            Gen4(IEnumerable<OnButtonGestureDefinition> gestureDef)
+            Gen1_2(IEnumerable<OnButtonGestureDefinition> gestureDef)
         {
             return gestureDef
                 .Select(x => x as OnButtonIfStrokeGestureDefinition)
@@ -101,16 +111,16 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key, x => x.Select(y => y));
         }
 
-        // Transition 05 (default gesture established)
+        // Transition 1_3 (default gesture established)
         // 
-        // State 1 -> State0
+        // State1 -> State0
         //
         // Transition from the state(S1) to the state(S0).
         // This transition happens when `release` event of primary double action mouse button is given and 
         // there have not been any actions executed.
         // 1. Functions given as the parameter of `@do` clause of IfButtonGestureDefinition are executed.
         public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<IfButtonGestureDefinition>>
-            Gen5(IEnumerable<GestureDefinition> gestureDef)
+            Gen1_3(IEnumerable<GestureDefinition> gestureDef)
         {
             return gestureDef
                 .Select(x => x as IfButtonGestureDefinition)
@@ -120,7 +130,7 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key as Def.Event.IDoubleActionSet, x => x.Select(y => y));
         }
 
-        // Transition 06 (gesture canceled)
+        // Transition 1_4 (restoration of the mouse click event)
         //
         // State1 -> State0
         //
@@ -128,44 +138,18 @@ namespace CreviceApp.Core.FSM
         // This transition happends when `release` event of primary double action mouse button is given and 
         // there have not been any actions executed.
         // This transition has one side effect.
-        // 1. Primary double action mouse button will be restored.
+        // 1. The `set` and `release` events of primary double action mouse button will be restored.
 
-
-        // Transition 07 (gesture end)
+        // Transition 1_5 (forced cancel)
         //
         // State1 -> State0
         //
-        // Transition from the state(S1) to the state(S0).
-        // This transition happends when `release` event of primary double action mouse button is given.
-        // This transition has no side effect.
-
-        // Transition 08 (double action gesture established)
-        //
-        // State2 -> State1
-        //
-        // Transition from the state(S2) to the state(S1).
-        // This transition happends when `release` event of secondary double action mouse button is given.
+        // Transition from the state(S1) to the state(S0). 
+        // This event happens when a `cancel` command given.
         // This transition has one side effect.
-        // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed. 
+        // 1. The `set` and `release` events of primary double action mouse button will be restored.
 
-        // Transition 09 (irregular end)
-        //
-        // State2 -> State0
-        //
-        // Transition from the state(S2) to the state(S0).
-        // This transition happends when primary double action mouse button is released in irregular order. 
-        // This transition has one side effect.
-        // 1. Secondary double action mouse button left holding will be marked as irreggularly holding by the user.
-
-        // Transition 10 (forced reset)
-        //
-        // State0 -> State0
-        // 
-        // Transition from the state(S0) to the state(S0).
-        // This event happens when a `reset` command given.
-        // This transition have no side effect.
-
-        // Transition 11 (forced reset)
+        // Transition 1_6 (forced reset)
         //
         // State1 -> State0
         //
@@ -173,25 +157,103 @@ namespace CreviceApp.Core.FSM
         // This event happens when a `reset` command given.
         // This transition has one side effect.
         // 1. Primary double action mouse button left holding is marked as irregularly holding by the user,
+        #endregion
 
-        // Transition 12 (forced reset)
+        #region State2
+        // Transition 2_0 (single action gesture established)
+        //
+        // State2 -> State2
+        //
+        // Transition from the state(S2) to the state(S2). 
+        // This transition happends when `fire` event of single action mouse button is given.
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed.
+
+        // Transition 2_1 (gesture with primary and secondary double action mouse button start)
+        //
+        // State2 -> State3
+        //
+        // Transition from the state(S2) to the state(S2).
+        // This transition happends when `set` event of double action mouse button is given.
+        // This transition has no side effect.
+
+        // Transition 2_2 (stroke gesture established)
         //
         // State2 -> State0
         //
         // Transition from the state(S2) to the state(S0).
+        // This transition happends when `release` event of primary double action mouse button
+        // and a gesture stroke existing in OnButtonIfStrokeGestureDefinition are given.
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@do` clause of StrokeGestureDefinition are executed.
+
+        // Transition 2_2 (default gesture established)
+        // 
+        // State2 -> State0
+        //
+        // Transition from the state(S2) to the state(S0).
+        // This transition happens when `release` event of primary double action mouse button is given and 
+        // there have not been any actions executed.
+        // 1. Functions given as the parameter of `@do` clause of IfButtonGestureDefinition are executed.
+
+        // Transition 2_3 (gesture end)
+        //
+        // State2 -> State0
+        //
+        // Transition from the state(S2) to the state(S0).
+        // This transition happends when `release` event of primary double action mouse button is given.
+        // This transition has no side effect.
+
+        // Transition 2_4 (forced reset)
+        //
+        // State2 -> State0
+        //
+        // Transition from the state(S2) to the state(S0). 
+        // This event happens when a `reset` command given.
+        // This transition has one side effect.
+        // 1. Primary double action mouse button left holding is marked as irregularly holding by the user,
+        #endregion
+
+        #region State3
+        // Transition 3_0 (double action gesture established)
+        //
+        // State3 -> State2
+        //
+        // Transition from the state(S3) to the state(S2).
+        // This transition happends when `release` event of secondary double action mouse button is given.
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed. 
+
+        // Transition 3-1 (irregular end)
+        //
+        // State3 -> State0
+        //
+        // Transition from the state(S3) to the state(S0).
+        // This transition happends when primary double action mouse button is released in irregular order. 
+        // This transition has one side effect.
+        // 1. Secondary double action mouse button left holding will be marked as irreggularly holding by the user.
+
+        // Transition 3-2 (forced reset)
+        //
+        // State3 -> State0
+        //
+        // Transition from the state(S3) to the state(S0).
         // This event happens when a `reset` command given.
         // This transition has one side effects.
         // 1. Primary and secondly double action mouse buttons left holding is marked as irregularly 
         // holding by the user.
+        #endregion
 
+        #region Special side effects
         // Special side effects
         //
-        // 1. Transition any state to the State(S1) will reset the gesture stroke.
-        // 2. Input given to the State(S1) is intepreted as a gesture stroke.
+        // 1. Transition any state to the state S1 and S2 will reset the gesture stroke.
+        // 2. Input given to the state S1 and S2 is intepreted as a gesture stroke.
         // 3. Each state will remove the mark of irregularly holding from double action mouse button when 
-        //    `set` event of it is given.
+        //    `set` event of it to be given. 
         // 4. Each state will remove the mark of irregularly holding from double action mouse button and ignore it when 
-        //    `release` event of it is given.
+        //    `release` event of it to be given.
+        #endregion
         #endregion
     }
 }

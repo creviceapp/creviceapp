@@ -12,5 +12,6 @@ namespace CreviceApp.Core.Config
         public int StrokeDirectionChangeThreshold { get; set; } = 20;
         public int StrokeExtensionThreshold       { get; set; } = 10;
         public int WatchInterval                  { get; set; } = 10;
+        public int Timeout                        { get; set; } = 1000;
     }
 }
