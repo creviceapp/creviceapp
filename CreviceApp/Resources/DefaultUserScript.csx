@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using CreviceApp.WinAPI.CoreAudio;
 using CreviceApp.WinAPI.Window;
 
+using static CreviceApp.WinAPI.Constants.WindowsMessages;
+using static CreviceApp.WinAPI.Constants.VirtualKeys;
+
 
 /*
  * Gesture definitions for standard browsers. 
