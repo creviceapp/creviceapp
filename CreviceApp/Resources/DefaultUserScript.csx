@@ -20,7 +20,7 @@ var Browser = @when((ctx) =>
            ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
            ctx.ForegroundWindow.ModuleName == "opera.exe" ||
            ctx.ForegroundWindow.ModuleName == "iexplore.exe" ||
-          (ctx.ForegroundWindow.ModuleName == "explorer.exe" &&              
+          (ctx.ForegroundWindow.ModuleName == "explorer.exe" &&
                ctx.PointedWindow.ClassName == "DirectUIHWND");
 });
 
@@ -145,18 +145,14 @@ Taskbar.
 @if(WheelUp).
 @do((ctx) =>
 {
-    var current = VolumeControl.GetMasterVolume() + VolumeDelta;
-    var next = (current > 1 ? 1 : current);
-    VolumeControl.SetMasterVolume(next);
-    Tooltip(string.Format("Volume: {0:D2}", (int)(next * 100)));
+    VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() + VolumeDelta);
+    Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
 
 Taskbar.
 @if(WheelDown).
 @do((ctx) =>
 {
-    var current = VolumeControl.GetMasterVolume() - VolumeDelta;
-    var next = (current < 0 ? 0 : current);
-    VolumeControl.SetMasterVolume(next);
-    Tooltip(string.Format("Volume: {0:D2}", (int)(next * 100)));
+    VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() - VolumeDelta);
+    Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
