@@ -12,13 +12,13 @@ namespace CreviceApp.Core
 
     public class UserActionExecutionContext
     {
-        public readonly Point GestureStartPosition;
+        public readonly Point GestureStartPoint;
         public readonly ForegroundWindowInfo ForegroundWindow;
         public readonly PointedWindowInfo PointedWindow;
 
         public UserActionExecutionContext(Point point)
         {
-            this.GestureStartPosition = point;
+            this.GestureStartPoint = point;
             this.ForegroundWindow = new ForegroundWindowInfo();
             this.PointedWindow = new PointedWindowInfo(point);
         }

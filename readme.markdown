@@ -19,7 +19,7 @@ Firstly, all gestures start with `@when` clause represent the condition for the 
 ```cs
 var Chrome = @when((ctx) =>
 {
-    return ctx.Window.ModuleName == "chrome.exe";
+    return ctx.ForegroundWindow.ModuleName == "chrome.exe";
 });
 ```
 
@@ -113,34 +113,29 @@ Chrome.
 `@when` clause and `@do` clause take a function as it's argument, and the function takes an ExecutionContext as it's argument. 
 An ExecutionContext will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
 
-#### ExecutionContext.Window
+#### ExecutionContext.ForegroundWindow
 
 The window which was on the foreground when a gesture started. 
-This is an instance of `Window`.
+This is an instance of `WindowInfo`.
 
-#### ExecutionContext.Window.OnCursor
+#### ExecutionContext.PointedWindow
 
 The window which was under the cursor when a gesture started. 
-This is an instance of `Window`.
+This is an instance of `WindowInfo`.
 
-#### ExecutionContext.Window.Now()
-
-If you would like to get current `Window`, `Window.Now()` provides it. 
-This is an instance of `Window`.
-
-### Window
+### WindowInfo
 
 This class provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
 
-#### Window.BringToTop()
+#### WindowInfo.BringWindowToTop()
 
 A shortcut to win32 API `BringWindowToTop(Handle)`.
 
-#### Window.SendMessage(uint Msg, uint wParam, uint lParam)
+#### WindowInfo.SendMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `SendMessage(Handle, Msg, wParam, lParam)`.
 
-#### Window.PostMessage(uint Msg, uint wParam, uint lParam)
+#### WindowInfo.PostMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `PostMessage(Handle, Msg, wParam, lParam)`.
 
