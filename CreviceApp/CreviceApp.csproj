@@ -227,7 +227,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="WinAPI.CoreAudioAPI.cs" />
+    <Compile Include="WinAPI.CoreAudio.cs" />
     <Compile Include="WinAPI.Window.cs" />
     <Compile Include="WinAPI.WindowsHookEx.cs" />
     <None Include="Resources\DefaultUserScript.csx" />
