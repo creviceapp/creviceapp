@@ -75,22 +75,26 @@ namespace CreviceApp
 
         private IEnumerable<Core.GestureDefinition> EvaluateUserScriptAsync(Core.UserScriptExecutionContext ctx)
         {
-            Debug.Print("Trying to compile and evaluate the user script");
+            Debug.Print("Trying to compile and evaluate user script");
             var script = CSharpScript.Create(
                 GetDefaultUserScript(),
                 ScriptOptions.Default
                     .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
                     .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
-                    .WithReferences(Assembly.GetEntryAssembly()),
+                    .WithReferences("microlib")                   // microlib.dll
+                    .WithReferences("System")                     // System.dll
+                    .WithReferences("System.Core")                // System.Core.dll
+                    .WithReferences("Microsoft.CSharp")           // Microsoft.CSharp.dll
+                    .WithReferences(Assembly.GetEntryAssembly()), // CreviceApp.exe
                 globalsType: typeof(Core.UserScriptExecutionContext));
             var diagnotstics = script.Compile();
-            Debug.Print("compiled");
+            Debug.Print("Compile finished");
             foreach (var dg in diagnotstics.Select((v, i) => new { v, i }))
             {
                 Debug.Print("[{0}] {1}", dg.i, dg.v.ToString());
             }
             script.RunAsync(ctx).Wait();
-            Debug.Print("evaluated");
+            Debug.Print("User script evaluated");
             return ctx.GetGestureDefinition();
         }
 
