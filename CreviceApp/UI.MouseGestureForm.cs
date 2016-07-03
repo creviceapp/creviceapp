@@ -78,7 +78,10 @@ namespace CreviceApp
             Debug.Print("Trying to compile and evaluate the user script");
             var script = CSharpScript.Create(
                 GetDefaultUserScript(),
-                ScriptOptions.Default,
+                ScriptOptions.Default
+                    .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
+                    .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
+                    .WithReferences(Assembly.GetEntryAssembly()),
                 globalsType: typeof(Core.UserScriptExecutionContext));
             var diagnotstics = script.Compile();
             Debug.Print("compiled");

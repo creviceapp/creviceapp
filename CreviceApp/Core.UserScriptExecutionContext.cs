@@ -201,7 +201,6 @@ namespace CreviceApp.Core
         public readonly DSL.Def.MoveRight MoveRight = DSL.Def.Constant.MoveRight;
 
         public readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
-        public readonly WinAPI.CoreAudioAPI.VolumeControl WaveVolume = new WinAPI.CoreAudioAPI.VolumeControl();
         
         public Config.UserConfig Config
         {
