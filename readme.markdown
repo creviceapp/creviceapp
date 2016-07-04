@@ -299,7 +299,7 @@ SendInput.UnicodeKeyDown('🍣');
 SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
 ```
 
-Note: `keyCode` is a virtual key code. See [VirtualKeys](#VirtualKeys).
+Note: `keyCode` is a virtual key code. See [VirtualKeys](#virtualkeys).
 
 ##### Complete list of supported methods
 
