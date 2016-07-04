@@ -198,8 +198,9 @@
     <Compile Include="Core.Config.UserConfig.cs" />
     <Compile Include="Core.UserActionExecutionContext.cs" />
     <Compile Include="UI.TooltipNotifier.cs" />
+    <Compile Include="WinAPI.Constants.WindowsMessages.cs" />
     <Compile Include="WinAPI.Helper.cs" />
-    <Compile Include="WinAPI.SendInput.VirtualKeys.cs" />
+    <Compile Include="WinAPI.Constants.VirtualKeys.cs" />
     <Compile Include="WinAPI.SendInput.cs" />
     <EmbeddedResource Include="UI.ProductInfoForm.resx">
       <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
@@ -227,7 +228,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="WinAPI.CoreAudioAPI.cs" />
+    <Compile Include="WinAPI.CoreAudio.cs" />
     <Compile Include="WinAPI.Window.cs" />
     <Compile Include="WinAPI.WindowsHookEx.cs" />
     <None Include="Resources\DefaultUserScript.csx" />

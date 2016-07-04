@@ -3,15 +3,18 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-## What is this?
 CreviceApp is a mouse gesture utility that consists of fully tested small and robust core of 2000 lines, thin GUI wrapper and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
 Mouse gestures can be defined as a csx file, so there is noting can not do.<sup>[citation needed]</sup>
 
 This software requires Windows7 or later, and .Net Framework 4.6.
 
-## Edit config csx file
+## User script
 
-After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the config file. Please open it with a text editor and look through it. 
+After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and look through it. 
+
+`default.csx` is merely a csharp script file so that you can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there is need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+
+For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives)
 
 ## Mouse gesture DSL
 
@@ -19,11 +22,11 @@ Firstly, all gestures start with `@when` clause represent the condition for the 
 ```cs
 var Chrome = @when((ctx) =>
 {
-    return ctx.Window.ModuleName == "chrome.exe";
+    return ctx.ForegroundWindow.ModuleName == "chrome.exe";
 });
 ```
 
-The following clauses to `@when` is `@on`, `@if` and `@do`. 
+Following clauses to `@when` is `@on`, `@if` and `@do`. 
 
 ```cs
 Chrome.
@@ -107,42 +110,107 @@ Chrome.
 });
 ```
 
-## API
+
+## Config
+
+The system default parameters can be configured by using `Config` as following:
+
+```cs
+// When moved distance of the cursor is exceeded this value, the first stroke will be established.
+Config.Gesture.InitialStrokeThreshold = 10;
+
+// When moved distance of the cursor is exceeded this value and the direction of the movement is different from the current stroke, new stroke for new direction will be established.
+Config.Gesture.StrokeDirectionChangeThreshold = 20;
+
+// When moved distance of the cursor is exceeded this value and the direction of the movement is the same as the current stroke, it will be extended.
+Config.Gesture.StrokeExtensionThreshold = 10;
+
+// Interval time for updating strokes.
+Config.Gesture.WatchInterval = 10;
+
+// When there is no established stroke and this period of time have passed, the gesture will be canceled.
+Config.Gesture.Timeout = 1000;
+
+// The period of time for showing a tooltip message.
+Config.UI.TooltipTimeout = 3000;
+
+// The period of time for showing a baloon message.
+Config.UI.BaloonTimeout = 10000;
+
+// Binding for the position of tooltip messages.
+Config.UI.TooltipPositionBinding = (point) =>
+{
+    var newPoint = // Create new point.
+    return newPoint;
+}
+```
+
+## Core API
 
 ### ExecutionContext
-`@when` clause and `@do` clause take a function as it's argument, and the function takes an ExecutionContext as it's argument. 
-An ExecutionContext will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
+`@when` clause and `@do` clause take a function as it's argument, and the function takes an `ExecutionContext` as it's argument. 
+An `ExecutionContext` will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
 
-#### ExecutionContext.Window
+#### Properties
+
+##### ForegroundWindow
 
 The window which was on the foreground when a gesture started. 
-This is an instance of `Window`.
+This is an instance of `WindowInfo`.
 
-#### ExecutionContext.Window.OnCursor
+##### PointedWindow
 
 The window which was under the cursor when a gesture started. 
-This is an instance of `Window`.
+This is an instance of `WindowInfo`.
 
-#### ExecutionContext.Window.Now()
+### WindowInfo
 
-If you would like to get current `Window`, `Window.Now()` provides it. 
-This is an instance of `Window`.
+`WindowInfo` is a thin wrapper of the handle of a window. This class provides functions to use window handles more easily.
 
-### Window
+#### Properties
+This class provides `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
 
-This class provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
+#### Methods
 
-#### Window.BringToTop()
+##### SendMessage(uint Msg, uint wParam, uint lParam)
 
-A shortcut to win32 API `BringWindowToTop(Handle)`.
+A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`. 
+This returns a `long` value returned by win32 API as is.
 
-#### Window.SendMessage(uint Msg, uint wParam, uint lParam)
+##### PostMessage(uint Msg, uint wParam, uint lParam)
 
-A shortcut to win32 API `SendMessage(Handle, Msg, wParam, lParam)`.
+A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
+This returns a `bool` value returned by win32 API as is.
 
-#### Window.PostMessage(uint Msg, uint wParam, uint lParam)
+##### BringWindowToTop()
 
-A shortcut to win32 API `PostMessage(Handle, Msg, wParam, lParam)`.
+A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
+This returns a `bool` value returned by win32 API as is.
+
+##### FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow)
+
+A shortcut to win32 API `FindWindowEx(WindowHandle, hwndChildAfter, lpszClass, lpszWindow)`.
+This returns an instance of `WindowInfo`.
+
+##### FindWindowEx(string lpszClass, string lpszWindow)
+
+A shortcut to win32 API `FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow)`.
+This returns an instance of `WindowInfo`.
+
+##### GetChildWindows()
+
+A shortcut to win32 API `EnumChildWindows(WindowHandle, EnumWindowProc, IntPtr.Zero)`.
+This returns an instance of `IEmumerable<WindowInfo>`.
+
+##### GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
+
+A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, flags)`.
+This method recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
+
+##### GetPointedDescendantWindows(Point point)
+
+A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`.
+This method recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
 
 ### SendInput
 
@@ -172,6 +240,31 @@ Send(); // This won't interrupted by any other input.
 For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
 For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also provided.
+
+##### Complete list of supported methods
+- LeftDown()
+- LeftUp()
+- LeftClick()
+- RightDown()
+- RightUp()
+- RightClick()
+- Move(int dx, int dy)
+- MoveTo(int x, int y)
+- MiddleDown()
+- MiddleUp()
+- MiddleClick()
+- VerticalWheel(short delta)
+- WheelDown()
+- WheelUp()
+- HorizontalWheel(short delta)
+- WheelLeft()
+- WheelRight()
+- X1Down()
+- X1Up()
+- X1Click()
+- X2Down()
+- X2Up()
+- X2Click()
 
 #### Keyboard event
 
@@ -209,23 +302,121 @@ SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
 Note: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
 CreviceApp provides virtual keys as `VK_XXXX`, but for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
 
+
+##### Complete list of supported methods
+
+- KeyDown(ushort keyCode)
+- KeyUp(ushort keyCode)
+- ExtendedKeyDown(ushort keyCode)
+- ExtendedKeyUp(ushort keyCode)
+- KeyDownWithScanCode(ushort keyCode)
+- KeyUpWithScanCode(ushort keyCode)
+- ExtendedKeyDownWithScanCode(ushort keyCode)
+- ExtendedKeyUpWithScanCode(ushort keyCode)
+- UnicodeKeyDown(char c)
+- UnicodeKeyUp(char c)
+- UnicodeKeyStroke(string str)
+
 ### Notification
 
 #### Tooltip(string text)
 
-Show tooltip message on the right bottom corner of the display on the cusor.
+Show tooltip message at the right bottom corner of the display on the cursor.
 
 ```cs
 Tooptip("This is tooltip.");
 ```
 
+#### Tooltip(string text, Point point)
+
+Show a tooltip message at the specified point.
+
+#### Tooltip(string text, Point point, int duration)
+
+Show a tooltip message at the specified point for a specified period.
+
 #### Baloon(string text)
 
-Show baloon message.
+Show a baloon message.
 
 ```cs
 Baloon("This is baloon.");
 ```
+
+#### Baloon(string text, string title)
+
+Show a baloon message with a title.
+
+#### Baloon(string text, string title, int timeout)
+
+Show a baloon message with a title for a specified period.
+
+#### Baloon(string text, string title, ToolTipIcon icon)
+
+Show a baloon message with a title and a icon.
+
+#### Baloon(string text, string title, ToolTipIcon icon, int timeout)
+
+Show a baloon message with a title and a icon for a specified period.
+
+## Extension API
+
+### Window
+
+`Window` is a utility static class about Windows's window.
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.Window;
+```
+
+#### From(IntPtr hWnd)
+
+This function wraps `IntPtr` and returns an instance of `WindowInfo`.
+
+#### GetCurosrPos()
+
+Returns current position of the cursor.
+This function returns an instance of `Point`.
+
+#### WindowFromPoint(Point point)
+
+Returns a window under the cursor.
+This function returns an instance of `WindowInfo`.
+
+#### FindWindow(string lpClassName, string lpWindowName)
+
+Find a window matches given class name and window name.
+This function returns an instance of `WindowInfo`.
+
+#### GetTopLevelWindows()
+
+Enumerates all windows.
+This function returns an instance of `IEnumerable<WindowInfo>`.
+
+#### GetThreadWindows(uint threadId)
+
+Enumerates all windows belonging specified thread.
+This function returns an instance of `IEnumerable<WindowInfo>`.
+
+### VolumeControl
+
+`VolumeControl` is a utility static class about Windows's volume controller.
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.CoreAudio;
+var VolumeControl = new VolumeControl();
+```
+
+#### GetMasterVolume()
+
+Returns window's current master mixer volume.
+This function returns a `float` value, within the range between 0 and 1.
+
+#### SetMasterVolume(float value)
+
+Sets window's current master mixer volume. The value should be within the range between 0 and 1.
+
+####
 
 ## Lisence
 

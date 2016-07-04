@@ -1,10 +1,27 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using CreviceApp.WinAPI.CoreAudio;
+using CreviceApp.WinAPI.Window;
+
+using static CreviceApp.WinAPI.Constants.WindowsMessages;
+using static CreviceApp.WinAPI.Constants.VirtualKeys;
+
+
+/*
+ * Gesture definitions for standard browsers. 
+ */
 var Browser = @when((ctx) =>
 {
-    return ctx.Window.ModuleName == "chrome.exe" ||
-           ctx.Window.ModuleName == "firefox.exe" ||
-           ctx.Window.ModuleName == "opera.exe" ||
-           ctx.Window.ModuleName == "iexplore.exe";
+    return ctx.ForegroundWindow.ModuleName == "chrome.exe" ||
+           ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
+           ctx.ForegroundWindow.ModuleName == "opera.exe" ||
+           ctx.ForegroundWindow.ModuleName == "iexplore.exe" ||
+          (ctx.ForegroundWindow.ModuleName == "explorer.exe" &&
+               ctx.PointedWindow.ClassName == "DirectUIHWND");
 });
 
 Browser.
@@ -108,109 +125,34 @@ Browser.
 });
 
 
-var Explorer = @when((ctx) =>
-{
-    return ctx.Window.ModuleName == "explorer.exe";
-});
-
-Explorer.
-@on(RightButton).
-@if(MoveUp).
-@do((ctx) =>
-{
-    SendInput.Multiple().
-    ExtendedKeyDown(VK_HOME).
-    ExtendedKeyUp(VK_HOME).
-    Send(); // Scroll to top
-});
-
-Explorer.
-@on(RightButton).
-@if(MoveDown).
-@do((ctx) =>
-{
-    SendInput.Multiple().
-    ExtendedKeyDown(VK_END).
-    ExtendedKeyUp(VK_END).
-    Send(); // Scroll to bottom
-});
-
-Explorer.
-@on(RightButton).
-@if(MoveLeft).
-@do((ctx) =>
-{
-    SendInput.Multiple().
-    ExtendedKeyDown(VK_LMENU).
-    ExtendedKeyDown(VK_LEFT).
-    ExtendedKeyUp(VK_LEFT).
-    ExtendedKeyUp(VK_LMENU).
-    Send(); // Go back
-});
-
-Explorer.
-@on(RightButton).
-@if(MoveRight).
-@do((ctx) =>
-{
-    SendInput.Multiple().
-    ExtendedKeyDown(VK_LMENU).
-    ExtendedKeyDown(VK_RIGHT).
-    ExtendedKeyUp(VK_RIGHT).
-    ExtendedKeyUp(VK_LMENU).
-    Send(); // Go next
-});
-
-Explorer.
-@on(RightButton).
-@if(MoveUp, MoveDown).
-@do((ctx) =>
-{
-    SendInput.Multiple().
-    ExtendedKeyDown(VK_F5).
-    ExtendedKeyUp(VK_F5).
-    Send(); // Reflesh window
-});
-
-Explorer.
-@on(RightButton).
-@if(MoveDown, MoveRight).
-@do((ctx) =>
-{
-    SendInput.Multiple().
-    ExtendedKeyDown(VK_CONTROL).
-    ExtendedKeyDown(VK_W).
-    ExtendedKeyUp(VK_W).
-    ExtendedKeyUp(VK_CONTROL).
-    Send(); // Close window
-});
-
-/* Change system master volume by WheelUp and WheelDown events when
+/* 
+ * Change system master volume by WheelUp and WheelDown events when
  * the cursor on the taskbar.
- * 
+ */
+var VolumeControl = new VolumeControl();
+var VolumeDelta = 0.01f;
+
 var Taskbar = @when((ctx) =>
 {
-    return ctx.Window.OnCursor.ModuleName == "explorer.exe" &&
-           ctx.Window.OnCursor.ClassName == "MSTaskListWClass";
+    return ctx.PointedWindow.ModuleName == "explorer.exe" &&
+              (ctx.PointedWindow.ClassName == "MSTaskListWClass" ||
+               ctx.PointedWindow.ClassName == "TrayShowDesktopButtonWClass" ||
+               ctx.PointedWindow.ClassName == "TrayClockWClass" ||
+               ctx.PointedWindow.ClassName == "TaskbarWindow32");
 });
 
 Taskbar.
 @if(WheelUp).
 @do((ctx) =>
 {
-    var current = WaveVolume.GetMasterVolume() + 0.02f;
-    var next = (current > 1 ? 1 : current);
-    WaveVolume.SetMasterVolume(next);
-    Tooltip(string.Format("Volume: {0:D2}", (int)(next * 100)));
+    VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() + VolumeDelta);
+    Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
 
 Taskbar.
 @if(WheelDown).
 @do((ctx) =>
 {
-    var current = WaveVolume.GetMasterVolume() - 0.02f;
-    var next = (current < 0 ? 0 : current);
-    WaveVolume.SetMasterVolume(next);
-    Tooltip(string.Format("Volume: {0:D2}", (int)(next * 100)));
+    VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() - VolumeDelta);
+    Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
-*/

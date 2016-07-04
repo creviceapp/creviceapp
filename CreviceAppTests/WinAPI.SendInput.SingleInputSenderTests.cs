@@ -14,6 +14,7 @@ namespace CreviceApp.Tests
 {
     using WinAPI.WindowsHookEx;
     using WinAPI.SendInput;
+    using WinAPI.Constants;
 
     [TestClass()]
     public class SingleInputSenderTests
