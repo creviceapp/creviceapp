@@ -8,9 +8,13 @@ Mouse gestures can be defined as a csx file, so there is noting can not do.<sup>
 
 This software requires Windows7 or later, and .Net Framework 4.6.
 
-## Config csx file
+## User script
 
-After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the config file. Please open it with a text editor and look through it. 
+After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and look through it. 
+
+`default.csx` is merely a csharp script file so that you can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there is need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+
+For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives)
 
 ## Mouse gesture DSL
 
@@ -22,7 +26,7 @@ var Chrome = @when((ctx) =>
 });
 ```
 
-The following clauses to `@when` is `@on`, `@if` and `@do`. 
+Following clauses to `@when` is `@on`, `@if` and `@do`. 
 
 ```cs
 Chrome.
@@ -104,6 +108,41 @@ Chrome.
     ExtendedKeyUp(VK_LMENU).
     Send(); // Send Alt+Left to Chrome
 });
+```
+
+
+## Config
+
+The system default parameters can be configured by using `Config` as following:
+
+```cs
+// When moved distance of the cursor is exceeded this value, the first stroke will be established.
+Config.Gesture.InitialStrokeThreshold = 10;
+
+// When moved distance of the cursor is exceeded this value and the direction of the movement is different from the current stroke, new stroke for new direction will be established.
+Config.Gesture.StrokeDirectionChangeThreshold = 20;
+
+// When moved distance of the cursor is exceeded this value and the direction of the movement is the same as the current stroke, it will be extended.
+Config.Gesture.StrokeExtensionThreshold = 10;
+
+// Interval time for updating strokes.
+Config.Gesture.WatchInterval = 10;
+
+// When there is no established stroke and this period of time have passed, the gesture will be canceled.
+Config.Gesture.Timeout = 1000;
+
+// The period of time for showing a tooltip message.
+Config.UI.TooltipTimeout = 3000;
+
+// The period of time for showing a baloon message.
+Config.UI.BaloonTimeout = 10000;
+
+// Binding for the position of tooltip messages.
+Config.UI.TooltipPositionBinding = (point) =>
+{
+    var newPoint = // Create new point.
+    return newPoint;
+}
 ```
 
 ## Core API
@@ -202,6 +241,31 @@ For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `Whe
 
 For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also provided.
 
+##### Complete list of supported methods
+- LeftDown()
+- LeftUp()
+- LeftClick()
+- RightDown()
+- RightUp()
+- RightClick()
+- Move(int dx, int dy)
+- MoveTo(int x, int y)
+- MiddleDown()
+- MiddleUp()
+- MiddleClick()
+- VerticalWheel(short delta)
+- WheelDown()
+- WheelUp()
+- HorizontalWheel(short delta)
+- WheelLeft()
+- WheelRight()
+- X1Down()
+- X1Up()
+- X1Click()
+- X2Down()
+- X2Up()
+- X2Click()
+
 #### Keyboard event
 
 A keyboard event is synthesized from a key code with two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
@@ -238,30 +302,121 @@ SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
 Note: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
 CreviceApp provides virtual keys as `VK_XXXX`, but for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
 
+
+##### Complete list of supported methods
+
+- KeyDown(ushort keyCode)
+- KeyUp(ushort keyCode)
+- ExtendedKeyDown(ushort keyCode)
+- ExtendedKeyUp(ushort keyCode)
+- KeyDownWithScanCode(ushort keyCode)
+- KeyUpWithScanCode(ushort keyCode)
+- ExtendedKeyDownWithScanCode(ushort keyCode)
+- ExtendedKeyUpWithScanCode(ushort keyCode)
+- UnicodeKeyDown(char c)
+- UnicodeKeyUp(char c)
+- UnicodeKeyStroke(string str)
+
 ### Notification
 
 #### Tooltip(string text)
 
-Show tooltip message on the right bottom corner of the display on the cusor.
+Show tooltip message at the right bottom corner of the display on the cursor.
 
 ```cs
 Tooptip("This is tooltip.");
 ```
 
+#### Tooltip(string text, Point point)
+
+Show a tooltip message at the specified point.
+
+#### Tooltip(string text, Point point, int duration)
+
+Show a tooltip message at the specified point for a specified period.
+
 #### Baloon(string text)
 
-Show baloon message.
+Show a baloon message.
 
 ```cs
 Baloon("This is baloon.");
 ```
 
-## Extension API
+#### Baloon(string text, string title)
 
+Show a baloon message with a title.
+
+#### Baloon(string text, string title, int timeout)
+
+Show a baloon message with a title for a specified period.
+
+#### Baloon(string text, string title, ToolTipIcon icon)
+
+Show a baloon message with a title and a icon.
+
+#### Baloon(string text, string title, ToolTipIcon icon, int timeout)
+
+Show a baloon message with a title and a icon for a specified period.
+
+## Extension API
 
 ### Window
 
-### CoreAudio
+`Window` is a utility static class about Windows's window.
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.Window;
+```
+
+#### From(IntPtr hWnd)
+
+This function wraps `IntPtr` and returns an instance of `WindowInfo`.
+
+#### GetCurosrPos()
+
+Returns current position of the cursor.
+This function returns an instance of `Point`.
+
+#### WindowFromPoint(Point point)
+
+Returns a window under the cursor.
+This function returns an instance of `WindowInfo`.
+
+#### FindWindow(string lpClassName, string lpWindowName)
+
+Find a window matches given class name and window name.
+This function returns an instance of `WindowInfo`.
+
+#### GetTopLevelWindows()
+
+Enumerates all windows.
+This function returns an instance of `IEnumerable<WindowInfo>`.
+
+#### GetThreadWindows(uint threadId)
+
+Enumerates all windows belonging specified thread.
+This function returns an instance of `IEnumerable<WindowInfo>`.
+
+### VolumeControl
+
+`VolumeControl` is a utility static class about Windows's volume controller.
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.CoreAudio;
+var VolumeControl = new VolumeControl();
+```
+
+#### GetMasterVolume()
+
+Returns window's current master mixer volume.
+This function returns a `float` value, within the range between 0 and 1.
+
+#### SetMasterVolume(float value)
+
+Sets window's current master mixer volume. The value should be within the range between 0 and 1.
+
+####
 
 ## Lisence
 
