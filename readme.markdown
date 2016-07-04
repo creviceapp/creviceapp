@@ -3,13 +3,12 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-## What is this?
 CreviceApp is a mouse gesture utility that consists of fully tested small and robust core of 2000 lines, thin GUI wrapper and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
 Mouse gestures can be defined as a csx file, so there is noting can not do.<sup>[citation needed]</sup>
 
 This software requires Windows7 or later, and .Net Framework 4.6.
 
-## Edit config csx file
+## Config csx file
 
 After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the config file. Please open it with a text editor and look through it. 
 
@@ -107,37 +106,72 @@ Chrome.
 });
 ```
 
-## API
+## Core API
 
 ### ExecutionContext
-`@when` clause and `@do` clause take a function as it's argument, and the function takes an ExecutionContext as it's argument. 
-An ExecutionContext will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
+`@when` clause and `@do` clause take a function as it's argument, and the function takes an `ExecutionContext` as it's argument. 
+An `ExecutionContext` will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
 
-#### ExecutionContext.ForegroundWindow
+#### Properties
+
+##### ForegroundWindow
 
 The window which was on the foreground when a gesture started. 
 This is an instance of `WindowInfo`.
 
-#### ExecutionContext.PointedWindow
+##### PointedWindow
 
 The window which was under the cursor when a gesture started. 
 This is an instance of `WindowInfo`.
 
 ### WindowInfo
 
-This class provides `Handle`, `ThreadId`, `ProcessId`, `Id`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
+`WindowInfo` is a thin wrapper of the handle of a window. This class provides functions to use window handles more easily.
 
-#### WindowInfo.BringWindowToTop()
+#### Properties
+This class provides `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
 
-A shortcut to win32 API `BringWindowToTop(Handle)`.
+#### Methods
 
-#### WindowInfo.SendMessage(uint Msg, uint wParam, uint lParam)
+##### SendMessage(uint Msg, uint wParam, uint lParam)
 
-A shortcut to win32 API `SendMessage(Handle, Msg, wParam, lParam)`.
+A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`. 
+This returns a `long` value returned by win32 API as is.
 
-#### WindowInfo.PostMessage(uint Msg, uint wParam, uint lParam)
+##### PostMessage(uint Msg, uint wParam, uint lParam)
 
-A shortcut to win32 API `PostMessage(Handle, Msg, wParam, lParam)`.
+A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
+This returns a `bool` value returned by win32 API as is.
+
+##### BringWindowToTop()
+
+A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
+This returns a `bool` value returned by win32 API as is.
+
+##### FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow)
+
+A shortcut to win32 API `FindWindowEx(WindowHandle, hwndChildAfter, lpszClass, lpszWindow)`.
+This returns an instance of `WindowInfo`.
+
+##### FindWindowEx(string lpszClass, string lpszWindow)
+
+A shortcut to win32 API `FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow)`.
+This returns an instance of `WindowInfo`.
+
+##### GetChildWindows()
+
+A shortcut to win32 API `EnumChildWindows(WindowHandle, EnumWindowProc, IntPtr.Zero)`.
+This returns an instance of `IEmumerable<WindowInfo>`.
+
+##### GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
+
+A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, flags)`.
+This method recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
+
+##### GetPointedDescendantWindows(Point point)
+
+A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`.
+This method recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
 
 ### SendInput
 
@@ -221,6 +255,13 @@ Show baloon message.
 ```cs
 Baloon("This is baloon.");
 ```
+
+## Extension API
+
+
+### Window
+
+### CoreAudio
 
 ## Lisence
 
