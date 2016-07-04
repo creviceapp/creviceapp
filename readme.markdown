@@ -14,7 +14,7 @@ After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`
 
 `default.csx` is merely a csharp script file so that you can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there is need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
 
-For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives)
+For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives).
 
 ## Mouse gesture DSL
 
@@ -299,9 +299,7 @@ SendInput.UnicodeKeyDown('🍣');
 SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
 ```
 
-Note: `keyCode` is a virtual key code. See [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
-CreviceApp provides virtual keys as `VK_XXXX`, but for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
-
+Note: `keyCode` is a virtual key code. See [VirtualKeys](#VirtualKeys).
 
 ##### Complete list of supported methods
 
@@ -360,6 +358,34 @@ Show a baloon message with a title and a icon.
 Show a baloon message with a title and a icon for a specified period.
 
 ## Extension API
+
+### VirtualKeys
+
+This class provides virtual keys. 
+
+Note: for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
+
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.Constants.VirtualKeys;
+// or
+using static CreviceApp.WinAPI.Constants.VirtualKeys;
+```
+
+For more details, see [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
+
+### WindowsMessages
+
+This class provides windows messages. 
+
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.Constants.WindowsMessages;
+// or
+using static CreviceApp.WinAPI.Constants.WindowsMessages;
+```
+
+For more details, see [Window Messages (Windows)](https://msdn.microsoft.com/en-us/library/windows/desktop/ff381405(v=vs.85).aspx).
 
 ### Window
 
