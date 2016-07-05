@@ -24,7 +24,7 @@ namespace CreviceApp.Core.FSM
             this.State = new State0(Global, gestureDef);
             this.GestureDefinition = gestureDef;
 
-            timer.Elapsed += new ElapsedEventHandler(OnGestureTimeout);
+            timer.Elapsed += new ElapsedEventHandler(TryGestureTimeout);
             timer.Interval = Global.Config.Gesture.Timeout;
             timer.AutoReset = false;
         }
@@ -58,7 +58,7 @@ namespace CreviceApp.Core.FSM
             }
         }
 
-        private void OnGestureTimeout(object sender, ElapsedEventArgs args)
+        private void TryGestureTimeout(object sender, ElapsedEventArgs args)
         {
             lock (lockObject)
             {
