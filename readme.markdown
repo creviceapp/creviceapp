@@ -18,7 +18,7 @@ For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](ht
 
 ## Mouse gesture DSL
 
-Firstly, all gestures start with `@when` clause represent the condition for the activation of a mouse gesture.
+All mouse gesture definition start with `@when` clause represents the condition for the activation of a mouse gesture.
 ```cs
 var Chrome = @when((ctx) =>
 {
@@ -44,13 +44,13 @@ Chrome.
 ```
 
 
-`@on` caluse tells the system that which mouse button will be used when the gesture starts. 
+`@on` caluse tells the system that which mouse button will be used at start of the gesture. 
 `@if` clause also tells the trigger of the action of the gesture. 
 And finally, `@do` clause represents the action of the gesture will be acivated when all given conditions to be satisfied. 
 
 ### Stroke gestures
 
-Mouse gestures with strokes, namely, stroke gestures, is the most used and  needed of some kinds of mouse gestures. 
+Mouse gestures with strokes, namely, stroke gestures, is the most used and needed of some kinds of mouse gestures. 
 CreviceApp naturally supports this.
 `@if` clause takes movements of the mouse, combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`, as it's argument then.
 
@@ -116,19 +116,24 @@ Chrome.
 The system default parameters can be configured by using `Config` as following:
 
 ```cs
-// When moved distance of the cursor is exceeded this value, the first stroke will be established.
+// When moved distance of the cursor is exceeded this value, the first stroke 
+// will be established.
 Config.Gesture.InitialStrokeThreshold = 10;
 
-// When moved distance of the cursor is exceeded this value and the direction of the movement is different from the current stroke, new stroke for new direction will be established.
+// When moved distance of the cursor is exceeded this value and the direction 
+// of the movement is different from the current stroke, new stroke 
+// for new direction will be established.
 Config.Gesture.StrokeDirectionChangeThreshold = 20;
 
-// When moved distance of the cursor is exceeded this value and the direction of the movement is the same as the current stroke, it will be extended.
+// When moved distance of the cursor is exceeded this value and the direction 
+// of the movement is the same as the current stroke, it will be extended.
 Config.Gesture.StrokeExtensionThreshold = 10;
 
 // Interval time for updating strokes.
 Config.Gesture.WatchInterval = 10;
 
-// When there is no established stroke and this period of time have passed, the gesture will be canceled.
+// When there is no established stroke yet and this period of time has passed, 
+// the gesture will be canceled and the original click event will be reproduced.
 Config.Gesture.Timeout = 1000;
 
 // The period of time for showing a tooltip message.
@@ -175,17 +180,17 @@ This class provides `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`,
 ##### SendMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`. 
-This function returns a `long` value returned by win32 API as is.
+This function returns a `long` value returned by win32 API directly.
 
 ##### PostMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
-This function returns a `bool` value returned by win32 API as is.
+This function returns a `bool` value returned by win32 API directly.
 
 ##### BringWindowToTop()
 
 A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
-This function returns a `bool` value returned by win32 API as is.
+This function returns a `bool` value returned by win32 API directly.
 
 ##### FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow)
 
@@ -361,7 +366,7 @@ Show a baloon message with a title and a icon for a specified period.
 
 ### VirtualKeys
 
-This class provides virtual keys. 
+This class provides the virtual key constants. 
 
 Note: for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
 
@@ -374,7 +379,7 @@ For more details, see [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/j
 
 ### WindowsMessages
 
-This class provides windows messages. 
+This class provides the windows message constants. 
 To use this class, declare as following:
 ```cs
 using static CreviceApp.WinAPI.Constants.WindowsMessages;
@@ -394,7 +399,7 @@ using CreviceApp.WinAPI.Window;
 
 This function wraps `IntPtr` and returns an instance of `WindowInfo`.
 
-#### GetCurosrPos()
+#### GetCursorPos()
 
 Returns current position of the cursor.
 This function returns an instance of `Point`.
@@ -421,7 +426,7 @@ This function returns an instance of `IEnumerable<WindowInfo>`.
 
 ### VolumeControl
 
-`VolumeControl` is a utility static class about Windows's volume controller.
+`VolumeControl` is a utility static class about system audio volume.
 To use this class, declare as following:
 ```cs
 using CreviceApp.WinAPI.CoreAudio;
