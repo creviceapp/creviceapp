@@ -165,7 +165,7 @@ This is an instance of `WindowInfo`.
 
 ### WindowInfo
 
-`WindowInfo` is a thin wrapper of the handle of a window. This class provides functions to use window handles more easily.
+`WindowInfo` is a thin wrapper of the handle of a window. This class provides properties and methods to use window handles more easily.
 
 #### Properties
 This class provides `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
@@ -175,42 +175,42 @@ This class provides `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`,
 ##### SendMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`. 
-This returns a `long` value returned by win32 API as is.
+This function returns a `long` value returned by win32 API as is.
 
 ##### PostMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
-This returns a `bool` value returned by win32 API as is.
+This function returns a `bool` value returned by win32 API as is.
 
 ##### BringWindowToTop()
 
 A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
-This returns a `bool` value returned by win32 API as is.
+This function returns a `bool` value returned by win32 API as is.
 
 ##### FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow)
 
 A shortcut to win32 API `FindWindowEx(WindowHandle, hwndChildAfter, lpszClass, lpszWindow)`.
-This returns an instance of `WindowInfo`.
+This function returns an instance of `WindowInfo`.
 
 ##### FindWindowEx(string lpszClass, string lpszWindow)
 
 A shortcut to win32 API `FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow)`.
-This returns an instance of `WindowInfo`.
+This function returns an instance of `WindowInfo`.
 
 ##### GetChildWindows()
 
 A shortcut to win32 API `EnumChildWindows(WindowHandle, EnumWindowProc, IntPtr.Zero)`.
-This returns an instance of `IEmumerable<WindowInfo>`.
+This function returns an instance of `IEmumerable<WindowInfo>`.
 
 ##### GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
 
 A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, flags)`.
-This method recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
+This function recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
 
 ##### GetPointedDescendantWindows(Point point)
 
 A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`.
-This method recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
+This function recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
 
 ### SendInput
 
@@ -367,8 +367,6 @@ Note: for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for conven
 
 To use this class, declare as following:
 ```cs
-using CreviceApp.WinAPI.Constants.VirtualKeys;
-// or
 using static CreviceApp.WinAPI.Constants.VirtualKeys;
 ```
 
@@ -377,11 +375,8 @@ For more details, see [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/j
 ### WindowsMessages
 
 This class provides windows messages. 
-
 To use this class, declare as following:
 ```cs
-using CreviceApp.WinAPI.Constants.WindowsMessages;
-// or
 using static CreviceApp.WinAPI.Constants.WindowsMessages;
 ```
 
