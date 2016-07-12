@@ -285,10 +285,10 @@ namespace CreviceApp.WinAPI.Window
             public static new class NativeMethods
             {
                 [DllImport("user32.dll")]
-                public static extern IntPtr WindowFromPoint(Point point);
+                public static extern IntPtr WindowFromPhysicalPoint(Point point);
             }
 
-            public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPoint(point)) { }
+            public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point)) { }
         }
 
         namespace Enumerables
