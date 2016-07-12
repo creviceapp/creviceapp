@@ -46,9 +46,10 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(12, 12);
+            this.checkBox1.Location = new System.Drawing.Point(13, 13);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(185, 16);
+            this.checkBox1.Size = new System.Drawing.Size(233, 19);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Run on startup of the computer";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -56,9 +57,10 @@
             // button1
             // 
             this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(12, 112);
+            this.button1.Location = new System.Drawing.Point(13, 195);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(260, 33);
+            this.button1.Size = new System.Drawing.Size(406, 65);
             this.button1.TabIndex = 3;
             this.button1.Text = "Shutdown";
             this.button1.UseVisualStyleBackColor = true;
@@ -67,9 +69,10 @@
             // button2
             // 
             this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button2.Location = new System.Drawing.Point(12, 34);
+            this.button2.Location = new System.Drawing.Point(13, 49);
+            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(260, 33);
+            this.button2.Size = new System.Drawing.Size(406, 65);
             this.button2.TabIndex = 5;
             this.button2.Text = "Open user directory";
             this.button2.UseVisualStyleBackColor = true;
@@ -77,9 +80,10 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(12, 73);
+            this.button3.Location = new System.Drawing.Point(13, 122);
+            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(260, 33);
+            this.button3.Size = new System.Drawing.Size(406, 65);
             this.button3.TabIndex = 6;
             this.button3.Text = "About";
             this.button3.UseVisualStyleBackColor = true;
@@ -87,18 +91,18 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 157);
+            this.ClientSize = new System.Drawing.Size(432, 273);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.checkBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(300, 196);
+            this.MaximumSize = new System.Drawing.Size(450, 320);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(300, 196);
             this.Name = "MainForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
