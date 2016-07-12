@@ -130,7 +130,7 @@ namespace CreviceApp.Core.FSM
                 .ToDictionary(x => x.Key as Def.Event.IDoubleActionSet, x => x.Select(y => y));
         }
 
-        // Transition 1_4 (restoration of the mouse click event)
+        // Transition 1_4 (restoration of the `set` event)
         //
         // State1 -> State0
         //
