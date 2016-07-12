@@ -422,7 +422,10 @@ namespace CreviceApp.WinAPI.Window
         public static class NativeMethods
         {
             [DllImport("user32.dll")]
-            public static extern IntPtr WindowFromPoint(Point point);
+            public static extern bool GetCursorPos(out Point lpPoint);
+
+            [DllImport("user32.dll")]
+            public static extern bool GetPhysicalCursorPos(out Point lpPoint);
 
             [DllImport("user32.dll", SetLastError = true)]
             public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -460,7 +463,16 @@ namespace CreviceApp.WinAPI.Window
 
         public static Point GetCursorPos()
         {
-            return Cursor.Position;
+            var point = new Point();
+            NativeMethods.GetCursorPos(out point);
+            return point;
+        }
+
+        public static Point GetPhysicalCursorPos()
+        {
+            var point = new Point();
+            NativeMethods.GetPhysicalCursorPos(out point);
+            return point;
         }
 
         public static Impl.WindowInfo GetForegroundWindow()
@@ -470,7 +482,7 @@ namespace CreviceApp.WinAPI.Window
 
         public static Impl.WindowInfo GetPointedWindow()
         {
-            return WindowFromPoint(GetCursorPos());
+            return WindowFromPoint(GetPhysicalCursorPos());
         }
 
         public static Impl.WindowInfo WindowFromPoint(Point point)
