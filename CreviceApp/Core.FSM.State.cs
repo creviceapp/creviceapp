@@ -15,11 +15,11 @@ namespace CreviceApp.Core.FSM
 
     // S1
     //
-    // The state holding primary double action mouse button and the button is restorable.
+    // The state holding primary double action mouse button and the set action of the button is restorable.
 
     // S2
     //
-    // The state holding primary double action mouse button and the button is not restorable.
+    // The state holding primary double action mouse button and the set action of the button is not restorable.
 
     // S3
     //

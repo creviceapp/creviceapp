@@ -55,7 +55,7 @@ namespace CreviceApp.Core
 
         public void Tooltip(string text)
         {
-            Tooltip(text, Global.UserConfig.UI.TooltipPositionBinding(Cursor.Position));
+            Tooltip(text, Global.UserConfig.UI.TooltipPositionBinding(WinAPI.Window.Window.GetPhysicalCursorPos()));
         }
 
         public void Tooltip(string text, Point point)

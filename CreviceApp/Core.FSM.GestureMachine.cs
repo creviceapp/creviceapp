@@ -24,8 +24,8 @@ namespace CreviceApp.Core.FSM
             this.State = new State0(Global, gestureDef);
             this.GestureDefinition = gestureDef;
 
-            timer.Elapsed += new ElapsedEventHandler(OnGestureTimeout);
-            timer.Interval = userConfig.Gesture.Timeout;
+            timer.Elapsed += new ElapsedEventHandler(TryGestureTimeout);
+            timer.Interval = Global.Config.Gesture.Timeout;
             timer.AutoReset = false;
         }
 
@@ -48,6 +48,8 @@ namespace CreviceApp.Core.FSM
                     if (State is State0 && res.NextState is State1)
                     {
                         timer.Stop();
+                        // Reflect current config value
+                        timer.Interval = Global.Config.Gesture.Timeout;
                         timer.Start();
                     }
                 }
@@ -56,7 +58,7 @@ namespace CreviceApp.Core.FSM
             }
         }
 
-        private void OnGestureTimeout(object sender, ElapsedEventArgs args)
+        private void TryGestureTimeout(object sender, ElapsedEventArgs args)
         {
             lock (lockObject)
             {

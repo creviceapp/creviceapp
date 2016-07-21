@@ -241,8 +241,9 @@ namespace CreviceApp.WinAPI.SendInput
 
         protected MOUSEINPUT MouseMoveEvent(int dx, int dy)
         {
-            var x = Cursor.Position.X + dx;
-            var y = Cursor.Position.Y + dy;
+            var point = Window.Window.GetPhysicalCursorPos();
+            var x = point.X + dx;
+            var y = point.Y + dy;
             return MouseMoveToEvent(x, y);
         }
 

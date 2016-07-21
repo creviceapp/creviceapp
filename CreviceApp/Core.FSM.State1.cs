@@ -109,8 +109,7 @@ namespace CreviceApp.Core.FSM
         public IState Cancel()
         {
             Debug.Print("[Transition 1_5]");
-            RestorePrimaryButtonClick();
-            IgnoreNext(primaryEvent.GetPair());
+            RestorePrimaryButtonDown();
             return S0;
         }
 
@@ -119,6 +118,30 @@ namespace CreviceApp.Core.FSM
             Debug.Print("[Transition 1_6]");
             IgnoreNext(primaryEvent.GetPair());
             return S0;
+        }
+
+        internal void RestorePrimaryButtonDown()
+        {
+            if (primaryEvent == Def.Constant.LeftButtonDown)
+            {
+                InputSender.LeftDown();
+            }
+            else if (primaryEvent == Def.Constant.MiddleButtonDown)
+            {
+                InputSender.MiddleDown();
+            }
+            else if (primaryEvent == Def.Constant.RightButtonDown)
+            {
+                InputSender.RightDown();
+            }
+            else if (primaryEvent == Def.Constant.X1ButtonDown)
+            {
+                InputSender.X1Down();
+            }
+            else if (primaryEvent == Def.Constant.X2ButtonDown)
+            {
+                InputSender.X2Down();
+            }
         }
 
         internal void RestorePrimaryButtonClick()
