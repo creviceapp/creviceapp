@@ -281,12 +281,12 @@ namespace CreviceApp.WinAPI.SendInput
 
         protected MOUSEINPUT MouseWheelDownEvent()
         {
-            return MouseVerticalWheelEvent(-120);
+            return MouseVerticalWheelEvent(120);
         }
 
         protected MOUSEINPUT MouseWheelUpEvent()
         {
-            return MouseVerticalWheelEvent(120);
+            return MouseVerticalWheelEvent(-120);
         }
         
         protected MOUSEINPUT MouseHorizontalWheelEvent(int delta)
