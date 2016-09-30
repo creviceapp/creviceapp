@@ -186,7 +186,7 @@ namespace CreviceApp.Tests
             Assert.AreEqual(keyboardEvents.Count, 0);
             Assert.AreEqual(mouseEvents.Count, 1);
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEWHEEL);
-            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
+            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, -120);
         }
 
         [TestMethod()]
@@ -194,7 +194,7 @@ namespace CreviceApp.Tests
         {
             sender.WheelUp();
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEWHEEL);
-            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, -120);
+            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
         }
 
         [TestMethod()]
@@ -212,7 +212,7 @@ namespace CreviceApp.Tests
             Assert.AreEqual(keyboardEvents.Count, 0);
             Assert.AreEqual(mouseEvents.Count, 1);
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEHWHEEL);
-            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
+            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, -120);
         }
 
         [TestMethod()]
@@ -220,7 +220,7 @@ namespace CreviceApp.Tests
         {
             sender.WheelRight();
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEHWHEEL);
-            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, -120);
+            Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
         }
 
         [TestMethod()]
