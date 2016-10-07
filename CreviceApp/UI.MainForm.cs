@@ -135,7 +135,7 @@ namespace CreviceApp
                 notifyIcon1.Visible = false;
             }
         }
-
+        
         private bool closeRequest = false;
 
         protected override void OnClosing(CancelEventArgs e)
@@ -232,6 +232,7 @@ namespace CreviceApp
             Left = (rect.Width - Width) / 2;
             Top = (rect.Height - Height) / 2;
             Opacity = 1;
+            BringToFront();
         }
     }
 }
