@@ -61,6 +61,19 @@ namespace CreviceApp
             }
         }
 
+        // Force make this application invisible from task switcher applications.
+        const int WS_EX_TOOLWINDOW = 0x00000080;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle = cp.ExStyle | WS_EX_TOOLWINDOW;
+                return cp;
+            }
+        }
+
+
         private readonly UI.TooltipNotifier tooltip;
 
         public MainForm(AppGlobal Global) : base(Global)
