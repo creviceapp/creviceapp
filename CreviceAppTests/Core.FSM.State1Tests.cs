@@ -290,7 +290,12 @@ namespace CreviceApp.Core.FSM.Tests
                         var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                         var ev = Helper.Convert(b).GetPair();
                         var res = S1.Input((Def.Event.IEvent)ev, new Point());
-                        Thread.Sleep(100);
+                        var cde = new CountdownEvent(1);
+                        Global.UserActionTaskFactory.StartNew(() => 
+                        {
+                            cde.Signal();
+                        });
+                        cde.Wait();
                         if (a == b)
                         {
                             Assert.IsTrue(res.NextState is State0);
@@ -350,7 +355,12 @@ namespace CreviceApp.Core.FSM.Tests
                     var S0 = new State0(Global, new List<GestureDefinition>());
                     var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     var res = S1.Cancel();
-                    Thread.Sleep(100);
+                    var cde = new CountdownEvent(1);
+                    Global.UserActionTaskFactory.StartNew(() =>
+                    {
+                        cde.Signal();
+                    });
+                    cde.Wait();
                     Assert.AreEqual(mouseEvents.Count, 1);
                     if (a == DSL.Def.Constant.LeftButton)
                     {
@@ -443,7 +453,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.LeftButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonDown();
+                    S1.RestorePrimaryButtonDownEvent()();
                     Assert.AreEqual(mouseEvents.Count, 1);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
                 }
@@ -451,7 +461,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.MiddleButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonDown();
+                    S1.RestorePrimaryButtonDownEvent()();
                     Assert.AreEqual(mouseEvents.Count, 1);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
                 }
@@ -459,7 +469,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonDown();
+                    S1.RestorePrimaryButtonDownEvent()();
                     Assert.AreEqual(mouseEvents.Count, 1);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
                 }
@@ -467,7 +477,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.X1ButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonDown();
+                    S1.RestorePrimaryButtonDownEvent()();
                     Assert.AreEqual(mouseEvents.Count, 1);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
                     Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
@@ -476,7 +486,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.X2ButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonDown();
+                    S1.RestorePrimaryButtonDownEvent()();
                     Assert.AreEqual(mouseEvents.Count, 1);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
                     Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
@@ -494,7 +504,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.LeftButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonClick();
+                    S1.RestorePrimaryButtonClickEvent()();
                     Assert.AreEqual(mouseEvents.Count, 2);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
                     Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
@@ -503,7 +513,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.MiddleButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonClick();
+                    S1.RestorePrimaryButtonClickEvent()();
                     Assert.AreEqual(mouseEvents.Count, 2);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
                     Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
@@ -512,7 +522,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonClick();
+                    S1.RestorePrimaryButtonClickEvent()();
                     Assert.AreEqual(mouseEvents.Count, 2);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
                     Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
@@ -521,7 +531,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.X1ButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonClick();
+                    S1.RestorePrimaryButtonClickEvent()();
                     Assert.AreEqual(mouseEvents.Count, 2);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
                     Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
@@ -532,7 +542,7 @@ namespace CreviceApp.Core.FSM.Tests
                     var S1 = new State1(Global, S0, ctx, Def.Constant.X2ButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
                     mouseEvents.Clear();
                     Assert.AreEqual(mouseEvents.Count, 0);
-                    S1.RestorePrimaryButtonClick();
+                    S1.RestorePrimaryButtonClickEvent()();
                     Assert.AreEqual(mouseEvents.Count, 2);
                     Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
                     Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
