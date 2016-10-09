@@ -145,6 +145,7 @@ namespace CreviceApp
                 e.Cancel = true;
                 AutoRun = checkBox1.Checked;
                 Hide();
+                ShowInTaskbar = false;
                 return;
             }
             base.OnClosing(e);
@@ -228,6 +229,7 @@ namespace CreviceApp
             Opacity = 0;
             Show();
             WindowState = FormWindowState.Normal;
+            ShowInTaskbar = true;
             var rect = Screen.PrimaryScreen.Bounds;
             Left = (rect.Width - Width) / 2;
             Top = (rect.Height - Height) / 2;
