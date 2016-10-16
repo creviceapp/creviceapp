@@ -61,6 +61,19 @@ namespace CreviceApp
             }
         }
 
+        // Force make this application invisible from task switcher applications.
+        const int WS_EX_TOOLWINDOW = 0x00000080;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle = cp.ExStyle | WS_EX_TOOLWINDOW;
+                return cp;
+            }
+        }
+
+
         private readonly UI.TooltipNotifier tooltip;
 
         public MainForm(AppGlobal Global) : base(Global)
@@ -122,7 +135,7 @@ namespace CreviceApp
                 notifyIcon1.Visible = false;
             }
         }
-
+        
         private bool closeRequest = false;
 
         protected override void OnClosing(CancelEventArgs e)
@@ -132,6 +145,7 @@ namespace CreviceApp
                 e.Cancel = true;
                 AutoRun = checkBox1.Checked;
                 Hide();
+                ShowInTaskbar = false;
                 return;
             }
             base.OnClosing(e);
@@ -215,10 +229,13 @@ namespace CreviceApp
             Opacity = 0;
             Show();
             WindowState = FormWindowState.Normal;
+            ShowInTaskbar = true;
             var rect = Screen.PrimaryScreen.Bounds;
             Left = (rect.Width - Width) / 2;
             Top = (rect.Height - Height) / 2;
             Opacity = 1;
+            Activate();
+            BringToFront();
         }
     }
 }

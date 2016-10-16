@@ -96,7 +96,7 @@ namespace CreviceApp.Core.FSM
                         else
                         {
                             Debug.Print("[Transition 1_4]");
-                            RestorePrimaryButtonClick();
+                            ExecuteUserActionInBackground(ctx, RestorePrimaryButtonClickEvent());
                         }
                     }
                     
@@ -109,7 +109,7 @@ namespace CreviceApp.Core.FSM
         public IState Cancel()
         {
             Debug.Print("[Transition 1_5]");
-            RestorePrimaryButtonDown();
+            ExecuteUserActionInBackground(ctx, RestorePrimaryButtonDownEvent());
             return S0;
         }
 
@@ -120,52 +120,58 @@ namespace CreviceApp.Core.FSM
             return S0;
         }
 
-        internal void RestorePrimaryButtonDown()
+        internal Action RestorePrimaryButtonDownEvent()
         {
-            if (primaryEvent == Def.Constant.LeftButtonDown)
+            return () =>
             {
-                InputSender.LeftDown();
-            }
-            else if (primaryEvent == Def.Constant.MiddleButtonDown)
-            {
-                InputSender.MiddleDown();
-            }
-            else if (primaryEvent == Def.Constant.RightButtonDown)
-            {
-                InputSender.RightDown();
-            }
-            else if (primaryEvent == Def.Constant.X1ButtonDown)
-            {
-                InputSender.X1Down();
-            }
-            else if (primaryEvent == Def.Constant.X2ButtonDown)
-            {
-                InputSender.X2Down();
-            }
+                if (primaryEvent == Def.Constant.LeftButtonDown)
+                {
+                    InputSender.LeftDown();
+                }
+                else if (primaryEvent == Def.Constant.MiddleButtonDown)
+                {
+                    InputSender.MiddleDown();
+                }
+                else if (primaryEvent == Def.Constant.RightButtonDown)
+                {
+                    InputSender.RightDown();
+                }
+                else if (primaryEvent == Def.Constant.X1ButtonDown)
+                {
+                    InputSender.X1Down();
+                }
+                else if (primaryEvent == Def.Constant.X2ButtonDown)
+                {
+                    InputSender.X2Down();
+                }
+            };
         }
 
-        internal void RestorePrimaryButtonClick()
+        internal Action RestorePrimaryButtonClickEvent()
         {
-            if (primaryEvent == Def.Constant.LeftButtonDown)
+            return () =>
             {
-                InputSender.LeftClick();
-            }
-            else if (primaryEvent == Def.Constant.MiddleButtonDown)
-            {
-                InputSender.MiddleClick();
-            }
-            else if (primaryEvent == Def.Constant.RightButtonDown)
-            {
-                InputSender.RightClick();
-            }
-            else if (primaryEvent == Def.Constant.X1ButtonDown)
-            {
-                InputSender.X1Click();
-            }
-            else if (primaryEvent == Def.Constant.X2ButtonDown)
-            {
-                InputSender.X2Click();
-            }
+                if (primaryEvent == Def.Constant.LeftButtonDown)
+                {
+                    InputSender.LeftClick();
+                }
+                else if (primaryEvent == Def.Constant.MiddleButtonDown)
+                {
+                    InputSender.MiddleClick();
+                }
+                else if (primaryEvent == Def.Constant.RightButtonDown)
+                {
+                    InputSender.RightClick();
+                }
+                else if (primaryEvent == Def.Constant.X1ButtonDown)
+                {
+                    InputSender.X1Click();
+                }
+                else if (primaryEvent == Def.Constant.X2ButtonDown)
+                {
+                    InputSender.X2Click();
+                }
+            };
         }
     }
 }

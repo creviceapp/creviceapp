@@ -236,7 +236,7 @@ SendInput.ExtendedKeyUp(VK_LWIN);
 SendInput.Multiple().
 ExtendedKeyDown(VK_LWIN).
 ExtendedKeyUp(VK_LWIN).
-Send(); // This won't interrupted by any other input.
+Send(); // This won't be interrupted by any other input.
 ```
 
 #### Mouse event
@@ -426,7 +426,7 @@ This function returns an instance of `IEnumerable<WindowInfo>`.
 
 ### VolumeControl
 
-`VolumeControl` is a utility static class about system audio volume.
+`VolumeControl` is a utility class about system audio volume.
 To use this class, declare as following:
 ```cs
 using CreviceApp.WinAPI.CoreAudio;

@@ -299,12 +299,12 @@ namespace CreviceApp.WinAPI.SendInput
 
         protected MOUSEINPUT MouseWheelRightEvent()
         {
-            return MouseHorizontalWheelEvent(-120);
+            return MouseHorizontalWheelEvent(120);
         }
 
         protected MOUSEINPUT MouseWheelLeftEvent()
         {
-            return MouseHorizontalWheelEvent(120);
+            return MouseHorizontalWheelEvent(-120);
         }
 
         private MOUSEINPUT MouseXUpEvent(int type)
@@ -528,12 +528,12 @@ namespace CreviceApp.WinAPI.SendInput
 
         public void WheelDown()
         {
-            Send(MouseVerticalWheelEvent(120));
+            Send(MouseWheelDownEvent());
         }
 
         public void WheelUp()
         {
-            Send(MouseVerticalWheelEvent(-120));
+            Send(MouseWheelUpEvent());
         }
         
         public void HorizontalWheel(short delta)
@@ -543,12 +543,12 @@ namespace CreviceApp.WinAPI.SendInput
 
         public void WheelLeft()
         {
-            Send(MouseHorizontalWheelEvent(120));
+            Send(MouseWheelLeftEvent());
         }
 
         public void WheelRight()
         {
-            Send(MouseHorizontalWheelEvent(-120));
+            Send(MouseWheelRightEvent());
         }
 
         public void X1Down()
@@ -738,12 +738,12 @@ namespace CreviceApp.WinAPI.SendInput
 
         public InputSequenceBuilder WheelDown()
         {
-            return NewInstance(MouseVerticalWheelEvent(120));
+            return NewInstance(MouseWheelDownEvent());
         }
 
         public InputSequenceBuilder WheelUp()
         {
-            return NewInstance(MouseVerticalWheelEvent(-120));
+            return NewInstance(MouseWheelUpEvent());
         }
 
         public InputSequenceBuilder HorizontalWheel(short delta)
@@ -753,12 +753,12 @@ namespace CreviceApp.WinAPI.SendInput
 
         public InputSequenceBuilder WheelLeft()
         {
-            return NewInstance(MouseHorizontalWheelEvent(120));
+            return NewInstance(MouseWheelLeftEvent());
         }
 
         public InputSequenceBuilder WheelRight()
         {
-            return NewInstance(MouseHorizontalWheelEvent(-120));
+            return NewInstance(MouseWheelRightEvent());
         }
 
         public InputSequenceBuilder X1Down()

@@ -63,6 +63,13 @@ namespace CreviceApp.Core.FSM
             });
         }
 
+        protected internal void ExecuteUserActionInBackground(
+            UserActionExecutionContext ctx,
+            Action action)
+        {
+            Global.UserActionTaskFactory.StartNew(action);
+        }
+
         // Check whether given event must be ignored or not.
         // Return true if given event is in the ignore list, and remove it from the list.
         // Return false if the pair of given event is in the ignore list, and remove it from the list.

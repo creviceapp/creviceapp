@@ -48,10 +48,9 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(13, 24);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBox1.Location = new System.Drawing.Point(10, 19);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(233, 19);
+            this.checkBox1.Size = new System.Drawing.Size(185, 16);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Run on startup of the computer";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -59,10 +58,9 @@
             // button1
             // 
             this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(0, 158);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Location = new System.Drawing.Point(0, 126);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(406, 65);
+            this.button1.Size = new System.Drawing.Size(304, 52);
             this.button1.TabIndex = 3;
             this.button1.Text = "Shutdown";
             this.button1.UseVisualStyleBackColor = true;
@@ -71,10 +69,9 @@
             // button2
             // 
             this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button2.Location = new System.Drawing.Point(0, 12);
-            this.button2.Margin = new System.Windows.Forms.Padding(4);
+            this.button2.Location = new System.Drawing.Point(0, 10);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(406, 65);
+            this.button2.Size = new System.Drawing.Size(304, 52);
             this.button2.TabIndex = 5;
             this.button2.Text = "Open user directory";
             this.button2.UseVisualStyleBackColor = true;
@@ -82,10 +79,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(0, 85);
-            this.button3.Margin = new System.Windows.Forms.Padding(4);
+            this.button3.Location = new System.Drawing.Point(0, 68);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(406, 65);
+            this.button3.Size = new System.Drawing.Size(304, 52);
             this.button3.TabIndex = 6;
             this.button3.Text = "About";
             this.button3.UseVisualStyleBackColor = true;
@@ -96,26 +92,27 @@
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.button3);
-            this.panel1.Location = new System.Drawing.Point(13, 50);
+            this.panel1.Location = new System.Drawing.Point(10, 40);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(407, 242);
+            this.panel1.Size = new System.Drawing.Size(305, 194);
             this.panel1.TabIndex = 7;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(432, 293);
+            this.ClientSize = new System.Drawing.Size(326, 241);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.checkBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(450, 340);
+            this.MaximumSize = new System.Drawing.Size(342, 280);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(450, 340);
+            this.MinimumSize = new System.Drawing.Size(342, 280);
             this.Name = "MainForm";
-            this.Padding = new System.Windows.Forms.Padding(10);
+            this.Opacity = 0D;
+            this.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "CreviceApp";
