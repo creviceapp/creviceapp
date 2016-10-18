@@ -16,9 +16,9 @@ namespace CreviceApp.Core.FSM
         internal readonly State2 S2;
         internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
-        internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonIfButtonGestureDefinition>> T0;
-        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonIfButtonGestureDefinition>> T1;
-        internal readonly IDictionary<Def.Stroke, IEnumerable<OnButtonIfStrokeGestureDefinition>> T2;
+        internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T0;
+        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T1;
+        internal readonly IDictionary<Def.Stroke, IEnumerable<OnButtonWithIfStrokeGestureDefinition>> T2;
         internal readonly IEnumerable<IfButtonGestureDefinition> T3;
 
         private readonly SingleInputSender InputSender = new SingleInputSender();
@@ -58,7 +58,7 @@ namespace CreviceApp.Core.FSM
                 if (T0.Keys.Contains(ev))
                 {
                     Debug.Print("[Transition 1_0]");
-                    ExecuteUserActionInBackground(ctx, T0[ev]);
+                    ExecuteUserDoFuncInBackground(ctx, T0[ev]);
                     return Result.EventIsConsumed(nextState: S2);
                 }
             }
@@ -68,7 +68,8 @@ namespace CreviceApp.Core.FSM
                 if (T1.Keys.Contains(ev))
                 {
                     Debug.Print("[Transition 1_1]");
-                    return Result.EventIsConsumed(nextState: new State3(Global, S0, S2, ctx, primaryEvent, ev, T1[ev]));
+                    ExecuteUserBeforeFuncInBackground(ctx, T1[ev]);
+                    return Result.EventIsConsumed(nextState: new State3(Global, S0, S2, ctx, primaryEvent, ev, T3, T1[ev]));
                 }
             }
             else if (evnt is Def.Event.IDoubleActionRelease)
@@ -83,7 +84,7 @@ namespace CreviceApp.Core.FSM
                         if (T2.Keys.Contains(stroke))
                         {
                             Debug.Print("[Transition 1_2]");
-                            ExecuteUserActionInBackground(ctx, T2[stroke]);
+                            ExecuteUserDoFuncInBackground(ctx, T2[stroke]);
                         }
                     }
                     else
@@ -91,15 +92,15 @@ namespace CreviceApp.Core.FSM
                         if (T3.Count() > 0)
                         {
                             Debug.Print("[Transition 1_3]");
-                            ExecuteUserActionInBackground(ctx, T3);
+                            ExecuteUserDoFuncInBackground(ctx, T3);
                         }
                         else
                         {
                             Debug.Print("[Transition 1_4]");
-                            ExecuteUserActionInBackground(ctx, RestorePrimaryButtonClickEvent());
+                            ExecuteInBackground(ctx, RestorePrimaryButtonClickEvent());
                         }
                     }
-                    
+                    ExecuteUserAfterFuncInBackground(ctx, T3);
                     return Result.EventIsConsumed(nextState: S0);
                 }
             }
@@ -108,15 +109,33 @@ namespace CreviceApp.Core.FSM
 
         public IState Cancel()
         {
-            Debug.Print("[Transition 1_5]");
-            ExecuteUserActionInBackground(ctx, RestorePrimaryButtonDownEvent());
-            return S0;
+            if (!HasBeforeOrAfter)
+            {
+                Debug.Print("[Transition 1_5]");
+                ExecuteInBackground(ctx, RestorePrimaryButtonDownEvent());
+                return S0;
+            }
+            else
+            {
+                return this;
+            }
+        }
+
+        internal bool HasBeforeOrAfter
+        {
+            get
+            {
+                return T3
+                    .Where(x => x.beforeFunc != null || x.afterFunc != null)
+                    .Count() > 0;
+            }
         }
 
         public override IState Reset()
         {
             Debug.Print("[Transition 1_6]");
             IgnoreNext(primaryEvent.GetPair());
+            ExecuteUserAfterFuncInBackground(ctx, T3);
             return S0;
         }
 

@@ -10,7 +10,8 @@ namespace CreviceApp.DSL
     {
         public class Value
         {
-            public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
+            public readonly List<IfSingleTriggerButtonElement.Value> ifSingleTriggerButtonElements = new List<IfSingleTriggerButtonElement.Value>();
+            public readonly List<IfDoubleTriggerButtonElement.Value> ifDoubleTriggerButtonElements = new List<IfDoubleTriggerButtonElement.Value>();
             public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
             public readonly Def.AcceptableInOnClause button;
 
@@ -28,9 +29,14 @@ namespace CreviceApp.DSL
             parent.Add(this.value);
         }
 
-        public IfButtonElement @if(Def.AcceptableInIfButtonClause button)
+        public IfSingleTriggerButtonElement @if(Def.AcceptableInIfSingleTriggerButtonClause button)
         {
-            return new IfButtonElement(value.ifButtonElements, button);
+            return new IfSingleTriggerButtonElement(value.ifSingleTriggerButtonElements, button);
+        }
+
+        public IfDoubleTriggerButtonElement @if(Def.AcceptableInIfDoubleTriggerButtonClause button)
+        {
+            return new IfDoubleTriggerButtonElement(value.ifDoubleTriggerButtonElements, button);
         }
 
         public IfStrokeElement @if(params Def.AcceptableInIfStrokeClause[] moves)

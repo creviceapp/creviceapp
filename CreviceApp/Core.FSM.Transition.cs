@@ -34,7 +34,8 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S0) to the state(S1).
         // This transition happends when `set` event of double action mouse button is given.
-        // This transition has no side effect.
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@before` clause of IfButtonGestureDefinition are executed.
         public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonGestureDefinition>>
             Gen0_1(IEnumerable<GestureDefinition> gestureDef)
         {
@@ -62,12 +63,12 @@ namespace CreviceApp.Core.FSM
         // Transition from the state(S1) to the state(S2). 
         // This transition happends when `fire` event of single action mouse button is given.
         // This transition has one side effect.
-        // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed.
-        public static IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonIfButtonGestureDefinition>>
+        // 1. Functions given as the parameter of `@do` clause of OnButtonWithIfButtonGestureDefinition are executed.
+        public static IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>>
             Gen1_0(IEnumerable<OnButtonGestureDefinition> gestureDef)
         {
             return gestureDef
-                .Select(x => x as OnButtonIfButtonGestureDefinition)
+                .Select(x => x as OnButtonWithIfButtonGestureDefinition)
                 .Where(x => x != null)
                 .ToLookup(x => Helper.Convert(x.ifButton))
                 .Where(x => x.Key is Def.Event.ISingleAction)
@@ -80,12 +81,13 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S1) to the state(S3).
         // This transition happends when `set` event of double action mouse button is given.
-        // This transition has no side effect.
-        public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonIfButtonGestureDefinition>>
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@before` clause of OnButtonWithIfButtonGestureDefinition are executed.
+        public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>>
             Gen1_1(IEnumerable<OnButtonGestureDefinition> gestureDef)
         {
             return gestureDef
-                .Select(x => x as OnButtonIfButtonGestureDefinition)
+                .Select(x => x as OnButtonWithIfButtonGestureDefinition)
                 .Where(x => x != null)
                 .ToLookup(x => Helper.Convert(x.ifButton))
                 .Where(x => x.Key is Def.Event.IDoubleActionSet)
@@ -98,14 +100,15 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S1) to the state(S0).
         // This transition happends when `release` event of primary double action mouse button
-        // and a gesture stroke existing in OnButtonIfStrokeGestureDefinition are given.
-        // This transition has one side effect.
+        // and a gesture stroke existing in OnButtonWithIfStrokeGestureDefinition are given.
+        // This transition has two side effects.
         // 1. Functions given as the parameter of `@do` clause of StrokeGestureDefinition are executed.
-        public static IDictionary<Def.Stroke, IEnumerable<OnButtonIfStrokeGestureDefinition>>
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
+        public static IDictionary<Def.Stroke, IEnumerable<OnButtonWithIfStrokeGestureDefinition>>
             Gen1_2(IEnumerable<OnButtonGestureDefinition> gestureDef)
         {
             return gestureDef
-                .Select(x => x as OnButtonIfStrokeGestureDefinition)
+                .Select(x => x as OnButtonWithIfStrokeGestureDefinition)
                 .Where(x => x != null)
                 .ToLookup(x => x.stroke)
                 .ToDictionary(x => x.Key, x => x.Select(y => y));
@@ -118,7 +121,9 @@ namespace CreviceApp.Core.FSM
         // Transition from the state(S1) to the state(S0).
         // This transition happens when `release` event of primary double action mouse button is given and 
         // there have not been any actions executed.
+        // This transition has two side effects.
         // 1. Functions given as the parameter of `@do` clause of IfButtonGestureDefinition are executed.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
         public static IDictionary<Def.Event.IDoubleActionSet, IEnumerable<IfButtonGestureDefinition>>
             Gen1_3(IEnumerable<GestureDefinition> gestureDef)
         {
@@ -137,15 +142,17 @@ namespace CreviceApp.Core.FSM
         // Transition from the state(S1) to the state(S0).
         // This transition happends when `release` event of primary double action mouse button is given and 
         // there have not been any actions executed.
-        // This transition has one side effect.
+        // This transition has two side effects.
         // 1. The `set` and `release` events of primary double action mouse button will be restored.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
 
         // Transition 1_5 (forced cancel)
         //
         // State1 -> State0
         //
         // Transition from the state(S1) to the state(S0). 
-        // This event happens when a `cancel` command given.
+        // This event happens when a `cancel` command given and functions given as the parameter of
+        // `@before` and `@after` clauses of IfButtonGestureDefinition does not exist.
         // This transition has one side effect.
         // 1. The `set` and `release` events of primary double action mouse button will be restored.
 
@@ -155,8 +162,9 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S1) to the state(S0). 
         // This event happens when a `reset` command given.
-        // This transition has one side effect.
-        // 1. Primary double action mouse button left holding is marked as irregularly holding by the user,
+        // This transition has two side effects.
+        // 1. Primary double action mouse button left holding is marked as irregularly holding by the user.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
         #endregion
 
         #region State2
@@ -167,7 +175,7 @@ namespace CreviceApp.Core.FSM
         // Transition from the state(S2) to the state(S2). 
         // This transition happends when `fire` event of single action mouse button is given.
         // This transition has one side effect.
-        // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed.
+        // 1. Functions given as the parameter of `@do` clause of OnButtonWithIfButtonGestureDefinition are executed.
 
         // Transition 2_1 (gesture with primary and secondary double action mouse button start)
         //
@@ -175,17 +183,19 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S2) to the state(S2).
         // This transition happends when `set` event of double action mouse button is given.
-        // This transition has no side effect.
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@before` clause of OnButtonWithIfButtonGestureDefinition are executed.
 
         // Transition 2_2 (stroke gesture established)
         //
         // State2 -> State0
         //
         // Transition from the state(S2) to the state(S0).
-        // This transition happends when `release` event of primary double action mouse button
-        // and a gesture stroke existing in OnButtonIfStrokeGestureDefinition are given.
-        // This transition has one side effect.
+        // This transition happends when `release` event of primary double action mouse button is given
+        // and a gesture stroke existing in OnButtonWithIfStrokeGestureDefinition is established.
+        // This transition has two side effects.
         // 1. Functions given as the parameter of `@do` clause of StrokeGestureDefinition are executed.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
 
         // Transition 2_3 (default gesture established)
         // 
@@ -194,7 +204,9 @@ namespace CreviceApp.Core.FSM
         // Transition from the state(S2) to the state(S0).
         // This transition happens when `release` event of primary double action mouse button is given and 
         // there have not been any actions executed.
+        // This transition has two side effects.
         // 1. Functions given as the parameter of `@do` clause of IfButtonGestureDefinition are executed.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
 
         // Transition 2_4 (forced reset)
         //
@@ -202,8 +214,9 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S2) to the state(S0). 
         // This event happens when a `reset` command given.
-        // This transition has one side effect.
-        // 1. Primary double action mouse button left holding is marked as irregularly holding by the user,
+        // This transition has two side effects.
+        // 1. Primary double action mouse button left holding is marked as irregularly holding by the user.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
         #endregion
 
         #region State3
@@ -213,8 +226,9 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S3) to the state(S2).
         // This transition happends when `release` event of secondary double action mouse button is given.
-        // This transition has one side effect.
-        // 1. Functions given as the parameter of `@do` clause of OnButtonIfButtonGestureDefinition are executed. 
+        // This transition has two side effects.
+        // 1. Functions given as the parameter of `@do` clause of OnButtonWithIfButtonGestureDefinition are executed. 
+        // 2. Functions given as the parameter of `@after` clause of OnButtonWithIfButtonGestureDefinition are executed.
 
         // Transition 3-1 (irregular end)
         //
@@ -222,8 +236,10 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S3) to the state(S0).
         // This transition happends when primary double action mouse button is released in irregular order. 
-        // This transition has one side effect.
+        // This transition has three side effects.
         // 1. Secondary double action mouse button left holding will be marked as irreggularly holding by the user.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
+        // 3. Functions given as the parameter of `@after` clause of OnButtonWithIfButtonGestureDefinition are executed.
 
         // Transition 3-2 (forced reset)
         //
@@ -231,9 +247,11 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S3) to the state(S0).
         // This event happens when a `reset` command given.
-        // This transition has one side effects.
+        // This transition has three side effects.
         // 1. Primary and secondly double action mouse buttons left holding is marked as irregularly 
         // holding by the user.
+        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
+        // 3. Functions given as the parameter of `@after` clause of OnButtonWithIfButtonGestureDefinition are executed.
         #endregion
 
         #region Special side effects

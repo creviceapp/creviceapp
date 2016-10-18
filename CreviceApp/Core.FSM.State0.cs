@@ -42,7 +42,7 @@ namespace CreviceApp.Core.FSM
                     if (_T0.Count() > 0)
                     {
                         Debug.Print("[Transition 0_0]");
-                        ExecuteUserActionInBackground(ctx, _T0);
+                        ExecuteUserDoFuncInBackground(ctx, _T0);
                         return Result.EventIsConsumed(nextState: this);
                     }
                 }
@@ -59,6 +59,7 @@ namespace CreviceApp.Core.FSM
                     if (_T1.Count() > 0 || _T2.Count() > 0)
                     {
                         Debug.Print("[Transition 0_1]");
+                        ExecuteUserBeforeFuncInBackground(ctx, _T2);
                         return Result.EventIsConsumed(nextState: new State1(Global, this, ctx, ev, _T1, _T2));
                     }
                 }
@@ -89,7 +90,7 @@ namespace CreviceApp.Core.FSM
             // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
             // but executing it in sequential order here for simplicity.
             return gestureDef
-                .Where(x => x.Evaluate(ctx, cache))
+                .Where(x => x.EvaluateUserWhenFunc(ctx, cache))
                 .ToList();
         }
     }

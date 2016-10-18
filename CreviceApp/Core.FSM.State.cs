@@ -51,19 +51,43 @@ namespace CreviceApp.Core.FSM
             throw new InvalidOperationException();
         }
 
-        protected internal void ExecuteUserActionInBackground(
+        protected internal void ExecuteUserBeforeFuncInBackground(
+            UserActionExecutionContext ctx,
+            IEnumerable<IBeforeExecutable> gestureDef)
+        {
+            Global.UserActionTaskFactory.StartNew(() => {
+                foreach (var gDef in gestureDef)
+                {
+                    gDef.ExecuteUserBeforeFunc(ctx);
+                }
+            });
+        }
+
+        protected internal void ExecuteUserDoFuncInBackground(
             UserActionExecutionContext ctx,
             IEnumerable<IDoExecutable> gestureDef)
         {
             Global.UserActionTaskFactory.StartNew(() => {
                 foreach (var gDef in gestureDef)
                 {
-                    gDef.Execute(ctx);
+                    gDef.ExecuteUserDoFunc(ctx);
                 }
             });
         }
 
-        protected internal void ExecuteUserActionInBackground(
+        protected internal void ExecuteUserAfterFuncInBackground(
+            UserActionExecutionContext ctx,
+            IEnumerable<IAfterExecutable> gestureDef)
+        {
+            Global.UserActionTaskFactory.StartNew(() => {
+                foreach (var gDef in gestureDef)
+                {
+                    gDef.ExecuteUserAfterFunc(ctx);
+                }
+            });
+        }
+
+        protected internal void ExecuteInBackground(
             UserActionExecutionContext ctx,
             Action action)
         {

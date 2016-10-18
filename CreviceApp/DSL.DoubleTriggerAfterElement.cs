@@ -7,24 +7,21 @@ using System.Threading.Tasks;
 
 namespace CreviceApp.DSL
 {
-    public class DoElement
+    public class DoubleTriggerAfterElement
     {
         public class Value
         {
-            public readonly Def.DoFunc func;
+            public readonly Def.AfterFunc func;
 
-            public Value(Def.DoFunc func)
+            public Value(Def.AfterFunc func)
             {
                 this.func = func;
             }
         }
 
-        private readonly Value value;
-
-        public DoElement(List<Value> parent, Def.DoFunc func)
+        public DoubleTriggerAfterElement(List<Value> parent, Def.AfterFunc func)
         {
-            this.value = new Value(func);
-            parent.Add(this.value);
+            parent.Add(new Value(func));
         }
     }
 }

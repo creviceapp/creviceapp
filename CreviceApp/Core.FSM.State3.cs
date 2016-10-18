@@ -15,7 +15,8 @@ namespace CreviceApp.Core.FSM
         internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly Def.Event.IDoubleActionSet secondaryEvent;
-        internal readonly IEnumerable<OnButtonIfButtonGestureDefinition> T0;
+        internal readonly IEnumerable<IfButtonGestureDefinition> T0;
+        internal readonly IEnumerable<OnButtonWithIfButtonGestureDefinition> T1;
 
         public State3(
             StateGlobal Global,
@@ -24,7 +25,8 @@ namespace CreviceApp.Core.FSM
             UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             Def.Event.IDoubleActionSet secondaryEvent,
-            IEnumerable<OnButtonIfButtonGestureDefinition> T0
+            IEnumerable<IfButtonGestureDefinition> T0,
+            IEnumerable<OnButtonWithIfButtonGestureDefinition> T1
             ) : base(Global)
         {
             this.S0 = S0;
@@ -33,6 +35,7 @@ namespace CreviceApp.Core.FSM
             this.primaryEvent = primaryEvent;
             this.secondaryEvent = secondaryEvent;
             this.T0 = T0;
+            this.T1 = T1;
         }
 
         public override Result Input(Def.Event.IEvent evnt, Point point)
@@ -49,13 +52,16 @@ namespace CreviceApp.Core.FSM
                 if (ev == secondaryEvent.GetPair())
                 {
                     Debug.Print("[Transition 3_0]");
-                    ExecuteUserActionInBackground(ctx, T0);
+                    ExecuteUserDoFuncInBackground(ctx, T1);
+                    ExecuteUserAfterFuncInBackground(ctx, T1);
                     return Result.EventIsConsumed(nextState: S2);
                 }
                 else if (ev == primaryEvent.GetPair())
                 {
                     Debug.Print("[Transition 3_1]");
                     IgnoreNext(secondaryEvent.GetPair());
+                    ExecuteUserAfterFuncInBackground(ctx, T1);
+                    ExecuteUserAfterFuncInBackground(ctx, T0);
                     return Result.EventIsConsumed(nextState: S0);
                 }
             }
@@ -67,6 +73,8 @@ namespace CreviceApp.Core.FSM
             Debug.Print("[Transition 3_2]");
             IgnoreNext(primaryEvent.GetPair());
             IgnoreNext(secondaryEvent.GetPair());
+            ExecuteUserAfterFuncInBackground(ctx, T1);
+            ExecuteUserAfterFuncInBackground(ctx, T0);
             return S0;
         }
     }

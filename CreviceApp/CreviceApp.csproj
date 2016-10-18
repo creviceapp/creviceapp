@@ -173,8 +173,12 @@
     <Compile Include="Core.StrokeWatcher.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />
     <Compile Include="DSL.Def.cs" />
-    <Compile Include="DSL.DoElement.cs" />
-    <Compile Include="DSL.IfButtonElement.cs" />
+    <Compile Include="DSL.DoubleTriggerBeforeElement.cs" />
+    <Compile Include="DSL.DoubleTriggerDoElement.cs" />
+    <Compile Include="DSL.DoubleTriggerAfterElement.cs" />
+    <Compile Include="DSL.SingleTriggerDoElement.cs" />
+    <Compile Include="DSL.IfDoubleTriggerButtonElement.cs" />
+    <Compile Include="DSL.IfSingleTriggerButtonElement.cs" />
     <Compile Include="DSL.IfStrokeElement.cs" />
     <Compile Include="DSL.OnElement.cs" />
     <Compile Include="DSL.Root.cs" />
