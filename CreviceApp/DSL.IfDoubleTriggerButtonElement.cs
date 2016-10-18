@@ -30,7 +30,7 @@ namespace CreviceApp.DSL
             parent.Add(this.value);
         }
         
-        public DoubleTriggerBeforeElement @prepare(Def.BeforeFunc func)
+        public DoubleTriggerBeforeElement @before(Def.BeforeFunc func)
         {
             return new DoubleTriggerBeforeElement(value.beforeElements, value.doElements, value.afterElements, func);
         }
@@ -38,6 +38,11 @@ namespace CreviceApp.DSL
         public DoubleTriggerDoElement @do(Def.DoFunc func)
         {
             return new DoubleTriggerDoElement(value.doElements, value.afterElements, func);
+        }
+
+        public DoubleTriggerAfterElement @after(Def.AfterFunc func)
+        {
+            return new DoubleTriggerAfterElement(value.afterElements, func);
         }
     }
 }

@@ -37,5 +37,10 @@ namespace CreviceApp.DSL
         {
             return new DoubleTriggerDoElement(doParent, afterParent, func);
         }
+
+        public DoubleTriggerAfterElement @after(Def.AfterFunc func)
+        {
+            return new DoubleTriggerAfterElement(afterParent, func);
+        }
     }
 }
