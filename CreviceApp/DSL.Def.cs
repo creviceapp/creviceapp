@@ -9,43 +9,59 @@ namespace CreviceApp.DSL
     /**
     * BNF of Gesture Definition DSL 
     * 
-    * WHEN      ::= @when(WHEN_FUNC) ON
+    * WHEN                  ::= @when(WHEN_FUNC)           ( ON  | ( IF_A | IF_B ))
     * 
-    * ON        ::= @on(ON_BUTTON)   IF
+    * ON                    ::= @on(DOUBLE_TRIGGER_BUTTON) ( IF_A | IF_B | IF_C )
     * 
-    * IF        ::= @if(IF_BUTTON)   DO
-    *             | @if(MOVE *)      DO
+    * IF_A                  ::= @if(DOUBLE_TRIGGER_BUTTON) [ BEFORE ] DO [ AFTER ]
+    *           
+    * IF_B                  ::= @if(SINGLE_TRIGGER_BUTTON)   DO
     * 
-    * DO        ::= @do(DO_FUNC) 
+    * IF_C                  ::= @if(MOVE *)                  DO
     * 
-    * ON_BUTTON ::= L | M | R | X1 | X2
+    * BEFORE                ::= @before(BEFORE_FUNC)
     * 
-    * IF_BUTTON ::= L | M | R | X1 | X2 | W_UP | W_DOWN | W_LEFT | W_RIGHT
+    * DO                    ::= @do(DO_FUNC) 
     * 
-    * MOVE      ::= MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
+    * AFTER                 ::= @after(AFTER_FUNC)
     * 
-    * WHEN_FUNC ::= Func<bool>
+    * SINGLE_TRIGGER_BUTTON ::= L | M | R | X1 | X2
     * 
-    * DO_FUNC   ::= Action
+    * DOUBLE_TRIGGER_BUTTON ::= W_UP | W_DOWN | W_LEFT | W_RIGHT
+    * 
+    * MOVE                  ::= MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
+    * 
+    * WHEN_FUNC             ::= delegate bool
+    * 
+    * BEFORE_FUNC           ::= delegate void
+    * 
+    * DO_FUNC               ::= delegate void
+    * 
+    * AFTER_FUNC            ::= delegate void
     * 
     */
 
     public static class Def
     {
         public delegate bool WhenFunc(Core.UserActionExecutionContext ctx);
+        public delegate void BeforeFunc(Core.UserActionExecutionContext ctx);
         public delegate void DoFunc(Core.UserActionExecutionContext ctx);
+        public delegate void AfterFunc(Core.UserActionExecutionContext ctx);
 
         public interface AcceptableInOnClause { }
         public interface AcceptableInIfButtonClause { }
-        public class LeftButton   : AcceptableInOnClause, AcceptableInIfButtonClause { }
-        public class MiddleButton : AcceptableInOnClause, AcceptableInIfButtonClause { }
-        public class RightButton  : AcceptableInOnClause, AcceptableInIfButtonClause { }
-        public class WheelUp      :                       AcceptableInIfButtonClause { }
-        public class WheelDown    :                       AcceptableInIfButtonClause { }
-        public class WheelLeft    :                       AcceptableInIfButtonClause { }
-        public class WheelRight   :                       AcceptableInIfButtonClause { }
-        public class X1Button     : AcceptableInOnClause, AcceptableInIfButtonClause { }
-        public class X2Button     : AcceptableInOnClause, AcceptableInIfButtonClause { }
+        public interface AcceptableInIfSingleTriggerButtonClause : AcceptableInIfButtonClause { }
+        public interface AcceptableInIfDoubleTriggerButtonClause : AcceptableInIfButtonClause { }
+
+        public class LeftButton   : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
+        public class MiddleButton : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
+        public class RightButton  : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
+        public class WheelUp      :                       AcceptableInIfSingleTriggerButtonClause { }
+        public class WheelDown    :                       AcceptableInIfSingleTriggerButtonClause { }
+        public class WheelLeft    :                       AcceptableInIfSingleTriggerButtonClause { }
+        public class WheelRight   :                       AcceptableInIfSingleTriggerButtonClause { }
+        public class X1Button     : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
+        public class X2Button     : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
             
         public interface AcceptableInIfStrokeClause { }
         public class MoveUp    : AcceptableInIfStrokeClause { }

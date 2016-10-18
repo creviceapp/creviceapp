@@ -169,7 +169,7 @@ namespace CreviceApp.Core
         
         public void ExecuteUserAfterFunc(UserActionExecutionContext ctx)
         {
-            if (beforeFunc != null)
+            if (afterFunc != null)
             {
                 ExecuteSafely(ctx, afterFunc);
             }
@@ -242,7 +242,7 @@ namespace CreviceApp.Core
 
         public void ExecuteUserAfterFunc(UserActionExecutionContext ctx)
         {
-            if (beforeFunc != null)
+            if (afterFunc != null)
             {
                 ExecuteSafely(ctx, afterFunc);
             }

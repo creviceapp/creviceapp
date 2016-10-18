@@ -142,9 +142,8 @@ namespace CreviceApp.Core.FSM
         // Transition from the state(S1) to the state(S0).
         // This transition happends when `release` event of primary double action mouse button is given and 
         // there have not been any actions executed.
-        // This transition has two side effects.
+        // This transition has one side effect.
         // 1. The `set` and `release` events of primary double action mouse button will be restored.
-        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
 
         // Transition 1_5 (forced cancel)
         //
