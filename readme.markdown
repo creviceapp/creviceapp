@@ -46,7 +46,7 @@ Chrome.
 
 `@on` caluse tells the system which mouse button will be used at start of the gesture. 
 
-`@on` clause takes a argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
+`@on` clause takes an argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
 
 `@if` clause also tells the trigger of the action of the gesture. 
 
@@ -80,7 +80,7 @@ But we call it "button gestures" here.
 CreviceApp supports two kinds of button gestures. 
 Both these button gestures are almost the same except that the one have `@on` clause and the other do not have it.
 
-`@if` clause takes a argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `WheelUp`, `WheelDown`, `WheelLeft`, `WheelRight`, `X1Button`, `X2Button`.
+`@if` clause takes an argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `WheelUp`, `WheelDown`, `WheelLeft`, `WheelRight`, `X1Button`, `X2Button`.
 
 #### Button gestures (with `@on` clause)
 
