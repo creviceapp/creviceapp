@@ -96,6 +96,7 @@ namespace CreviceApp
                 await Task.Run(() =>
                 {
                     InitializeGestureMachine();
+                    ReleaseUnusedMemory();
                 });
                 try
                 {
@@ -119,6 +120,14 @@ namespace CreviceApp
                 ShowFatalErrorDialog(ex.ToString());
                 Application.Exit();
             }
+        }
+
+        private void ReleaseUnusedMemory()
+        {
+            var totalMemory = GC.GetTotalMemory(false);
+            Debug.Print("Releasing unused memory");
+            GC.Collect(2);
+            Debug.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
         }
 
         private void RegisterNotifyIcon()

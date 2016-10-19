@@ -17,7 +17,7 @@ namespace CreviceApp.Core.FSM.Tests
         {
             private static ConstantSingleton singleton = new ConstantSingleton();
 
-            public readonly List<DSL.Def.AcceptableInIfButtonClause> AcceptablesInIfButtonClause = new List<DSL.Def.AcceptableInIfButtonClause>()
+            public readonly List<DSL.Def.Button> Buttons = new List<DSL.Def.Button>()
             {
                 DSL.Def.Constant.LeftButton,
                 DSL.Def.Constant.MiddleButton,
@@ -30,7 +30,15 @@ namespace CreviceApp.Core.FSM.Tests
                 DSL.Def.Constant.X2Button
             };
 
-            public readonly List<DSL.Def.AcceptableInOnClause> AcceptablesInOnClause = new List<DSL.Def.AcceptableInOnClause>()
+            public readonly List<DSL.Def.Button> SingleTriggerButtons = new List<DSL.Def.Button>()
+            {
+                DSL.Def.Constant.WheelUp,
+                DSL.Def.Constant.WheelDown,
+                DSL.Def.Constant.WheelLeft,
+                DSL.Def.Constant.WheelRight
+            };
+
+            public readonly List<DSL.Def.Button> DoubleTriggerButtons = new List<DSL.Def.Button>()
             {
                 DSL.Def.Constant.LeftButton,
                 DSL.Def.Constant.MiddleButton,
@@ -39,7 +47,7 @@ namespace CreviceApp.Core.FSM.Tests
                 DSL.Def.Constant.X2Button
             };
 
-            public readonly List<DSL.Def.AcceptableInIfStrokeClause> AcceptablesInIfStrokeClause = new List<DSL.Def.AcceptableInIfStrokeClause>()
+            public readonly List<DSL.Def.Move> Moves = new List<DSL.Def.Move>()
             {
                 DSL.Def.Constant.MoveUp,
                 DSL.Def.Constant.MoveDown,

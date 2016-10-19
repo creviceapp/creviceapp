@@ -15,9 +15,9 @@ namespace CreviceApp.Core.FSM
         internal readonly State0 S0;
         internal readonly UserActionExecutionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
-        internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonIfButtonGestureDefinition>> T0;
-        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonIfButtonGestureDefinition>> T1;
-        internal readonly IDictionary<Def.Stroke, IEnumerable<OnButtonIfStrokeGestureDefinition>> T2;
+        internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T0;
+        internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T1;
+        internal readonly IDictionary<Def.Stroke, IEnumerable<OnButtonWithIfStrokeGestureDefinition>> T2;
         internal readonly IEnumerable<IfButtonGestureDefinition> T3;
 
         public State2(
@@ -25,9 +25,9 @@ namespace CreviceApp.Core.FSM
             State0 S0,
             UserActionExecutionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
-            IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonIfButtonGestureDefinition>> T0,
-            IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonIfButtonGestureDefinition>> T1,
-            IDictionary<Def.Stroke, IEnumerable<OnButtonIfStrokeGestureDefinition>> T2,
+            IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T0,
+            IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T1,
+            IDictionary<Def.Stroke, IEnumerable<OnButtonWithIfStrokeGestureDefinition>> T2,
             IEnumerable<IfButtonGestureDefinition> T3
             ) : base(Global)
         {
@@ -56,7 +56,7 @@ namespace CreviceApp.Core.FSM
                 if (T0.Keys.Contains(ev))
                 {
                     Debug.Print("[Transition 2_0]");
-                    ExecuteUserActionInBackground(ctx, T0[ev]);
+                    ExecuteUserDoFuncInBackground(ctx, T0[ev]);
                     return Result.EventIsConsumed(nextState: this);
                 }
             }
@@ -66,7 +66,8 @@ namespace CreviceApp.Core.FSM
                 if (T1.Keys.Contains(ev))
                 {
                     Debug.Print("[Transition 2_1]");
-                    return Result.EventIsConsumed(nextState: new State3(Global, S0, this, ctx, primaryEvent, ev, T1[ev]));
+                    ExecuteUserBeforeFuncInBackground(ctx, T1[ev]);
+                    return Result.EventIsConsumed(nextState: new State3(Global, S0, this, ctx, primaryEvent, ev, T3, T1[ev]));
                 }
             }
             else if (evnt is Def.Event.IDoubleActionRelease)
@@ -81,14 +82,15 @@ namespace CreviceApp.Core.FSM
                         if (T2.Keys.Contains(stroke))
                         {
                             Debug.Print("[Transition 2_2]");
-                            ExecuteUserActionInBackground(ctx, T2[stroke]);
+                            ExecuteUserDoFuncInBackground(ctx, T2[stroke]);
+                            ExecuteUserAfterFuncInBackground(ctx, T3);
                         }
                     }
                     else
                     {
                         Debug.Print("[Transition 2_3]");
+                        ExecuteUserAfterFuncInBackground(ctx, T3);
                     }
-
                     return Result.EventIsConsumed(nextState: S0);
                 }
             }
@@ -99,6 +101,7 @@ namespace CreviceApp.Core.FSM
         {
             Debug.Print("[Transition 2_4]");
             IgnoreNext(primaryEvent.GetPair());
+            ExecuteUserAfterFuncInBackground(ctx, T3);
             return S0;
         }
     }

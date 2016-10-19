@@ -91,6 +91,10 @@
   <ItemGroup>
     <Compile Include="Core.FSM.State2Tests.cs" />
     <Compile Include="Core.FSM.TestDef.cs" />
+    <Compile Include="DSL.DoubleTriggerBeforeElementTests.cs" />
+    <Compile Include="DSL.DoubleTriggerDoElementTests.cs" />
+    <Compile Include="DSL.IfDoubleTriggerButtonElementTests.cs" />
+    <Compile Include="DSL.DoubleTriggerAfterElementTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core.FSM.State0Tests.cs" />
     <Compile Include="Core.FSM.State1Tests.cs" />
@@ -98,8 +102,8 @@
     <Compile Include="Core.StrokeTests.cs" />
     <Compile Include="Core.FSM.TransitionTests.cs" />
     <Compile Include="DSL.WhenElementTests.cs" />
-    <Compile Include="DSL.DoElementTests.cs" />
-    <Compile Include="DSL.IfButtonElementTests.cs" />
+    <Compile Include="DSL.SingleTriggerDoElementTests.cs" />
+    <Compile Include="DSL.IfSingleTriggerButtonElementTests.cs" />
     <Compile Include="DSL.IfStrokeElementTests.cs" />
     <Compile Include="WinAPI.WindowsHookEx.LowLevelKeyboardHookTests.cs" />
     <Compile Include="WinAPI.WindowsHookEx.LowLevelMouseHookTests.cs" />

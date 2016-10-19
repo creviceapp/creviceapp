@@ -15,29 +15,37 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen1Test()
         {
             var gestureDef = new List<GestureDefinition>() {
-                new OnButtonIfButtonGestureDefinition(
+                new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null, 
+                    (ctx) => { }, 
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelDown,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null, 
+                    (ctx) => { }, 
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.MiddleButton,
                     DSL.Def.Constant.WheelLeft,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null, 
+                    (ctx) => { }, 
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.MiddleButton,
                     DSL.Def.Constant.WheelRight,
-                    (ctx) => { }),
+                    null, 
+                    (ctx) => { }, 
+                    null),
             };
             var Gen1 = Transition.Gen0_1(gestureDef)
-                .ToDictionary(x => x.Key, x => x.Value.Select(y => y as OnButtonIfButtonGestureDefinition))
+                .ToDictionary(x => x.Key, x => x.Value.Select(y => y as OnButtonWithIfButtonGestureDefinition))
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
 
             Assert.AreEqual(Gen1.Keys.Count, 2);
@@ -59,21 +67,25 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen2MustAcceptOnlyButtonGestureDefinitionHavingISingleActionAsIfButtonTest()
         {
             var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfStrokeGestureDefinition(
+                new OnButtonWithIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null, 
+                    (ctx) => { }, 
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    (ctx) => { }),
+                    null, 
+                    (ctx) => { }, 
+                    null),
             };
             var Gen2 = Transition.Gen1_0(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
@@ -89,21 +101,25 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen3MustAcceptOnlyButtonGestureDefinitionHavingIDoubleActionAsIfButtonTest()
         {
             var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfStrokeGestureDefinition(
+                new OnButtonWithIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null, 
+                    (ctx) => { },
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    (ctx) => { }),
+                    null, 
+                    (ctx) => { }, 
+                    null),
             };
             var Gen3 = Transition.Gen1_1(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());
@@ -119,21 +135,25 @@ namespace CreviceApp.Core.FSM.Tests
         public void Gen4MustAcceptOnlyStrokeGestureDefinitionTest()
         {
             var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfStrokeGestureDefinition(
+                new OnButtonWithIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
                     (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null, 
+                    (ctx) => { }, 
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    (ctx) => { }),
+                    null, 
+                    (ctx) => { }, 
+                    null),
             };
             var Gen4 = Transition.Gen1_2(gestureDef)
                 .ToDictionary(x => x.Key, x => x.Value.ToList());

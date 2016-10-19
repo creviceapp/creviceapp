@@ -11,7 +11,8 @@ namespace CreviceApp.DSL
     {
         public class Value
         {
-            public readonly List<IfButtonElement.Value> ifButtonElements = new List<IfButtonElement.Value>();
+            public readonly List<IfSingleTriggerButtonElement.Value> ifSingleTriggerButtonElements = new List<IfSingleTriggerButtonElement.Value>();
+            public readonly List<IfDoubleTriggerButtonElement.Value> ifDoubleTriggerButtonElements = new List<IfDoubleTriggerButtonElement.Value>();
             public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
             public readonly Def.WhenFunc func;
 
@@ -34,9 +35,14 @@ namespace CreviceApp.DSL
             return new OnElement(value.onElements, button);
         }
 
-        public IfButtonElement @if(Def.AcceptableInIfButtonClause button)
+        public IfSingleTriggerButtonElement @if(Def.AcceptableInIfSingleTriggerButtonClause button)
         {
-            return new IfButtonElement(value.ifButtonElements, button);
+            return new IfSingleTriggerButtonElement(value.ifSingleTriggerButtonElements, button);
+        }
+
+        public IfDoubleTriggerButtonElement @if(Def.AcceptableInIfDoubleTriggerButtonClause button)
+        {
+            return new IfDoubleTriggerButtonElement(value.ifDoubleTriggerButtonElements, button);
         }
     }
 }
