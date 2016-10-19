@@ -196,16 +196,14 @@ namespace CreviceApp.Core.FSM
         // 1. Functions given as the parameter of `@do` clause of StrokeGestureDefinition are executed.
         // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
 
-        // Transition 2_3 (default gesture established)
+        // Transition 2_3 (normal end)
         // 
         // State2 -> State0
         //
         // Transition from the state(S2) to the state(S0).
-        // This transition happens when `release` event of primary double action mouse button is given and 
-        // there have not been any actions executed.
-        // This transition has two side effects.
-        // 1. Functions given as the parameter of `@do` clause of IfButtonGestureDefinition are executed.
-        // 2. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
+        // This transition happens when `release` event of primary double action mouse button is given.
+        // This transition has one side effect.
+        // 1. Functions given as the parameter of `@after` clause of IfButtonGestureDefinition are executed.
 
         // Transition 2_4 (forced reset)
         //

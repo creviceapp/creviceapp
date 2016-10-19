@@ -269,13 +269,13 @@ namespace CreviceApp.Core.FSM.Tests
         {
             foreach (var a in TestDef.Constant.DoubleTriggerButtons)
             {
-                var countDown = new CountdownEvent(2);
+                var countDown = new CountdownEvent(1);
                 var gestureDef = new List<IfButtonGestureDefinition>() {
                     new IfButtonGestureDefinition(
                         (ctx) => { return true; },
                         a as DSL.Def.AcceptableInIfButtonClause,
                         (ctx) => { Assert.Fail(); },
-                        (ctx) => { countDown.Signal(); },
+                        (ctx) => { Assert.Fail(); },
                         (ctx) => { countDown.Signal(); })
                 };
                 foreach (var b in TestDef.Constant.DoubleTriggerButtons)
