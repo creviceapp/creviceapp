@@ -49,13 +49,14 @@ Chrome.
 `@on` clause takes a argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
 
 `@if` clause also tells the trigger of the action of the gesture. 
+
 And finally, `@do` clause represents the action of the gesture to be activated when all given conditions to be satisfied. 
 
 ### Stroke gestures
 
 "Mouse gestures by strokes", namely "stroke gesture" is in the functions of mouse gesture utilities, is the most important part. CreviceApp naturally supports this.
 
-`@if` clause takes arguments that consist of combination of `MoveUp`, `MoveDown`, `MoveLeft`, and `MoveRight`. These are directions of movements of the mouse pointer.
+`@if` clause takes arguments that consist of combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`. These are directions of movements of the mouse pointer.
 
 ```cs
 Chrome.
@@ -115,7 +116,7 @@ Chrome.
 ```
 
 ### @before/@after clause
-`@do` clause is just simple but does not fit to cases where there is need to hook push / release events of mouse buttons. `@before` and `@after` clauses support it. These can be written just after `@if` clause called with a **double** action mouse button any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
+`@do` clause is just simple but does not fit to cases where there is need to hook push / release events of mouse buttons. `@before` and `@after` clauses support it. These can be written just after `@if` clause given with a **double** action mouse button any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
 
 ```cs
 var Whenever = @when((ctx) => {
@@ -219,7 +220,7 @@ This is an instance of `WindowInfo`.
 `WindowInfo` is a thin wrapper of the handle of a window. This class provides properties and methods to use window handles more easily.
 
 #### Properties
-This class provides properties as following;`WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`.
+This class provides properties as following; `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`.
 
 #### Methods
 
@@ -286,7 +287,7 @@ Send(); // This won't be interrupted by any other input.
 ```
 
 #### Mouse event
-`Down`, `Up` and `Click` events are supported for the push-release type buttons of mouse devices as following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()`, and `LeftClick()`. 
+`Down`, `Up`, and `Click` events are supported for the push-release type buttons of mouse devices as following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()` and `LeftClick()`. 
 
 For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
@@ -319,7 +320,7 @@ For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also prov
 
 #### Keyboard event
 
-A keyboard event is synthesized from a key code with two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
+A keyboard event is synthesized from a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
 
 ```cs
 SendInput.KeyDown(VK_A);
@@ -343,7 +344,7 @@ SendInput.KeyUpWithScanCode(VK_S);
 SendInput.ExtendedKeyUpWithScanCode(VK_LCONTROL); // Send `Ctrl+S` with scan code to the foreground application.
 ```
 
-And finally, for to support an other special `Unicode` flag, following functions are proviced; `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)`,  `UnicodeKeyStroke(string str)`.
+And finally, for to support `Unicode` flag, following functions are provided; `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)`,  `UnicodeKeyStroke(string str)`.
 
 ```cs
 SendInput.UnicodeKeyDown('🍣');
