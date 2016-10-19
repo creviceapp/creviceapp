@@ -10,7 +10,7 @@ This software requires Windows7 or later, and .Net Framework 4.6.
 
 ## User script
 
-After first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and look through it. 
+After the first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and look through it. 
 
 `default.csx` is merely a csharp script file so that you can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there is need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
 
@@ -110,6 +110,49 @@ Chrome.
 });
 ```
 
+### @before/@after clause
+`@do` clause is just simple but does not fit to cases where there is need to hook push and release events of mouse buttons. `@before` and `@after` clauses support it. These can be written just after `@if` clause with **double** action mouse buttons.
+
+```cs
+var Whenever = @when((ctx) => {
+    return true;
+});
+
+// Convert X1Button to Win-key.
+Whenever.
+@if(X1Button).
+@before((ctx) =>
+{
+    SendInput.ExtendedKeyDown(VK_LWIN);
+}).
+@after((ctx) =>
+{
+    SendInput.ExtendedKeyUp(VK_LWIN);
+});
+```
+ 
+Actions given in `@before` and `@after` clauses are different from it's of `@do` clause, the execution of these actions are assured.
+
+```cs
+Whenever.
+@if(X2Button).
+@before((ctx) =>
+{
+    // Assured.
+}).
+@do((ctx) =>
+{
+    // Not assured. 
+    // e.g. When the gesture timeout
+    //      this action will not be executed.
+}).
+@after((ctx) =>
+{
+    // Assured.
+});
+```
+
+Note: `@before` and `@after` clauses written after `@if` clause with **single** action mouse buttons causes compilation error because the fire event of these buttons can not be separated into two parts.
 
 ## Config
 
@@ -441,8 +484,6 @@ This function returns a `float` value, within the range between 0 and 1.
 #### SetMasterVolume(float value)
 
 Sets window's current master mixer volume. The value should be within the range between 0 and 1.
-
-####
 
 ## Lisence
 
