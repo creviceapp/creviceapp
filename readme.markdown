@@ -3,22 +3,22 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-CreviceApp is a mouse gesture utility that consists of fully tested small and robust core of 2000 lines, thin GUI wrapper and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
-Mouse gestures can be defined as a csx file, so there is noting can not do.<sup>[citation needed]</sup>
+CreviceApp is a mouse gesture utility, consists of fully tested small and robust core of 2000 lines, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
+Mouse gestures can be defined as a csx file, so there is nothing that can not be done.<sup>[citation needed]</sup>
 
 This software requires Windows7 or later, and .Net Framework 4.6.
 
 ## User script
 
-After the first starting of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and look through it. 
+After the first startup of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and take a look at it.
 
-`default.csx` is merely a csharp script file so that you can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there is need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+`default.csx` is merely a csharp script file. You can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
 
 For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives).
 
 ## Mouse gesture DSL
 
-All mouse gesture definition start with `@when` clause represents the condition for the activation of a mouse gesture.
+All mouse gesture definition starting from `@when` clause represents the condition for the activation of a mouse gesture.
 ```cs
 var Chrome = @when((ctx) =>
 {
@@ -26,7 +26,7 @@ var Chrome = @when((ctx) =>
 });
 ```
 
-Following clauses to `@when` is `@on`, `@if` and `@do`. 
+The next `@when` is `@on`, the next will continue `@if`, and `@do`.
 
 ```cs
 Chrome.
@@ -44,15 +44,18 @@ Chrome.
 ```
 
 
-`@on` caluse tells the system that which mouse button will be used at start of the gesture. 
+`@on` caluse tells the system which mouse button will be used at start of the gesture. 
+
+`@on` clause takes a argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
+
 `@if` clause also tells the trigger of the action of the gesture. 
-And finally, `@do` clause represents the action of the gesture will be acivated when all given conditions to be satisfied. 
+And finally, `@do` clause represents the action of the gesture to be activated when all given conditions to be satisfied. 
 
 ### Stroke gestures
 
-Mouse gestures with strokes, namely, stroke gestures, is the most used and needed of some kinds of mouse gestures. 
-CreviceApp naturally supports this.
-`@if` clause takes movements of the mouse, combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`, as it's argument then.
+"Mouse gestures by strokes", namely "stroke gesture" is in the functions of mouse gesture utilities, is the most important part. CreviceApp naturally supports this.
+
+`@if` clause takes arguments that consist of combination of `MoveUp`, `MoveDown`, `MoveLeft`, and `MoveRight`. These are directions of movements of the mouse pointer.
 
 ```cs
 Chrome.
@@ -71,11 +74,12 @@ Chrome.
 ```
 
 ### Button gestures
-As you may know, mouse gestures with buttons is called "rocker gestures" around mouse gesture utility communities. 
+As you may know, mouse gestures with buttons is called "rocker gestures" in mouse gesture utility communities. 
 But we call it "button gestures" here. 
 CreviceApp supports two kinds of button gestures. 
-Both these button gestures are almost the same except that one have `@on` clause and the other one do not have it. 
-At this time, `@if` clause takes a mouse button, any of following, `LeftButton`, `MiddleButton`, `RightButton`, `WheelUp`, `WheelDown`, `WheelLeft`, `WheelRight`, `X1Button` and `X2Button`, as it's argument to tell the system that which mouse button is the trigger of the action of the gesture.
+Both these button gestures are almost the same except that the one have `@on` clause and the other do not have it.
+
+`@if` clause takes a argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `WheelUp`, `WheelDown`, `WheelLeft`, `WheelRight`, `X1Button`, `X2Button`.
 
 #### Button gestures (with `@on` clause)
 
@@ -111,7 +115,7 @@ Chrome.
 ```
 
 ### @before/@after clause
-`@do` clause is just simple but does not fit to cases where there is need to hook push and release events of mouse buttons. `@before` and `@after` clauses support it. These can be written just after `@if` clause with **double** action mouse buttons.
+`@do` clause is just simple but does not fit to cases where there is need to hook push / release events of mouse buttons. `@before` and `@after` clauses support it. These can be written just after `@if` clause called with a **double** action mouse button any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
 
 ```cs
 var Whenever = @when((ctx) => {
@@ -131,7 +135,7 @@ Whenever.
 });
 ```
  
-Actions given in `@before` and `@after` clauses are different from it's of `@do` clause, the execution of these actions are assured.
+Actions given in `@before` and `@after` clauses are different from it of `@do` clause, the execution of these actions are assured.
 
 ```cs
 Whenever.
@@ -143,7 +147,7 @@ Whenever.
 @do((ctx) =>
 {
     // Not assured. 
-    // e.g. When the gesture timeout
+    // e.g. When the gesture to timeout,
     //      this action will not be executed.
 }).
 @after((ctx) =>
@@ -152,7 +156,7 @@ Whenever.
 });
 ```
 
-Note: `@before` and `@after` clauses written after `@if` clause with **single** action mouse buttons causes compilation error because the fire event of these buttons can not be separated into two parts.
+Note:  Calling `@before` and `@after` clauses from `@if` clause given with a **single** action mouse button causes compilation error because the event of these buttons can not be separated into two parts.
 
 ## Config
 
@@ -163,19 +167,18 @@ The system default parameters can be configured by using `Config` as following:
 // will be established.
 Config.Gesture.InitialStrokeThreshold = 10;
 
-// When moved distance of the cursor is exceeded this value and the direction 
-// of the movement is different from the current stroke, new stroke 
-// for new direction will be established.
+// When moved distance of the cursor is exceeded this value, and the direction is changed
+// new stroke for new direction will be established.
 Config.Gesture.StrokeDirectionChangeThreshold = 20;
 
-// When moved distance of the cursor is exceeded this value and the direction 
-// of the movement is the same as the current stroke, it will be extended.
+// When moved distance of the cursor is exceeded this value, and the direction is not changed, 
+// it will be extended.
 Config.Gesture.StrokeExtensionThreshold = 10;
 
 // Interval time for updating strokes.
 Config.Gesture.WatchInterval = 10;
 
-// When there is no established stroke yet and this period of time has passed, 
+// When stroke is not established and this period of time has passed, 
 // the gesture will be canceled and the original click event will be reproduced.
 Config.Gesture.Timeout = 1000;
 
@@ -196,8 +199,8 @@ Config.UI.TooltipPositionBinding = (point) =>
 ## Core API
 
 ### ExecutionContext
-`@when` clause and `@do` clause take a function as it's argument, and the function takes an `ExecutionContext` as it's argument. 
-An `ExecutionContext` will be generated each time gestures started, and the same instance of it will be given to the functions of `@when` and `@do` to guarantee that these functions will be executed on the same context.
+`@when` and `@do` clause take an argument of a function, and the function takes an argument of an `ExecutionContext`. 
+An `ExecutionContext` will be generated each time a gesture started, and the same instance will be passed to the actions of `@when` and `@do` to guarantee that these actions to be executed on the same context.
 
 #### Properties
 
@@ -216,24 +219,24 @@ This is an instance of `WindowInfo`.
 `WindowInfo` is a thin wrapper of the handle of a window. This class provides properties and methods to use window handles more easily.
 
 #### Properties
-This class provides `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath` and `ModuleName` as it's property.
+This class provides properties as following;`WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`.
 
 #### Methods
 
 ##### SendMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`. 
-This function returns a `long` value returned by win32 API directly.
+This function returns a `long` value directly from win32 API.
 
 ##### PostMessage(uint Msg, uint wParam, uint lParam)
 
 A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
-This function returns a `bool` value returned by win32 API directly.
+This function returns a `bool` value directly from win32 API.
 
 ##### BringWindowToTop()
 
 A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
-This function returns a `bool` value returned by win32 API directly.
+This function returns a `bool` value directly from win32 API.
 
 ##### FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow)
 
@@ -283,7 +286,7 @@ Send(); // This won't be interrupted by any other input.
 ```
 
 #### Mouse event
-`Down`, `Up` and `Click` events are supported for the push-release type buttons of mouse devices, `LeftButton`, `MiddleButton`, `RightButton`, `X1Button` and `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()`, `LeftClick()`. 
+`Down`, `Up` and `Click` events are supported for the push-release type buttons of mouse devices as following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()`, and `LeftClick()`. 
 
 For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
@@ -316,7 +319,7 @@ For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also prov
 
 #### Keyboard event
 
-A keyboard event is synthesized from a key code with two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events for a key, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
+A keyboard event is synthesized from a key code with two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
 
 ```cs
 SendInput.KeyDown(VK_A);
@@ -330,7 +333,7 @@ SendInput.ExetendedKeyDown(VK_LWIN);
 SendInput.ExtentedKeyUp(VK_LWIN); // Send `Win` to the foreground application.
 ```
 
-For the API combined four API above mentioned with `ScanCode` flag,
+For four API above mentioned, combined it with `ScanCode` flag,
 `KeyDownWithScanCode(ushort keyCode)`, `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
 
 ```cs
@@ -340,7 +343,7 @@ SendInput.KeyUpWithScanCode(VK_S);
 SendInput.ExtendedKeyUpWithScanCode(VK_LCONTROL); // Send `Ctrl+S` with scan code to the foreground application.
 ```
 
-And finally, for the API to support an other special `Unicode` flag, `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)` and `UnicodeKeyStroke(string str)` are provided.
+And finally, for to support an other special `Unicode` flag, following functions are proviced; `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)`,  `UnicodeKeyStroke(string str)`.
 
 ```cs
 SendInput.UnicodeKeyDown('🍣');
@@ -375,11 +378,11 @@ Tooptip("This is tooltip.");
 
 #### Tooltip(string text, Point point)
 
-Show a tooltip message at the specified point.
+Show a tooltip message at the specified position.
 
 #### Tooltip(string text, Point point, int duration)
 
-Show a tooltip message at the specified point for a specified period.
+Show a tooltip message at the specified position for a specified period.
 
 #### Baloon(string text)
 
@@ -391,19 +394,19 @@ Baloon("This is baloon.");
 
 #### Baloon(string text, string title)
 
-Show a baloon message with a title.
+Show a baloon message and a title.
 
 #### Baloon(string text, string title, int timeout)
 
-Show a baloon message with a title for a specified period.
+Show a baloon message and a title for a specified period.
 
 #### Baloon(string text, string title, ToolTipIcon icon)
 
-Show a baloon message with a title and a icon.
+Show a baloon message, a title, and a icon.
 
 #### Baloon(string text, string title, ToolTipIcon icon, int timeout)
 
-Show a baloon message with a title and a icon for a specified period.
+Show a baloon message, a title, and a icon for a specified period.
 
 ## Extension API
 
