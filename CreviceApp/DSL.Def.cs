@@ -48,8 +48,9 @@ namespace CreviceApp.DSL
         public delegate void DoFunc(Core.UserActionExecutionContext ctx);
         public delegate void AfterFunc(Core.UserActionExecutionContext ctx);
 
-        public interface AcceptableInOnClause { }
-        public interface AcceptableInIfButtonClause { }
+        public interface Button { }
+        public interface AcceptableInOnClause : Button { }
+        public interface AcceptableInIfButtonClause : Button { }
         public interface AcceptableInIfSingleTriggerButtonClause : AcceptableInIfButtonClause { }
         public interface AcceptableInIfDoubleTriggerButtonClause : AcceptableInIfButtonClause { }
 
@@ -63,7 +64,8 @@ namespace CreviceApp.DSL
         public class X1Button     : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
         public class X2Button     : AcceptableInOnClause, AcceptableInIfDoubleTriggerButtonClause { }
             
-        public interface AcceptableInIfStrokeClause { }
+        public interface Move { }
+        public interface AcceptableInIfStrokeClause : Move { }
         public class MoveUp    : AcceptableInIfStrokeClause { }
         public class MoveDown  : AcceptableInIfStrokeClause { }
         public class MoveLeft  : AcceptableInIfStrokeClause { }

@@ -12,14 +12,25 @@ namespace CreviceApp.DSL.Tests
     public class OnElementTests
     {
         [TestMethod()]
-        public void ifButtonTest()
+        public void ifSingleTriggerButtonTest()
         {
             var root = new Root();
             var appElement = root.@when(_ => true);
             var onElement = appElement.@on(new Def.RightButton());
-            Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements.Count, 0);
+            Assert.AreEqual(root.whenElements[0].onElements[0].ifSingleTriggerButtonElements.Count, 0);
             onElement.@if(new Def.WheelUp());
-            Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements.Count, 1);
+            Assert.AreEqual(root.whenElements[0].onElements[0].ifSingleTriggerButtonElements.Count, 1);
+        }
+
+        [TestMethod()]
+        public void ifDoubleTriggerButtonTest()
+        {
+            var root = new Root();
+            var appElement = root.@when(_ => true);
+            var onElement = appElement.@on(new Def.RightButton());
+            Assert.AreEqual(root.whenElements[0].onElements[0].ifDoubleTriggerButtonElements.Count, 0);
+            onElement.@if(new Def.RightButton());
+            Assert.AreEqual(root.whenElements[0].onElements[0].ifDoubleTriggerButtonElements.Count, 1);
         }
 
         [TestMethod()]

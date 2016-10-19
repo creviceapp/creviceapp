@@ -253,6 +253,7 @@ namespace CreviceApp.Core
     {
         public readonly Def.Stroke stroke;
         public readonly DSL.Def.DoFunc doFunc;
+
         public OnButtonWithIfStrokeGestureDefinition(
             DSL.Def.WhenFunc whenFunc,
             DSL.Def.AcceptableInOnClause onButton,
@@ -263,6 +264,7 @@ namespace CreviceApp.Core
             this.stroke = stroke;
             this.doFunc = doFunc;
         }
+
         override public bool IsComplete
         {
             get

@@ -83,13 +83,18 @@ namespace CreviceApp.Core.FSM
                         {
                             Debug.Print("[Transition 2_2]");
                             ExecuteUserDoFuncInBackground(ctx, T2[stroke]);
+                            ExecuteUserAfterFuncInBackground(ctx, T3);
                         }
                     }
                     else
                     {
-                        Debug.Print("[Transition 2_3]");
+                        if (T3.Count() > 0)
+                        {
+                            Debug.Print("[Transition 2_3]");
+                            ExecuteUserDoFuncInBackground(ctx, T3);
+                            ExecuteUserAfterFuncInBackground(ctx, T3);
+                        }
                     }
-                    ExecuteUserAfterFuncInBackground(ctx, T3);
                     return Result.EventIsConsumed(nextState: S0);
                 }
             }

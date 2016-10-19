@@ -23,6 +23,26 @@ namespace CreviceApp.DSL.Tests
         }
 
         [TestMethod()]
+        public void ifSingleTriggerButtonTest()
+        {
+            var root = new Root();
+            var appElement = root.@when(_ => true);
+            Assert.AreEqual(root.whenElements[0].ifSingleTriggerButtonElements.Count, 0);
+            appElement.@if(new Def.WheelUp());
+            Assert.AreEqual(root.whenElements[0].ifSingleTriggerButtonElements.Count, 1);
+        }
+
+        [TestMethod()]
+        public void ifDoubleTriggerButtonTest()
+        {
+            var root = new Root();
+            var appElement = root.@when(_ => true);
+            Assert.AreEqual(root.whenElements[0].ifDoubleTriggerButtonElements.Count, 0);
+            appElement.@if(new Def.RightButton());
+            Assert.AreEqual(root.whenElements[0].ifDoubleTriggerButtonElements.Count, 1);
+        }
+
+        [TestMethod()]
         public void funcTest()
         {
             var ctx = new Core.UserActionExecutionContext(new Point());
@@ -30,6 +50,5 @@ namespace CreviceApp.DSL.Tests
             var appElement = root.when(_ => true);
             Assert.IsTrue(root.whenElements[0].func(ctx));
         }
-
     }
 }

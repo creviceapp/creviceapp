@@ -151,7 +151,7 @@ namespace CreviceApp.Core.FSM
         //
         // Transition from the state(S1) to the state(S0). 
         // This event happens when a `cancel` command given and functions given as the parameter of
-        // `@before` and `@after` clauses of IfButtonGestureDefinition does not exist.
+        // `@before` and `@after` clauses of IfButtonGestureDefinition do not exist.
         // This transition has one side effect.
         // 1. The `set` and `release` events of primary double action mouse button will be restored.
 

@@ -18,70 +18,141 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void State3MustHaveGivenArgumentsTest()
         {
-            var gestureDef = new List<OnButtonIfButtonGestureDefinition>() {
-                new OnButtonIfButtonGestureDefinition(
+            var gestureDef = new List<OnButtonWithIfButtonGestureDefinition>() {
+                new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    (ctx) => { })
+                    null,
+                    (ctx) => { },
+                    null)
             };
             var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = S1.S2;
-            var S3 = new State3(S1.Global, S0, S2, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
+            var S3 = new State3(S1.Global, S0, S2, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S2.T3, gestureDef);
 
             Assert.AreEqual(S3.Global, S1.Global);
             Assert.AreEqual(S3.S0, S0);
             Assert.AreEqual(S3.S2, S2);
             Assert.AreEqual(S3.primaryEvent, Def.Constant.RightButtonDown);
             Assert.AreEqual(S3.secondaryEvent, Def.Constant.LeftButtonDown);
-            Assert.AreEqual(S3.T0.Count(), 1);
+            Assert.AreEqual(S3.T0, S2.T3);
+            Assert.AreEqual(S3.T1.Count(), 1);
         }
 
         [TestMethod()]
-        public void Transition3_0_Transition3_1_RRTest()
+        public void Transition3_0_RRTest()
         {
-            using (var countDown = new CountdownEvent(1))
+            using (var countDown = new CountdownEvent(2))
             {
-                foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    foreach (var b in TestDef.Constant.AcceptablesInOnClause)
+                    foreach (var b in TestDef.Constant.DoubleTriggerButtons)
                     {
-                        var gestureDef = new List<OnButtonIfButtonGestureDefinition>() {
-                            new OnButtonIfButtonGestureDefinition(
+                        var gestureDefA = new List<IfButtonGestureDefinition>() {
+                            new IfButtonGestureDefinition(
                                 (ctx) => { return true; },
-                                a,
-                                (DSL.Def.AcceptableInIfButtonClause)b,
+                                a as DSL.Def.AcceptableInIfButtonClause,
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { Assert.Fail(); })
+                        };
+                        var gestureDefB = new List<OnButtonWithIfButtonGestureDefinition>() {
+                            new OnButtonWithIfButtonGestureDefinition(
+                                (ctx) => { return true; },
+                                a as DSL.Def.AcceptableInOnClause,
+                                b as DSL.Def.AcceptableInIfButtonClause,
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { countDown.Signal(); },
                                 (ctx) => { countDown.Signal(); })
                         };
-                        foreach (var c in TestDef.Constant.AcceptablesInOnClause)
+                        foreach (var c in TestDef.Constant.DoubleTriggerButtons)
                         {
+                            if (a == c)
+                            {
+                                continue;
+                            }
                             countDown.Reset();
                             using (var Global = new StateGlobal())
                             {
                                 var S0 = new State0(Global, new List<GestureDefinition>());
-                                var S1 = new State1(Global, S0, ctx, Helper.Convert(a), gestureDef, new List<IfButtonGestureDefinition>());
+                                var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), gestureDefB, gestureDefA);
                                 var S2 = S1.S2;
-                                var S3 = new State3(Global, S0, S2, ctx, Helper.Convert(a), Helper.Convert(b), gestureDef);
-                                var ev = Helper.Convert(c).GetPair();
+                                var S3 = new State3(Global, S0, S2, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), Helper.Convert(b as DSL.Def.AcceptableInOnClause), S2.T3, gestureDefB);
+                                var ev = Helper.Convert(c as DSL.Def.AcceptableInOnClause).GetPair();
                                 var res = S3.Input((Def.Event.IEvent)ev, new Point());
                                 if (b == c)
                                 {
                                     Assert.IsTrue(res.NextState is State2);
-                                    Assert.IsTrue(countDown.Wait(50));
                                     Assert.IsTrue(Global.IgnoreNext.Count() == 0);
-                                }
-                                else if (a == c)
-                                {
-                                    Assert.IsTrue(res.NextState is State0);
-                                    Assert.IsFalse(countDown.Wait(50));
-                                    Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(b).GetPair()));
+                                    Assert.IsTrue(countDown.Wait(50));
                                 }
                                 else
                                 {
                                     Assert.IsTrue(res.NextState is State3);
-                                    Assert.IsFalse(countDown.Wait(50));
                                     Assert.IsTrue(Global.IgnoreNext.Count() == 0);
+                                    Assert.IsFalse(countDown.Wait(50));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void Transition3_1_RRTest()
+        {
+            using (var countDown = new CountdownEvent(2))
+            {
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
+                {
+                    foreach (var b in TestDef.Constant.DoubleTriggerButtons)
+                    {
+                        var gestureDefA = new List<IfButtonGestureDefinition>() {
+                            new IfButtonGestureDefinition(
+                                (ctx) => { return true; },
+                                a as DSL.Def.AcceptableInIfButtonClause,
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { countDown.Signal(); })
+                        };
+                        var gestureDefB = new List<OnButtonWithIfButtonGestureDefinition>() {
+                            new OnButtonWithIfButtonGestureDefinition(
+                                (ctx) => { return true; },
+                                a as DSL.Def.AcceptableInOnClause,
+                                b as DSL.Def.AcceptableInIfButtonClause,
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { countDown.Signal(); })
+                        };
+                        foreach (var c in TestDef.Constant.DoubleTriggerButtons)
+                        {
+                            if (b == c)
+                            {
+                                continue;
+                            }
+                            countDown.Reset();
+                            using (var Global = new StateGlobal())
+                            {
+                                var S0 = new State0(Global, new List<GestureDefinition>());
+                                var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), gestureDefB, gestureDefA);
+                                var S2 = S1.S2;
+                                var S3 = new State3(Global, S0, S2, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), Helper.Convert(b as DSL.Def.AcceptableInOnClause), S2.T3, gestureDefB);
+                                var ev = Helper.Convert(c as DSL.Def.AcceptableInOnClause).GetPair();
+                                var res = S3.Input((Def.Event.IEvent)ev, new Point());
+                                if (a == c)
+                                {
+                                    Assert.IsTrue(res.NextState is State0);
+                                    Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(b as DSL.Def.AcceptableInOnClause).GetPair()));
+                                    Assert.IsTrue(countDown.Wait(50));
+                                }
+                                else
+                                {
+                                    Assert.IsTrue(res.NextState is State3);
+                                    Assert.IsTrue(Global.IgnoreNext.Count() == 0);
+                                    Assert.IsFalse(countDown.Wait(50));
                                 }
                             }
                         }
@@ -93,20 +164,41 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition3_2_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            using (var countDown = new CountdownEvent(2))
             {
-                foreach (var b in TestDef.Constant.AcceptablesInOnClause)
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    using (var Global = new StateGlobal())
+                    foreach (var b in TestDef.Constant.DoubleTriggerButtons)
                     {
-                        var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
-                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
-                        var S2 = S1.S2;
-                        var S3 = new State3(Global, S0, S2, ctx, Helper.Convert(a), Helper.Convert(b), new List<OnButtonIfButtonGestureDefinition>());
-                        var res = S3.Reset();
-                        Assert.IsTrue(res is State0);
-                        Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(a).GetPair()));
-                        Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(b).GetPair()));
+                        var gestureDefA = new List<IfButtonGestureDefinition>() {
+                            new IfButtonGestureDefinition(
+                                (ctx) => { return true; },
+                                a as DSL.Def.AcceptableInIfButtonClause,
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { countDown.Signal(); })
+                        };
+                        var gestureDefB = new List<OnButtonWithIfButtonGestureDefinition>() {
+                            new OnButtonWithIfButtonGestureDefinition(
+                                (ctx) => { return true; },
+                                a as DSL.Def.AcceptableInOnClause,
+                                b as DSL.Def.AcceptableInIfButtonClause,
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { Assert.Fail(); },
+                                (ctx) => { countDown.Signal(); })
+                        };
+                        using (var Global = new StateGlobal())
+                        {
+                            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
+                            var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), gestureDefB, gestureDefA);
+                            var S2 = S1.S2;
+                            var S3 = new State3(Global, S0, S2, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), Helper.Convert(b as DSL.Def.AcceptableInOnClause), S2.T3, gestureDefB);
+                            var res = S3.Reset();
+                            Assert.IsTrue(res is State0);
+                            Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(a as DSL.Def.AcceptableInOnClause).GetPair()));
+                            Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(b as DSL.Def.AcceptableInOnClause).GetPair()));
+                            Assert.IsTrue(countDown.Wait(50));
+                        }
                     }
                 }
             }
@@ -115,11 +207,11 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void InputMustReturnConsumedResultWhenGivenTriggerIsInIgnoreListTest()
         {
-            var gestureDef = new List<OnButtonIfButtonGestureDefinition>();
+            var gestureDef = new List<OnButtonWithIfButtonGestureDefinition>();
             var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = S1.S2;
-            var S3 = new State3(S1.Global, S0, S2, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
+            var S3 = new State3(S1.Global, S0, S2, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S2.T3, gestureDef);
 
             S3.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S3.Global.IgnoreNext.Count, 1);
@@ -132,11 +224,11 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void InputMustResetIgnoreListWhenGivenTriggerIsPairOfTriggerInIgnoreListTest()
         {
-            var gestureDef = new List<OnButtonIfButtonGestureDefinition>();
+            var gestureDef = new List<OnButtonWithIfButtonGestureDefinition>();
             var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
             var S2 = S1.S2;
-            var S3 = new State3(S1.Global, S0, S2, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, gestureDef);
+            var S3 = new State3(S1.Global, S0, S2, ctx, Def.Constant.RightButtonDown, Def.Constant.LeftButtonDown, S2.T3, gestureDef);
 
             S3.Global.IgnoreNext.Add(Def.Constant.RightButtonUp);
             Assert.AreEqual(S3.Global.IgnoreNext.Count, 1);

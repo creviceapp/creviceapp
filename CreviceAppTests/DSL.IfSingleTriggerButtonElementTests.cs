@@ -9,18 +9,17 @@ using System.Threading.Tasks;
 namespace CreviceApp.DSL.Tests
 {
     [TestClass()]
-    public class IfButtonElementTests
+    public class IfSingleTriggerButtonElementTests
     {
         [TestMethod()]
         public void doTest()
         {
             var root = new Root();
             var appElement = root.@when(_ => true);
-            var onElement = appElement.@on(new Def.RightButton());
-            var ifElement = onElement.@if(new Def.WheelUp());
-            Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements[0].doElements.Count, 0);
+            var ifElement = appElement.@if(new Def.WheelUp());
+            Assert.AreEqual(root.whenElements[0].ifSingleTriggerButtonElements[0].doElements.Count, 0);
             ifElement.@do(_ => { });
-            Assert.AreEqual(root.whenElements[0].onElements[0].ifButtonElements[0].doElements.Count, 1);
+            Assert.AreEqual(root.whenElements[0].ifSingleTriggerButtonElements[0].doElements.Count, 1);
         }
     }
 }

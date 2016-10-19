@@ -61,17 +61,21 @@ namespace CreviceApp.Core.FSM.Tests
         public void State1MustHaveGivenArgumentsTest()
         {
             var defA = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfButtonGestureDefinition(
+                new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return true; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.WheelUp,
-                    (ctx) => { }),
-                 new OnButtonIfButtonGestureDefinition(
+                    null,
+                    (ctx) => { },
+                    null),
+                 new OnButtonWithIfButtonGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     DSL.Def.Constant.LeftButton,
-                    (ctx) => { }),
-                new OnButtonIfStrokeGestureDefinition(
+                    null,
+                    (ctx) => { },
+                    null),
+                new OnButtonWithIfStrokeGestureDefinition(
                     (ctx) => { return false; },
                     DSL.Def.Constant.RightButton,
                     new Def.Stroke(new List<Def.Direction>() { Def.Direction.Up }),
@@ -81,7 +85,9 @@ namespace CreviceApp.Core.FSM.Tests
                 new IfButtonGestureDefinition(
                     (ctx) => { return true; },
                     DSL.Def.Constant.LeftButton,
-                    (ctx) => { })
+                    null,
+                    (ctx) => { },
+                    null)
             };
             var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
             var S1 = new State1(S0.Global, S0, ctx, Def.Constant.RightButtonDown, defA, defB);
@@ -99,24 +105,24 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void State1MustBypassInputToStrokeWatcher_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            foreach (var a in TestDef.Constant.DoubleTriggerButtons)
             {
                 var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfStrokeGestureDefinition(
-                    (ctx) => { return true; },
-                    a,
-                    new Def.Stroke(Def.Direction.Down),
-                    (ctx) => { })
+                    new OnButtonWithIfStrokeGestureDefinition(
+                        (ctx) => { return true; },
+                        a as DSL.Def.AcceptableInOnClause,
+                        new Def.Stroke(Def.Direction.Down),
+                        (ctx) => { Assert.Fail(); })
                 };
-                foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
+                foreach (var b in TestDef.Constant.Buttons)
                 {
                     using (var Global = new StateGlobal())
                     {
                         Global.StrokeWatcher.Dispose();
                         Global.StrokeWatcher = new StrokeWatcherMock();
                         var S0 = new State0(Global, new List<GestureDefinition>());
-                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a), gestureDef, new List<IfButtonGestureDefinition>());
-                        S1.Input(Helper.Convert(b), new Point(0, 0));
+                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), gestureDef, new List<IfButtonGestureDefinition>());
+                        S1.Input(Helper.Convert(b as DSL.Def.AcceptableInIfButtonClause), new Point(0, 0));
                         S1.Input(Def.Constant.Move, new Point(100, 100));
                         Console.WriteLine(((StrokeWatcherMock)Global.StrokeWatcher).queue.Count());
                         Assert.IsTrue(((StrokeWatcherMock)Global.StrokeWatcher).queue.SequenceEqual(new List<Point>() {
@@ -131,34 +137,38 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_0_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInIfButtonClause.Where(x => Helper.Convert(x) is Def.Event.ISingleAction))
+            using (var countDown = new CountdownEvent(1))
             {
-                var countDown = new CountdownEvent(1);
-                var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfButtonGestureDefinition(
-                    (ctx) => { return true; },
-                    DSL.Def.Constant.RightButton,
-                    a,
-                    (ctx) => { countDown.Signal(); })
-                };
-                foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
+                foreach (var a in TestDef.Constant.SingleTriggerButtons)
                 {
-                    countDown.Reset();
-                    using (var Global = new StateGlobal())
+                    var gestureDef = new List<OnButtonGestureDefinition>() {
+                        new OnButtonWithIfButtonGestureDefinition(
+                            (ctx) => { return true; },
+                            DSL.Def.Constant.RightButton,
+                            a as DSL.Def.AcceptableInIfButtonClause,
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { countDown.Signal(); },
+                            (ctx) => { Assert.Fail(); })
+                    };
+                    foreach (var b in TestDef.Constant.Buttons)
                     {
-                        var S0 = new State0(Global, new List<GestureDefinition>());
-                        var S1 = new State1(Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef, new List<IfButtonGestureDefinition>());
-                        var ev = Helper.Convert(b);
-                        var res = S1.Input(ev, new Point());
-                        if (a == b)
+                        countDown.Reset();
+                        using (var Global = new StateGlobal())
                         {
-                            Assert.IsTrue(res.NextState is State2);
-                            Assert.IsTrue(countDown.Wait(50));
-                        }
-                        else
-                        {
-                            Assert.IsTrue(res.NextState is State1);
-                            Assert.IsFalse(countDown.Wait(50));
+                            var S0 = new State0(Global, new List<GestureDefinition>());
+                            var S1 = new State1(Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef, new List<IfButtonGestureDefinition>());
+                            var ev = Helper.Convert(b as DSL.Def.AcceptableInIfButtonClause);
+                            var res = S1.Input(ev, new Point());
+                            if (a == b)
+                            {
+                                Assert.IsTrue(res.NextState is State2);
+                                Assert.IsTrue(countDown.Wait(50));
+                            }
+                            else
+                            {
+                                Assert.IsTrue(res.NextState is State1);
+                                Assert.IsFalse(countDown.Wait(50));
+                            }
                         }
                     }
                 }
@@ -168,31 +178,39 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_1_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInIfButtonClause.Where(x => Helper.Convert(x) is Def.Event.IDoubleActionSet))
+            using (var countDown = new CountdownEvent(1))
             {
-                var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfButtonGestureDefinition(
-                    (ctx) => { return true; },
-                    DSL.Def.Constant.RightButton,
-                    a,
-                    (ctx) => { })
-                };
-                foreach (var b in TestDef.Constant.AcceptablesInIfButtonClause)
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    using (var Global = new StateGlobal())
+                    var gestureDef = new List<OnButtonGestureDefinition>() {
+                        new OnButtonWithIfButtonGestureDefinition(
+                            (ctx) => { return true; },
+                            DSL.Def.Constant.RightButton,
+                            a as DSL.Def.AcceptableInIfButtonClause,
+                            (ctx) => { countDown.Signal(); },
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { Assert.Fail(); })
+                    };
+                    foreach (var b in TestDef.Constant.Buttons)
                     {
-                        var S0 = new State0(Global, new List<GestureDefinition>());
-                        var S1 = new State1(Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef, new List<IfButtonGestureDefinition>());
-                        var ev = Helper.Convert(b);
-                        var res = S1.Input(ev, new Point());
-                        if (a == b)
+                        countDown.Reset();
+                        using (var Global = new StateGlobal())
                         {
-                            Assert.IsTrue(res.NextState is State3);
-                            Assert.IsTrue(S1.T1[(Def.Event.IDoubleActionSet)ev].SequenceEqual(((State3)res.NextState).T0));
-                        }
-                        else
-                        {
-                            Assert.IsTrue(res.NextState is State1);
+                            var S0 = new State0(Global, new List<GestureDefinition>());
+                            var S1 = new State1(Global, S0, ctx, Def.Constant.RightButtonDown, gestureDef, new List<IfButtonGestureDefinition>());
+                            var ev = Helper.Convert(b as DSL.Def.AcceptableInIfButtonClause);
+                            var res = S1.Input(ev, new Point());
+                            if (a == b)
+                            {
+                                Assert.IsTrue(res.NextState is State3);
+                                Assert.IsTrue(S1.T1[(Def.Event.IDoubleActionSet)ev].SequenceEqual(((State3)res.NextState).T1));
+                                Assert.IsTrue(countDown.Wait(50));
+                            }
+                            else
+                            {
+                                Assert.IsTrue(res.NextState is State1);
+                                Assert.IsFalse(countDown.Wait(50));
+                            }
                         }
                     }
                 }
@@ -202,38 +220,48 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_2_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            using (var countDown = new CountdownEvent(2))
             {
-                var countDown = new CountdownEvent(1);
-                var gestureDef = new List<OnButtonGestureDefinition>() {
-                new OnButtonIfStrokeGestureDefinition(
-                    (ctx) => { return true; },
-                    a,
-                    new Def.Stroke(new List<Def.Direction>() { Def.Direction.Down }),
-                    (ctx) => { countDown.Signal(); })
-                };
-                foreach (var b in TestDef.Constant.AcceptablesInOnClause)
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    countDown.Reset();
-                    using(var Global = new StateGlobal())
+                    var gestureDefA = new List<OnButtonGestureDefinition>() {
+                        new OnButtonWithIfStrokeGestureDefinition(
+                            (ctx) => { return true; },
+                            a as DSL.Def.AcceptableInOnClause,
+                            new Def.Stroke(new List<Def.Direction>() { Def.Direction.Down }),
+                            (ctx) => { countDown.Signal(); })
+                    };
+                    var gestureDefB = new List<IfButtonGestureDefinition>() {
+                        new IfButtonGestureDefinition(
+                            (ctx) => { return true; },
+                            a as DSL.Def.AcceptableInIfButtonClause,
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { countDown.Signal(); })
+                    };
+                    foreach (var b in TestDef.Constant.DoubleTriggerButtons)
                     {
-                        var S0 = new State0(Global, new List<GestureDefinition>());
-                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a), gestureDef, new List<IfButtonGestureDefinition>());
-                        Global.StrokeWatcher.strokes.Add(new Stroke.Stroke(
-                            Global.Config.Gesture.StrokeDirectionChangeThreshold, 
-                            Global.Config.Gesture.StrokeExtensionThreshold,
-                            Def.Direction.Down));
-                        var ev = Helper.Convert(b).GetPair();
-                        var res = S1.Input((Def.Event.IEvent)ev, new Point());
-                        if (a == b)
+                        countDown.Reset();
+                        using (var Global = new StateGlobal())
                         {
-                            Assert.IsTrue(res.NextState is State0);
-                            Assert.IsTrue(countDown.Wait(50));
-                        }
-                        else
-                        {
-                            Assert.IsTrue(res.NextState is State1);
-                            Assert.IsFalse(countDown.Wait(50));
+                            var S0 = new State0(Global, new List<GestureDefinition>());
+                            var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), gestureDefA, gestureDefB);
+                            Global.StrokeWatcher.strokes.Add(new Stroke.Stroke(
+                                Global.Config.Gesture.StrokeDirectionChangeThreshold,
+                                Global.Config.Gesture.StrokeExtensionThreshold,
+                                Def.Direction.Down));
+                            var ev = Helper.Convert(b as DSL.Def.AcceptableInOnClause).GetPair();
+                            var res = S1.Input((Def.Event.IEvent)ev, new Point());
+                            if (a == b)
+                            {
+                                Assert.IsTrue(res.NextState is State0);
+                                Assert.IsTrue(countDown.Wait(50));
+                            }
+                            else
+                            {
+                                Assert.IsTrue(res.NextState is State1);
+                                Assert.IsFalse(countDown.Wait(50));
+                            }
                         }
                     }
                 }
@@ -243,33 +271,37 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_3_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            using (var countDown = new CountdownEvent(2))
             {
-                var countDown = new CountdownEvent(1);
-                var gestureDef = new List<IfButtonGestureDefinition>() {
-                new IfButtonGestureDefinition(
-                    (ctx) => { return true; },
-                    (DSL.Def.AcceptableInIfButtonClause)a,
-                    (ctx) => { countDown.Signal(); })
-                };
-                foreach (var b in TestDef.Constant.AcceptablesInOnClause)
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    countDown.Reset();
-                    using (var Global = new StateGlobal())
+                    var gestureDef = new List<IfButtonGestureDefinition>() {
+                        new IfButtonGestureDefinition(
+                            (ctx) => { return true; },
+                            a as DSL.Def.AcceptableInIfButtonClause,
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { countDown.Signal(); },
+                            (ctx) => { countDown.Signal(); })
+                    };
+                    foreach (var b in TestDef.Constant.DoubleTriggerButtons)
                     {
-                        var S0 = new State0(new StateGlobal(), gestureDef);
-                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), gestureDef);
-                        var ev = Helper.Convert(b).GetPair();
-                        var res = S1.Input((Def.Event.IEvent)ev, new Point());
-                        if (a == b)
+                        countDown.Reset();
+                        using (var Global = new StateGlobal())
                         {
-                            Assert.IsTrue(res.NextState is State0);
-                            Assert.IsTrue(countDown.Wait(50));
-                        }
-                        else
-                        {
-                            Assert.IsTrue(res.NextState is State1);
-                            Assert.IsFalse(countDown.Wait(50));
+                            var S0 = new State0(new StateGlobal(), gestureDef);
+                            var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), new List<OnButtonGestureDefinition>(), gestureDef);
+                            var ev = Helper.Convert(b as DSL.Def.AcceptableInOnClause).GetPair();
+                            var res = S1.Input((Def.Event.IEvent)ev, new Point());
+                            if (a == b)
+                            {
+                                Assert.IsTrue(res.NextState is State0);
+                                Assert.IsTrue(countDown.Wait(50));
+                            }
+                            else
+                            {
+                                Assert.IsTrue(res.NextState is State1);
+                                Assert.IsFalse(countDown.Wait(50));
+                            }
                         }
                     }
                 }
@@ -279,65 +311,69 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_4_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            using (var countDown = new CountdownEvent(1))
             {
-                foreach (var b in TestDef.Constant.AcceptablesInOnClause)
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    mouseEvents.Clear();
-                    using (var Global = new StateGlobal())
+                    foreach (var b in TestDef.Constant.DoubleTriggerButtons)
                     {
-                        var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
-                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
-                        var ev = Helper.Convert(b).GetPair();
-                        var res = S1.Input((Def.Event.IEvent)ev, new Point());
-                        var cde = new CountdownEvent(1);
-                        Global.UserActionTaskFactory.StartNew(() => 
+                        mouseEvents.Clear();
+                        countDown.Reset();
+                        using (var Global = new StateGlobal())
                         {
-                            cde.Signal();
-                        });
-                        cde.Wait();
-                        if (a == b)
-                        {
-                            Assert.IsTrue(res.NextState is State0);
-                            Assert.AreEqual(mouseEvents.Count, 2);
-                            if (a == DSL.Def.Constant.LeftButton)
+                            var S0 = new State0(new StateGlobal(), new List<GestureDefinition>());
+                            var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
+                            var ev = Helper.Convert(b as DSL.Def.AcceptableInOnClause).GetPair();
+                            var res = S1.Input((Def.Event.IEvent)ev, new Point());
+
+                            Global.UserActionTaskFactory.StartNew(() =>
                             {
-                                Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
-                                Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
-                            }
-                            else if (a == DSL.Def.Constant.MiddleButton)
+                                countDown.Signal();
+                            });
+                            countDown.Wait(50);
+                            if (a == b)
                             {
-                                Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
-                                Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
-                            }
-                            else if (a == DSL.Def.Constant.RightButton)
-                            {
-                                Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
-                                Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
-                            }
-                            else if (a == DSL.Def.Constant.X1Button)
-                            {
-                                Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-                                Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
-                                Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
-                                Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton1);
-                            }
-                            else if (a == DSL.Def.Constant.X2Button)
-                            {
-                                Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-                                Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
-                                Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
-                                Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton2);
+                                Assert.IsTrue(res.NextState is State0);
+                                Assert.AreEqual(mouseEvents.Count, 2);
+                                if (a == DSL.Def.Constant.LeftButton)
+                                {
+                                    Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
+                                    Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
+                                }
+                                else if (a == DSL.Def.Constant.MiddleButton)
+                                {
+                                    Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
+                                    Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
+                                }
+                                else if (a == DSL.Def.Constant.RightButton)
+                                {
+                                    Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
+                                    Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
+                                }
+                                else if (a == DSL.Def.Constant.X1Button)
+                                {
+                                    Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
+                                    Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
+                                    Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
+                                    Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton1);
+                                }
+                                else if (a == DSL.Def.Constant.X2Button)
+                                {
+                                    Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
+                                    Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
+                                    Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
+                                    Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton2);
+                                }
+                                else
+                                {
+                                    throw new InvalidOperationException();
+                                }
                             }
                             else
                             {
-                                throw new InvalidOperationException();
+                                Assert.IsTrue(res.NextState is State1);
+                                Assert.AreEqual(mouseEvents.Count, 0);
                             }
-                        }
-                        else
-                        {
-                            Assert.IsTrue(res.NextState is State1);
-                            Assert.AreEqual(mouseEvents.Count, 0);
                         }
                     }
                 }
@@ -347,48 +383,47 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_5_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            using (var countDown = new CountdownEvent(1))
             {
-                mouseEvents.Clear();
-                using (var Global = new StateGlobal())
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    var S0 = new State0(Global, new List<GestureDefinition>());
-                    var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
-                    var res = S1.Cancel();
-                    var cde = new CountdownEvent(1);
-                    Global.UserActionTaskFactory.StartNew(() =>
+                    mouseEvents.Clear();
+                    countDown.Reset();
+                    using (var Global = new StateGlobal())
                     {
-                        cde.Signal();
-                    });
-                    cde.Wait();
-                    Assert.AreEqual(mouseEvents.Count, 1);
-                    if (a == DSL.Def.Constant.LeftButton)
-                    {
-                        Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
+                        var S0 = new State0(Global, new List<GestureDefinition>());
+                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
+                        var res = S1.Cancel();
+                        Global.UserActionTaskFactory.StartNew(() =>
+                        {
+                            countDown.Signal();
+                        });
+                        countDown.Wait(50);
+                        Assert.AreEqual(mouseEvents.Count, 1);
+                        if (a == DSL.Def.Constant.LeftButton)
+                        {
+                            Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
+                        }
+                        else if (a == DSL.Def.Constant.MiddleButton)
+                        {
+                            Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
+                        }
+                        else if (a == DSL.Def.Constant.RightButton)
+                        {
+                            Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
+                        }
+                        else if (a == DSL.Def.Constant.X1Button)
+                        {
+                            Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
+                            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
+                        }
+                        else if (a == DSL.Def.Constant.X2Button)
+                        {
+                            Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
+                            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
+                        }
+                        Assert.IsTrue(res is State0);
                     }
-                    else if (a == DSL.Def.Constant.MiddleButton)
-                    {
-                        Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
-                    }
-                    else if (a == DSL.Def.Constant.RightButton)
-                    {
-                        Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
-                    }
-                    else if (a == DSL.Def.Constant.X1Button)
-                    {
-                        Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-                        Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
-                    }
-                    else if (a == DSL.Def.Constant.X2Button)
-                    {
-                        Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-                        Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException();
-                    }
-                    Assert.IsTrue(res is State0);
                 }
             }
         }
@@ -396,15 +431,28 @@ namespace CreviceApp.Core.FSM.Tests
         [TestMethod()]
         public void Transition1_6_RRTest()
         {
-            foreach (var a in TestDef.Constant.AcceptablesInOnClause)
+            using (var countDown = new CountdownEvent(1))
             {
-                using (var Global = new StateGlobal())
+                foreach (var a in TestDef.Constant.DoubleTriggerButtons)
                 {
-                    var S0 = new State0(Global, new List<GestureDefinition>());
-                    var S1 = new State1(Global, S0, ctx, Helper.Convert(a), new List<OnButtonGestureDefinition>(), new List<IfButtonGestureDefinition>());
-                    var res = S1.Reset();
-                    Assert.IsTrue(res is State0);
-                    Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(a).GetPair()));
+                    countDown.Reset();
+                    var gestureDef = new List<IfButtonGestureDefinition>() {
+                        new IfButtonGestureDefinition(
+                            (ctx) => { return true; },
+                            a as DSL.Def.AcceptableInIfButtonClause,
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { Assert.Fail(); },
+                            (ctx) => { countDown.Signal(); })
+                    };
+                    using (var Global = new StateGlobal())
+                    {
+                        var S0 = new State0(Global, new List<GestureDefinition>());
+                        var S1 = new State1(Global, S0, ctx, Helper.Convert(a as DSL.Def.AcceptableInOnClause), new List<OnButtonGestureDefinition>(), gestureDef);
+                        var res = S1.Reset();
+                        Assert.IsTrue(res is State0);
+                        Assert.IsTrue(Global.IgnoreNext.Contains(Helper.Convert(a as DSL.Def.AcceptableInOnClause).GetPair()));
+                        Assert.IsTrue(countDown.Wait(50));
+                    }
                 }
             }
         }
