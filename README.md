@@ -3,7 +3,7 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-CreviceApp is a mouse gesture utility, consists of fully tested small and robust core of 2000 lines, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
+CreviceApp is a mouse gesture utility, consists of small and robust core of 2000 lines fully tested, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
 Mouse gestures can be defined as a csx file, so there is nothing that can not be done.<sup>[citation needed]</sup>
 
 This software requires Windows7 or later, and .Net Framework 4.6.
@@ -12,7 +12,7 @@ This software requires Windows7 or later, and .Net Framework 4.6.
 
 After the first startup of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and take a look at it.
 
-`default.csx` is merely a csharp script file. You can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+It is merely a csharp script file. You can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
 
 For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives).
 
@@ -48,7 +48,7 @@ Chrome.
 
 `@on` clause takes an argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`.
 
-`@if` clause also tells the trigger of the action of the gesture. 
+`@if` clause tells the trigger of the action of the gesture. 
 
 And finally, `@do` clause represents the action of the gesture to be activated when all given conditions to be satisfied. 
 
@@ -291,7 +291,7 @@ Send(); // This won't be interrupted by any other input.
 
 For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
 
-For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are also provided.
+For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are provided.
 
 ##### Complete list of supported methods
 - LeftDown()
@@ -335,7 +335,7 @@ SendInput.ExtentedKeyUp(VK_LWIN); // Send `Win` to the foreground application.
 ```
 
 For four API above mentioned, combined it with `ScanCode` flag,
-`KeyDownWithScanCode(ushort keyCode)`, `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are also provided.
+`KeyDownWithScanCode(ushort keyCode)`, `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are provided.
 
 ```cs
 SendInput.ExtendedKeyDownWithScanCode(VK_LCONTROL);
