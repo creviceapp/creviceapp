@@ -168,7 +168,7 @@ The system default parameters can be configured by using `Config` as following:
 // will be established.
 Config.Gesture.InitialStrokeThreshold = 10;
 
-// When moved distance of the cursor is exceeded this value, and the direction is changed
+// When moved distance of the cursor is exceeded this value, and the direction is changed,
 // new stroke for new direction will be established.
 Config.Gesture.StrokeDirectionChangeThreshold = 20;
 
