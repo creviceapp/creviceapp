@@ -9,7 +9,7 @@ namespace CreviceApp.DSL
     /**
     * BNF of Gesture Definition DSL 
     * 
-    * WHEN                  ::= @when(WHEN_FUNC)           ( ON  | ( IF_A | IF_B ))
+    * WHEN                  ::= @when(WHEN_FUNC)           ( ON | IF_A | IF_B )
     * 
     * ON                    ::= @on(DOUBLE_TRIGGER_BUTTON) ( IF_A | IF_B | IF_C )
     * 
