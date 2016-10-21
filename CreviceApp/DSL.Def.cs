@@ -25,9 +25,9 @@ namespace CreviceApp.DSL
     * 
     * AFTER                 ::= @after(AFTER_FUNC)
     * 
-    * SINGLE_TRIGGER_BUTTON ::= L | M | R | X1 | X2
+    * DOUBLE_TRIGGER_BUTTON ::= L | M | R | X1 | X2
     * 
-    * DOUBLE_TRIGGER_BUTTON ::= W_UP | W_DOWN | W_LEFT | W_RIGHT
+    * SINGLE_TRIGGER_BUTTON ::= W_UP | W_DOWN | W_LEFT | W_RIGHT
     * 
     * MOVE                  ::= MOVE_UP | MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
     * 
