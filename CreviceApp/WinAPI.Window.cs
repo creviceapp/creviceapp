@@ -124,8 +124,7 @@ namespace CreviceApp.WinAPI.Window
             private readonly Lazy<IntPtr> windowId;
             public IntPtr WindowId { get { return windowId.Value; } }
 
-            private readonly Lazy<string> text;
-            public string Text { get { return text.Value; } }
+            public string Text { get { return GetWindowText(WindowHandle); } }
 
             private readonly Lazy<string> className;
             public string ClassName { get { return className.Value; } }
@@ -150,10 +149,6 @@ namespace CreviceApp.WinAPI.Window
                 this.windowId = new Lazy<IntPtr>(() =>
                 {
                     return GetWindowId(WindowHandle);
-                });
-                this.text = new Lazy<string>(() =>
-                {
-                    return GetWindowText(WindowHandle);
                 });
                 this.className = new Lazy<string>(() =>
                 {
