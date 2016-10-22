@@ -3,10 +3,10 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-CreviceApp is a mouse gesture utility, consists of small and robust core of 2000 lines fully tested, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
+CreviceApp is a mouse gesture utility which is consisted of small and robust core of 2000 lines fully tested, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
 Mouse gestures can be defined as a csx file, so there is nothing that can not be done.<sup>[citation needed]</sup>
 
-This software requires Windows7 or later, and .Net Framework 4.6.
+This software requires Windows 7 or later, and .Net Framework 4.6.
 
 ## User script
 
@@ -157,7 +157,9 @@ Whenever.
 });
 ```
 
-Note:  Calling `@before` and `@after` clauses from `@if` clause given with a **single** action mouse button causes compilation error because the event of these buttons can not be separated into two parts.
+Note 1:  Calling `@before` and `@after` clauses from `@if` clause given with a **single** action mouse button causes compilation error because the event of these buttons can not be separated into two parts.
+
+Note 2: Even if you specify a part of `@before`or `@after`, the other one will automatically be captured and be ignored. This is the limitation on the specification. When you want to set a hook to the one, and want to bypass the other one, you should do it by your hands.
 
 ## Config
 
