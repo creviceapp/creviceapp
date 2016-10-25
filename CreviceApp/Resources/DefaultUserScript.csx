@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using CreviceApp.WinAPI.CoreAudio;
 using CreviceApp.WinAPI.Window;
 
 using static CreviceApp.WinAPI.Constants.WindowsMessages;
@@ -129,6 +128,8 @@ Browser.
  * Examples for CoreAudio and Tooltip API.
  * The system master volume will be changed by WheelUp and WheelDown when the cursor is on the taskbar.
  *
+using CreviceApp.WinAPI.CoreAudio;
+
 var VolumeControl = new VolumeControl();
 var VolumeDelta = 0.01f;
 
