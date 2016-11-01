@@ -13,12 +13,15 @@ using static CreviceApp.WinAPI.Constants.VirtualKeys;
 /*
  * Examples for gestures for standard browsers.
  */
+
 var Browser = @when((ctx) =>
 {
     return ctx.ForegroundWindow.ModuleName == "chrome.exe" ||
            ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
            ctx.ForegroundWindow.ModuleName == "opera.exe" ||
            ctx.ForegroundWindow.ModuleName == "iexplore.exe" ||
+          (ctx.ForegroundWindow.ModuleName == "ApplicationFrameHost.exe" &&
+               ctx.PointedWindow.Text == "Microsoft Edge") ||
           (ctx.ForegroundWindow.ModuleName == "explorer.exe" &&
                ctx.PointedWindow.ClassName == "DirectUIHWND");
 });
@@ -128,6 +131,8 @@ Browser.
  * Examples for CoreAudio and Tooltip API.
  * The system master volume will be changed by WheelUp and WheelDown when the cursor is on the taskbar.
  *
+
+// This using clause should be placed the top of this script.
 using CreviceApp.WinAPI.CoreAudio;
 
 var VolumeControl = new VolumeControl();
@@ -167,7 +172,8 @@ Taskbar.
  * like Alt+Tab no matter how hard you try on Windows 8. This is the limitation of 
  * that operating system. You should have upgraded it to Windows 10.
  * 
- var Whenever = @when((ctx) =>
+
+var Whenever = @when((ctx) =>
 {
     return true;
 });

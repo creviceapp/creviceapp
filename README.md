@@ -179,17 +179,17 @@ Config.Gesture.StrokeDirectionChangeThreshold = 20;
 Config.Gesture.StrokeExtensionThreshold = 10;
 
 // Interval time for updating strokes.
-Config.Gesture.WatchInterval = 10;
+Config.Gesture.WatchInterval = 10; // ms
 
 // When stroke is not established and this period of time has passed, 
 // the gesture will be canceled and the original click event will be reproduced.
-Config.Gesture.Timeout = 1000;
+Config.Gesture.Timeout = 1000; // ms
 
 // The period of time for showing a tooltip message.
-Config.UI.TooltipTimeout = 3000;
+Config.UI.TooltipTimeout = 3000; // ms
 
 // The period of time for showing a baloon message.
-Config.UI.BaloonTimeout = 10000;
+Config.UI.BaloonTimeout = 10000; // ms
 
 // Binding for the position of tooltip messages.
 Config.UI.TooltipPositionBinding = (point) =>
