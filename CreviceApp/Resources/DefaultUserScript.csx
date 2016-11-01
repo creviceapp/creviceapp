@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using CreviceApp.WinAPI.CoreAudio;
 using CreviceApp.WinAPI.Window;
 
 using static CreviceApp.WinAPI.Constants.WindowsMessages;
@@ -12,7 +11,7 @@ using static CreviceApp.WinAPI.Constants.VirtualKeys;
 
 
 /*
- * Gesture definitions for standard browsers. 
+ * Examples for gestures for standard browsers.
  */
 var Browser = @when((ctx) =>
 {
@@ -126,9 +125,11 @@ Browser.
 
 
 /* 
- * Change system master volume by WheelUp and WheelDown events when
- * the cursor on the taskbar.
- */
+ * Examples for CoreAudio and Tooltip API.
+ * The system master volume will be changed by WheelUp and WheelDown when the cursor is on the taskbar.
+ *
+using CreviceApp.WinAPI.CoreAudio;
+
 var VolumeControl = new VolumeControl();
 var VolumeDelta = 0.01f;
 
@@ -137,6 +138,7 @@ var Taskbar = @when((ctx) =>
     return ctx.PointedWindow.ModuleName == "explorer.exe" &&
               (ctx.PointedWindow.ClassName == "MSTaskListWClass" ||
                ctx.PointedWindow.ClassName == "TrayShowDesktopButtonWClass" ||
+               ctx.PointedWindow.ClassName == "TrayButton" ||
                ctx.PointedWindow.ClassName == "TrayClockWClass" ||
                ctx.PointedWindow.ClassName == "TaskbarWindow32");
 });
@@ -156,3 +158,41 @@ Taskbar.
     VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() - VolumeDelta);
     Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
+ */
+
+
+/*
+ * Examples for global gestures.
+ * Caution: Unfortunately, It would be impossible for you to send special key strokes 
+ * like Alt+Tab no matter how hard you try on Windows 8. This is the limitation of 
+ * that operating system. You should have upgraded it to Windows 10.
+ * 
+ var Whenever = @when((ctx) =>
+{
+    return true;
+});
+
+Whenever.
+@if(X1Button).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_MENU).
+    ExtendedKeyDown(VK_TAB).
+    ExtendedKeyUp(VK_TAB).
+    ExtendedKeyUp(VK_MENU).
+    Send(); // Assign X1Button to Alt+Tab
+});
+
+Whenever.
+@if(X2Button).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_LWIN).
+    ExtendedKeyDown(VK_TAB).
+    ExtendedKeyUp(VK_TAB).
+    ExtendedKeyUp(VK_LWIN).
+    Send(); // Assign X2Button to Win+Tab
+});
+ */

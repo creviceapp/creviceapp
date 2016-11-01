@@ -143,7 +143,7 @@ namespace CreviceApp
                 Debug.Print("{0} was ignored because this event has the signature of CreviceApp",
                     Enum.GetName(typeof(LowLevelMouseHook.Event),
                     evnt));
-                return WindowsHook.Result.Determine;
+                return WindowsHook.Result.Transfer;
             }
 
             var point = new Point(data.pt.x, data.pt.y);
