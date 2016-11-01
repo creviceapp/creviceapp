@@ -140,7 +140,14 @@ namespace CreviceApp
         {
             if (data.fromCreviceApp)
             {
-                Debug.Print("{0} was ignored because this event has the signature of CreviceApp",
+                Debug.Print("{0} was passed to the next hook because this event has the signature of CreviceApp",
+                    Enum.GetName(typeof(LowLevelMouseHook.Event),
+                    evnt));
+                return WindowsHook.Result.Transfer;
+            }
+            else if (data.fromTablet)
+            {
+                Debug.Print("{0} was passed to the next hook because this event has the signature of Tablet",
                     Enum.GetName(typeof(LowLevelMouseHook.Event),
                     evnt));
                 return WindowsHook.Result.Transfer;
