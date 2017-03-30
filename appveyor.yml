@@ -4,7 +4,7 @@ skip_non_tags: false
 
 image: Visual Studio 2015
 
-version: 2.2.{build}
+version: 2.3.{build}
 
 assembly_info:
   patch: true
