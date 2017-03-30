@@ -22,6 +22,17 @@ namespace CreviceApp
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            SetProcessPriority();
+            RunApplication();
+        }
+
+        private static void SetProcessPriority()
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+        }
+
+        private static void RunApplication()
+        {
             var Global = new AppGlobal();
             Application.Run(Global.MainForm);
         }
