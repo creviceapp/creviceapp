@@ -52,6 +52,16 @@ namespace CreviceApp.WinAPI.Window
 
                 [DllImport("user32.dll", SetLastError = true)]
                 public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+                [DllImport("user32.dll")]
+                [return: MarshalAs(UnmanagedType.Bool)]
+                public extern static bool SetForegroundWindow(IntPtr hWnd);
+
+                [DllImport("user32.dll")]
+                public extern static bool AttachThreadInput(int idAttach, int idAttachTo, bool fAttach);
+
+                [DllImport("user32.dll", ExactSpelling = true)]
+                public extern static IntPtr GetAncestor(IntPtr hwnd, uint flags);
             }
 
             public const int MaxPathSize = 1024;
@@ -221,6 +231,29 @@ namespace CreviceApp.WinAPI.Window
             private static string GetName(string path)
             {
                 return path.Substring(path.LastIndexOf("\\") + 1);
+            }
+
+            public bool Activate()
+            {
+                var hwndTarget = NativeMethods.GetAncestor(WindowHandle, 2);
+                var hwndActive = ForegroundWindowInfo.NativeMethods.GetForegroundWindow();
+                if (hwndTarget == hwndActive)
+                    return true;
+
+                var outTmp = 0;
+                var tidTarget = NativeMethods.GetWindowThreadProcessId(WindowHandle, out outTmp);
+                var tidActive = NativeMethods.GetWindowThreadProcessId(hwndActive, out outTmp);
+
+                if (NativeMethods.SetForegroundWindow(WindowHandle))
+                    return true;
+                if (tidTarget == tidActive)
+                    return BringWindowToTop();
+                else
+                {
+                    NativeMethods.AttachThreadInput(tidTarget, tidActive, true);
+                    try { return BringWindowToTop(); }
+                    finally { NativeMethods.AttachThreadInput(tidTarget, tidActive, false); }
+                }
             }
 
             public bool BringWindowToTop()

@@ -266,6 +266,9 @@ This function recursively calls `ChildWindowFromPointEx` until the last descenda
 A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`.
 This function recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
 
+##### Activate()
+Brings window into the foreground and activates the window.
+
 ### SendInput
 
 Send mouse and keyboard input events to the foreground window. 
