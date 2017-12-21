@@ -15,8 +15,11 @@ namespace CreviceApp
 {
     public partial class ProductInfoForm : Form
     {
-        public ProductInfoForm()
+        private CLIOption.Result cliOption;
+
+        public ProductInfoForm(CLIOption.Result cliOption)
         {
+            this.cliOption = cliOption;
             InitializeComponent();
         }
 
@@ -29,7 +32,8 @@ namespace CreviceApp
                 Application.ProductVersion,
                 ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false)).Copyright,
                 url,
-                url);
+                url,
+                cliOption.helpMessageHtml);
         }
 
         protected override void OnShown(EventArgs e)

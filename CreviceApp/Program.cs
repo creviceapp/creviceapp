@@ -17,24 +17,31 @@ namespace CreviceApp
         [STAThread]
         static void Main()
         {
-            //Trace.Listeners.Clear();
-            //Trace.Listeners.Add(new Logging.CustomConsoleTraceListener());
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             SetProcessPriority();
-            RunApplication();
+
+            WinAPI.Console.Console.AttachConsole();
+
+            var Global = new AppGlobal();
+            if (!Global.CLIOption.parseSuccess)
+            {
+                Console.WriteLine(Global.CLIOption.helpMessage);
+                WinAPI.Console.Console.FreeConsole();
+                return;
+            } 
+
+            if (Global.CLIOption.NoGUI)
+            {
+                Console.WriteLine("CreviceApp is running in NoGUI mode.");
+            }
+            
+            Application.Run(Global.MainForm);
         }
 
         private static void SetProcessPriority()
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-        }
-
-        private static void RunApplication()
-        {
-            var Global = new AppGlobal();
-            Application.Run(Global.MainForm);
         }
     }
 }

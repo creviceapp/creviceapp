@@ -73,7 +73,6 @@ namespace CreviceApp
             }
         }
 
-
         private readonly UI.TooltipNotifier tooltip;
 
         public MainForm(AppGlobal Global) : base(Global)
@@ -91,6 +90,7 @@ namespace CreviceApp
         protected override async void OnShown(EventArgs e)
         {
             base.OnShown(e);
+
             try
             {
                 await Task.Run(() =>
@@ -101,13 +101,17 @@ namespace CreviceApp
                 try
                 {
                     StartCapture();
-                    RegisterNotifyIcon();
-                    ShowBaloon(string.Format("{0} gesture definitions were loaded", GestureMachine.GestureDefinition.Count()),
-                        string.Format("{0} was started", Application.ProductName),
-                        ToolTipIcon.Info, 10000);
-                    notifyIcon1.Text = string.Format("{0}\nGestures: {1}",
-                        Application.ProductName,
-                        GestureMachine.GestureDefinition.Count());
+                    Console.WriteLine("CreviceApp is started.");
+                    if (!Global.CLIOption.NoGUI)
+                    {
+                        RegisterNotifyIcon();
+                        ShowBaloon(string.Format("{0} gesture definitions were loaded", GestureMachine.GestureDefinition.Count()),
+                            string.Format("{0} was started", Application.ProductName),
+                            ToolTipIcon.Info, 10000);
+                        notifyIcon1.Text = string.Format("{0}\nGestures: {1}",
+                            Application.ProductName,
+                            GestureMachine.GestureDefinition.Count());
+                    }
                 }
                 catch (Win32Exception)
                 {
@@ -144,7 +148,15 @@ namespace CreviceApp
                 notifyIcon1.Visible = false;
             }
         }
-        
+
+        private void ShowProductInfoForm()
+        {
+            string[] args = { "--help" };
+            var cliOption = CLIOption.Parse(args);
+            var form = new ProductInfoForm(cliOption);
+            form.Show();
+        }
+
         private bool closeRequest = false;
 
         protected override void OnClosing(CancelEventArgs e)
@@ -172,6 +184,9 @@ namespace CreviceApp
                 ShowFatalErrorDialog("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.");
             }
             tooltip.Dispose();
+            WinAPI.Console.Console.FreeConsole();
+            Console.WriteLine("CreviceApp is ended.");
+
         }
 
         private void InvokeProperly(MethodInvoker invoker)
@@ -229,8 +244,7 @@ namespace CreviceApp
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var form = new ProductInfoForm();
-            form.Show();
+            ShowProductInfoForm();
         }
 
         private void notifyIcon1_Click(object sender, EventArgs e)

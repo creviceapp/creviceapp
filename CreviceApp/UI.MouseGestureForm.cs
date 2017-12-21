@@ -54,23 +54,29 @@ namespace CreviceApp
         {
             get
             {
-                return Path.Combine(UserDirectory, "default.csx");
+                var scriptPath = Global.CLIOption.Script;
+                if (Path.IsPathRooted(scriptPath))
+                {
+                    return scriptPath;
+                }
+                var uri = new Uri(new Uri(UserDirectory + "\\"), scriptPath);
+                return uri.LocalPath;
             }
         }
 
         private string GetDefaultUserScript()
         {
-            var dir = UserDirectory;
-            if (!Directory.Exists(dir))
+            var scriptFile = UserScriptFile;
+            var dir = Directory.GetParent(scriptFile);
+            if (!dir.Exists)
             {
-                Directory.CreateDirectory(dir);
+                dir.Create();
             }
-            var script = UserScriptFile;
-            if (!File.Exists(script))
+            if (!File.Exists(scriptFile))
             {
-                File.WriteAllText(script, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
+                File.WriteAllText(scriptFile, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
             }
-            return File.ReadAllText(script, Encoding.UTF8);
+            return File.ReadAllText(scriptFile, Encoding.UTF8);
         }
 
         private IEnumerable<Core.GestureDefinition> EvaluateUserScriptAsync(Core.UserScriptExecutionContext ctx)
@@ -138,6 +144,11 @@ namespace CreviceApp
 
         public WindowsHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
+            Debug.Print("MouseEvent: {0} | {1}",
+                    Enum.GetName(typeof(LowLevelMouseHook.Event), evnt),
+                    BitConverter.ToString(BitConverter.GetBytes((uint)data.dwExtraInfo))
+                    );
+
             if (data.fromCreviceApp)
             {
                 Debug.Print("{0} was passed to the next hook because this event has the signature of CreviceApp",
