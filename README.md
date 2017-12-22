@@ -379,7 +379,7 @@ Note: `keyCode` is a virtual key code. See [VirtualKeys](#virtualkeys).
 Show tooltip message at the right bottom corner of the display on the cursor.
 
 ```cs
-Tooptip("This is tooltip.");
+Tooltip("This is tooltip.");
 ```
 
 #### Tooltip(string text, Point point)
