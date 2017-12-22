@@ -3,7 +3,9 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-![alt icon](https://raw.githubusercontent.com/rubyu/CreviceApp/develop/CreviceApp/creviceicon.png)
+<p align="center"> 
+<img src="https://i.imgur.com/1BSdwPN.png" alt="alt logo">
+</p>
 
 Crevice is a mouse gesture utility which is consisted of small and robust core of 2000 lines fully tested, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
 Mouse gestures can be defined as a C# Script file, so there is nothing that can not be done.<sup>[citation needed]</sup>
