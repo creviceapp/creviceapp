@@ -157,10 +157,13 @@ namespace CreviceApp
         {
             var invoker = (MethodInvoker)delegate ()
             {
-                notifyIcon1.BalloonTipText = text;
-                notifyIcon1.BalloonTipTitle = title;
-                notifyIcon1.BalloonTipIcon = icon;
-                notifyIcon1.ShowBalloonTip(timeout);
+                if (!Global.CLIOption.NoGUI)
+                {
+                    notifyIcon1.BalloonTipText = text;
+                    notifyIcon1.BalloonTipTitle = title;
+                    notifyIcon1.BalloonTipIcon = icon;
+                    notifyIcon1.ShowBalloonTip(timeout);
+                }
             };
             InvokeProperly(invoker);
         }
