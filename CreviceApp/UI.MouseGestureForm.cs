@@ -39,7 +39,7 @@ namespace CreviceApp
             this.Global = Global;
         }
 
-        protected string UserDirectory
+        public string UserDirectory
         {
             get
             {
@@ -50,7 +50,7 @@ namespace CreviceApp
             }
         }
 
-        protected string UserScriptFile
+        public string UserScriptFile
         {
             get
             {
@@ -232,6 +232,19 @@ namespace CreviceApp
             {
                 return WindowsHook.Result.Transfer;
             }
+        }
+        
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MouseGestureForm));
+            this.SuspendLayout();
+            // 
+            // MouseGestureForm
+            // 
+            this.ClientSize = new System.Drawing.Size(278, 244);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "MouseGestureForm";
+            this.ResumeLayout(false);
         }
     }
 }

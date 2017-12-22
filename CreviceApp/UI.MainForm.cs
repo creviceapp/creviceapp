@@ -15,52 +15,9 @@ using System.Windows.Forms;
 namespace CreviceApp
 {
     using Microsoft.CodeAnalysis.Scripting;
-    
+
     public partial class MainForm : MouseGestureForm
     {
-        private static Microsoft.Win32.RegistryKey AutorunRegistry()
-        {
-            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-        }
-        private static bool AutoRun
-        {
-            get
-            {
-                var registry = AutorunRegistry();
-                try
-                {
-                    var res = registry.GetValue(Application.ProductName);
-                    return res != null &&
-                           (string)res == Application.ExecutablePath;
-                }
-                finally
-                {
-                    registry.Close();
-                }
-            }
-            set
-            {
-                if (value)
-                {
-                    var registry = AutorunRegistry();
-                    registry.SetValue(Application.ProductName, Application.ExecutablePath);
-                    Debug.Print("Autorun was set to true");
-                    registry.Close();
-                }
-                else
-                {
-                    var registry = AutorunRegistry();
-                    try
-                    {
-                        registry.DeleteValue(Application.ProductName);
-                        Debug.Print("Autorun was set to false");
-                    }
-                    catch (ArgumentException) { }
-                    registry.Close();
-                }
-            }
-        }
-
         // Force make this application invisible from task switcher applications.
         const int WS_EX_TOOLWINDOW = 0x00000080;
         protected override CreateParams CreateParams
@@ -74,6 +31,7 @@ namespace CreviceApp
         }
 
         private readonly UI.TooltipNotifier tooltip;
+        private LauncherForm launcherForm = null;
 
         public MainForm(AppGlobal Global) : base(Global)
         {
@@ -81,16 +39,9 @@ namespace CreviceApp
             InitializeComponent();
         }
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            checkBox1.Checked = AutoRun;
-        }
-        
         protected override async void OnShown(EventArgs e)
         {
             base.OnShown(e);
-
             try
             {
                 await Task.Run(() =>
@@ -119,7 +70,7 @@ namespace CreviceApp
                     Application.Exit();
                 }
             }
-            catch(CompilationErrorException ex)
+            catch (CompilationErrorException ex)
             {
                 ShowFatalErrorDialog(ex.ToString());
                 Application.Exit();
@@ -149,29 +100,6 @@ namespace CreviceApp
             }
         }
 
-        private void ShowProductInfoForm()
-        {
-            string[] args = { "--help" };
-            var cliOption = CLIOption.Parse(args);
-            var form = new ProductInfoForm(cliOption);
-            form.Show();
-        }
-
-        private bool closeRequest = false;
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            if (!closeRequest)
-            {
-                e.Cancel = true;
-                AutoRun = checkBox1.Checked;
-                Hide();
-                ShowInTaskbar = false;
-                return;
-            }
-            base.OnClosing(e);
-        }
-
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -183,6 +111,7 @@ namespace CreviceApp
             {
                 ShowFatalErrorDialog("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.");
             }
+            notifyIcon1.Visible = false;
             tooltip.Dispose();
             WinAPI.Console.Console.FreeConsole();
             Console.WriteLine("CreviceApp is ended.");
@@ -211,7 +140,7 @@ namespace CreviceApp
 
         public void ShowTooltip(string text, Point point, int duration)
         {
-            var invoker = (MethodInvoker)delegate()
+            var invoker = (MethodInvoker)delegate ()
             {
                 tooltip.Show(text, point, duration);
             };
@@ -229,36 +158,19 @@ namespace CreviceApp
             };
             InvokeProperly(invoker);
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            closeRequest = true;
-            AutoRun = checkBox1.Checked;
-            Close();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            Process.Start("explorer.exe", UserDirectory);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            ShowProductInfoForm();
-        }
-
+        
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
-            Opacity = 0;
-            Show();
-            WindowState = FormWindowState.Normal;
-            ShowInTaskbar = true;
-            var rect = Screen.PrimaryScreen.Bounds;
-            Left = (rect.Width - Width) / 2;
-            Top = (rect.Height - Height) / 2;
-            Opacity = 1;
-            Activate();
-            BringToFront();
+            if (launcherForm == null || launcherForm.IsDisposed)
+            {
+                launcherForm = new LauncherForm(Global);
+                launcherForm.Opacity = 0;
+                launcherForm.Show();
+            }
+            else
+            {
+                launcherForm.Activate();
+            }
         }
     }
 }
