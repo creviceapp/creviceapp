@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Forms;
 
 namespace CreviceApp
 {
@@ -12,7 +14,7 @@ namespace CreviceApp
     {
         [CommandLine.Option('g', "nogui", 
             DefaultValue = false,
-            HelpText = "Whether disable GUI features or not. Set to true if you use Crevice as a CUI application.")]
+            HelpText = "Disable GUI features. Set to true if you use Crevice as a CUI application.")]
         public bool NoGUI
         {
             get; set;
@@ -20,25 +22,34 @@ namespace CreviceApp
 
         [CommandLine.Option('n', "nocache",
             DefaultValue = false,
-            HelpText = "Whether disable user script assembly caching feature or not. Strongly recommend this value to false because compiling task consuming CPU every startup of application if true.")]
+            HelpText = "Disable user script assembly caching. Strongly recommend this value to false because compiling task consumes CPU resources every startup of application if true.")]
         public bool NoCache
         {
             get; set;
         }
         
-        [CommandLine.Option('s', "scriptfile",
+        [CommandLine.Option('s', "script",
             DefaultValue = "default.csx",
             HelpText = "Path to user script file. " + 
                        "Use this option if you need to change the default location of user script. " + 
-                       "If given value is relative path, Crevice will resolve it to absolute path based on the default folder (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).")]
+                       "If given value is relative path, Crevice will resolve it to absolute path based on the default directory (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).")]
         public string ScriptFile
+        {
+            get; set;
+        }
+
+        [CommandLine.Option('p', "priority",
+            DefaultValue = ProcessPriorityClass.High,
+            HelpText = "Process priority. " +
+                       "Acceptable values are the following: AboveNormal, BelowNormal, High, Idle, Normal, RealTime.")]
+        public ProcessPriorityClass ProcessPriority
         {
             get; set;
         }
 
         [CommandLine.Option('V', "verbose",
             DefaultValue = false,
-            HelpText = "Whether show details about running application.")]
+            HelpText = "Show details about running application.")]
         public bool Verbose
         {
             get; set;
@@ -58,6 +69,8 @@ namespace CreviceApp
         // todo V, verbose
         // todo v, version
         // todo h, help
+
+        // todo p, priority 
 
         [CommandLine.ParserState]
         public CommandLine.IParserState LastParserState { get; set; }
@@ -121,14 +134,27 @@ namespace CreviceApp
                 get { return CLIOption.Version; }
             }
 
+            public ProcessPriorityClass ProcessPriority
+            {
+                get { return CLIOption.ProcessPriority; }
+            }
 
             public string ScriptFile
             {
                 get { return CLIOption.ScriptFile; }
             }
+
+            public string VersionMessage
+            {
+                get
+                {
+                    return string.Format("{0} Version {1}", Application.ProductName, Application.ProductVersion);
+                }
+            }
             
             public string helpMessageHtml
-            { get
+            {
+                get
                 {
                     var html = HttpUtility.HtmlEncode(HelpMessage);
                     html = html.Replace("\r\n", "<br>");
