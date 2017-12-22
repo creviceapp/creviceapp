@@ -63,15 +63,6 @@ namespace CreviceApp
             get; set;
         }
 
-        // todo g, nogui
-        // todo n, nocache
-        // todo s, scriptfile
-        // todo V, verbose
-        // todo v, version
-        // todo h, help
-
-        // todo p, priority 
-
         [CommandLine.ParserState]
         public CommandLine.IParserState LastParserState { get; set; }
 
