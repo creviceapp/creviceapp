@@ -10,24 +10,55 @@ namespace CreviceApp
 {
     public class CLIOption
     {
-        [CommandLine.Option("nogui", 
+        [CommandLine.Option('g', "nogui", 
             DefaultValue = false,
-            HelpText = "Whether disable GUI features or not. Set to true if you use CreviceApp as a CUI application.")]
+            HelpText = "Whether disable GUI features or not. Set to true if you use Crevice as a CUI application.")]
         public bool NoGUI
         {
             get; set;
         }
-        
-        [CommandLine.Option("script",
-            DefaultValue = "default.csx",
-            HelpText = "The path to the user script file. " + 
-                       "Use this option if you need to change the default location of the user script. " + 
-                       "If given value is relative path, CreviceApp will resolve it to absolute path based on the default folder (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).")]
-        public string Script
+
+        [CommandLine.Option('n', "nocache",
+            DefaultValue = false,
+            HelpText = "Whether disable user script assembly caching feature or not. Strongly recommend this value to false because compiling task consuming CPU every startup of application if true.")]
+        public bool NoCache
         {
             get; set;
         }
         
+        [CommandLine.Option('s', "scriptfile",
+            DefaultValue = "default.csx",
+            HelpText = "Path to user script file. " + 
+                       "Use this option if you need to change the default location of user script. " + 
+                       "If given value is relative path, Crevice will resolve it to absolute path based on the default folder (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).")]
+        public string ScriptFile
+        {
+            get; set;
+        }
+
+        [CommandLine.Option('V', "verbose",
+            DefaultValue = false,
+            HelpText = "Whether show details about running application.")]
+        public bool Verbose
+        {
+            get; set;
+        }
+
+        [CommandLine.Option('v', "version",
+            DefaultValue = false,
+            HelpText = "Display product version.")]
+        public bool Version
+        {
+            get; set;
+        }
+
+        // todo g, nogui
+        // todo n, nocache
+        // todo s, scriptfile
+        // todo V, verbose
+        // todo v, version
+        // todo h, help
+
         [CommandLine.ParserState]
         public CommandLine.IParserState LastParserState { get; set; }
 
@@ -57,25 +88,52 @@ namespace CreviceApp
         
         public class Result
         {
-            public bool NoGUI { internal set; get; }
-            public string Script { internal set; get; }
-            public bool parseSuccess { internal set; get; }
-            public string helpMessage { internal set; get; }
+            private CLIOption CLIOption { set; get; }
+
+            public bool ParseSuccess { internal set; get; }
+
+            public string HelpMessage { internal set; get; }
+
+            public Result(CLIOption cliOption, bool parseSuccess, string helpMessage)
+            {
+                this.CLIOption = cliOption;
+                this.ParseSuccess = parseSuccess;
+                this.HelpMessage = helpMessage;
+            }
+
+            public bool NoGUI
+            {
+                get { return CLIOption.NoGUI; }
+            }
+
+            public bool NoCache
+            {
+                get { return CLIOption.NoCache; }
+            }
+            
+            public bool Verbose
+            {
+                get { return CLIOption.Verbose; }
+            }
+            
+            public bool Version
+            {
+                get { return CLIOption.Version; }
+            }
+
+
+            public string ScriptFile
+            {
+                get { return CLIOption.ScriptFile; }
+            }
+            
             public string helpMessageHtml
             { get
                 {
-                    var html = HttpUtility.HtmlEncode(helpMessage);
+                    var html = HttpUtility.HtmlEncode(HelpMessage);
                     html = html.Replace("\r\n", "<br>");
                     return html;
                 }
-            }
-
-            public Result(bool NoGUI, string Script, bool parseSuccess, string helpMessage)
-            {
-                this.NoGUI = NoGUI;
-                this.Script = Script;
-                this.parseSuccess = parseSuccess;
-                this.helpMessage = helpMessage;
             }
         }
 
@@ -89,7 +147,7 @@ namespace CreviceApp
             stringWriter.Close();
             var helpMessage = stringWriter.ToString();
 
-            var result = new Result(cliOption.NoGUI, cliOption.Script, tryParse, helpMessage);
+            var result = new Result(cliOption, tryParse, helpMessage);
             return result;
         }
 

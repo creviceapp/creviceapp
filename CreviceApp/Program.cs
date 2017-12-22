@@ -24,9 +24,9 @@ namespace CreviceApp
             WinAPI.Console.Console.AttachConsole();
 
             var Global = new AppGlobal();
-            if (!Global.CLIOption.parseSuccess)
+            if (!Global.CLIOption.ParseSuccess)
             {
-                Console.WriteLine(Global.CLIOption.helpMessage);
+                Console.WriteLine(Global.CLIOption.HelpMessage);
                 WinAPI.Console.Console.FreeConsole();
                 return;
             } 
