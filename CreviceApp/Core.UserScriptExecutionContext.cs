@@ -68,34 +68,34 @@ namespace CreviceApp.Core
             Global.MainForm.ShowTooltip(text, point, duration);
         }
 
-        public void Baloon(string text)
+        public void Balloon(string text)
         {
-            Baloon(text, Global.UserConfig.UI.BaloonTimeout);
+            Balloon(text, Global.UserConfig.UI.BalloonTimeout);
         }
 
-        public void Baloon(string text, int timeout)
+        public void Balloon(string text, int timeout)
         {
-            Global.MainForm.ShowBaloon(text, "", ToolTipIcon.None, timeout);
+            Global.MainForm.ShowBalloon(text, "", ToolTipIcon.None, timeout);
         }
 
-        public void Baloon(string text, string title)
+        public void Balloon(string text, string title)
         {
-            Baloon(text, title, ToolTipIcon.None, Global.UserConfig.UI.BaloonTimeout);
+            Balloon(text, title, ToolTipIcon.None, Global.UserConfig.UI.BalloonTimeout);
         }
 
-        public void Baloon(string text, string title, int timeout)
+        public void Balloon(string text, string title, int timeout)
         {
-            Global.MainForm.ShowBaloon(text, title, ToolTipIcon.None, timeout);
+            Global.MainForm.ShowBalloon(text, title, ToolTipIcon.None, timeout);
         }
 
-        public void Baloon(string text, string title, ToolTipIcon icon)
+        public void Balloon(string text, string title, ToolTipIcon icon)
         {
-            Baloon(text, title, icon, Global.UserConfig.UI.BaloonTimeout);
+            Balloon(text, title, icon, Global.UserConfig.UI.BalloonTimeout);
         }
 
-        public void Baloon(string text, string title, ToolTipIcon icon, int timeout)
+        public void Balloon(string text, string title, ToolTipIcon icon, int timeout)
         {
-            Global.MainForm.ShowBaloon(text, title, icon, timeout);
+            Global.MainForm.ShowBalloon(text, title, icon, timeout);
         }
     }
 }
