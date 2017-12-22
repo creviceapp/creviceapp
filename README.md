@@ -3,18 +3,61 @@
 |--------|---------|
 | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
 
-CreviceApp is a mouse gesture utility which is consisted of small and robust core of 2000 lines fully tested, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
-Mouse gestures can be defined as a csx file, so there is nothing that can not be done.<sup>[citation needed]</sup>
+![alt icon](https://raw.githubusercontent.com/rubyu/CreviceApp/develop/CreviceApp/creviceicon.png)
+
+Crevice is a mouse gesture utility which is consisted of small and robust core of 2000 lines fully tested, thin GUI wrapper, and [Microsoft Roslyn](https://github.com/dotnet/roslyn).
+Mouse gestures can be defined as a C# Script file, so there is nothing that can not be done.<sup>[citation needed]</sup>
 
 This software requires Windows 7 or later, and .Net Framework 4.6.
 
-## User script
+## Quickstart
 
-After the first startup of `CreviceApp.exe`, move to `%APPDATA%\Crevice\CreviceApp`, and you could find `default.csx`. It's the user script file. Please open it with a text editor and take a look at it.
+Extract zip file to any location, and Click `CreviceApp.exe`.
 
-It is merely a csharp script file. You can use `#load` directive to load another csx file and can use `#r` directive to add  assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+### Userscript
 
-For more details, see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives).
+After the first execution of Crevice, you could find `default.csx` in the directory `%APPDATA%\Crevice\CreviceApp`. It's the user script file. Please open it with a text editor and take a look through.
+
+
+After several `using` declaring lines, you will see `Browser` definition following:
+
+```cs
+var Browser = @when((ctx) =>
+{
+    return ctx.ForegroundWindow.ModuleName == "chrome.exe" ||
+           ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
+           ctx.ForegroundWindow.ModuleName == "opera.exe" ||
+           ctx.ForegroundWindow.ModuleName == "iexplore.exe");
+});
+```
+
+When the `ModuleName` of `ForegroundWindow` is as follows, `chrome.exe`, `firefox.exe`, `opera.exe` .., then, `@when` returns true; this is a declare of browsers. 
+
+After declaration of `Browser`, the declaration of mouse gestures of it follows. Let's see the first one:
+
+```cs
+Browser.
+@on(RightButton).
+@if(WheelUp).
+@do((ctx) =>
+{
+    SendInput.Multiple().
+    ExtendedKeyDown(VK_CONTROL).
+    ExtendedKeyDown(VK_SHIFT).
+    ExtendedKeyDown(VK_TAB).
+    ExtendedKeyUp(VK_TAB).
+    ExtendedKeyUp(VK_SHIFT).
+    ExtendedKeyUp(VK_CONTROL).
+    Send(); // Previous tab
+});
+```
+
+This is a mouse gesture definition; when you press and hold `RightButton`, and then if you `WheelUp` the mouse, codes declared in `@do` will be executed.
+
+
+This file is just a C# Script file. So, you can use `#load` directive to load another csx file, and can use `#r` directive to add assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `CreviceApp.exe`. In other words, if there need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+
+For more information about C# Script, please see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives).
 
 ## Mouse gesture DSL
 
@@ -54,7 +97,7 @@ And finally, `@do` clause represents the action of the gesture to be activated w
 
 ### Stroke gestures
 
-"Mouse gestures by strokes", namely "stroke gesture" is in the functions of mouse gesture utilities, is the most important part. CreviceApp naturally supports this.
+"Mouse gestures by strokes", namely "stroke gesture" is in the functions of mouse gesture utilities, is the most important part. Crevice naturally supports this.
 
 `@if` clause takes arguments that consist of combination of `MoveUp`, `MoveDown`, `MoveLeft` and `MoveRight`. These are directions of movements of the mouse pointer.
 
@@ -77,7 +120,7 @@ Chrome.
 ### Button gestures
 As you may know, mouse gestures with buttons is called "rocker gestures" in mouse gesture utility communities. 
 But we call it "button gestures" here. 
-CreviceApp supports two kinds of button gestures. 
+Crevice supports two kinds of button gestures. 
 Both these button gestures are almost the same except that the one have `@on` clause and the other do not have it.
 
 `@if` clause takes an argument any of following; `LeftButton`, `MiddleButton`, `RightButton`, `WheelUp`, `WheelDown`, `WheelLeft`, `WheelRight`, `X1Button`, `X2Button`.
@@ -198,6 +241,39 @@ Config.UI.TooltipPositionBinding = (point) =>
     return newPoint;
 }
 ```
+
+## Comamnd line interface
+
+```
+Usage:
+  CreviceApp.exe [--nogui] [--script path] [--help]
+
+  -g, --nogui       (Default: False) Disable GUI features. Set to true if you 
+                    use Crevice as a CUI application.
+
+  -n, --nocache     (Default: False) Disable user script assembly caching. 
+                    Strongly recommend this value to false because compiling 
+                    task consumes CPU resources every startup of application if
+                    true.
+
+  -s, --script      (Default: default.csx) Path to user script file. Use this 
+                    option if you need to change the default location of user 
+                    script. If given value is relative path, Crevice will 
+                    resolve it to absolute path based on the default directory 
+                    (%USERPROFILE%\AppData\Roaming\Crevice\CreviceApp).
+
+  -p, --priority    (Default: High) Process priority. Acceptable values are the
+                    following: AboveNormal, BelowNormal, High, Idle, Normal, 
+                    RealTime.
+
+  -V, --verbose     (Default: False) Show details about running application.
+
+  -v, --version     (Default: False) Display product version.
+
+  --help            Display this help screen.
+```
+
+Added in Crevice 3.0.
 
 ## Core API
 
