@@ -231,8 +231,8 @@ Config.Gesture.Timeout = 1000; // ms
 // The period of time for showing a tooltip message.
 Config.UI.TooltipTimeout = 3000; // ms
 
-// The period of time for showing a baloon message.
-Config.UI.BaloonTimeout = 10000; // ms
+// The period of time for showing a balloon message.
+Config.UI.BalloonTimeout = 10000; // ms
 
 // Binding for the position of tooltip messages.
 Config.UI.TooltipPositionBinding = (point) =>
@@ -466,29 +466,29 @@ Show a tooltip message at the specified position.
 
 Show a tooltip message at the specified position for a specified period.
 
-#### Baloon(string text)
+#### Balloon(string text)
 
-Show a baloon message.
+Show a balloon message.
 
 ```cs
-Baloon("This is baloon.");
+Balloon("This is balloon.");
 ```
 
-#### Baloon(string text, string title)
+#### Balloon(string text, string title)
 
-Show a baloon message and a title.
+Show a balloon message and a title.
 
-#### Baloon(string text, string title, int timeout)
+#### Balloon(string text, string title, int timeout)
 
-Show a baloon message and a title for a specified period.
+Show a balloon message and a title for a specified period.
 
-#### Baloon(string text, string title, ToolTipIcon icon)
+#### Balloon(string text, string title, ToolTipIcon icon)
 
-Show a baloon message, a title, and a icon.
+Show a balloon message, a title, and a icon.
 
-#### Baloon(string text, string title, ToolTipIcon icon, int timeout)
+#### Balloon(string text, string title, ToolTipIcon icon, int timeout)
 
-Show a baloon message, a title, and a icon for a specified period.
+Show a balloon message, a title, and a icon for a specified period.
 
 ## Extension API
 

@@ -56,7 +56,7 @@ namespace CreviceApp
                     if (!Global.CLIOption.NoGUI)
                     {
                         RegisterNotifyIcon();
-                        ShowBaloon(string.Format("{0} gesture definitions were loaded", GestureMachine.GestureDefinition.Count()),
+                        ShowBalloon(string.Format("{0} gesture definitions were loaded", GestureMachine.GestureDefinition.Count()),
                             "Crevice is started",
                             ToolTipIcon.Info, 10000);
                         notifyIcon1.Text = string.Format("{0}\nGestures: {1}",
@@ -153,7 +153,7 @@ namespace CreviceApp
             InvokeProperly(invoker);
         }
 
-        public void ShowBaloon(string text, string title, ToolTipIcon icon, int timeout)
+        public void ShowBalloon(string text, string title, ToolTipIcon icon, int timeout)
         {
             var invoker = (MethodInvoker)delegate ()
             {
