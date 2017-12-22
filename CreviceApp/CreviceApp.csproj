@@ -98,7 +98,14 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>creviceicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.CodeAnalysis.Common.1.2.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
@@ -153,6 +160,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CLIOption.cs" />
     <Compile Include="Core.AppGlobal.cs" />
     <Compile Include="Core.Config.GestureConfig.cs" />
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
@@ -171,7 +179,9 @@
     <Compile Include="Core.GestureDefinition.cs" />
     <Compile Include="Core.Stroke.cs" />
     <Compile Include="Core.StrokeWatcher.cs" />
+    <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />
+    <Compile Include="Core.Verbose.cs" />
     <Compile Include="DSL.Def.cs" />
     <Compile Include="DSL.DoubleTriggerBeforeElement.cs" />
     <Compile Include="DSL.DoubleTriggerDoElement.cs" />
@@ -183,6 +193,18 @@
     <Compile Include="DSL.OnElement.cs" />
     <Compile Include="DSL.Root.cs" />
     <Compile Include="DSL.WhenElement.cs" />
+    <Compile Include="UI.LauncherForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI.LauncherForm.Designer.cs">
+      <DependentUpon>UI.LauncherForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI.MainForm.Designer.cs">
+      <DependentUpon>UI.MainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI.MouseGestureForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,12 +214,6 @@
     <Compile Include="UI.ProductInfoForm.Designer.cs">
       <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI.MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI.MainForm.Designer.cs">
-      <DependentUpon>UI.MainForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Logging.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -206,14 +222,21 @@
     <Compile Include="Core.UserActionExecutionContext.cs" />
     <Compile Include="UI.TooltipNotifier.cs" />
     <Compile Include="WinAPI.Constants.WindowsMessages.cs" />
+    <Compile Include="WinAPI.Console.cs" />
     <Compile Include="WinAPI.Helper.cs" />
     <Compile Include="WinAPI.Constants.VirtualKeys.cs" />
     <Compile Include="WinAPI.SendInput.cs" />
-    <EmbeddedResource Include="UI.ProductInfoForm.resx">
-      <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI.LauncherForm.resx">
+      <DependentUpon>UI.LauncherForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI.MainForm.resx">
       <DependentUpon>UI.MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI.MouseGestureForm.resx">
+      <DependentUpon>UI.MouseGestureForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI.ProductInfoForm.resx">
+      <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -262,6 +285,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ProductInfo.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="creviceicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

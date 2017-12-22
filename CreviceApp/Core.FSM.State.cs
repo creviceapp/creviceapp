@@ -124,7 +124,7 @@ namespace CreviceApp.Core.FSM
 
         protected internal void IgnoreNext(Def.Event.IDoubleActionRelease evnt)
         {
-            Debug.Print("IgnoreNext flag is set for {0}. This event will be ignored next time.", evnt.GetType().Name);
+            Verbose.Print("IgnoreNext flag is set for {0}. This event will be ignored next time.", evnt.GetType().Name);
             Global.IgnoreNext.Add(evnt);
         }
     }

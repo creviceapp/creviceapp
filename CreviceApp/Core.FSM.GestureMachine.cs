@@ -36,7 +36,7 @@ namespace CreviceApp.Core.FSM
                 var res = State.Input(evnt, point);   
                 if (State.GetType() != res.NextState.GetType())
                 {
-                    Debug.Print("The state of GestureMachine was changed: {0} -> {1}", State.GetType().Name, res.NextState.GetType().Name);
+                    Verbose.Print("The state of GestureMachine was changed: {0} -> {1}", State.GetType().Name, res.NextState.GetType().Name);
 
                     // Special side effect 1
                     if (res.NextState is State1 || res.NextState is State2)
