@@ -179,6 +179,7 @@
     <Compile Include="Core.GestureDefinition.cs" />
     <Compile Include="Core.Stroke.cs" />
     <Compile Include="Core.StrokeWatcher.cs" />
+    <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />
     <Compile Include="DSL.Def.cs" />
     <Compile Include="DSL.DoubleTriggerBeforeElement.cs" />

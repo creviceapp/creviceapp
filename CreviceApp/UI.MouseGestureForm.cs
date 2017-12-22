@@ -5,7 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -17,7 +16,7 @@ namespace CreviceApp
     using Microsoft.CodeAnalysis.Scripting;
     using Microsoft.CodeAnalysis.CSharp.Scripting;
     using WinAPI.WindowsHookEx;
-    
+
     public class MouseGestureForm : Form
     {
         private const int WM_DISPLAYCHANGE = 0x007E;
@@ -64,7 +63,7 @@ namespace CreviceApp
             }
         }
 
-        private string GetDefaultUserScript()
+        private string GetUserScript()
         {
             var scriptFile = UserScriptFile;
             var dir = Directory.GetParent(scriptFile);
@@ -79,11 +78,11 @@ namespace CreviceApp
             return File.ReadAllText(scriptFile, Encoding.UTF8);
         }
 
-        private IEnumerable<Core.GestureDefinition> EvaluateUserScriptAsync(Core.UserScriptExecutionContext ctx)
+        private UserScriptAssembly.Cache CompileUserScript(UserScriptAssembly usa, string userScript)
         {
-            Debug.Print("Trying to compile and evaluate user script");
+            Debug.Print("Compiling UserScript");
             var script = CSharpScript.Create(
-                GetDefaultUserScript(),
+                userScript,
                 ScriptOptions.Default
                     .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
                     .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
@@ -99,23 +98,58 @@ namespace CreviceApp
             var peStream = new MemoryStream();
             var pdbStream = new MemoryStream();
             compilation.Emit(peStream, pdbStream);
+            var cache = usa.CreateCache(userScript, peStream.GetBuffer(), pdbStream.GetBuffer());
+            Debug.Print("UserScriptAssemblyCache generated");
+            return cache;
+        }
 
-            var assembly = Assembly.Load(peStream.GetBuffer(), pdbStream.GetBuffer());
+        private IEnumerable<Core.GestureDefinition> EvaluateUserScript(UserScriptAssembly.Cache cache, Core.UserScriptExecutionContext ctx)
+        {
+            Debug.Print("Evaluating UserScript");
+            var assembly = Assembly.Load(cache.pe, cache.pdb);
             var type = assembly.GetType("Submission#0");
             var factory = type.GetMethod("<Factory>");
             var parameterinfo = factory.GetParameters();
 
             var parameters = new object[] { new object[] { ctx, null } };
             var result = factory.Invoke(null, parameters);
-            Debug.Print("User script evaluated");
+            Debug.Print("UserScript evaluated");
 
             return ctx.GetGestureDefinition();
+        }
+
+        private UserScriptAssembly.Cache GetUserScriptAssemblyCache(string userScript)
+        {
+            var cachePath = Path.Combine(UserDirectory, "crevice.userscript.assembly.cache");
+            var usa = new UserScriptAssembly();
+            if (File.Exists(cachePath))
+            {
+                Debug.Print("Loading UserScriptAssemblyCache");
+                var loadedCache = usa.Load(cachePath);
+                Debug.Print("UserScriptAssemblyCache loaded");
+                if (usa.IsCompatible(loadedCache, GetUserScript()))
+                {
+                    return loadedCache;
+                }
+            }
+            var generatedCache = CompileUserScript(usa, userScript);
+            Debug.Print("Saving UserScriptAssemblyCache");
+            usa.Save(cachePath, generatedCache);
+            Debug.Print("UserScriptAssemblyCache saved");
+            return generatedCache;
+        }
+
+        private IEnumerable<Core.GestureDefinition> GetGestureDef(Core.UserScriptExecutionContext ctx)
+        {
+            var userScript = GetUserScript();
+            var cache = GetUserScriptAssemblyCache(userScript);
+            return EvaluateUserScript(cache, ctx);
         }
 
         protected void InitializeGestureMachine()
         {
             var ctx = new Core.UserScriptExecutionContext(Global);
-            var gestureDef = EvaluateUserScriptAsync(ctx);
+            var gestureDef = GetGestureDef(ctx);
             this.GestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
         }
 
