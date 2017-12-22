@@ -86,6 +86,8 @@ namespace CreviceApp
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
+            Opacity = 0;
+            Show();
             var rect = Screen.PrimaryScreen.Bounds;
             Left = (rect.Width - Width) / 2;
             Top = (rect.Height - Height) / 2;

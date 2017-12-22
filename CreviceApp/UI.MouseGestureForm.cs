@@ -93,14 +93,22 @@ namespace CreviceApp
                     .WithReferences("Microsoft.CSharp")           // Microsoft.CSharp.dll
                     .WithReferences(Assembly.GetEntryAssembly()), // CreviceApp.exe
                 globalsType: typeof(Core.UserScriptExecutionContext));
-            var diagnotstics = script.Compile();
+
+            var compilation = script.GetCompilation();
             Debug.Print("Compile finished");
-            foreach (var dg in diagnotstics.Select((v, i) => new { v, i }))
-            {
-                Debug.Print("[{0}] {1}", dg.i, dg.v.ToString());
-            }
-            script.RunAsync(ctx).Wait();
+            var peStream = new MemoryStream();
+            var pdbStream = new MemoryStream();
+            compilation.Emit(peStream, pdbStream);
+
+            var assembly = Assembly.Load(peStream.GetBuffer(), pdbStream.GetBuffer());
+            var type = assembly.GetType("Submission#0");
+            var factory = type.GetMethod("<Factory>");
+            var parameterinfo = factory.GetParameters();
+
+            var parameters = new object[] { new object[] { ctx, null } };
+            var result = factory.Invoke(null, parameters);
             Debug.Print("User script evaluated");
+
             return ctx.GetGestureDefinition();
         }
 
