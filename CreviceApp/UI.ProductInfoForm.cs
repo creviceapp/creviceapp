@@ -32,7 +32,6 @@ namespace CreviceApp
                 Application.ProductVersion,
                 ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false)).Copyright,
                 url,
-                url,
                 cliOption.helpMessageHtml);
         }
 

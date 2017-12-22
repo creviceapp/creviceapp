@@ -5,20 +5,24 @@ html
 {{
  	line-height: 1.8; 
 }}
-.header1 
+.appname 
 {{
- 	font-size: 120%; 
+ 	font-size: 100%; 
  	font-weight: bold; 
 }}
-.header2 
+.version 
 {{
  	font-size: 100%; 
 }}
-.header3 
+.license 
 {{
- 	font-size: 100%; 
+ 	font-size: 80%; 
 }}  
-.header4
+.link 
+{{
+ 	font-size: 80%; 
+}}  
+.usage
 {{
  	font-size: 60%; 
 }}
@@ -29,10 +33,9 @@ html
 </style>
 </head>
 <body>
-    <div class="center header1">{0}</div>
-	<div class="center header3">Version: {1}</div>
-	<div class="center header2">{2}</div>
-	<div class="center header3"><a href="{3}">{4}</a></div>
-    <div class="header4"><pre>{5}</pre></div>
+    <div class="center"><span class="appname">{0}</span> <span class="version">{1}</span></div>
+    <div class="center license">{2}</div>
+    <div class="center link"><a href="{3}">{3}</a></div>
+    <div class="usage"><pre>{4}</pre></div>
 </body>
 </html>
