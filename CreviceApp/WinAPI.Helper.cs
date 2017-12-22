@@ -41,19 +41,19 @@ namespace CreviceApp.WinAPI
         public void Success()
         {
             Add("Success");
-            Debug.Print(buffer.ToString());
+            Verbose.Print(buffer.ToString());
         }
 
         public void Fail()
         {
             Add("Failed");
-            Debug.Print(buffer.ToString());
+            Verbose.Print(buffer.ToString());
         }
 
         public void FailWithErrorCode()
         {
             Add("Failed; ErrorCode: {0}", Marshal.GetLastWin32Error());
-            Debug.Print(buffer.ToString());
+            Verbose.Print(buffer.ToString());
         }
     }
 }

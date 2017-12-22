@@ -47,7 +47,7 @@ namespace CreviceApp
                 {
                     var registry = AutorunRegistry();
                     registry.SetValue(Application.ProductName, Application.ExecutablePath);
-                    Debug.Print("Autorun was set to true");
+                    Verbose.Print("Autorun was set to true");
                     registry.Close();
                 }
                 else
@@ -56,7 +56,7 @@ namespace CreviceApp
                     try
                     {
                         registry.DeleteValue(Application.ProductName);
-                        Debug.Print("Autorun was set to false");
+                        Verbose.Print("Autorun was set to false");
                     }
                     catch (ArgumentException) { }
                     registry.Close();

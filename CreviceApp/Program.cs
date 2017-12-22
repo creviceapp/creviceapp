@@ -41,17 +41,17 @@ namespace CreviceApp
             if (Global.CLIOption.Verbose)
             {
                 WinAPI.Console.Console.AttachConsole();
-                Console.WriteLine("CreviceApp is running in verbose mode.");
+                Verbose.Output.Enable();
             }
 
-            Debug.Print(string.Format("CLIOption.NoGUI: {0}", Global.CLIOption.NoGUI));
-            Debug.Print(string.Format("CLIOption.NoCache: {0}", Global.CLIOption.NoCache));
-            Debug.Print(string.Format("CLIOption.Verbose: {0}", Global.CLIOption.Verbose));
-            Debug.Print(string.Format("CLIOption.Version: {0}", Global.CLIOption.Version));
-            Debug.Print(string.Format("CLIOption.ProcessPriority: {0}", Global.CLIOption.ProcessPriority));
-            Debug.Print(string.Format("CLIOption.ScriptFile: {0}", Global.CLIOption.ScriptFile));
+            Verbose.Print("CLIOption.NoGUI: {0}", Global.CLIOption.NoGUI);
+            Verbose.Print("CLIOption.NoCache: {0}", Global.CLIOption.NoCache);
+            Verbose.Print("CLIOption.Verbose: {0}", Global.CLIOption.Verbose);
+            Verbose.Print("CLIOption.Version: {0}", Global.CLIOption.Version);
+            Verbose.Print("CLIOption.ProcessPriority: {0}", Global.CLIOption.ProcessPriority);
+            Verbose.Print("CLIOption.ScriptFile: {0}", Global.CLIOption.ScriptFile);
 
-            Debug.Print(string.Format("Setting ProcessPriority to {0}", Global.CLIOption.ProcessPriority));
+            Verbose.Print("Setting ProcessPriority to {0}", Global.CLIOption.ProcessPriority);
             SetProcessPriority(Global.CLIOption.ProcessPriority);
             
             Application.Run(Global.MainForm);

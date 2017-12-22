@@ -52,15 +52,15 @@ namespace CreviceApp
                 try
                 {
                     StartCapture();
-                    Console.WriteLine("CreviceApp is started.");
+                    Verbose.Print("CreviceApp is started.");
                     if (!Global.CLIOption.NoGUI)
                     {
                         RegisterNotifyIcon();
                         ShowBaloon(string.Format("{0} gesture definitions were loaded", GestureMachine.GestureDefinition.Count()),
-                            string.Format("{0} was started", Application.ProductName),
+                            "Crevice is started",
                             ToolTipIcon.Info, 10000);
                         notifyIcon1.Text = string.Format("{0}\nGestures: {1}",
-                            Application.ProductName,
+                            "Crevice",
                             GestureMachine.GestureDefinition.Count());
                     }
                 }
@@ -79,10 +79,14 @@ namespace CreviceApp
 
         private void ReleaseUnusedMemory()
         {
+            var stopwatch = new Stopwatch();
             var totalMemory = GC.GetTotalMemory(false);
-            Debug.Print("Releasing unused memory");
+            Verbose.Print("Releasing unused memory...");
+            stopwatch.Start();
             GC.Collect(2);
-            Debug.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
+            stopwatch.Stop();
+            Verbose.Print("Unused memory releasing finished. ({0})", stopwatch.Elapsed);
+            Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
         }
 
         private void RegisterNotifyIcon()
@@ -113,8 +117,8 @@ namespace CreviceApp
             }
             notifyIcon1.Visible = false;
             tooltip.Dispose();
+            Verbose.Print("CreviceApp is ended.");
             WinAPI.Console.Console.FreeConsole();
-            Console.WriteLine("CreviceApp is ended.");
 
         }
 
@@ -130,10 +134,12 @@ namespace CreviceApp
             }
         }
 
-        public void ShowFatalErrorDialog(string text)
+        public void ShowFatalErrorDialog(string message)
         {
-            MessageBox.Show(text,
-                "Fatal error",
+
+            Verbose.Print(message);
+            MessageBox.Show(message,
+                "Error",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }

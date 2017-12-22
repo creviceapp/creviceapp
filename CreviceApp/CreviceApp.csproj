@@ -181,6 +181,7 @@
     <Compile Include="Core.StrokeWatcher.cs" />
     <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />
+    <Compile Include="Core.Verbose.cs" />
     <Compile Include="DSL.Def.cs" />
     <Compile Include="DSL.DoubleTriggerBeforeElement.cs" />
     <Compile Include="DSL.DoubleTriggerDoElement.cs" />

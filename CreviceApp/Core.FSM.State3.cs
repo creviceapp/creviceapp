@@ -51,14 +51,14 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionRelease;
                 if (ev == secondaryEvent.GetPair())
                 {
-                    Debug.Print("[Transition 3_0]");
+                    Verbose.Print("[Transition 3_0]");
                     ExecuteUserDoFuncInBackground(ctx, T1);
                     ExecuteUserAfterFuncInBackground(ctx, T1);
                     return Result.EventIsConsumed(nextState: S2);
                 }
                 else if (ev == primaryEvent.GetPair())
                 {
-                    Debug.Print("[Transition 3_1]");
+                    Verbose.Print("[Transition 3_1]");
                     IgnoreNext(secondaryEvent.GetPair());
                     ExecuteUserAfterFuncInBackground(ctx, T1);
                     ExecuteUserAfterFuncInBackground(ctx, T0);
@@ -70,7 +70,7 @@ namespace CreviceApp.Core.FSM
 
         public override IState Reset()
         {
-            Debug.Print("[Transition 3_2]");
+            Verbose.Print("[Transition 3_2]");
             IgnoreNext(primaryEvent.GetPair());
             IgnoreNext(secondaryEvent.GetPair());
             ExecuteUserAfterFuncInBackground(ctx, T1);

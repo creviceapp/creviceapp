@@ -41,7 +41,7 @@ namespace CreviceApp.Core.FSM
                     var _T0 = FilterByWhenClause(ctx, T0[ev]);
                     if (_T0.Count() > 0)
                     {
-                        Debug.Print("[Transition 0_0]");
+                        Verbose.Print("[Transition 0_0]");
                         ExecuteUserDoFuncInBackground(ctx, _T0);
                         return Result.EventIsConsumed(nextState: this);
                     }
@@ -58,7 +58,7 @@ namespace CreviceApp.Core.FSM
                     var _T2 = T2.Keys.Contains(ev) ? FilterByWhenClause(ctx, T2[ev], cache) : new List<IfButtonGestureDefinition>();
                     if (_T1.Count() > 0 || _T2.Count() > 0)
                     {
-                        Debug.Print("[Transition 0_1]");
+                        Verbose.Print("[Transition 0_1]");
                         ExecuteUserBeforeFuncInBackground(ctx, _T2);
                         return Result.EventIsConsumed(nextState: new State1(Global, this, ctx, ev, _T1, _T2));
                     }
@@ -69,7 +69,7 @@ namespace CreviceApp.Core.FSM
         
         public override IState Reset()
         {
-            Debug.Print("[Transition 0_2]");
+            Verbose.Print("[Transition 0_2]");
             return this;
         }
 

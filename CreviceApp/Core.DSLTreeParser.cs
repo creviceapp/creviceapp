@@ -11,9 +11,12 @@ namespace CreviceApp.Core
     {
         public static IEnumerable<GestureDefinition> TreeToGestureDefinition(DSL.Root root)
         {
-            Debug.Print("Parsing tree of GestureConfig.DSL");
+            var stopwatch = new Stopwatch();
+            Verbose.Print("Parsing GestureConfigTree...");
+            stopwatch.Start();
             var gestureDef = Parse(root).ToList();
-            Debug.Print("Parse end.");
+            stopwatch.Stop();
+            Verbose.Print("GestureConfigTree parsing finished. ({0})", stopwatch.Elapsed);
             return gestureDef; 
         }
 

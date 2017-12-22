@@ -61,7 +61,7 @@ namespace CreviceApp.Core
             }
             catch (Exception ex)
             {
-                Debug.Print(
+                Verbose.Print(
                     "An exception was thrown when executing a BeforeFunc of a gesture. " +
                     "This error may automatically be recovered.\n{0} :\n{1}",
                     ex.GetType().Name,
@@ -77,7 +77,7 @@ namespace CreviceApp.Core
             }
             catch (Exception ex)
             {
-                Debug.Print(
+                Verbose.Print(
                     "An exception was thrown when executing a DoFunc of a gesture. " +
                     "This error may automatically be recovered.\n{0} :\n{1}",
                     ex.GetType().Name,
@@ -93,7 +93,7 @@ namespace CreviceApp.Core
             }
             catch (Exception ex)
             {
-                Debug.Print(
+                Verbose.Print(
                     "An exception was thrown when executing a AfterFunc of a gesture. " +
                     "This error may automatically be recovered.\n{0} :\n{1}",
                     ex.GetType().Name,
@@ -109,7 +109,7 @@ namespace CreviceApp.Core
             }
             catch (Exception ex)
             {
-                Debug.Print(
+                Verbose.Print(
                     "An exception was thrown when executing a WhenFunc of a gesture. " +
                     "This error may automatically be recovered.\n{0} :\n{1}",
                     ex.GetType().Name,

@@ -55,7 +55,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.ISingleAction;
                 if (T0.Keys.Contains(ev))
                 {
-                    Debug.Print("[Transition 2_0]");
+                    Verbose.Print("[Transition 2_0]");
                     ExecuteUserDoFuncInBackground(ctx, T0[ev]);
                     return Result.EventIsConsumed(nextState: this);
                 }
@@ -65,7 +65,7 @@ namespace CreviceApp.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionSet;
                 if (T1.Keys.Contains(ev))
                 {
-                    Debug.Print("[Transition 2_1]");
+                    Verbose.Print("[Transition 2_1]");
                     ExecuteUserBeforeFuncInBackground(ctx, T1[ev]);
                     return Result.EventIsConsumed(nextState: new State3(Global, S0, this, ctx, primaryEvent, ev, T3, T1[ev]));
                 }
@@ -78,17 +78,17 @@ namespace CreviceApp.Core.FSM
                     var stroke = Global.StrokeWatcher.GetStorke();
                     if (stroke.Count() > 0)
                     {
-                        Debug.Print("Stroke: {0}", stroke.ToString());
+                        Verbose.Print("Stroke: {0}", stroke.ToString());
                         if (T2.Keys.Contains(stroke))
                         {
-                            Debug.Print("[Transition 2_2]");
+                            Verbose.Print("[Transition 2_2]");
                             ExecuteUserDoFuncInBackground(ctx, T2[stroke]);
                             ExecuteUserAfterFuncInBackground(ctx, T3);
                         }
                     }
                     else
                     {
-                        Debug.Print("[Transition 2_3]");
+                        Verbose.Print("[Transition 2_3]");
                         ExecuteUserAfterFuncInBackground(ctx, T3);
                     }
                     return Result.EventIsConsumed(nextState: S0);
@@ -99,7 +99,7 @@ namespace CreviceApp.Core.FSM
         
         public override IState Reset()
         {
-            Debug.Print("[Transition 2_4]");
+            Verbose.Print("[Transition 2_4]");
             IgnoreNext(primaryEvent.GetPair());
             ExecuteUserAfterFuncInBackground(ctx, T3);
             return S0;
