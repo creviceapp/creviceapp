@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceApp", "CreviceApp.csproj", "{67EC531C-07C7-463A-87CE-F5F49496E271}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crevice", "Crevice.csproj", "{67EC531C-07C7-463A-87CE-F5F49496E271}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceAppTests", "..\CreviceAppTests\CreviceAppTests.csproj", "{73279195-6457-477E-89F9-7E4ACB8A00D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceTests", "..\CreviceAppTests\CreviceTests.csproj", "{73279195-6457-477E-89F9-7E4ACB8A00D7}"
 EndProject
-Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceAppUMP", "..\CreviceAppWindowsStore\PackageProject\CreviceAppUMP.jsproj", "{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}"
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceApp", "..\CreviceAppWindowsStore\PackageProject\CreviceApp.jsproj", "{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}"
 	ProjectSection(ProjectDependencies) = postProject
 		{67EC531C-07C7-463A-87CE-F5F49496E271} = {67EC531C-07C7-463A-87CE-F5F49496E271}
 	EndProjectSection

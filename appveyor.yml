@@ -17,8 +17,8 @@ platform:
   - Any CPU
 
 environment:
-  AppxPackage: true
-  GenerateAppxPackageOnBuild: true
+  AppxPackage: false
+  GenerateAppxPackageOnBuild: false
 
 configuration:
   - Release
