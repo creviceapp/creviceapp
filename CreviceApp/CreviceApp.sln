@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceApp", "CreviceApp.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceAppTests", "..\CreviceAppTests\CreviceAppTests.csproj", "{73279195-6457-477E-89F9-7E4ACB8A00D7}"
 EndProject
-Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceUniversalApp", "..\CreviceAppWindowsStore\PackageProject\CreviceUniversalApp.jsproj", "{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}"
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceAppUniversal", "..\CreviceAppUniversal\CreviceAppUniversal.jsproj", "{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}"
 	ProjectSection(ProjectDependencies) = postProject
 		{67EC531C-07C7-463A-87CE-F5F49496E271} = {67EC531C-07C7-463A-87CE-F5F49496E271}
 	EndProjectSection
@@ -69,8 +69,6 @@ Global
 		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Debug|x86.Build.0 = Debug|x86
 		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Debug|x86.Deploy.0 = Debug|x86
 		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Release|ARM.ActiveCfg = Release|ARM
 		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Release|ARM.Build.0 = Release|ARM
 		{5726C323-7977-4D2A-B3C7-0CB4CE9A2853}.Release|ARM.Deploy.0 = Release|ARM
