@@ -14,7 +14,7 @@ This software requires Windows 7 or later, and .Net Framework 4.6.
 
 ## Quickstart
 
-Extract zip file to any location, and Click `CreviceApp.exe`.
+Extract zip file to any location, and click `CreviceApp.exe`.
 
 ### Userscript
 
@@ -575,6 +575,9 @@ Sets window's current master mixer volume. The value should be within the range 
 ## Lisence
 
 MIT Lisense
+
+## Author
+[Rubyu](https://twitter.com/ruby_U), [Yasuyuki Nishiseki](mailto:tukigase@gmail.com)
 
 ## Latest releases (not recommended)
 
