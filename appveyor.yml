@@ -16,6 +16,10 @@ assembly_info:
 platform:
   - Any CPU
 
+environment:
+  AppxPackage: false
+  GenerateAppxPackageOnBuild: false
+
 configuration:
   - Release
 
