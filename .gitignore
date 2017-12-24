@@ -244,7 +244,10 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
+*.dll
+*.exe
+
 dist/
 
-CreviceAppWindowsStore/PackageProject/win32/*
-CreviceAppWindowsStore/PackageProject/_*
+CreviceAppUniversal/_*
+CreviceAppUniversal/win32
