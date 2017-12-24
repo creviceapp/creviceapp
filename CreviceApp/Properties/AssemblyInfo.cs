@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CommandLine;
@@ -38,3 +39,5 @@ using CommandLine;
 
 // 
 [assembly: InternalsVisibleTo("CreviceAppTests")]
+[assembly: NeutralResourcesLanguage("en")]
+
