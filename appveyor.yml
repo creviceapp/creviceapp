@@ -52,15 +52,6 @@ after_test:
         Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag"
       }
       cd ..
-      cd "CreviceAppWindowsStore\PackageProject\AppPackages"
-      7z a "$artifact.UMP.zip" "*"
-      Push-AppveyorArtifact "$artifact.UMP.zip" -FileName "$artifact.UMP.zip" -DeploymentName "Latest"
-      if ($tag -eq "true")
-      {
-        Push-AppveyorArtifact "$artifact.UMP.zip" -FileName "$artifact.$tagname.UMP.zip" -DeploymentName "Tag"
-      }
-      cd ..
-      cd ..
 
 deploy:
   - provider: GitHub
