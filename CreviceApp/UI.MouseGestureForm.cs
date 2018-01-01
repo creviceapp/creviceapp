@@ -20,8 +20,6 @@ namespace CreviceApp
 
     public class MouseGestureForm : Form
     {
-        private const int WM_DISPLAYCHANGE = 0x007E;
-
         protected Core.FSM.GestureMachine GestureMachine { get; private set; }
 
         private readonly LowLevelMouseHook mouseHook;
@@ -245,15 +243,83 @@ namespace CreviceApp
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            GestureMachine.Dispose();
+            if (GestureMachine != null)
+            {
+                GestureMachine.Dispose();
+            }
         }
+
+        private const int WM_DISPLAYCHANGE = 0x007E;
+        private const int WM_POWERBROADCAST = 0x0218;
+
+        private const int PBT_APMQUERYSUSPEND = 0x0000;
+        private const int PBT_APMQUERYSTANDBY = 0x0001;
+        private const int PBT_APMQUERYSUSPENDFAILED = 0x0002;
+        private const int PBT_APMQUERYSTANDBYFAILED = 0x0003;
+        private const int PBT_APMSUSPEND = 0x0004;
+        private const int PBT_APMSTANDBY = 0x0005;
+        private const int PBT_APMRESUMECRITICAL = 0x0006;
+        private const int PBT_APMRESUMESUSPEND = 0x0007;
+        private const int PBT_APMRESUMESTANDBY = 0x0008;
+        private const int PBT_APMBATTERYLOW = 0x0009;
+        private const int PBT_APMPOWERSTATUSCHANGE = 0x000A;
+        private const int PBT_APMOEMEVENT = 0x000B;
+        private const int PBT_APMRESUMEAUTOMATIC = 0x0012;
 
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
                 case WM_DISPLAYCHANGE:
+                    Verbose.Print("WndProc: WM_DISPLAYCHANGE");
                     GestureMachine.Reset();
+                    Verbose.Print("GestureMachine was reset.");
+                    break;
+
+                case WM_POWERBROADCAST:
+                    int reason = m.WParam.ToInt32();
+                    switch(reason)
+                    {
+                        case PBT_APMQUERYSUSPEND:
+                            Verbose.Print("WndProc: PBT_APMQUERYSUSPEND");
+                            break;
+                        case PBT_APMQUERYSTANDBY:
+                            Verbose.Print("WndProc: PBT_APMQUERYSTANDBY");
+                            break;
+                        case PBT_APMQUERYSUSPENDFAILED:
+                            Verbose.Print("WndProc: PBT_APMQUERYSUSPENDFAILED");
+                            break;
+                        case PBT_APMQUERYSTANDBYFAILED:
+                            Verbose.Print("WndProc: PBT_APMQUERYSTANDBYFAILED");
+                            break;
+                        case PBT_APMSUSPEND:
+                            Verbose.Print("WndProc: PBT_APMSUSPEND");
+                            break;
+                        case PBT_APMSTANDBY:
+                            Verbose.Print("WndProc: PBT_APMSTANDBY");
+                            break;
+                        case PBT_APMRESUMECRITICAL:
+                            Verbose.Print("WndProc: PBT_APMRESUMECRITICAL");
+                            break;
+                        case PBT_APMRESUMESUSPEND:
+                            Verbose.Print("WndProc: PBT_APMRESUMESUSPEND");
+                            break;
+                        case PBT_APMRESUMESTANDBY:
+                            Verbose.Print("WndProc: PBT_APMRESUMESTANDBY");
+                            break;
+                        case PBT_APMBATTERYLOW:
+                            Verbose.Print("WndProc: PBT_APMBATTERYLOW");
+                            break;
+                        case PBT_APMPOWERSTATUSCHANGE:
+                            Verbose.Print("WndProc: PBT_APMPOWERSTATUSCHANGE");
+                            break;
+                        case PBT_APMOEMEVENT:
+                            Verbose.Print("WndProc: PBT_APMOEMEVENT");
+                            break;
+                        case PBT_APMRESUMEAUTOMATIC:
+                            Verbose.Print("WndProc: PBT_APMRESUMEAUTOMATIC");
+                            break;
+                    }
                     break;
             }
             base.WndProc(ref m);
