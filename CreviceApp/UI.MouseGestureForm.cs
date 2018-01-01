@@ -243,7 +243,10 @@ namespace CreviceApp
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            GestureMachine.Dispose();
+            if (GestureMachine != null)
+            {
+                GestureMachine.Dispose();
+            }
         }
 
         private const int WM_DISPLAYCHANGE = 0x007E;
