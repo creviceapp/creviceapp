@@ -140,7 +140,7 @@ namespace CreviceApp
             stopwatch.Start();
             var diagnotstics = userScript.Compile();
             stopwatch.Stop();
-            Verbose.Print("UserScript compilation finished. ({ 0})", stopwatch.Elapsed);
+            Verbose.Print("UserScript compilation finished. ({0})", stopwatch.Elapsed);
             foreach (var dg in diagnotstics.Select((v, i) => new { v, i }))
             {
                 Verbose.Print("Diagnotstics[{0}]: {1}", dg.i, dg.v.ToString());
