@@ -60,6 +60,7 @@ namespace CreviceApp
         public UserScript(AppGlobal Global)
         {
             this.Global = Global;
+            Directory.CreateDirectory(UserDirectory);
         }
         
         public Watcher GetWatcher(ISynchronizeInvoke SynchronizingObject)
@@ -112,17 +113,16 @@ namespace CreviceApp
 
         public string GetUserScriptCode()
         {
-            var scriptFile = UserScriptFile;
-            var dir = Directory.GetParent(scriptFile);
-            if (!dir.Exists)
+            if (!Directory.Exists(UserDirectory))
             {
-                dir.Create();
+                Directory.CreateDirectory(UserDirectory);
             }
-            if (!File.Exists(scriptFile))
+
+            if (!File.Exists(UserScriptFile))
             {
-                File.WriteAllText(scriptFile, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
+                File.WriteAllText(UserScriptFile, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
             }
-            return File.ReadAllText(scriptFile, Encoding.UTF8);
+            return File.ReadAllText(UserScriptFile, Encoding.UTF8);
         }
 
         public Script ParseScript(string userScriptCode)

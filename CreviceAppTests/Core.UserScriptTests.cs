@@ -232,7 +232,6 @@ namespace CreviceApp
             var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
             userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
-
         }
 
         [TestMethod()]
@@ -247,7 +246,6 @@ namespace CreviceApp
             var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
             userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
-
         }
 
         public class SynchronizeInvokeMock : System.ComponentModel.ISynchronizeInvoke
