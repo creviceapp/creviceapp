@@ -108,7 +108,7 @@ namespace CreviceApp
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Process.Start("explorer.exe", "/select, " + Global.MainForm.UserScriptFile);
+            Process.Start("explorer.exe", "/select, " + Global.MainForm.UserScript.UserScriptFile);
         }
 
         private void button3_Click(object sender, EventArgs e)

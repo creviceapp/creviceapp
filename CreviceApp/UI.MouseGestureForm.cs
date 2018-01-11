@@ -14,8 +14,6 @@ using System.Windows.Forms;
 
 namespace CreviceApp
 {
-    using Microsoft.CodeAnalysis.Scripting;
-    using Microsoft.CodeAnalysis.CSharp.Scripting;
     using WinAPI.WindowsHookEx;
 
     public class MouseGestureForm : Form
@@ -23,6 +21,7 @@ namespace CreviceApp
         protected Core.FSM.GestureMachine GestureMachine { get; private set; }
 
         private readonly LowLevelMouseHook mouseHook;
+        public readonly UserScript UserScript;
         protected readonly AppGlobal Global;
 
         // Designer needs this dummy constuctor.
@@ -34,195 +33,14 @@ namespace CreviceApp
         public MouseGestureForm(AppGlobal Global)
         {
             this.mouseHook = new LowLevelMouseHook(MouseProc);
+            this.UserScript = new UserScript(Global);
             this.Global = Global;
-        }
-
-        // %USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp
-        public string DefaultUserDirectory
-        {
-            get
-            {
-                return Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    Application.CompanyName,
-                    Application.ProductName);
-            }
-        }
-
-        // Parent directory of UserScriptFile.
-        public string UserDirectory
-        {
-            get
-            {
-                return Directory.GetParent(UserScriptFile).FullName;
-            }
-        }
-        
-        public string UserScriptFile
-        {
-            get
-            {
-                var scriptPath = Global.CLIOption.ScriptFile;
-                if (Path.IsPathRooted(scriptPath))
-                {
-                    return scriptPath;
-                }
-                var uri = new Uri(new Uri(DefaultUserDirectory + "\\"), scriptPath);
-                return uri.LocalPath;
-            }
-        }
-
-        private string GetUserScriptCode()
-        {
-            var scriptFile = UserScriptFile;
-            var dir = Directory.GetParent(scriptFile);
-            if (!dir.Exists)
-            {
-                dir.Create();
-            }
-            if (!File.Exists(scriptFile))
-            {
-                File.WriteAllText(scriptFile, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
-            }
-            return File.ReadAllText(scriptFile, Encoding.UTF8);
-        }
-
-        private string GetUserScriptCacheFile()
-        {
-            return UserScriptFile + ".cache";
-        }
-
-        private Script ParseScript(string userScript)
-        {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Parsing UserScript...");
-            stopwatch.Start();
-            var script = CSharpScript.Create(
-                userScript,
-                ScriptOptions.Default
-                    .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
-                    .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
-                    .WithReferences("microlib")                   // microlib.dll
-                    .WithReferences("System")                     // System.dll
-                    .WithReferences("System.Core")                // System.Core.dll
-                    .WithReferences("Microsoft.CSharp")           // Microsoft.CSharp.dll
-                    .WithReferences(Assembly.GetEntryAssembly()), // CreviceApp.exe
-                                                                  // todo dynamic type
-                globalsType: typeof(Core.UserScriptExecutionContext));
-            stopwatch.Stop();
-            Verbose.Print("UserScript parse finished. ({0})", stopwatch.Elapsed);
-            return script;
-        }
-
-        private UserScriptAssembly.Cache CompileUserScript(UserScriptAssembly usa, string userScriptCode, Script userScript)
-        {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Compiling UserScript...");
-            stopwatch.Start();
-            var compilation = userScript.GetCompilation();
-            stopwatch.Stop();
-            Verbose.Print("UserScript compilation finished. ({0})", stopwatch.Elapsed);
-
-            var peStream = new MemoryStream();
-            var pdbStream = new MemoryStream();
-            Verbose.Print("Genarating UserScriptAssembly...");
-            stopwatch.Restart();
-            compilation.Emit(peStream, pdbStream);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssembly generation finished. ({0})", stopwatch.Elapsed);
-            return usa.CreateCache(userScriptCode, peStream.GetBuffer(), pdbStream.GetBuffer());
-        }
-
-        private IEnumerable<Core.GestureDefinition> EvaluateUserScript(Script userScript, Core.UserScriptExecutionContext ctx)
-        {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Compiling UserScript...");
-            stopwatch.Start();
-            var diagnotstics = userScript.Compile();
-            stopwatch.Stop();
-            Verbose.Print("UserScript compilation finished. ({0})", stopwatch.Elapsed);
-            foreach (var dg in diagnotstics.Select((v, i) => new { v, i }))
-            {
-                Verbose.Print("Diagnotstics[{0}]: {1}", dg.i, dg.v.ToString());
-            }
-            Verbose.Print("Evaluating UserScript...");
-            stopwatch.Restart();
-            userScript.RunAsync(ctx).Wait();
-            stopwatch.Stop();
-            Verbose.Print("UserScript evaluation finished. ({0})", stopwatch.Elapsed);
-            return ctx.GetGestureDefinition();
-        }
-
-        private IEnumerable<Core.GestureDefinition> EvaluateUserScriptAssembly(UserScriptAssembly.Cache cache, Core.UserScriptExecutionContext ctx)
-        {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Loading UserScriptAssembly...");
-            stopwatch.Start();
-            var assembly = Assembly.Load(cache.pe, cache.pdb);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssembly loading finished. ({0})", stopwatch.Elapsed);
-            Verbose.Print("Evaluating UserScriptAssembly...");
-            stopwatch.Restart();
-            var type = assembly.GetType("Submission#0");
-            var factory = type.GetMethod("<Factory>");
-            var parameters = new object[] { new object[] { ctx, null } };
-            var result = factory.Invoke(null, parameters);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssembly evaluation finished. ({0})", stopwatch.Elapsed);
-            return ctx.GetGestureDefinition();
-        }
-
-        private UserScriptAssembly.Cache GetUserScriptAssemblyCache(string userScriptCode, Script userScript)
-        {
-            var stopwatch = new Stopwatch();
-            var cacheFile = GetUserScriptCacheFile();
-            var usa = new UserScriptAssembly();
-            if (File.Exists(cacheFile))
-            {
-                Verbose.Print("Loading UserScriptAssemblyCache...");
-                stopwatch.Start();
-                var loadedCache = usa.Load(cacheFile);
-                stopwatch.Stop();
-                Verbose.Print("UserScriptAssemblyCache loading finished. ({0})", stopwatch.Elapsed);
-                if (usa.IsCompatible(loadedCache, userScriptCode))
-                {
-                    return loadedCache;
-                }
-                Verbose.Print("UserScriptAssemblyCache was discarded because of the signature was not match with this application.");
-            }
-            var generatedCache = CompileUserScript(usa, userScriptCode, userScript);
-            Verbose.Print("Saving UserScriptAssemblyCache...");
-            stopwatch.Restart();
-            usa.Save(cacheFile, generatedCache);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssemblyCache saving finished. ({0})", stopwatch.Elapsed);
-            return generatedCache;
-        }
-
-        private IEnumerable<Core.GestureDefinition> GetGestureDef(Core.UserScriptExecutionContext ctx)
-        {
-            var userScriptCode = GetUserScriptCode();
-            var userScript = ParseScript(userScriptCode);
-            if (!Global.CLIOption.NoCache)
-            {
-                try
-                {
-                    var cache = GetUserScriptAssemblyCache(userScriptCode, userScript);
-                    return EvaluateUserScriptAssembly(cache, ctx);
-                }
-                catch (Exception ex)
-                {
-                    Verbose.Print("Error occured when UserScript conpilation and save and restoration; fallback to the --nocache mode and continume");
-                    Verbose.Print(ex.ToString());
-                }
-            }
-            return EvaluateUserScript(userScript, ctx);
         }
 
         protected void InitializeGestureMachine()
         {
             var ctx = new Core.UserScriptExecutionContext(Global);
-            var gestureDef = GetGestureDef(ctx);
+            var gestureDef = UserScript.GetGestureDef(ctx);
             this.GestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
         }
 

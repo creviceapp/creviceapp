@@ -19,10 +19,14 @@ namespace CreviceApp
 
         public AppGlobal()
         {
-            // StreamWriter sw = new StreamWriter(@"C:\Crevice\debug.log");
-            // Debug.Listeners.Add(new TextWriterTraceListener(sw));
-
             this.CLIOption = CreviceApp.CLIOption.ParseEnvironmentCommandLine();
+            this.UserConfig = new Core.Config.UserConfig();
+            this.MainForm = new MainForm(this);
+        }
+
+        public AppGlobal(CLIOption.Result CLIOption)
+        {
+            this.CLIOption = CLIOption;
             this.UserConfig = new Core.Config.UserConfig();
             this.MainForm = new MainForm(this);
         }
