@@ -92,6 +92,7 @@ namespace CreviceApp
             Left = (rect.Width - Width) / 2;
             Top = (rect.Height - Height) / 2;
             Opacity = 1;
+            Activate();
         }
 
         protected override void OnClosing(CancelEventArgs e)
