@@ -276,6 +276,7 @@ namespace CreviceApp
                                 ToolTipIcon.Info, 10000);
                             Global.MainForm.UpdateTasktrayIconText(
                                 "{0}\nGestures: {1}", "Crevice", Instance.GestureDefinition.Count());
+                            ReleaseUnusedMemory();
                         }
                     }
                     finally
@@ -290,6 +291,18 @@ namespace CreviceApp
                 }
             }
             Verbose.Print("Hot reload was finished.");
+        }
+        
+        private void ReleaseUnusedMemory()
+        {
+            var stopwatch = new Stopwatch();
+            var totalMemory = GC.GetTotalMemory(false);
+            Verbose.Print("Releasing unused memory...");
+            stopwatch.Start();
+            GC.Collect(2);
+            stopwatch.Stop();
+            Verbose.Print("Unused memory releasing finished. ({0})", stopwatch.Elapsed);
+            Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
         }
 
         private bool disposed = false;
