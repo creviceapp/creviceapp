@@ -382,10 +382,7 @@ namespace CreviceApp
             {
                 case WM_DISPLAYCHANGE:
                     Verbose.Print("WndProc: WM_DISPLAYCHANGE");
-                    if (ReloadableGestureMachine.Instance != null)
-                    {
-                        ReloadableGestureMachine.Instance.Reset();
-                    }
+                    ReloadableGestureMachine.Instance.Reset();
                     Verbose.Print("GestureMachine was reset.");
                     break;
 
@@ -457,11 +454,6 @@ namespace CreviceApp
                 Debug.Print("{0} was passed to the next hook because this event has the signature of Tablet",
                     Enum.GetName(typeof(LowLevelMouseHook.Event),
                     evnt));
-                return WindowsHook.Result.Transfer;
-            }
-
-            if (ReloadableGestureMachine.Instance == null)
-            {
                 return WindowsHook.Result.Transfer;
             }
 
