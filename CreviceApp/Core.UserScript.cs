@@ -19,29 +19,6 @@ namespace CreviceApp
 {
     public class UserScript
     {
-        public class CompilationError
-        {
-            public readonly string Id;
-            public readonly string Category;
-            public readonly string Message;
-            public readonly string HelpLinkUri;
-            public readonly Microsoft.CodeAnalysis.Text.TextSpan SourceSpan;
-
-            public CompilationError(
-                string Id, 
-                string Category, 
-                string Message, 
-                string HelpLinkUri,
-                Microsoft.CodeAnalysis.Text.TextSpan SourceSpan)
-            {
-                this.Id = Id;
-                this.Category = Category;
-                this.Message = Message;
-                this.HelpLinkUri = HelpLinkUri;
-                this.SourceSpan = SourceSpan;
-            }
-        }
-
         public class Watcher : FileSystemWatcher
         {
             public Watcher(string Path, ISynchronizeInvoke SynchronizingObject)
@@ -167,7 +144,7 @@ namespace CreviceApp
             return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
         }
 
-        public IEnumerable<CompilationError> CompileUserScript(Script parsedScript)
+        public System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> CompileUserScript(Script parsedScript)
         {
             var stopwatch = new Stopwatch();
             Verbose.Print("Compiling UserScript...");
@@ -175,14 +152,7 @@ namespace CreviceApp
             var diagnostic = parsedScript.Compile();
             stopwatch.Stop();
             Verbose.Print("UserScript compilation finished. ({0})", stopwatch.Elapsed);
-            var errors = from d in diagnostic
-                         select new CompilationError(
-                                    d.Id,
-                                    d.Descriptor.Category,
-                                    d.GetMessage(),
-                                    d.Descriptor.HelpLinkUri,
-                                    d.Location.SourceSpan);
-            return errors;
+            return diagnostic;
         }
 
         public IEnumerable<Core.GestureDefinition> EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
@@ -256,6 +226,78 @@ namespace CreviceApp
         {
             CompileUserScript(parsedScript);
             return EvaluateUserScript(ctx, parsedScript);
+        }
+
+        private string GetHighlightedUserScriptString(Microsoft.CodeAnalysis.Diagnostic error)
+        {
+            var lineSpan = error.Location.GetLineSpan();
+            var start = lineSpan.StartLinePosition;
+            var end = lineSpan.EndLinePosition;
+            var lines = error.Location.SourceTree.GetText().Lines;
+            var maxDigits = lines.Count.ToString().Length;
+            var range = 5;
+            var s = Math.Max(0, start.Line - range);
+            var e = Math.Min(lines.Count - 1, end.Line + range);
+
+            var sb = new StringBuilder();
+            for (var i = s; i <= e;  i++)
+            {
+                var line = lines[i].ToString();
+                var lineDigits = i.ToString().Length;
+                var lineNumber = (new string('0', maxDigits - lineDigits) + i).Substring(0, maxDigits);
+                sb.AppendFormat("{0}|{1}\r\n", lineNumber, line);
+                if (i == start.Line)
+                {
+                    var h_start = start.Character;
+                    var h_end = i == end.Line ? end.Character : line.Length;
+                    sb.Append(new string(' ', maxDigits + 1));
+                    sb.Append(new string(' ', h_start));
+                    sb.Append(new string('~', Math.Max(1, h_end - h_start)));
+                    sb.Append("\r\n");
+                }
+                else if (i == end.Line)
+                {
+                    var h_start = 0;
+                    var h_end = end.Character;
+                    sb.Append(new string(' ', maxDigits + 1));
+                    sb.Append(new string(' ', h_start));
+                    sb.Append(new string('~', Math.Max(1, h_end - h_start)));
+                    sb.Append("\r\n");
+                }
+            }
+            if (e == lines.Count - 1)
+            {
+                sb.Append("[EOF]\r\n");
+            }
+            var code = sb.ToString();
+            return code;
+        }
+
+        public string GetPrettyErrorMessage(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> errors)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var error in errors)
+            {
+                var lineSpan = error.Location.GetLineSpan();
+                var start = lineSpan.StartLinePosition;
+                var end = lineSpan.EndLinePosition;
+
+                sb.Append(new string('-', 80));
+                sb.Append("\r\n");
+                sb.AppendFormat("[{0} Error] {1}\r\n", error.Descriptor.Category, error.Id);
+                sb.Append("\r\n");
+                sb.AppendFormat("{0}\r\n", error.GetMessage());
+                sb.Append("\r\n");
+                sb.AppendFormat("Line {0}, Pos {1}\r\n", start.Line, start.Character);
+                sb.Append(new string('=', 10));
+                sb.Append("\r\n");
+                sb.Append(GetHighlightedUserScriptString(error));
+                sb.Append(new string('=', 10));
+                sb.Append("\r\n");
+            }
+            sb.Append(new string('-', 80));
+            sb.Append("\r\n");
+            return sb.ToString();
         }
     }
 }

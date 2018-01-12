@@ -18,7 +18,7 @@ namespace CreviceApp
 
     public partial class MainForm : MouseGestureForm
     {
-        // Force make this application invisible from task switcher applications.
+        // Forcely make this application invisible from task switcher applications.
         const int WS_EX_TOOLWINDOW = 0x00000080;
         protected override CreateParams CreateParams
         {
@@ -63,7 +63,7 @@ namespace CreviceApp
         {
             base.OnShown(e);
             RegisterNotifyIcon();
-            UpdateTasktrayIconText("Crevice\n Gestures not loaded.");
+            UpdateTasktrayIconText("Crevice\n Gesture not loaded.");
             SetupUserScriptWatcher();
             ReloadableGestureMachine.RequestReload();
             try
@@ -195,6 +195,27 @@ namespace CreviceApp
             else
             {
                 launcherForm.Activate();
+            }
+        }
+
+        public string LastErrorMessage { set; get; }
+
+        private void OpenWithNotepad(string text)
+        {
+            var tempPath = Path.Combine(Path.GetTempPath(), "CreviceApp.ErrorInformation.txt");
+            try
+            {
+                File.WriteAllText(tempPath, text);
+                Process.Start("notepad.exe", tempPath);
+            } 
+            catch (Exception) { }
+        }
+
+        private void notifyIcon1_BalloonTipClicked(object sender, EventArgs e)
+        {
+            if (LastErrorMessage != null)
+            {
+                OpenWithNotepad(LastErrorMessage);
             }
         }
     }

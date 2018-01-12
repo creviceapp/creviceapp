@@ -315,5 +315,47 @@ namespace CreviceApp
             var gestureDef = userScript.GetGestureDefinition(ctx, parsedScript);
             Assert.IsTrue(gestureDef.Count() > 0);
         }
+
+        [TestMethod()]
+        public void GetPrettyTextTest()
+        {
+            var global = new AppGlobal();
+            var userScript = new UserScript(global);
+            var userScriptString = @"
+var hoge = 1;
+
+void foo() 
+{ 
+  undefined_variable
+}
+
+";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            var errors = userScript.CompileUserScript(parsedScript);
+            Assert.IsTrue(errors.Count() > 0);
+            var prettyText = userScript.GetPrettyErrorMessage(errors);
+
+            Assert.AreEqual(prettyText, @"--------------------------------------------------------------------------------
+[Compiler Error] CS1002
+
+; expected
+
+Line 5, Pos 20
+==========
+0|
+1|var hoge = 1;
+2|
+3|void foo() 
+4|{ 
+5|  undefined_variable
+                      ~
+6|}
+7|
+8|
+[EOF]
+==========
+--------------------------------------------------------------------------------
+");
+        }
     }
 }

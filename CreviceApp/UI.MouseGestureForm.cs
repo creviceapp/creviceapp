@@ -70,8 +70,8 @@ namespace CreviceApp
                 }
             }
             
-            private IEnumerable<UserScript.CompilationError> _errors = null;
-            public IEnumerable<UserScript.CompilationError> Errors
+            private System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> _errors;
+            public System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> Errors
             {
                 get
                 {
@@ -204,14 +204,19 @@ namespace CreviceApp
 
             if (candidate.Errors.Count() > 0)
             {
+                var prettyErrorMessage = userScript.GetPrettyErrorMessage(candidate.Errors);
+                Verbose.Print("Error(s) found in the user script on compilation phase. \r\n{0}", prettyErrorMessage);
+                Global.MainForm.LastErrorMessage = prettyErrorMessage;
                 Global.MainForm.ShowBalloon(
-                    string.Format("Error: {0} error(s) found in the user script on compilation phase.", candidate.Errors.Count()),
+                    string.Format("{0} error(s) found in the user script on compilation phase. \r\nClick to view the detail.", candidate.Errors.Count()),
                     "Crevice",
                     ToolTipIcon.Error, 10000);
                 return null;
             }
-
+                
             Verbose.Print("No error found in the user script on compilation phase.");
+            Global.MainForm.LastErrorMessage = "";
+
             try
             {
                 return candidate.CreateGestureMachineFromAssembly(Global);
@@ -228,9 +233,14 @@ namespace CreviceApp
             catch (Exception ex)
             {
                 Verbose.Print("CreateGestureMachineFromScript was failed; cannot fallback to any MouseGestureMachine generator. {0}", ex.ToString());
+                Global.MainForm.LastErrorMessage = ex.ToString();
             }
 
             Verbose.Print("Hot reload request was canceled.");
+            Global.MainForm.ShowBalloon(
+                "An error occured in the user script on evaluation phase. \r\nClick to view the detail.",
+                "Crevice",
+                ToolTipIcon.Error, 10000);
             return null;
         }
 

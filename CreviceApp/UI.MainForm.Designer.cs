@@ -37,6 +37,7 @@
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "Crevice is loading";
+            this.notifyIcon1.BalloonTipClicked += new System.EventHandler(this.notifyIcon1_BalloonTipClicked);
             this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
             // 
             // MainForm
