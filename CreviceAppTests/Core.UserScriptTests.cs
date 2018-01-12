@@ -81,13 +81,13 @@ namespace CreviceApp
         }
 
         [TestMethod()]
-        public void GetUserScriptCodeTest()
+        public void GetUserScriptStringTest()
         {
             string[] args = { "--script", "test.csx" };
             var cliOption = CLIOption.Parse(args);
             var global = new AppGlobal(cliOption);
             var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.GetUserScriptCode().Length > 0);
+            Assert.IsTrue(userScript.GetUserScriptString().Length > 0);
         }
 
         [TestMethod()]
@@ -103,9 +103,9 @@ namespace CreviceApp
         {
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "dummy_script";
-            var parsedScript = userScript.ParseScript(userScriptCode);
-            Assert.AreEqual(parsedScript.Code, userScriptCode);
+            var userScriptString = "dummy_script";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            Assert.AreEqual(parsedScript.Code, userScriptString);
             Assert.AreEqual(parsedScript.GlobalsType.Name, "UserScriptExecutionContext");
             Assert.AreEqual(parsedScript.GlobalsType.FullName, "CreviceApp.Core.UserScriptExecutionContext");
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("mscorlib.dll")));
@@ -119,12 +119,12 @@ namespace CreviceApp
         {
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "var hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptCode);
+            var userScriptString = "var hoge = 1;";
+            var parsedScript = userScript.ParseScript(userScriptString);
             var errors = userScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(parsedScript, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -133,12 +133,12 @@ namespace CreviceApp
             // When the user script containing dynamic expression is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "dynamic hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptCode);
+            var userScriptString = "dynamic hoge = 1;";
+            var parsedScript = userScript.ParseScript(userScriptString);
             var errors = userScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(parsedScript, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -147,12 +147,12 @@ namespace CreviceApp
             // When the user script which defines a mouse gesture is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "var Whenever = @when((ctx) => {return true;});";
-            var parsedScript = userScript.ParseScript(userScriptCode);
+            var userScriptString = "var Whenever = @when((ctx) => {return true;});";
+            var parsedScript = userScript.ParseScript(userScriptString);
             var errors = userScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(parsedScript, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -161,12 +161,12 @@ namespace CreviceApp
             // When the user script which using CreviceApp API is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
-            var parsedScript = userScript.ParseScript(userScriptCode);
+            var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
+            var parsedScript = userScript.ParseScript(userScriptString);
             var errors = userScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(parsedScript, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -175,8 +175,8 @@ namespace CreviceApp
             // When the user script containing a error is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "undefined_variable";
-            var parsedScript = userScript.ParseScript(userScriptCode);
+            var userScriptString = "undefined_variable";
+            var parsedScript = userScript.ParseScript(userScriptString);
             var errors = userScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() > 0);
         }
@@ -186,12 +186,12 @@ namespace CreviceApp
         {
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "var hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptCode);
-            userScript.CompileUserScript(userScriptCode, parsedScript);
-            var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
+            var userScriptString = "var hoge = 1;";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            userScript.CompileUserScript(parsedScript);
+            var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -200,11 +200,11 @@ namespace CreviceApp
             // When the user script containing dynamic expression is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "dynamic hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptCode);
-            var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
+            var userScriptString = "dynamic hoge = 1;";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -213,39 +213,38 @@ namespace CreviceApp
             // When the user script which defines a mouse gesture is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "var Whenever = @when((ctx) => {return true;});";
-            var parsedScript = userScript.ParseScript(userScriptCode);
-            var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
+            var userScriptString = "var Whenever = @when((ctx) => {return true;});";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(System.BadImageFormatException))]
         public void CompileAndEvaluateUserScript1_3Test()
         {
             // When the user script which using CreviceApp API is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
-            var parsedScript = userScript.ParseScript(userScriptCode);
-            var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
+            var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(System.BadImageFormatException))]
+        [ExpectedException(typeof(Microsoft.CodeAnalysis.Scripting.CompilationErrorException))]
         public void CompileAndEvaluateUserScript1_4Test()
         {
             // When the user script containing a error is given.
             var global = new AppGlobal();
             var userScript = new UserScript(global);
-            var userScriptCode = "undefined_variable";
-            var parsedScript = userScript.ParseScript(userScriptCode);
-            var userScriptCache = userScript.CompileUserScript(userScriptCode, parsedScript);
+            var userScriptString = "undefined_variable";
+            var parsedScript = userScript.ParseScript(userScriptString);
+            var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScriptAssembly(userScriptCache, ctx);
+            userScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         public class SynchronizeInvokeMock : System.ComponentModel.ISynchronizeInvoke
@@ -309,8 +308,11 @@ namespace CreviceApp
             var global = new AppGlobal();
             var userScript = new UserScript(global);
             CleanupUserDirectory(userScript);
+            var userScriptString = userScript.GetUserScriptString();
+            var parsedScript = userScript.ParseScript(userScriptString);
+            var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            var gestureDef = userScript.GetGestureDef(ctx);
+            var gestureDef = userScript.GetGestureDefinition(ctx, parsedScript);
             Assert.IsTrue(gestureDef.Count() > 0);
         }
     }

@@ -32,88 +32,40 @@ namespace CreviceApp
 
         private readonly UI.TooltipNotifier tooltip;
 
-        private FileSystemWatcher UserScriptWatcher;
+        private FileSystemWatcher userScriptWatcher;
 
         private LauncherForm launcherForm = null;
 
         public MainForm(AppGlobal Global) : base(Global)
         {
             this.tooltip = new UI.TooltipNotifier(this);
-            this.UserScriptWatcher = UserScript.GetWatcher(this);
+            this.userScriptWatcher = UserScript.GetWatcher(this);
             InitializeComponent();
-        }
-
-        private async void OnUserScriptUpdate() {
-            await Task.Run(() =>
-            {
-                ReloadGestureMachine();
-            });
-        }
-
-        private void ReloadGestureMachine()
-        {
-            try
-            {
-                ReloadableGestureMachine.RequestReload();
-                InvokeProperly(delegate
-                {
-                    if (!Global.CLIOption.NoGUI)
-                    {
-                        ShowBalloon(string.Format("{0} gesture definitions were loaded", ReloadableGestureMachine.Instance.GestureDefinition.Count()),
-                        "Crevice",
-                        ToolTipIcon.Info, 10000);
-                        UpdateTasktrayIconText("{0}\nGestures: {1}", "Crevice", ReloadableGestureMachine.Instance.GestureDefinition.Count());
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                InvokeProperly(delegate
-                {
-                    ShowFatalErrorDialog("Encounter an error when loading the user script: {0}", ex.ToString());
-                    if (!Global.CLIOption.NoGUI)
-                    {
-                        UpdateTasktrayIconText("{0}\nEncounter an error when loading the user script.", "Crevice");
-                    }
-                });
-            }
         }
 
         private void ReloadGestureMachine(object source, FileSystemEventArgs e)
         {
-            ReloadGestureMachine();
+            Task.Run(() =>
+            {
+                ReloadableGestureMachine.RequestReload();
+            });
         }
 
         private void SetupUserScriptWatcher()
         {
-            UserScriptWatcher.Changed += new FileSystemEventHandler(ReloadGestureMachine);
-            UserScriptWatcher.Created += new FileSystemEventHandler(ReloadGestureMachine);
-            UserScriptWatcher.Renamed += new RenamedEventHandler(ReloadGestureMachine);
-            UserScriptWatcher.EnableRaisingEvents = true;
+            userScriptWatcher.Changed += new FileSystemEventHandler(ReloadGestureMachine);
+            userScriptWatcher.Created += new FileSystemEventHandler(ReloadGestureMachine);
+            userScriptWatcher.Renamed += new RenamedEventHandler(ReloadGestureMachine);
+            userScriptWatcher.EnableRaisingEvents = true;
         }
 
-        private void UpdateTasktrayIconText(string formatText, params object[] args)
-        {
-            var text = string.Format(formatText, args);
-            notifyIcon1.Text = text;
-        }
-
-        protected override async void OnShown(EventArgs e)
+        protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-
-            if (!Global.CLIOption.NoGUI)
-            {
-                RegisterNotifyIcon();
-            }
-
+            RegisterNotifyIcon();
+            UpdateTasktrayIconText("Crevice\n Gestures not loaded.");
             SetupUserScriptWatcher();
-
-            await Task.Run(() =>
-            {
-                ReloadGestureMachine();
-            });
-
+            ReloadableGestureMachine.RequestReload();
             try
             {
                 CaptureMouse = true;
@@ -123,29 +75,32 @@ namespace CreviceApp
                 ShowFatalErrorDialog("SetWindowsHookEX(WH_MOUSE_LL) was failed.");
                 Application.Exit();
             }
-            Verbose.Print("CreviceApp is started.");
+            Verbose.Print("CreviceApp was started.");
         }
         
         private void RegisterNotifyIcon()
         {
-            while (true)
+            if (!Global.CLIOption.NoGUI)
             {
-                var stopwatch = Stopwatch.StartNew();
-                notifyIcon1.Visible = true;
-                stopwatch.Stop();
-                if (stopwatch.ElapsedMilliseconds < 4000)
+                while (true)
                 {
-                    break;
+                    var stopwatch = Stopwatch.StartNew();
+                    notifyIcon1.Visible = true;
+                    stopwatch.Stop();
+                    if (stopwatch.ElapsedMilliseconds < 4000)
+                    {
+                        break;
+                    }
+                    notifyIcon1.Visible = false;
                 }
-                notifyIcon1.Visible = false;
             }
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            UserScriptWatcher.EnableRaisingEvents = false;
-            UserScriptWatcher.Dispose();
+            userScriptWatcher.EnableRaisingEvents = false;
+            userScriptWatcher.Dispose();
             try
             {
                 CaptureMouse = false;
@@ -156,7 +111,7 @@ namespace CreviceApp
             }
             notifyIcon1.Visible = false;
             tooltip.Dispose();
-            Verbose.Print("CreviceApp is ended.");
+            Verbose.Print("CreviceApp was ended.");
             WinAPI.Console.Console.FreeConsole();
         }
 
@@ -172,24 +127,44 @@ namespace CreviceApp
             }
         }
 
-        public void ShowFatalErrorDialog(string message)
+        public void UpdateTasktrayIconText(string text)
         {
-            Verbose.Print(message);
-            MessageBox.Show(message,
+            InvokeProperly(delegate ()
+            {
+                if (!Global.CLIOption.NoGUI)
+                {
+                    notifyIcon1.Text = text.Length > 63 ? text.Substring(0, 63) : text;
+                }
+            });
+        }
+
+        public void UpdateTasktrayIconText(string formattedtext, params object[] args)
+        {
+            UpdateTasktrayIconText(string.Format(formattedtext, args));
+        }
+        
+        public void ShowFatalErrorDialog(string text)
+        {
+            InvokeProperly(delegate ()
+            {
+                Verbose.Print("ShowFatalErrorDialog: {0}", text);
+                MessageBox.Show(text,
                 "Error",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
+            });
         }
 
-        public void ShowFatalErrorDialog(string template, params object[] objects)
+        public void ShowFatalErrorDialog(string formattedtext, params object[] objects)
         {
-            ShowFatalErrorDialog(string.Format(template, objects));
+            ShowFatalErrorDialog(string.Format(formattedtext, objects));
         }
 
         public void ShowTooltip(string text, Point point, int duration)
         {
             InvokeProperly(delegate ()
             {
+                Verbose.Print("ShowTooltip: {0}", text);
                 tooltip.Show(text, point, duration);
             });
         }
@@ -198,6 +173,7 @@ namespace CreviceApp
         {
             InvokeProperly(delegate ()
             {
+                Verbose.Print("ShowBalloon: {0}", text);
                 if (!Global.CLIOption.NoGUI)
                 {
                     notifyIcon1.BalloonTipText = text;

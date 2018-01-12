@@ -111,7 +111,7 @@ namespace CreviceApp
             }
         }
 
-        public string GetUserScriptCode()
+        public string GetUserScriptString()
         {
             if (!Directory.Exists(UserDirectory))
             {
@@ -125,13 +125,13 @@ namespace CreviceApp
             return File.ReadAllText(UserScriptFile, Encoding.UTF8);
         }
 
-        public Script ParseScript(string userScriptCode)
+        public Script ParseScript(string userScriptString)
         {
             var stopwatch = new Stopwatch();
             Verbose.Print("Parsing UserScript...");
             stopwatch.Start();
             var script = CSharpScript.Create(
-                userScriptCode,
+                userScriptString,
                 ScriptOptions.Default
                     .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
                     .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
@@ -148,14 +148,14 @@ namespace CreviceApp
             return script;
         }
 
-        public UserScriptAssembly.Cache CompileUserScript(string userScriptCode, Script parsedScript)
+        public UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string userScriptString, Script parsedScript)
         {
             var stopwatch = new Stopwatch();
-            Verbose.Print("Compiling UserScript...");
+            Verbose.Print("Generating UserScriptAssemblyCache...");
             stopwatch.Start();
             var compilation = parsedScript.GetCompilation();
             stopwatch.Stop();
-            Verbose.Print("UserScript compilation finished. ({0})", stopwatch.Elapsed);
+            Verbose.Print("UserScriptAssemblyCache generating finished. ({0})", stopwatch.Elapsed);
 
             var peStream = new MemoryStream();
             var pdbStream = new MemoryStream();
@@ -164,7 +164,7 @@ namespace CreviceApp
             compilation.Emit(peStream, pdbStream);
             stopwatch.Stop();
             Verbose.Print("UserScriptAssembly generation finished. ({0})", stopwatch.Elapsed);
-            return UserScriptAssembly.CreateCache(userScriptCode, peStream.GetBuffer(), pdbStream.GetBuffer());
+            return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
         }
 
         public IEnumerable<CompilationError> CompileUserScript(Script parsedScript)
@@ -185,9 +185,10 @@ namespace CreviceApp
             return errors;
         }
 
-        public IEnumerable<Core.GestureDefinition> EvaluateUserScript(Script parsedScript, Core.UserScriptExecutionContext ctx)
+        public IEnumerable<Core.GestureDefinition> EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
         {
             var stopwatch = new Stopwatch();
+            Verbose.Print("Evaluating UserScript...");
             stopwatch.Start();
             parsedScript.RunAsync(ctx).Wait();
             stopwatch.Stop();
@@ -195,12 +196,13 @@ namespace CreviceApp
             return ctx.GetGestureDefinition();
         }
 
-        public IEnumerable<Core.GestureDefinition> EvaluateUserScriptAssembly(UserScriptAssembly.Cache cache, Core.UserScriptExecutionContext ctx)
+        public IEnumerable<Core.GestureDefinition> EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
         {
+            // todo: using(Verbose.StopWatch("Loading", "UserScriptAssembly")){}
             var stopwatch = new Stopwatch();
             Verbose.Print("Loading UserScriptAssembly...");
             stopwatch.Start();
-            var assembly = Assembly.Load(cache.pe, cache.pdb);
+            var assembly = Assembly.Load(userScriptAssemblyCache.pe, userScriptAssemblyCache.pdb);
             stopwatch.Stop();
             Verbose.Print("UserScriptAssembly loading finished. ({0})", stopwatch.Elapsed);
             Verbose.Print("Evaluating UserScriptAssembly...");
@@ -214,7 +216,7 @@ namespace CreviceApp
             return ctx.GetGestureDefinition();
         }
 
-        public UserScriptAssembly.Cache GetUserScriptAssemblyCache(string userScriptCode, Script parsedScript)
+        public UserScriptAssembly.Cache LoadUserScriptAssemblyCache(string userScriptString)
         {
             var stopwatch = new Stopwatch();
             var cacheFile = UserScriptCacheFile;
@@ -225,40 +227,35 @@ namespace CreviceApp
                 var loadedCache = UserScriptAssembly.Load(cacheFile);
                 stopwatch.Stop();
                 Verbose.Print("UserScriptAssemblyCache loading finished. ({0})", stopwatch.Elapsed);
-                if (UserScriptAssembly.IsCompatible(loadedCache, userScriptCode))
+                if (UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
                 {
                     return loadedCache;
                 }
                 Verbose.Print("UserScriptAssemblyCache was discarded because of the signature was not match with this application.");
             }
-            var generatedCache = CompileUserScript(userScriptCode, parsedScript);
-            Verbose.Print("Saving UserScriptAssemblyCache...");
-            stopwatch.Restart();
-            UserScriptAssembly.Save(cacheFile, generatedCache);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssemblyCache saving finished. ({0})", stopwatch.Elapsed);
-            return generatedCache;
+            return null;
         }
 
-        public IEnumerable<Core.GestureDefinition> GetGestureDef(Core.UserScriptExecutionContext ctx)
+        public void SaveUserScriptAssemblyCache(UserScriptAssembly.Cache userScriptAssemblyCache)
         {
-            var userScriptCode = GetUserScriptCode();
-            var parsedScript = ParseScript(userScriptCode);
-            if (!Global.CLIOption.NoCache)
-            {
-                try
-                {
-                    var cache = GetUserScriptAssemblyCache(userScriptCode, parsedScript);
-                    return EvaluateUserScriptAssembly(cache, ctx);
-                }
-                catch (Exception ex)
-                {
-                    Verbose.Print("Error occured when UserScript conpilation and save and restoration; fallback to the --nocache mode and continume");
-                    Verbose.Print(ex.ToString());
-                }
-            }
+            var stopwatch = new Stopwatch();
+            var cacheFile = UserScriptCacheFile;
+            Verbose.Print("Saving UserScriptAssemblyCache...");
+            stopwatch.Start();
+            UserScriptAssembly.Save(cacheFile, userScriptAssemblyCache);
+            stopwatch.Stop();
+            Verbose.Print("UserScriptAssemblyCache saving finished. ({0})", stopwatch.Elapsed);
+        }
+
+        public IEnumerable<Core.GestureDefinition> GetGestureDefinition(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
+        {
+            return EvaluateUserScriptAssembly(ctx, userScriptAssemblyCache);
+        }
+
+        public IEnumerable<Core.GestureDefinition> GetGestureDefinition(Core.UserScriptExecutionContext ctx, Script parsedScript)
+        {
             CompileUserScript(parsedScript);
-            return EvaluateUserScript(parsedScript, ctx);
+            return EvaluateUserScript(ctx, parsedScript);
         }
     }
 }

@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+
 
 namespace CreviceApp
 {
@@ -18,108 +21,276 @@ namespace CreviceApp
 
     public class ReloadableGestureMachine : IDisposable
     {
-        private AppGlobal Global;
-        private UserScript UserScript;
+        public class NullGestureMachine : Core.FSM.GestureMachine
+        {
+            public NullGestureMachine() : base(new Core.Config.UserConfig(), new List<Core.GestureDefinition>())
+            {
+
+            }
+        }
+
+        public class GestureMachineCandidate
+        {
+            public readonly DateTime Created;
+            public readonly bool RestoreFromCache;
+            public readonly bool SaveCache;
+            public readonly string UserScriptString;
+
+            private readonly UserScript userScript;
+            private readonly ReloadableGestureMachine reloadableGestureMachine;
+            
+            public GestureMachineCandidate(
+                UserScript userScript, 
+                ReloadableGestureMachine reloadableGestureMachine, 
+                bool restoreFromCache,
+                bool saveCache)
+            {
+                this.userScript = userScript;
+                this.reloadableGestureMachine = reloadableGestureMachine;
+                this.RestoreFromCache = restoreFromCache;
+                this.SaveCache = saveCache;
+                this.Created = DateTime.Now;
+                this.UserScriptString = this.userScript.GetUserScriptString();
+            }
+
+            private Script _parsedUserScript = null;
+            public Script ParsedUserScript
+            {
+                get
+                {
+                    if (_parsedUserScript == null)
+                    {
+                        _parsedUserScript = userScript.ParseScript(UserScriptString);
+                    }
+                    return _parsedUserScript;
+                }
+                private set
+                {
+                    _parsedUserScript = value;
+                }
+            }
+            
+            private IEnumerable<UserScript.CompilationError> _errors = null;
+            public IEnumerable<UserScript.CompilationError> Errors
+            {
+                get
+                {
+                    if (_errors == null)
+                    {
+                        _errors = userScript.CompileUserScript(ParsedUserScript);
+                    }
+                    return _errors;
+                }
+                private set
+                {
+                    _errors = value;
+                }
+            }
+
+            private UserScriptAssembly.Cache _restorationCache = null;
+            public UserScriptAssembly.Cache RestorationCache
+            {
+                get
+                {
+                    if (_restorationCache == null && RestoreFromCache)
+                    {
+                        _restorationCache = userScript.LoadUserScriptAssemblyCache(UserScriptString);
+                    }
+                    return _restorationCache;
+                }
+                private set
+                {
+                    _restorationCache = value;
+                }
+            }
+            public bool IsRestorable
+            {
+                get { return RestorationCache != null; }
+            }
+
+            private UserScriptAssembly.Cache _userScriptAssemblyCache = null;
+            public UserScriptAssembly.Cache UserScriptAssemblyCache
+            {
+                get
+                {
+                    if (_userScriptAssemblyCache == null)
+                    {
+                        _userScriptAssemblyCache = userScript.GenerateUserScriptAssemblyCache(UserScriptString, ParsedUserScript);
+                    }
+                    return _userScriptAssemblyCache;
+                }
+                private set
+                {
+                    _userScriptAssemblyCache = value;
+                }
+            }
+            
+            public Core.FSM.GestureMachine RestoreGestureMachine(AppGlobal Global)
+            {
+                var ctx = new Core.UserScriptExecutionContext(Global);
+                var gestureDef = userScript.GetGestureDefinition(ctx, RestorationCache);
+                return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
+            }
+
+            public Core.FSM.GestureMachine CreateGestureMachineFromAssembly(AppGlobal Global)
+            {
+                var ctx = new Core.UserScriptExecutionContext(Global);
+                var gestureDef = userScript.GetGestureDefinition(ctx, UserScriptAssemblyCache);
+                try
+                {
+                    userScript.SaveUserScriptAssemblyCache(UserScriptAssemblyCache);
+                } 
+                catch (Exception ex)
+                {
+                    Verbose.Print("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
+                }
+                return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
+            }
+
+            public Core.FSM.GestureMachine CreateGestureMachineFromScript(AppGlobal Global)
+            {
+                var ctx = new Core.UserScriptExecutionContext(Global);
+                var gestureDef = userScript.GetGestureDefinition(ctx, ParsedUserScript);
+                return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
+            }
+        }
+
+        private Core.FSM.GestureMachine _instance;
+        public Core.FSM.GestureMachine Instance
+        {
+            get { return _instance; }
+            private set
+            {
+                var old = Instance;
+                _instance = value;
+                if (old != null)
+                {
+                    old.Dispose();
+                }
+            }
+        }
+
+        private readonly AppGlobal Global;
+        private readonly UserScript userScript;
+
         public ReloadableGestureMachine(AppGlobal Global, UserScript UserScript)
         {
             this.Global = Global;
-            this.UserScript = UserScript;
+            this.userScript = UserScript;
+            this.Instance = new NullGestureMachine();
         }
-
-        private Core.FSM.GestureMachine _gestureMachine = null;
-        public Core.FSM.GestureMachine Instance
+        
+        private Core.FSM.GestureMachine GetGestureMachine()
         {
-            get { return _gestureMachine; }
-            private set
+            var restoreFromCache = Instance.GetType() == typeof(NullGestureMachine) && !Global.CLIOption.NoCache;
+            var saveCache = !Global.CLIOption.NoCache;
+            var candidate = new GestureMachineCandidate(userScript, this, restoreFromCache, saveCache);
+
+            Verbose.Print("restoreFromCache: {0}", restoreFromCache);
+            Verbose.Print("saveCache: {0}", saveCache);
+            Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
+
+            if (candidate.IsRestorable)
             {
-                if (_gestureMachine != null)
+                try
                 {
-                    _gestureMachine.Dispose();
+                    return candidate.RestoreGestureMachine(Global);
                 }
-                _gestureMachine = value;
+                catch (Exception ex)
+                {
+                    Verbose.Print("RestoreGestureMachine was failed; fallback to CreateGestureMachineFromAssembly. {0}", ex.ToString());
+                }
             }
+
+            if (candidate.Errors.Count() > 0)
+            {
+                Global.MainForm.ShowBalloon(
+                    string.Format("Error: {0} error(s) found in the user script on compilation phase.", candidate.Errors.Count()),
+                    "Crevice",
+                    ToolTipIcon.Error, 10000);
+                return null;
+            }
+
+            Verbose.Print("No error found in the user script on compilation phase.");
+            try
+            {
+                return candidate.CreateGestureMachineFromAssembly(Global);
+            }
+            catch (Exception ex)
+            {
+                Verbose.Print("CreateGestureMachineFromAssembly was failed; fallback to CreateGestureMachineFromScript. {0}", ex.ToString());
+            }
+
+            try
+            {
+                return candidate.CreateGestureMachineFromScript(Global);
+            }
+            catch (Exception ex)
+            {
+                Verbose.Print("CreateGestureMachineFromScript was failed; cannot fallback to any MouseGestureMachine generator. {0}", ex.ToString());
+            }
+
+            Verbose.Print("Hot reload request was canceled.");
+            return null;
         }
 
-        private object _lockObject = new object();
-        private bool _requestReload = false;
-        private bool _reloading = false;
+        private object lockObject = new object();
+        private bool requestReload = false;
+        private bool reloading = false;
 
         public void RequestReload()
         {
-            if (_reloading && !_disposing)
+            Verbose.Print("Hot reload was started.");
+            if (reloading && !disposed)
             {
-                _requestReload = true;
+                Verbose.Print("Hot reload request was queued because the reloading is already processing; This request will be processed after current reload is finished.");
+                requestReload = true;
                 return;
             }
 
-            lock (_lockObject)
+            lock (lockObject)
             {
-                _requestReload = false;
+                reloading = true;
                 while (true)
                 {
-                    _reloading = true;
+                    requestReload = false;
                     try
                     {
-                        DeployGestureMachine();
+                        var gestureMachine = GetGestureMachine();
+                        if (gestureMachine != null)
+                        {
+                            Instance = gestureMachine;
+                            Global.MainForm.ShowBalloon(
+                                string.Format("{0} gesture definitions were loaded", Instance.GestureDefinition.Count()),
+                                "Crevice",
+                                ToolTipIcon.Info, 10000);
+                            Global.MainForm.UpdateTasktrayIconText(
+                                "{0}\nGestures: {1}", "Crevice", Instance.GestureDefinition.Count());
+                        }
                     }
                     finally
                     {
-                        _reloading = false;
+                        reloading = false;
                     }
-                    if (!_requestReload || _disposing)
+                    if (!requestReload || disposed)
                     {
                         break;
                     }
+                    Verbose.Print("Retrying Hot reload...");
                 }
-                ReleaseUnusedMemory();
             }
+            Verbose.Print("Hot reload was finished.");
         }
 
-        private Core.FSM.GestureMachine LoadGestureMachine()
-        {
-            var ctx = new Core.UserScriptExecutionContext(Global);
-            var gestureDef = UserScript.GetGestureDef(ctx);
-            return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
-        }
-
-        private void SwapGestureMachine(Core.FSM.GestureMachine gestureMachine)
-        {
-            var old = Instance;
-            Instance = gestureMachine;
-            if (old != null)
-            {
-                old.Dispose();
-            }
-        }
-
-        private void DeployGestureMachine()
-        {
-            var gestureMachine = LoadGestureMachine();
-            ReleaseUnusedMemory();
-            SwapGestureMachine(gestureMachine);
-        }
-
-        private void ReleaseUnusedMemory()
-        {
-            var stopwatch = new Stopwatch();
-            var totalMemory = GC.GetTotalMemory(false);
-            Verbose.Print("Releasing unused memory...");
-            stopwatch.Start();
-            GC.Collect(2);
-            stopwatch.Stop();
-            Verbose.Print("Unused memory releasing finished. ({0})", stopwatch.Elapsed);
-            Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
-        }
-
-        private bool _disposing = false;
+        private bool disposed = false;
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            lock (_lockObject)
+            lock (lockObject)
             {
-                _requestReload = false;
-                _disposing = true;
-                SwapGestureMachine(null);
+                requestReload = false;
+                disposed = true;
+                Instance = null;
             }
         }
 
