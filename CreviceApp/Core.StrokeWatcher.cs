@@ -134,6 +134,7 @@ namespace CreviceApp.Core.Stroke
                 await task;
             }
             catch (OperationCanceledException) { }
+            catch (ObjectDisposedException) { }
             finally
             {
                 tokenSource.Dispose();
