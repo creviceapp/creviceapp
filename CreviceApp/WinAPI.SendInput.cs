@@ -239,6 +239,25 @@ namespace CreviceApp.WinAPI.SendInput
             return mouseInput;
         }
 
+        // We must consider DPI scaling factor to correctly treat logical and physical mouse cursor positions
+        // due to this application is DPI aware.
+        //
+        // The following uses or returns physical value:
+        //     WinAPI.Window.Window.GetPhysicalCursorPos()
+        //     WinAPI.Device.GetPhysicalScreenSize()
+        //     InputSender.MouseMoveEvent()
+        //     InputSender.MouseMoveToEvent()
+        //
+        // The following uses or returns logical value:
+        //     WinAPI.Window.Window.GetLogicalCursorPos()
+        //     WinAPI.Device.GetLogicalScreenSize()
+        //     InputSender.MouseLogicalMoveEvent()
+        //     InputSender.MouseLogicalMoveToEvent()
+        //     Mouse events which to be given in the procedure which passed to SetWindowsHookEx(WH_MOUSE_LL).
+        //
+        // Depend on the environment (physical if >= Windows 8.1, maybe...):
+        //     WinAPI.Window.Window.GetCursorPos()
+
         protected MOUSEINPUT MouseMoveEvent(int dx, int dy)
         {
             var point = Window.Window.GetPhysicalCursorPos();
@@ -247,14 +266,27 @@ namespace CreviceApp.WinAPI.SendInput
             return MouseMoveToEvent(x, y);
         }
 
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
         protected MOUSEINPUT MouseMoveToEvent(int x, int y)
         {
             var mouseInput = GetCreviceMouseInput();
-            mouseInput.dx = (x + 1) * 0xFFFF / Screen.PrimaryScreen.Bounds.Width;
-            mouseInput.dy = (y + 1) * 0xFFFF / Screen.PrimaryScreen.Bounds.Height;
+            var screenSize = Device.GetPhysicalScreenSize();
+            mouseInput.dx = (x + 1) * 0xFFFF / screenSize.X;
+            mouseInput.dy = (y + 1) * 0xFFFF / screenSize.Y;
             mouseInput.dwFlags = (int)(MouseEventType.MOUSEEVENTF_MOVE | MouseEventType.MOUSEEVENTF_ABSOLUTE);
             return mouseInput;
+        }
+
+        protected MOUSEINPUT MouseLogicalMoveEvent(int dx, int dy)
+        {
+            var point = Window.Window.GetPhysicalCursorPos();
+            var scalingFactor = Device.GetScreenScalingFactor();
+            return MouseMoveToEvent((int)(point.X + dx * scalingFactor), (int)(point.Y + dy * scalingFactor));
+        }
+
+        protected MOUSEINPUT MouseLogicalMoveToEvent(int x, int y)
+        {
+            var scalingFactor = Device.GetScreenScalingFactor();
+            return MouseMoveToEvent((int)(x * scalingFactor), (int)(y * scalingFactor));
         }
 
         protected MOUSEINPUT MouseMiddleDownEvent()
@@ -496,12 +528,36 @@ namespace CreviceApp.WinAPI.SendInput
             Send(MouseRightDownEvent(), MouseRightUpEvent());
         }
 
-        public void Move(int dx, int dy)
+        public void Move(int dx, int dy, bool logical = false)
         {
-            Send(MouseMoveEvent(dx, dy));
+            if (logical)
+            {
+                Send(MouseLogicalMoveEvent(dx, dy));
+            }
+            else
+            {
+                Send(MouseMoveEvent(dx, dy));
+            }
         }
 
-        public void MoveTo(int x, int y)
+        public void MoveTo(int x, int y, bool logical = false)
+        {
+            if (logical)
+            {
+                Send(MouseLogicalMoveToEvent(x, y));
+            }
+            else
+            {
+                Send(MouseMoveToEvent(x, y));
+            }
+        }
+
+        public void LogicalMove(int dx, int dy)
+        {
+            Send(MouseLogicalMoveEvent(dx, dy));
+        }
+
+        public void LogicalMoveMoveTo(int x, int y)
         {
             Send(MouseMoveToEvent(x, y));
         }
@@ -706,14 +762,28 @@ namespace CreviceApp.WinAPI.SendInput
             return NewInstance(MouseRightDownEvent(), MouseRightUpEvent());
         }
 
-        public InputSequenceBuilder Move(int dx, int dy)
+        public InputSequenceBuilder Move(int dx, int dy, bool logical = false)
         {
-            return NewInstance(MouseMoveEvent(dx, dy));
+            if (logical)
+            {
+                return NewInstance(MouseLogicalMoveEvent(dx, dy));
+            }
+            else
+            {
+                return NewInstance(MouseMoveEvent(dx, dy));
+            }
         }
 
-        public InputSequenceBuilder MoveTo(int x, int y)
+        public InputSequenceBuilder MoveTo(int x, int y, bool logical = false)
         {
-            return NewInstance(MouseMoveToEvent(x, y));
+            if (logical)
+            {
+                return NewInstance(MouseLogicalMoveToEvent(x, y));
+            }
+            else
+            {
+                return NewInstance(MouseMoveToEvent(x, y));
+            }
         }
 
         public InputSequenceBuilder MiddleDown()
