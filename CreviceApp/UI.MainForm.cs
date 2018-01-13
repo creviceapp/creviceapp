@@ -184,7 +184,29 @@ namespace CreviceApp
                 }
             });
         }
+
+        public void StartExternalProcess(string fileName)
+        {
+            InvokeProperly(delegate ()
+            {
+                if (!Global.CLIOption.NoGUI)
+                {
+                    Process.Start(fileName);
+                }
+            });
+        }
         
+        public void StartExternalProcess(string fileName, string arguments)
+        {
+            InvokeProperly(delegate ()
+            {
+                if (!Global.CLIOption.NoGUI)
+                {
+                    Process.Start(fileName, arguments);
+                }
+            });
+        }
+
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
             if (launcherForm == null || launcherForm.IsDisposed)
@@ -207,7 +229,7 @@ namespace CreviceApp
             try
             {
                 File.WriteAllText(tempPath, text);
-                Process.Start("notepad.exe", tempPath);
+                StartExternalProcess("notepad.exe", tempPath);
             } 
             catch (Exception) { }
         }
