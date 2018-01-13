@@ -63,7 +63,7 @@ namespace CreviceApp
         {
             base.OnShown(e);
             RegisterNotifyIcon();
-            UpdateTasktrayIconText("Crevice\n Gesture not loaded.");
+            UpdateTasktrayMessage("Gesture not loaded.");
             SetupUserScriptWatcher();
             ReloadableGestureMachine.RequestReload();
             try
@@ -127,8 +127,9 @@ namespace CreviceApp
             }
         }
 
-        public void UpdateTasktrayIconText(string text)
+        public void UpdateTasktrayMessage(string message)
         {
+            var text = string.Format("Crevice {0}\n{1}", Application.ProductVersion, message);
             InvokeProperly(delegate ()
             {
                 if (!Global.CLIOption.NoGUI)
@@ -138,9 +139,9 @@ namespace CreviceApp
             });
         }
 
-        public void UpdateTasktrayIconText(string formattedtext, params object[] args)
+        public void UpdateTasktrayMessage(string formattedtext, params object[] args)
         {
-            UpdateTasktrayIconText(string.Format(formattedtext, args));
+            UpdateTasktrayMessage(string.Format(formattedtext, args));
         }
         
         public void ShowFatalErrorDialog(string text)

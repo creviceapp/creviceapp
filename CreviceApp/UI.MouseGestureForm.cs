@@ -274,8 +274,7 @@ namespace CreviceApp
                                 string.Format("{0} gesture definitions were loaded", Instance.GestureDefinition.Count()),
                                 "Crevice",
                                 ToolTipIcon.Info, 10000);
-                            Global.MainForm.UpdateTasktrayIconText(
-                                "{0}\nGestures: {1}", "Crevice", Instance.GestureDefinition.Count());
+                            Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", Instance.GestureDefinition.Count());
                             ReleaseUnusedMemory();
                         }
                     }
