@@ -145,6 +145,8 @@ var Taskbar = @when((ctx) =>
                ctx.PointedWindow.ClassName == "TrayShowDesktopButtonWClass" ||
                ctx.PointedWindow.ClassName == "TrayButton" ||
                ctx.PointedWindow.ClassName == "TrayClockWClass" ||
+               ctx.PointedWindow.ClassName == "ClockButton" ||
+               ctx.PointedWindow.ClassName == "Start" ||
                ctx.PointedWindow.ClassName == "TaskbarWindow32");
 });
 

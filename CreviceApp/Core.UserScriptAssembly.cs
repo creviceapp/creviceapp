@@ -11,7 +11,7 @@ using System.Windows.Forms;
 namespace CreviceApp
 {
 
-    public class UserScriptAssembly
+    public sealed class UserScriptAssembly
     {
         [Serializable]
         public class Cache
@@ -22,60 +22,95 @@ namespace CreviceApp
             public string scriptFileHash { get; set; }
         }
 
-        System.Security.Cryptography.MD5 md5;
-        BinaryFormatter formatter;
-
-        public UserScriptAssembly()
+        public class UserScriptAssemblyImpl
         {
-            this.md5 = System.Security.Cryptography.MD5.Create();
-            this.formatter = new BinaryFormatter();
-        }
+            System.Security.Cryptography.MD5 md5;
+            BinaryFormatter formatter;
 
-        public string CurrentAppVersion()
-        {
-            return string.Format("{0}-{1}", Application.ProductName, Application.ProductVersion);
-        }
-
-        private string Hash(string str)
-        {
-            var bytes = Encoding.UTF8.GetBytes(str);
-            bytes = md5.ComputeHash(bytes);
-            return BitConverter.ToString(bytes).Replace("-", string.Empty);
-        }
-
-        public bool IsCompatible(Cache cache, string script)
-        {
-            return cache.AppVersion == CurrentAppVersion() &&
-                   cache.scriptFileHash == Hash(script);
-        }
-
-        public Cache CreateCache(string script, byte[] pe, byte[] pdb)
-        {
-            var cache = new Cache()
+            public UserScriptAssemblyImpl()
             {
-                AppVersion = CurrentAppVersion(),
-                pe = pe,
-                pdb = pdb,
-                scriptFileHash = Hash(script)
-            };
-            return cache;
-        }
+                this.md5 = System.Security.Cryptography.MD5.Create();
+                this.formatter = new BinaryFormatter();
+            }
 
-        public void Save(string path, Cache cache)
-        {
-            using (var fs = new FileStream(path, FileMode.Create))
+            public string CurrentAppVersion()
             {
-                formatter.Serialize(fs, cache);
+                return string.Format("{0}-{1}", Application.ProductName, Application.ProductVersion);
+            }
+
+            private string Hash(string str)
+            {
+                var bytes = Encoding.UTF8.GetBytes(str);
+                bytes = md5.ComputeHash(bytes);
+                return BitConverter.ToString(bytes).Replace("-", string.Empty);
+            }
+
+            public bool IsCompatible(Cache cache, string userScriptCode)
+            {
+                return cache.AppVersion == CurrentAppVersion() &&
+                       cache.scriptFileHash == Hash(userScriptCode);
+            }
+
+            public Cache CreateCache(string script, byte[] pe, byte[] pdb)
+            {
+                var cache = new Cache()
+                {
+                    AppVersion = CurrentAppVersion(),
+                    pe = pe,
+                    pdb = pdb,
+                    scriptFileHash = Hash(script)
+                };
+                return cache;
+            }
+
+            public void Save(string path, Cache cache)
+            {
+                using (var fs = new FileStream(path, FileMode.Create))
+                {
+                    formatter.Serialize(fs, cache);
+                }
+            }
+
+            public Cache Load(string path)
+            {
+                using (var fs = new FileStream(path, FileMode.Open))
+                {
+                    var data = formatter.Deserialize(fs);
+                    return data as Cache;
+                }
             }
         }
 
-        public Cache Load(string path)
+        private static UserScriptAssemblyImpl _singletonInstance = new UserScriptAssemblyImpl();
+        private static UserScriptAssemblyImpl GetInstance()
         {
-            using (var fs = new FileStream(path, FileMode.Open))
-            {
-                var data = formatter.Deserialize(fs);
-                return data as Cache;
-            }
+            return _singletonInstance;
+        }
+        private UserScriptAssembly() {}
+
+        public static string CurrentAppVersion()
+        {
+            return GetInstance().CurrentAppVersion();
+        }
+
+        public static bool IsCompatible(Cache cache, string userScriptCode)
+        {
+            return GetInstance().IsCompatible(cache, userScriptCode);
+        }
+
+        public static Cache CreateCache(string userScriptCode, byte[] pe, byte[] pdb)
+        {
+            return GetInstance().CreateCache(userScriptCode, pe, pdb);
+        }
+
+        public static void Save(string path, Cache cache)
+        {
+            GetInstance().Save(path, cache);
+        }
+
+        public static Cache Load(string path)
+        {
+            return GetInstance().Load(path);
         }
     }
 }

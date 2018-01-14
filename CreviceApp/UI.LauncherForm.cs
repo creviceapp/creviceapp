@@ -92,6 +92,7 @@ namespace CreviceApp
             Left = (rect.Width - Width) / 2;
             Top = (rect.Height - Height) / 2;
             Opacity = 1;
+            Activate();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -108,7 +109,7 @@ namespace CreviceApp
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Process.Start("explorer.exe", "/select, " + Global.MainForm.UserScriptFile);
+            Global.MainForm.StartExternalProcess("explorer.exe", "/select, " + Global.MainForm.UserScript.UserScriptFile);
         }
 
         private void button3_Click(object sender, EventArgs e)

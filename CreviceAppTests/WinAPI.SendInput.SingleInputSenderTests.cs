@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -105,13 +106,33 @@ namespace CreviceApp.Tests
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
         }
 
+        // https://stackoverflow.com/questions/5977445/how-to-get-windows-display-settings
+        [DllImport("gdi32.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        public enum DeviceCap
+        {
+            VERTRES = 10,
+            DESKTOPVERTRES = 117,
+        }
+
+        private float getScalingFactor()
+        {
+            Graphics g = Graphics.FromHwnd(IntPtr.Zero);
+            IntPtr desktop = g.GetHdc();
+            int LogicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
+            int PhysicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
+
+            float ScreenScalingFactor = (float)PhysicalScreenHeight / (float)LogicalScreenHeight;
+            return ScreenScalingFactor; 
+        }
+
         [TestMethod()]
         public void MoveTest()
         {
-            var rand = new System.Random();
+            var rand = new Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var start = Cursor.Position;
+            var start = WinAPI.Window.Window.GetCursorPos();
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();
@@ -121,18 +142,17 @@ namespace CreviceApp.Tests
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
                 Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-                Assert.AreEqual(pos.x, start.X + dx);
-                Assert.AreEqual(pos.y, start.Y + dy);
+                Assert.IsTrue(pos.x - (start.X + dx) * WinAPI.Device.GetScreenScalingFactor() <= 1);
+                Assert.IsTrue(pos.y - (start.Y + dy) * WinAPI.Device.GetScreenScalingFactor() <= 1);
             }
         } 
 
         [TestMethod()]
         public void MoveToTest()
         {
-            var rand = new System.Random();
+            var rand = new Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var start = Cursor.Position;
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();
@@ -142,8 +162,51 @@ namespace CreviceApp.Tests
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
                 Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-                Assert.AreEqual(pos.x, x);
-                Assert.AreEqual(pos.y, y);
+                Assert.IsTrue(pos.x - x * getScalingFactor() <= 1);
+                Assert.IsTrue(pos.y - y * getScalingFactor() <= 1);
+            }
+        }
+
+        [TestMethod()]
+        public void LogicalMoveTest()
+        {
+            var rand = new Random();
+            var max_cursor_range = 0xFFF;
+            var min_cursor_range = -0xFFF;
+            var start = WinAPI.Window.Window.GetPhysicalCursorPos();
+            var scalingFactor = WinAPI.Device.GetScreenScalingFactor();
+            foreach (int i in Enumerable.Range(0, 100))
+            {
+                mouseEvents.Clear();
+                var dx = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                var dy = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                sender.Move(dx, dy, logical: true);
+                var evnt = mouseEvents[0].Item1;
+                var pos = mouseEvents[0].Item2.pt;
+                Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
+                Assert.IsTrue(pos.x - (start.X + dx * scalingFactor) <= 1);
+                Assert.IsTrue(pos.y - (start.Y + dy * scalingFactor) <= 1);
+            }
+        }
+
+        [TestMethod()]
+        public void LogicalMoveToTest()
+        {
+            var rand = new Random();
+            var max_cursor_range = 0xFFF;
+            var min_cursor_range = -0xFFF;
+            var scalingFactor = WinAPI.Device.GetScreenScalingFactor();
+            foreach (int i in Enumerable.Range(0, 100))
+            {
+                mouseEvents.Clear();
+                var x = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                var y = rand.Next(max_cursor_range - min_cursor_range) - min_cursor_range;
+                sender.MoveTo(x, y, logical: true);
+                var evnt = mouseEvents[0].Item1;
+                var pos = mouseEvents[0].Item2.pt;
+                Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
+                Assert.IsTrue(pos.x - (x * scalingFactor) <= 1);
+                Assert.IsTrue(pos.y - (y * scalingFactor) <= 1);
             }
         }
 

@@ -489,13 +489,34 @@ namespace CreviceApp.WinAPI.Window
             return new Impl.WindowInfo(hWnd);
         }
 
+        /// <summary>
+        /// A shortcut to GetCursorPos().
+        /// </summary>
+        /// <returns>Physical cursor position.</returns>
         public static Point GetCursorPos()
         {
             var point = new Point();
             NativeMethods.GetCursorPos(out point);
             return point;
         }
+        
+        /// <summary>
+        /// Returns logical cursor position culculated based on physical and logical screen size.
+        /// </summary>
+        /// <returns>Logical cursor position.</returns>
+        public static Point GetLogicalCursorPos()
+        {
+            var point = GetPhysicalCursorPos();
+            var scaleFactor = (float)Device.GetLogicalScreenSize().X / (float)Device.GetPhysicalScreenSize().X;
+            var x = (int)(point.X * scaleFactor);
+            var y = (int)(point.Y * scaleFactor);
+            return new Point(x, y);
+        }
 
+        /// <summary>
+        /// A shortcut to GetPhysicalCursorPos().
+        /// </summary>
+        /// <returns>Physical cursor position.</returns>
         public static Point GetPhysicalCursorPos()
         {
             var point = new Point();

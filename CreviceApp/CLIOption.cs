@@ -30,8 +30,8 @@ namespace CreviceApp
         
         [CommandLine.Option('s', "script",
             DefaultValue = "default.csx",
-            HelpText = "Path to user script file. " + 
-                       "Use this option if you need to change the default location of user script. " + 
+            HelpText = "Path to user script file. " +
+                       "Use this option if you need to change the default location of user script file. " + 
                        "If given value is relative path, Crevice will resolve it to absolute path based on the default directory (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).")]
         public string ScriptFile
         {
