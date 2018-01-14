@@ -188,13 +188,11 @@ namespace CreviceApp
             }
                 
             Verbose.Print("No error found in the UserScript on compilation phase.");
-
-            // Create gesture machine from string but assembly for getting more human readable error message.
             {
                 var ctx = new Core.UserScriptExecutionContext(Global);
                 try
                 {
-                    userScript.EvaluateUserScript(ctx, candidate.ParsedUserScript);
+                    userScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
                     if (saveCache)
                     {
                         try
@@ -206,7 +204,7 @@ namespace CreviceApp
                             Verbose.Print("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
                         }
                     }
-                    Verbose.Print("An error ocurred in the UserScript on evaluation phase.");
+                    Verbose.Print("Error ocurred in the UserScript on evaluation phase.");
                     var gestureDef = ctx.GetGestureDefinition();
                     var gestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
                     return new GetGestureMachineResult(gestureMachine, null, null);

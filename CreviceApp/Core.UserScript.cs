@@ -164,7 +164,14 @@ namespace CreviceApp
             var stopwatch = new Stopwatch();
             Verbose.Print("Evaluating UserScript...");
             stopwatch.Start();
-            parsedScript.RunAsync(ctx).Wait();
+            try
+            {
+                parsedScript.RunAsync(ctx).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.InnerException;
+            }
             stopwatch.Stop();
             Verbose.Print("UserScript evaluation finished. ({0})", stopwatch.Elapsed);
         }
@@ -183,8 +190,15 @@ namespace CreviceApp
             var type = assembly.GetType("Submission#0");
             var factory = type.GetMethod("<Factory>");
             var parameters = new object[] { new object[] { ctx, null } };
-            var result = factory.Invoke(null, parameters);
-            (result as Task<object>).Wait();
+            try
+            {
+                var result = factory.Invoke(null, parameters);
+                (result as Task<object>).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.InnerException;
+            }
             stopwatch.Stop();
             Verbose.Print("UserScriptAssembly evaluation finished. ({0})", stopwatch.Elapsed);
         }
