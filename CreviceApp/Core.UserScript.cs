@@ -19,6 +19,16 @@ namespace CreviceApp
 {
     public class UserScript
     {
+        public class EvaluationAbortException : Exception
+        {
+            public EvaluationAbortException(Exception innerException) : 
+                base("UserScript evaluation was aborted!", innerException)
+            {
+                // Todo: Display preview of the point the exception thrown on UserScript and how to debug the dll
+                // generated from UserScript with ILSpy.
+            }
+        }
+
         public class Watcher : FileSystemWatcher
         {
             public Watcher(string Path, ISynchronizeInvoke SynchronizingObject)
@@ -170,7 +180,7 @@ namespace CreviceApp
             }
             catch (AggregateException ex)
             {
-                throw ex.InnerException;
+                throw new EvaluationAbortException(ex.InnerException);
             }
             stopwatch.Stop();
             Verbose.Print("UserScript evaluation finished. ({0})", stopwatch.Elapsed);
@@ -197,7 +207,7 @@ namespace CreviceApp
             }
             catch (AggregateException ex)
             {
-                throw ex.InnerException;
+                throw new EvaluationAbortException(ex.InnerException);
             }
             stopwatch.Stop();
             Verbose.Print("UserScriptAssembly evaluation finished. ({0})", stopwatch.Elapsed);
