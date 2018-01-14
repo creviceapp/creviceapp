@@ -63,7 +63,7 @@ namespace CreviceApp
         {
             base.OnShown(e);
             RegisterNotifyIcon();
-            UpdateTasktrayMessage("Gesture not loaded.");
+            UpdateTasktrayMessage("Configuration not loaded.");
             SetupUserScriptWatcher();
             ReloadableGestureMachine.RequestReload();
             try
@@ -207,7 +207,7 @@ namespace CreviceApp
             });
         }
 
-        private void notifyIcon1_Click(object sender, EventArgs e)
+        private void OpenLauncherForm()
         {
             if (launcherForm == null || launcherForm.IsDisposed)
             {
@@ -221,24 +221,42 @@ namespace CreviceApp
             }
         }
 
-        public string LastErrorMessage { set; get; }
-
-        private void OpenWithNotepad(string text)
+        private void notifyIcon1_Click(object sender, EventArgs e)
         {
-            var tempPath = Path.Combine(Path.GetTempPath(), "CreviceApp.ErrorInformation.txt");
+            OpenLauncherForm();
+        }
+
+        private string _lastErrorMessage = "";
+        public string LastErrorMessage
+        {
+            get { return _lastErrorMessage; }
+            set
+            {
+                Verbose.Print("LastErrorMessage: {0}", value);
+                _lastErrorMessage = value;
+            }
+        }
+
+        private void OpenWithNotepad(string path, string text)
+        {
             try
             {
-                File.WriteAllText(tempPath, text);
-                StartExternalProcess("notepad.exe", tempPath);
+                File.WriteAllText(path, text);
+                StartExternalProcess("notepad.exe", path);
             } 
             catch (Exception) { }
         }
 
         private void notifyIcon1_BalloonTipClicked(object sender, EventArgs e)
         {
-            if (LastErrorMessage != null)
+            if (LastErrorMessage == null)
             {
-                OpenWithNotepad(LastErrorMessage);
+                OpenLauncherForm();
+            }
+            else
+            {
+                var tempPath = Path.Combine(Path.GetTempPath(), "CreviceApp.ErrorInformation.txt");
+                OpenWithNotepad(tempPath, LastErrorMessage);
             }
         }
     }

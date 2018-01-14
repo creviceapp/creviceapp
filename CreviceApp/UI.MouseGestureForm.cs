@@ -19,8 +19,15 @@ namespace CreviceApp
 {
     using WinAPI.WindowsHookEx;
 
+    using GetGestureMachineResult = 
+        Tuple<Core.FSM.GestureMachine,
+            System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
+            Exception>;
+
     public class ReloadableGestureMachine : IDisposable
     {
+
+
         public class NullGestureMachine : Core.FSM.GestureMachine
         {
             public NullGestureMachine() : base(new Core.Config.UserConfig(), new List<Core.GestureDefinition>())
@@ -33,22 +40,16 @@ namespace CreviceApp
         {
             public readonly DateTime Created;
             public readonly bool RestoreFromCache;
-            public readonly bool SaveCache;
             public readonly string UserScriptString;
 
             private readonly UserScript userScript;
-            private readonly ReloadableGestureMachine reloadableGestureMachine;
             
             public GestureMachineCandidate(
                 UserScript userScript, 
-                ReloadableGestureMachine reloadableGestureMachine, 
-                bool restoreFromCache,
-                bool saveCache)
+                bool restoreFromCache)
             {
                 this.userScript = userScript;
-                this.reloadableGestureMachine = reloadableGestureMachine;
                 this.RestoreFromCache = restoreFromCache;
-                this.SaveCache = saveCache;
                 this.Created = DateTime.Now;
                 this.UserScriptString = this.userScript.GetUserScriptString();
             }
@@ -124,35 +125,6 @@ namespace CreviceApp
                     _userScriptAssemblyCache = value;
                 }
             }
-            
-            public Core.FSM.GestureMachine RestoreGestureMachine(AppGlobal Global)
-            {
-                var ctx = new Core.UserScriptExecutionContext(Global);
-                var gestureDef = userScript.GetGestureDefinition(ctx, RestorationCache);
-                return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
-            }
-
-            public Core.FSM.GestureMachine CreateGestureMachineFromAssembly(AppGlobal Global)
-            {
-                var ctx = new Core.UserScriptExecutionContext(Global);
-                var gestureDef = userScript.GetGestureDefinition(ctx, UserScriptAssemblyCache);
-                try
-                {
-                    userScript.SaveUserScriptAssemblyCache(UserScriptAssemblyCache);
-                } 
-                catch (Exception ex)
-                {
-                    Verbose.Print("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
-                }
-                return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
-            }
-
-            public Core.FSM.GestureMachine CreateGestureMachineFromScript(AppGlobal Global)
-            {
-                var ctx = new Core.UserScriptExecutionContext(Global);
-                var gestureDef = userScript.GetGestureDefinition(ctx, ParsedUserScript);
-                return new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
-            }
         }
 
         private Core.FSM.GestureMachine _instance;
@@ -169,6 +141,10 @@ namespace CreviceApp
                 }
             }
         }
+        public bool IsActivated()
+        {
+            return Instance.GetType() != typeof(NullGestureMachine);
+        }
 
         private readonly AppGlobal Global;
         private readonly UserScript userScript;
@@ -179,12 +155,12 @@ namespace CreviceApp
             this.userScript = UserScript;
             this.Instance = new NullGestureMachine();
         }
-        
-        private Core.FSM.GestureMachine GetGestureMachine()
+
+        private GetGestureMachineResult GetGestureMachine()
         {
-            var restoreFromCache = Instance.GetType() == typeof(NullGestureMachine) && !Global.CLIOption.NoCache;
+            var restoreFromCache = !IsActivated() || !Global.CLIOption.NoCache;
             var saveCache = !Global.CLIOption.NoCache;
-            var candidate = new GestureMachineCandidate(userScript, this, restoreFromCache, saveCache);
+            var candidate = new GestureMachineCandidate(userScript, restoreFromCache);
 
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
@@ -194,58 +170,59 @@ namespace CreviceApp
             {
                 try
                 {
-                    return candidate.RestoreGestureMachine(Global);
+                    var ctx = new Core.UserScriptExecutionContext(Global);
+                    userScript.EvaluateUserScriptAssembly(ctx, candidate.RestorationCache);
+                    var gestureDef = ctx.GetGestureDefinition();
+                    return new GetGestureMachineResult(new Core.FSM.GestureMachine(Global.UserConfig, gestureDef), null, null);
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Print("RestoreGestureMachine was failed; fallback to CreateGestureMachineFromAssembly. {0}", ex.ToString());
+                    Verbose.Print("GestureMachine restoration was failed; fallback to normal compilation. {0}", ex.ToString());
                 }
             }
 
             if (candidate.Errors.Count() > 0)
             {
-                var prettyErrorMessage = userScript.GetPrettyErrorMessage(candidate.Errors);
-                Verbose.Print("Error(s) found in the user script on compilation phase. \r\n{0}", prettyErrorMessage);
-                Global.MainForm.LastErrorMessage = prettyErrorMessage;
-                Global.MainForm.ShowBalloon(
-                    string.Format("{0} error(s) found in the user script on compilation phase. \r\nClick to view the detail.", candidate.Errors.Count()),
-                    "Crevice",
-                    ToolTipIcon.Error, 10000);
-                return null;
+                Verbose.Print("Error(s) found in the UserScript on compilation phase.");
+                return new GetGestureMachineResult(null, candidate.Errors, null);
             }
                 
-            Verbose.Print("No error found in the user script on compilation phase.");
-            Global.MainForm.LastErrorMessage = "";
+            Verbose.Print("No error found in the UserScript on compilation phase.");
 
-            try
+            // Create gesture machine from string but assembly for getting more human readable error message.
             {
-                return candidate.CreateGestureMachineFromAssembly(Global);
+                var ctx = new Core.UserScriptExecutionContext(Global);
+                try
+                {
+                    userScript.EvaluateUserScript(ctx, candidate.ParsedUserScript);
+                    if (saveCache)
+                    {
+                        try
+                        {
+                            userScript.SaveUserScriptAssemblyCache(candidate.UserScriptAssemblyCache);
+                        }
+                        catch (Exception ex)
+                        {
+                            Verbose.Print("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
+                        }
+                    }
+                    Verbose.Print("An error ocurred in the UserScript on evaluation phase.");
+                    var gestureDef = ctx.GetGestureDefinition();
+                    var gestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
+                    return new GetGestureMachineResult(gestureMachine, null, null);
+                }
+                catch (Exception ex)
+                {
+                    Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
+                    var gestureDef = ctx.GetGestureDefinition();
+                    var gestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
+                    return new GetGestureMachineResult(gestureMachine, null, ex);
+                }
             }
-            catch (Exception ex)
-            {
-                Verbose.Print("CreateGestureMachineFromAssembly was failed; fallback to CreateGestureMachineFromScript. {0}", ex.ToString());
-            }
-
-            try
-            {
-                return candidate.CreateGestureMachineFromScript(Global);
-            }
-            catch (Exception ex)
-            {
-                Verbose.Print("CreateGestureMachineFromScript was failed; cannot fallback to any MouseGestureMachine generator. {0}", ex.ToString());
-                Global.MainForm.LastErrorMessage = ex.ToString();
-            }
-
-            Verbose.Print("Hot reload request was canceled.");
-            Global.MainForm.ShowBalloon(
-                "An error occured in the user script on evaluation phase. \r\nClick to view the detail.",
-                "Crevice",
-                ToolTipIcon.Error, 10000);
-            return null;
         }
 
         private object lockObject = new object();
-        private bool requestReload = false;
+        private bool reloadRequest = false;
         private bool reloading = false;
 
         public void RequestReload()
@@ -254,7 +231,7 @@ namespace CreviceApp
             if (reloading && !disposed)
             {
                 Verbose.Print("Hot reload request was queued because the reloading is already processing; This request will be processed after current reload is finished.");
-                requestReload = true;
+                reloadRequest = true;
                 return;
             }
 
@@ -263,26 +240,64 @@ namespace CreviceApp
                 reloading = true;
                 while (true)
                 {
-                    requestReload = false;
+                    reloadRequest = false;
                     try
                     {
-                        var gestureMachine = GetGestureMachine();
-                        if (gestureMachine != null)
+                        var result = GetGestureMachine();
+                        var gestureMachine = result.Item1;
+                        var compilationErrors = result.Item2;
+                        var runtimeError = result.Item3;
+                        if (!reloadRequest && !disposed)
                         {
-                            Instance = gestureMachine;
-                            Global.MainForm.ShowBalloon(
-                                string.Format("{0} gesture definitions were loaded", Instance.GestureDefinition.Count()),
-                                "Crevice",
-                                ToolTipIcon.Info, 10000);
-                            Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", Instance.GestureDefinition.Count());
-                            ReleaseUnusedMemory();
+                            var balloonIconTitle = "";
+                            var balloonIconMessage = "";
+                            var balloonIcon = ToolTipIcon.None;
+                            var lastErrorMessage = "";
+                            if (gestureMachine == null)
+                            {
+                                balloonIconTitle = "UserScript Compilation Error";
+                                balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.", 
+                                    compilationErrors.GetValueOrDefault().Count());
+                                balloonIcon = ToolTipIcon.Error;
+                                lastErrorMessage = userScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
+                            }
+                            else
+                            {
+                                var gestures = gestureMachine.GestureDefinition.Count();
+                                var activatedMessage = string.Format("{0} Gestures Activated", gestures);
+                                    
+                                Instance = gestureMachine;
+                                if (runtimeError == null)
+                                {
+                                    balloonIcon = ToolTipIcon.Info;
+                                    balloonIconMessage = activatedMessage;
+                                    lastErrorMessage = "";
+                                }
+                                else
+                                {
+                                    balloonIcon = ToolTipIcon.Warning;
+                                    balloonIconTitle = activatedMessage;
+                                    balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
+                                    lastErrorMessage = runtimeError.ToString();
+                                }
+                                Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
+                            }
+                            Global.MainForm.LastErrorMessage = lastErrorMessage;
+                            Global.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
+
+                            // If an error to be thrown, users may retry compilation. So, for more quickly response,
+                            // we should not release unused memory, then. 
+                            if (gestureMachine != null)
+                            {
+                                ReleaseUnusedMemory();
+                            }
                         }
                     }
                     finally
                     {
                         reloading = false;
                     }
-                    if (!requestReload || disposed)
+                    if (!reloadRequest || disposed)
                     {
                         break;
                     }
@@ -310,7 +325,7 @@ namespace CreviceApp
             GC.SuppressFinalize(this);
             lock (lockObject)
             {
-                requestReload = false;
+                reloadRequest = false;
                 disposed = true;
                 Instance = null;
             }

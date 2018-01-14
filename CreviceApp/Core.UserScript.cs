@@ -139,6 +139,10 @@ namespace CreviceApp
             Verbose.Print("Genarating UserScriptAssembly...");
             stopwatch.Restart();
             compilation.Emit(peStream, pdbStream);
+#if DEBUG
+            File.WriteAllBytes((UserScriptFile + ".debug.dll"), peStream.GetBuffer());
+            File.WriteAllBytes((UserScriptFile + ".debug.pdb"), pdbStream.GetBuffer());
+#endif
             stopwatch.Stop();
             Verbose.Print("UserScriptAssembly generation finished. ({0})", stopwatch.Elapsed);
             return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
@@ -155,7 +159,7 @@ namespace CreviceApp
             return diagnostic;
         }
 
-        public IEnumerable<Core.GestureDefinition> EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
+        public void EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
         {
             var stopwatch = new Stopwatch();
             Verbose.Print("Evaluating UserScript...");
@@ -163,10 +167,9 @@ namespace CreviceApp
             parsedScript.RunAsync(ctx).Wait();
             stopwatch.Stop();
             Verbose.Print("UserScript evaluation finished. ({0})", stopwatch.Elapsed);
-            return ctx.GetGestureDefinition();
         }
 
-        public IEnumerable<Core.GestureDefinition> EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
+        public void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
         {
             // todo: using(Verbose.StopWatch("Loading", "UserScriptAssembly")){}
             var stopwatch = new Stopwatch();
@@ -181,9 +184,9 @@ namespace CreviceApp
             var factory = type.GetMethod("<Factory>");
             var parameters = new object[] { new object[] { ctx, null } };
             var result = factory.Invoke(null, parameters);
+            (result as Task<object>).Wait();
             stopwatch.Stop();
             Verbose.Print("UserScriptAssembly evaluation finished. ({0})", stopwatch.Elapsed);
-            return ctx.GetGestureDefinition();
         }
 
         public UserScriptAssembly.Cache LoadUserScriptAssemblyCache(string userScriptString)
@@ -216,18 +219,7 @@ namespace CreviceApp
             stopwatch.Stop();
             Verbose.Print("UserScriptAssemblyCache saving finished. ({0})", stopwatch.Elapsed);
         }
-
-        public IEnumerable<Core.GestureDefinition> GetGestureDefinition(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
-        {
-            return EvaluateUserScriptAssembly(ctx, userScriptAssemblyCache);
-        }
-
-        public IEnumerable<Core.GestureDefinition> GetGestureDefinition(Core.UserScriptExecutionContext ctx, Script parsedScript)
-        {
-            CompileUserScript(parsedScript);
-            return EvaluateUserScript(ctx, parsedScript);
-        }
-
+        
         private string GetHighlightedUserScriptString(Microsoft.CodeAnalysis.Diagnostic error)
         {
             var lineSpan = error.Location.GetLineSpan();

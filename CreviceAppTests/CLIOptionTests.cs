@@ -164,7 +164,7 @@ namespace CreviceApp
                     "\r\n" +
                     "  -s, --script      (Default: default.csx) Path to user script file. Use this \r\n" +
                     "                    option if you need to change the default location of user \r\n" +
-                    "                    script. If given value is relative path, Crevice will \r\n" +
+                    "                    script file. If given value is relative path, Crevice will \r\n" +
                     "                    resolve it to absolute path based on the default directory \r\n" +
                     "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).\r\n" +
                     "\r\n" +
@@ -199,7 +199,7 @@ namespace CreviceApp
                     "\r\n" +
                     "  -s, --script      (Default: default.csx) Path to user script file. Use this \r\n" +
                     "                    option if you need to change the default location of user \r\n" +
-                    "                    script. If given value is relative path, Crevice will \r\n" +
+                    "                    script file. If given value is relative path, Crevice will \r\n" +
                     "                    resolve it to absolute path based on the default directory \r\n" +
                     "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).\r\n" +
                     "\r\n" +

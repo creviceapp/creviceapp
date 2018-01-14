@@ -312,7 +312,8 @@ namespace CreviceApp
             var parsedScript = userScript.ParseScript(userScriptString);
             var userScriptCache = userScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(global);
-            var gestureDef = userScript.GetGestureDefinition(ctx, parsedScript);
+            userScript.EvaluateUserScript(ctx, parsedScript);
+            var gestureDef = ctx.GetGestureDefinition();
             Assert.IsTrue(gestureDef.Count() > 0);
         }
 
