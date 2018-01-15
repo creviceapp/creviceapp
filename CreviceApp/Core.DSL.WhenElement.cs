@@ -1,32 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.DSL
+namespace CreviceApp.Core.DSL
 {
-    public class OnElement
+    public class WhenElement
     {
         public class Value
         {
             public readonly List<IfSingleTriggerButtonElement.Value> ifSingleTriggerButtonElements = new List<IfSingleTriggerButtonElement.Value>();
             public readonly List<IfDoubleTriggerButtonElement.Value> ifDoubleTriggerButtonElements = new List<IfDoubleTriggerButtonElement.Value>();
-            public readonly List<IfStrokeElement.Value> ifStrokeElements = new List<IfStrokeElement.Value>();
-            public readonly Def.AcceptableInOnClause button;
+            public readonly List<OnElement.Value> onElements = new List<OnElement.Value>();
+            public readonly Def.WhenFunc func;
 
-            public Value(Def.AcceptableInOnClause button)
+            public Value(Def.WhenFunc func)
             {
-                this.button = button;
+                this.func = func;
             }
         }
         
         private readonly Value value;
 
-        public OnElement(List<Value> parent, Def.AcceptableInOnClause button)
+        public WhenElement(List<Value> parent, Def.WhenFunc func)
         {
-            this.value = new Value(button);
+            this.value = new Value(func);
             parent.Add(this.value);
+        }
+
+        public OnElement @on(Def.AcceptableInOnClause button)
+        {
+            return new OnElement(value.onElements, button);
         }
 
         public IfSingleTriggerButtonElement @if(Def.AcceptableInIfSingleTriggerButtonClause button)
@@ -37,11 +43,6 @@ namespace CreviceApp.DSL
         public IfDoubleTriggerButtonElement @if(Def.AcceptableInIfDoubleTriggerButtonClause button)
         {
             return new IfDoubleTriggerButtonElement(value.ifDoubleTriggerButtonElements, button);
-        }
-
-        public IfStrokeElement @if(params Def.AcceptableInIfStrokeClause[] moves)
-        {
-            return new IfStrokeElement(value.ifStrokeElements, moves);
         }
     }
 }

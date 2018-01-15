@@ -6,26 +6,47 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+
 
 namespace CreviceApp
 {
+    using App;
+
     [TestClass()]
     public class UserScriptTests
     {
+        private static string GetBaseTemporaryDirectory()
+        {
+            return Path.Combine(Path.GetTempPath(), "Crevice3Test");
+        }
+
+        private static string CreateTemporaryTestDirectory([CallerMemberName] string memberName = "")
+        {
+            var randomString = Guid.NewGuid().ToString("N");
+            var directory = Path.Combine(GetBaseTemporaryDirectory(), randomString, memberName);
+            Directory.CreateDirectory(directory);
+            return directory;
+        }
+
+        [ClassCleanup]
+        public static void CleanupDirectory()
+        {
+            Directory.Delete(GetBaseTemporaryDirectory(), recursive: true);
+        }
+
         [TestMethod()]
         public void DefaultUserDirectoryTest()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
+            var appConfig = new AppConfig();
+            Assert.IsTrue(appConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
         }
 
         [TestMethod()]
         public void UserScriptFile0Test()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\default.csx"));
+            var appConfig = new AppConfig();
+            Assert.IsTrue(appConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\default.csx"));
         }
 
         [TestMethod()]
@@ -34,9 +55,8 @@ namespace CreviceApp
             // When relative user script path is given.
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
-            var global = new AppGlobal(cliOption);
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\hoge.csx"));
+            var appConfig = new AppConfig(cliOption);
+            Assert.IsTrue(appConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\hoge.csx"));
         }
         
         [TestMethod()]
@@ -45,17 +65,15 @@ namespace CreviceApp
             // When absolute user script path is given.
             string[] args = { "--script", "C:\\hoge.csx" };
             var cliOption = CLIOption.Parse(args);
-            var global = new AppGlobal(cliOption);
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserScriptFile.Equals("C:\\hoge.csx"));
+            var appConfig = new AppConfig(cliOption);
+            Assert.IsTrue(appConfig.UserScriptFile.Equals("C:\\hoge.csx"));
         }
 
         [TestMethod()]
         public void UserDirectory0Test()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
+            var appConfig = new AppConfig();
+            Assert.IsTrue(appConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
         }
 
         [TestMethod()]
@@ -64,9 +82,8 @@ namespace CreviceApp
             // When relative user script path is given.
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
-            var global = new AppGlobal(cliOption);
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
+            var appConfig = new AppConfig(cliOption);
+            Assert.IsTrue(appConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
         }
 
         [TestMethod()]
@@ -75,36 +92,44 @@ namespace CreviceApp
             // When absolute user script path is given.
             string[] args = { "--script", "C:\\hoge.csx" };
             var cliOption = CLIOption.Parse(args);
-            var global = new AppGlobal(cliOption);
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserDirectory.Equals("C:\\"));
+            var appConfig = new AppConfig(cliOption);
+            Assert.IsTrue(appConfig.UserDirectory.Equals("C:\\"));
         }
 
         [TestMethod()]
-        public void GetUserScriptStringTest()
+        public void GetOrSetDefaultUserScriptFile0Test()
         {
-            string[] args = { "--script", "test.csx" };
+            var directory = CreateTemporaryTestDirectory();
+            string[] args = { "--script", Path.Combine(directory, "test.csx") };
             var cliOption = CLIOption.Parse(args);
-            var global = new AppGlobal(cliOption);
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.GetUserScriptString().Length > 0);
+            var appConfig = new AppConfig(cliOption);
+            Assert.IsTrue(appConfig.GetOrSetDefaultUserScriptFile("").Length == 0);
         }
+
+        [TestMethod()]
+        public void GetOrSetDefaultUserScriptFile1Test()
+        {
+            var directory = CreateTemporaryTestDirectory();
+            string[] args = { "--script", Path.Combine(directory, "test.csx") };
+            var cliOption = CLIOption.Parse(args);
+            var appConfig = new AppConfig(cliOption);
+            Assert.IsTrue(appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript)).Length > 0);
+        }
+
 
         [TestMethod()]
         public void GetUserScriptCacheFileTest()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
-            Assert.IsTrue(userScript.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\default.csx.cache"));
+            var appConfig = new AppConfig();
+            Assert.IsTrue(appConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\default.csx.cache"));
         }
 
         [TestMethod()]
         public void ParseScriptTest()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "dummy_script";
-            var parsedScript = userScript.ParseScript(userScriptString);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             Assert.AreEqual(parsedScript.Code, userScriptString);
             Assert.AreEqual(parsedScript.GlobalsType.Name, "UserScriptExecutionContext");
             Assert.AreEqual(parsedScript.GlobalsType.FullName, "CreviceApp.Core.UserScriptExecutionContext");
@@ -117,120 +142,110 @@ namespace CreviceApp
         [TestMethod()]
         public void CompileAndEvaluateUserScript0_0Test()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "var hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var errors = userScript.CompileUserScript(parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript0_1Test()
         {
             // When the user script containing dynamic expression is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "dynamic hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var errors = userScript.CompileUserScript(parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript0_2Test()
         {
             // When the user script which defines a mouse gesture is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "var Whenever = @when((ctx) => {return true;});";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var errors = userScript.CompileUserScript(parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript0_3Test()
         {
             // When the user script which using CreviceApp API is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var errors = userScript.CompileUserScript(parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript0_4Test()
         {
             // When the user script containing a error is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "undefined_variable";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var errors = userScript.CompileUserScript(parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() > 0);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript1_0Test()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "var hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            userScript.CompileUserScript(parsedScript);
-            var userScriptCache = userScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript1_1Test()
         {
             // When the user script containing dynamic expression is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "dynamic hoge = 1;";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var userScriptCache = userScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript1_2Test()
         {
             // When the user script which defines a mouse gesture is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "var Whenever = @when((ctx) => {return true;});";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var userScriptCache = userScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
         public void CompileAndEvaluateUserScript1_3Test()
         {
             // When the user script which using CreviceApp API is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var userScriptCache = userScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         [TestMethod()]
@@ -238,13 +253,12 @@ namespace CreviceApp
         public void CompileAndEvaluateUserScript1_4Test()
         {
             // When the user script containing a error is given.
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = "undefined_variable";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var userScriptCache = userScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
         public class SynchronizeInvokeMock : System.ComponentModel.ISynchronizeInvoke
@@ -271,24 +285,15 @@ namespace CreviceApp
                 return new object();
             }
         }
-
-        public void CleanupUserDirectory(UserScript us)
-        {
-            foreach (var file in Directory.GetFiles(us.UserDirectory))
-            {
-                File.Delete(file);
-            }
-        }
-
+        
         [TestMethod()]
         public void WatcherTest()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
-            CleanupUserDirectory(userScript);
+            var tempDir = CreateTemporaryTestDirectory();
+            Console.WriteLine(tempDir);
             var mock = new SynchronizeInvokeMock();
-            var watcher = userScript.GetWatcher(mock);
-            var watcherTestfile = Path.Combine(userScript.UserDirectory, "watcher_test.csx");
+            var watcher = new UserScript.DirectoryWatcher(mock, tempDir, "*.csx");
+            var watcherTestfile = Path.Combine(tempDir, "watcher_test.csx");
             var countdownEvent = new CountdownEvent(1);
             watcher.Created += new FileSystemEventHandler((s, e) =>
             {
@@ -300,19 +305,19 @@ namespace CreviceApp
                 File.WriteAllText(watcherTestfile, "watcher test text");
             });
             countdownEvent.Wait(TimeSpan.FromSeconds(4));
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
         }
 
         [TestMethod()]
         public void GetGestureDefTest()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
-            CleanupUserDirectory(userScript);
-            var userScriptString = userScript.GetUserScriptString();
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var userScriptCache = userScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(global);
-            userScript.EvaluateUserScript(ctx, parsedScript);
+            var tempDir = CreateTemporaryTestDirectory();
+            var appConfig = new AppConfig();
+            var parsedScript = UserScript.ParseScript(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), tempDir, tempDir);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
             var gestureDef = ctx.GetGestureDefinition();
             Assert.IsTrue(gestureDef.Count() > 0);
         }
@@ -320,8 +325,7 @@ namespace CreviceApp
         [TestMethod()]
         public void GetPrettyTextTest()
         {
-            var global = new AppGlobal();
-            var userScript = new UserScript(global);
+            var appConfig = new AppConfig();
             var userScriptString = @"
 var hoge = 1;
 
@@ -331,10 +335,10 @@ void foo()
 }
 
 ";
-            var parsedScript = userScript.ParseScript(userScriptString);
-            var errors = userScript.CompileUserScript(parsedScript);
+            var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+            var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() > 0);
-            var prettyText = userScript.GetPrettyErrorMessage(errors);
+            var prettyText = UserScript.GetPrettyErrorMessage(errors);
 
             Assert.AreEqual(prettyText, @"--------------------------------------------------------------------------------
 [Compiler Error] CS1002

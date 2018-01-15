@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.User;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.DSL.Tests
+namespace CreviceApp.Core.DSL.Tests
 {
     [TestClass()]
     public class AppElementTests
@@ -45,7 +44,7 @@ namespace CreviceApp.DSL.Tests
         [TestMethod()]
         public void funcTest()
         {
-            var ctx = new Core.UserActionExecutionContext(new Point());
+            var ctx = new UserActionExecutionContext(new Point());
             var root = new Root();
             var appElement = root.when(_ => true);
             Assert.IsTrue(root.whenElements[0].func(ctx));

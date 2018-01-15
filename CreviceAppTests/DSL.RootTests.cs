@@ -1,12 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.User.Tests
+namespace CreviceApp.Core.User.Tests
 {
     [TestClass()]
     public class RootTests

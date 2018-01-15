@@ -1,12 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.DSL.Tests
+namespace CreviceApp.Core.DSL.Tests
 {
     [TestClass()]
     public class IfStrokeElementTests

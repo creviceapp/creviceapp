@@ -29,16 +29,16 @@ namespace CreviceApp.Core
         
         public Config.UserConfig Config
         {
-          get { return Global.UserConfig; }
+          get { return AppConfig.UserConfig; }
         }
 
         private readonly DSL.Root root = new DSL.Root();
 
-        private readonly AppGlobal Global;
+        private readonly CreviceApp.App.AppConfig AppConfig;
         
-        public UserScriptExecutionContext(AppGlobal Global)
+        public UserScriptExecutionContext(CreviceApp.App.AppConfig AppConfig)
         {
-            this.Global = Global;
+            this.AppConfig = AppConfig;
         }
         
         public IEnumerable<GestureDefinition> GetGestureDefinition()
@@ -55,47 +55,47 @@ namespace CreviceApp.Core
 
         public void Tooltip(string text)
         {
-            Tooltip(text, Global.UserConfig.UI.TooltipPositionBinding(WinAPI.Window.Window.GetPhysicalCursorPos()));
+            Tooltip(text, AppConfig.UserConfig.UI.TooltipPositionBinding(WinAPI.Window.Window.GetPhysicalCursorPos()));
         }
 
         public void Tooltip(string text, Point point)
         {
-            Tooltip(text, point, Global.UserConfig.UI.TooltipTimeout);
+            Tooltip(text, point, AppConfig.UserConfig.UI.TooltipTimeout);
         }
 
         public void Tooltip(string text, Point point, int duration)
         {
-            Global.MainForm.ShowTooltip(text, point, duration);
+            AppConfig.MainForm.ShowTooltip(text, point, duration);
         }
 
         public void Balloon(string text)
         {
-            Balloon(text, Global.UserConfig.UI.BalloonTimeout);
+            Balloon(text, AppConfig.UserConfig.UI.BalloonTimeout);
         }
 
         public void Balloon(string text, int timeout)
         {
-            Global.MainForm.ShowBalloon(text, "", ToolTipIcon.None, timeout);
+            AppConfig.MainForm.ShowBalloon(text, "", ToolTipIcon.None, timeout);
         }
 
         public void Balloon(string text, string title)
         {
-            Balloon(text, title, ToolTipIcon.None, Global.UserConfig.UI.BalloonTimeout);
+            Balloon(text, title, ToolTipIcon.None, AppConfig.UserConfig.UI.BalloonTimeout);
         }
 
         public void Balloon(string text, string title, int timeout)
         {
-            Global.MainForm.ShowBalloon(text, title, ToolTipIcon.None, timeout);
+            AppConfig.MainForm.ShowBalloon(text, title, ToolTipIcon.None, timeout);
         }
 
         public void Balloon(string text, string title, ToolTipIcon icon)
         {
-            Balloon(text, title, icon, Global.UserConfig.UI.BalloonTimeout);
+            Balloon(text, title, icon, AppConfig.UserConfig.UI.BalloonTimeout);
         }
 
         public void Balloon(string text, string title, ToolTipIcon icon, int timeout)
         {
-            Global.MainForm.ShowBalloon(text, title, icon, timeout);
+            AppConfig.MainForm.ShowBalloon(text, title, icon, timeout);
         }
     }
 }

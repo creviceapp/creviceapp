@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.Core.App
+namespace CreviceApp.Core
 {
     using GetGestureMachineResult =
            Tuple<FSM.GestureMachine,
@@ -34,21 +34,19 @@ namespace CreviceApp.Core.App
             return Instance.GetType() != typeof(FSM.NullGestureMachine);
         }
 
-        private readonly AppGlobal Global;
-        private readonly UserScript userScript;
+        private readonly CreviceApp.App.AppConfig appConfig;
 
-        public ReloadableGestureMachine(AppGlobal Global, UserScript UserScript)
+        public ReloadableGestureMachine(CreviceApp.App.AppConfig appConfig)
         {
-            this.Global = Global;
-            this.userScript = UserScript;
+            this.appConfig = appConfig;
             this.Instance = new FSM.NullGestureMachine();
         }
 
         private GetGestureMachineResult GetGestureMachine()
         {
-            var restoreFromCache = !IsActivated() || !Global.CLIOption.NoCache;
-            var saveCache = !Global.CLIOption.NoCache;
-            var candidate = new GestureMachineCandidate(userScript, restoreFromCache);
+            var restoreFromCache = !IsActivated() || !appConfig.CLIOption.NoCache;
+            var saveCache = !appConfig.CLIOption.NoCache;
+            var candidate = new GestureMachineCandidate(appConfig, restoreFromCache);
 
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
@@ -58,7 +56,7 @@ namespace CreviceApp.Core.App
             {
                 try
                 {
-                    return new GetGestureMachineResult(candidate.Restore(Global), null, null);
+                    return new GetGestureMachineResult(candidate.Restore(appConfig), null, null);
                 }
                 catch (Exception ex)
                 {
@@ -74,15 +72,15 @@ namespace CreviceApp.Core.App
 
             Verbose.Print("No error found in the UserScript on compilation phase.");
             {
-                var ctx = new UserScriptExecutionContext(Global);
+                var ctx = new UserScriptExecutionContext(appConfig);
                 try
                 {
-                    userScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
+                    UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
                     if (saveCache)
                     {
                         try
                         {
-                            userScript.SaveUserScriptAssemblyCache(candidate.UserScriptAssemblyCache);
+                            UserScript.SaveUserScriptAssemblyCache(appConfig.UserScriptCacheFile, candidate.UserScriptAssemblyCache);
                         }
                         catch (Exception ex)
                         {
@@ -93,10 +91,10 @@ namespace CreviceApp.Core.App
                 catch (Exception ex)
                 {
                     Verbose.Print("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
-                    return new GetGestureMachineResult(candidate.CreateNew(Global, ctx), null, ex);
+                    return new GetGestureMachineResult(candidate.CreateNew(appConfig, ctx), null, ex);
                 }
                 Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
-                return new GetGestureMachineResult(candidate.CreateNew(Global, ctx), null, null);
+                return new GetGestureMachineResult(candidate.CreateNew(appConfig, ctx), null, null);
             }
         }
 
@@ -143,7 +141,7 @@ namespace CreviceApp.Core.App
                                     balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.",
                                         compilationErrors.GetValueOrDefault().Count());
                                     balloonIcon = ToolTipIcon.Error;
-                                    lastErrorMessage = userScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
+                                    lastErrorMessage = UserScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
                                 }
                                 else
                                 {
@@ -164,10 +162,10 @@ namespace CreviceApp.Core.App
                                         balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
                                         lastErrorMessage = runtimeError.ToString();
                                     }
-                                    Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
+                                    appConfig.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
                                 }
-                                Global.MainForm.LastErrorMessage = lastErrorMessage;
-                                Global.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
+                                appConfig.MainForm.LastErrorMessage = lastErrorMessage;
+                                appConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
 
                                 if (!reloadRequest)
                                 {

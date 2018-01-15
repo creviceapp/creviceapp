@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace CreviceApp
 {
-    public class UserScript
+    public static class UserScript
     {
         public class EvaluationAbortedException : Exception
         {
@@ -29,32 +29,48 @@ namespace CreviceApp
             }
         }
 
-        public class Watcher : FileSystemWatcher
+        public class DirectoryWatcher : FileSystemWatcher
         {
-            public Watcher(string Path, ISynchronizeInvoke SynchronizingObject)
+            public DirectoryWatcher(
+                ISynchronizeInvoke synchronizingObject, 
+                string targetDirectory, 
+                string filter, 
+                NotifyFilters notifyFilters = NotifyFilters.FileName | NotifyFilters.LastWrite,
+                bool watchSubdirectries = true)
             {
-                this.Path = Path;
-                this.Filter = "*.csx";
-                this.NotifyFilter = NotifyFilters.FileName |
-                                    NotifyFilters.LastWrite;
-                this.IncludeSubdirectories = true;
-                this.SynchronizingObject = SynchronizingObject;
+                this.Path = targetDirectory;
+                this.Filter = filter;
+                this.NotifyFilter = notifyFilters;
+                this.IncludeSubdirectories = watchSubdirectries;
+                this.SynchronizingObject = synchronizingObject;
             }
         }
 
-        protected readonly AppGlobal Global;
-
-        public UserScript(AppGlobal Global)
+        public class FileWatcher : FileSystemWatcher
         {
-            this.Global = Global;
+            public FileWatcher(
+                ISynchronizeInvoke synchronizingObject,
+                string targetFile,
+                NotifyFilters notifyFilters = NotifyFilters.FileName | NotifyFilters.LastWrite
+                )
+            {
+                this.Path = System.IO.Path.GetDirectoryName(targetFile);
+                this.Filter = System.IO.Path.GetFileName(targetFile);
+                this.NotifyFilter = notifyFilters;
+                this.IncludeSubdirectories = false;
+                this.SynchronizingObject = synchronizingObject;
+            }
+        }
+
+        /*
+        protected readonly App.AppConfig AppConfig;
+
+        public UserScript(App.AppConfig AppConfig)
+        {
+            this.AppConfig = AppConfig;
             Directory.CreateDirectory(UserDirectory);
         }
         
-        public Watcher GetWatcher(ISynchronizeInvoke SynchronizingObject)
-        {
-            return new Watcher(UserDirectory, SynchronizingObject);
-        }
-
         // %USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp
         public string DefaultUserDirectory
         {
@@ -80,7 +96,7 @@ namespace CreviceApp
         {
             get
             {
-                var scriptPath = Global.CLIOption.ScriptFile;
+                var scriptPath = AppConfig.CLIOption.ScriptFile;
                 if (Path.IsPathRooted(scriptPath))
                 {
                     return scriptPath;
@@ -97,30 +113,30 @@ namespace CreviceApp
                 return UserScriptFile + ".cache";
             }
         }
-
-        public string GetUserScriptString()
+        public static string GetUserScriptString(string userScriptFile)
         {
-            if (!Directory.Exists(UserDirectory))
+            if (!File.Exists(userScriptFile))
             {
-                Directory.CreateDirectory(UserDirectory);
+                return null;
             }
-
-            if (!File.Exists(UserScriptFile))
-            {
-                File.WriteAllText(UserScriptFile, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
-            }
-            return File.ReadAllText(UserScriptFile, Encoding.UTF8);
+            return File.ReadAllText(userScriptFile, Encoding.UTF8);
         }
+        */
 
-        public Script ParseScript(string userScriptString)
+
+        public static Script ParseScript(
+            string userScriptString,
+            string scriptSourceResolverBaseDirectory,
+            string scriptMetadataResolverBaseDirectory
+            )
         {
             using (Verbose.PrintElapsed("Parse UserScript"))
             {
                 var script = CSharpScript.Create(
                     userScriptString,
                     ScriptOptions.Default
-                        .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
-                        .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
+                        .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(scriptSourceResolverBaseDirectory))
+                        .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(scriptMetadataResolverBaseDirectory))
                         .WithReferences(
                             // mscorlib.dll
                             typeof(object).Assembly,
@@ -137,7 +153,7 @@ namespace CreviceApp
             }
         }
 
-        public UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string userScriptString, Script parsedScript)
+        public static UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string userScriptString, Script parsedScript)
         {
             using (Verbose.PrintElapsed("Generate UserScriptAssemblyCache"))
             {
@@ -145,6 +161,7 @@ namespace CreviceApp
                 var peStream = new MemoryStream();
                 var pdbStream = new MemoryStream();
                 compilation.Emit(peStream, pdbStream);
+                /*
 #if DEBUG
                 using (Verbose.PrintElapsed("Debug| Output UserScriptAssemblies"))
                 {
@@ -152,11 +169,12 @@ namespace CreviceApp
                     File.WriteAllBytes((UserScriptFile + ".debug.pdb"), pdbStream.GetBuffer());
                 }
 #endif
+*/
                 return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
             }
         }
 
-        public System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> CompileUserScript(Script parsedScript)
+        public static System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> CompileUserScript(Script parsedScript)
         {
             using (Verbose.PrintElapsed("Compile UserScript"))
             {
@@ -164,7 +182,7 @@ namespace CreviceApp
             }
         }
 
-        public void EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
+        public static void EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
         {
             using (Verbose.PrintElapsed("Evaluate UserScript"))
             {
@@ -179,7 +197,7 @@ namespace CreviceApp
             }
         }
 
-        public Assembly LoadUserScriptAssembly(UserScriptAssembly.Cache userScriptAssemblyCache)
+        public static Assembly LoadUserScriptAssembly(UserScriptAssembly.Cache userScriptAssemblyCache)
         {
             using (Verbose.PrintElapsed("Load UserScriptAssembly"))
             {
@@ -187,7 +205,7 @@ namespace CreviceApp
             }
         }
 
-        public void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, Assembly userScriptAssembly)
+        public static void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, Assembly userScriptAssembly)
         {
             using (Verbose.PrintElapsed("Evaluate UserScriptAssembly"))
             {
@@ -206,23 +224,22 @@ namespace CreviceApp
             }
         }
 
-        public void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
+        public static void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
         {
             var userScriptAssembly = LoadUserScriptAssembly(userScriptAssemblyCache);
             EvaluateUserScriptAssembly(ctx, userScriptAssembly);
         }
 
-        public UserScriptAssembly.Cache LoadUserScriptAssemblyCache(string userScriptString)
+        public static UserScriptAssembly.Cache LoadUserScriptAssemblyCache(string cachePath, string userScriptString)
         {
             using (Verbose.PrintElapsed("Load UserScriptAssemblyCache"))
             {
-                var cacheFile = UserScriptCacheFile;
-                if (!File.Exists(cacheFile))
+                if (!File.Exists(cachePath))
                 {
-                    Verbose.Print("UserScriptCacheFile: '{0}' did not exist.", cacheFile);
+                    Verbose.Print("UserScriptCacheFile: '{0}' did not exist.", cachePath);
                     return null;
                 }
-                var loadedCache = UserScriptAssembly.Load(UserScriptCacheFile);
+                var loadedCache = UserScriptAssembly.Load(cachePath);
                 if (!UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
                 {
                     Verbose.Print("UserScriptCacheFile was discarded because the signature was not match with this application.");
@@ -232,15 +249,15 @@ namespace CreviceApp
             }
         }
 
-        public void SaveUserScriptAssemblyCache(UserScriptAssembly.Cache userScriptAssemblyCache)
+        public static void SaveUserScriptAssemblyCache(string cachePath, UserScriptAssembly.Cache userScriptAssemblyCache)
         {
             using (Verbose.PrintElapsed("Save UserScriptAssemblyCache"))
             {
-                UserScriptAssembly.Save(UserScriptCacheFile, userScriptAssemblyCache);
+                UserScriptAssembly.Save(cachePath, userScriptAssemblyCache);
             }
         }
         
-        private string GetHighlightedUserScriptString(Microsoft.CodeAnalysis.Diagnostic error)
+        private static string GetHighlightedUserScriptString(Microsoft.CodeAnalysis.Diagnostic error)
         {
             var lineSpan = error.Location.GetLineSpan();
             var start = lineSpan.StartLinePosition;
@@ -285,7 +302,7 @@ namespace CreviceApp
             return code;
         }
 
-        public string GetPrettyErrorMessage(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> errors)
+        public static string GetPrettyErrorMessage(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> errors)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var error in errors)

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.DSL
+namespace CreviceApp.Core.DSL
 {
     public class DoubleTriggerDoElement
     {

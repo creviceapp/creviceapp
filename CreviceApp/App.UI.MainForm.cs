@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp
+namespace CreviceApp.App.UI
 {
     public partial class MainForm : MouseGestureForm
     {
@@ -28,16 +28,16 @@ namespace CreviceApp
             }
         }
 
-        private readonly UI.TooltipNotifier tooltip;
+        private readonly TooltipNotifier tooltip;
 
         private FileSystemWatcher userScriptWatcher;
 
         private LauncherForm launcherForm = null;
 
-        public MainForm(AppGlobal Global) : base(Global)
+        public MainForm(AppConfig AppConfig) : base(AppConfig)
         {
-            this.tooltip = new UI.TooltipNotifier(this);
-            this.userScriptWatcher = UserScript.GetWatcher(this);
+            this.tooltip = new TooltipNotifier(this);
+            this.userScriptWatcher = new UserScript.DirectoryWatcher(this, AppConfig.UserDirectory, "*.csx");
             InitializeComponent();
         }
 
@@ -45,7 +45,7 @@ namespace CreviceApp
         {
             Task.Run(() =>
             {
-                ReloadableGestureMachine.HotReload();
+                reloadableGestureMachine.HotReload();
             });
         }
 
@@ -63,7 +63,7 @@ namespace CreviceApp
             RegisterNotifyIcon();
             UpdateTasktrayMessage("Configuration not loaded.");
             SetupUserScriptWatcher();
-            ReloadableGestureMachine.HotReload();
+            reloadableGestureMachine.HotReload();
             try
             {
                 CaptureMouse = true;
@@ -78,7 +78,7 @@ namespace CreviceApp
         
         private void RegisterNotifyIcon()
         {
-            if (!Global.CLIOption.NoGUI)
+            if (!appConfig.CLIOption.NoGUI)
             {
                 while (true)
                 {
@@ -130,7 +130,7 @@ namespace CreviceApp
             var text = string.Format("Crevice {0}\n{1}", Application.ProductVersion, message);
             InvokeProperly(delegate ()
             {
-                if (!Global.CLIOption.NoGUI)
+                if (!appConfig.CLIOption.NoGUI)
                 {
                     notifyIcon1.Text = text.Length > 63 ? text.Substring(0, 63) : text;
                 }
@@ -173,7 +173,7 @@ namespace CreviceApp
             InvokeProperly(delegate ()
             {
                 Verbose.Print("ShowBalloon: {0}", text);
-                if (!Global.CLIOption.NoGUI)
+                if (!appConfig.CLIOption.NoGUI)
                 {
                     notifyIcon1.BalloonTipText = text;
                     notifyIcon1.BalloonTipTitle = title;
@@ -187,7 +187,7 @@ namespace CreviceApp
         {
             InvokeProperly(delegate ()
             {
-                if (!Global.CLIOption.NoGUI)
+                if (!appConfig.CLIOption.NoGUI)
                 {
                     Process.Start(fileName);
                 }
@@ -198,7 +198,7 @@ namespace CreviceApp
         {
             InvokeProperly(delegate ()
             {
-                if (!Global.CLIOption.NoGUI)
+                if (!appConfig.CLIOption.NoGUI)
                 {
                     Process.Start(fileName, arguments);
                 }
@@ -209,7 +209,7 @@ namespace CreviceApp
         {
             if (launcherForm == null || launcherForm.IsDisposed)
             {
-                launcherForm = new LauncherForm(Global);
+                launcherForm = new LauncherForm(appConfig);
                 launcherForm.Opacity = 0;
                 launcherForm.Show();
             }

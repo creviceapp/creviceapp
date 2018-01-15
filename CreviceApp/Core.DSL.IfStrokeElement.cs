@@ -4,27 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.DSL
+namespace CreviceApp.Core.DSL
 {
-    public class IfSingleTriggerButtonElement
+    public class IfStrokeElement
     {
         public class Value
         {
             public readonly List<SingleTriggerDoElement.Value> doElements = new List<SingleTriggerDoElement.Value>();
 
-            public readonly Def.AcceptableInIfSingleTriggerButtonClause button;
+            public readonly IEnumerable<Def.AcceptableInIfStrokeClause> moves;
 
-            public Value(Def.AcceptableInIfSingleTriggerButtonClause button)
+            public Value(IEnumerable<Def.AcceptableInIfStrokeClause> moves)
             {
-                this.button = button;
+                this.moves = moves;
             }
         }
         
         private readonly Value value;
 
-        public IfSingleTriggerButtonElement(List<Value> parent, Def.AcceptableInIfSingleTriggerButtonClause button)
+        public IfStrokeElement(List<Value> parent, params Def.AcceptableInIfStrokeClause[] moves)
         {
-            this.value = new Value(button);
+            this.value = new Value(moves);
             parent.Add(this.value);
         }
 

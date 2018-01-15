@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 
-namespace CreviceApp
+namespace CreviceApp.App.UI
 {
     public partial class ProductInfoForm : Form
     {

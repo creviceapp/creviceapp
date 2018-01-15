@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp.UI
+namespace CreviceApp.App.UI
 {
     public class TooltipNotifier : IDisposable
     {

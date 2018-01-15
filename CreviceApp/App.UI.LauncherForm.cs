@@ -9,15 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp
+namespace CreviceApp.App.UI
 {
     public partial class LauncherForm : Form
     {
-        protected readonly AppGlobal Global;
+        protected readonly AppConfig AppConfig;
 
-        public LauncherForm(AppGlobal Global)
+        public LauncherForm(AppConfig AppConfig)
         {
-            this.Global = Global;
+            this.AppConfig = AppConfig;
             InitializeComponent();
         }
 
@@ -104,12 +104,12 @@ namespace CreviceApp
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
-            Global.MainForm.Close();
+            AppConfig.MainForm.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Global.MainForm.StartExternalProcess("explorer.exe", "/select, " + Global.MainForm.UserScript.UserScriptFile);
+            AppConfig.MainForm.StartExternalProcess("explorer.exe", "/select, " + AppConfig.UserScriptFile);
         }
 
         private void button3_Click(object sender, EventArgs e)

@@ -160,10 +160,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CLIOption.cs" />
-    <Compile Include="Core.App.GestureMachineCandidate.cs" />
-    <Compile Include="Core.App.ReloadableGestureMachine.cs" />
-    <Compile Include="Core.AppGlobal.cs" />
+    <Compile Include="App.CLIOption.cs" />
+    <Compile Include="Core.GestureMachineCandidate.cs" />
+    <Compile Include="Core.ReloadableGestureMachine.cs" />
+    <Compile Include="App.AppConfig.cs" />
     <Compile Include="Core.Config.GestureConfig.cs" />
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
     <Compile Include="Core.DSLTreeParser.cs" />
@@ -185,61 +185,60 @@
     <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />
     <Compile Include="Core.Verbose.cs" />
-    <Compile Include="DSL.Def.cs" />
-    <Compile Include="DSL.DoubleTriggerBeforeElement.cs" />
-    <Compile Include="DSL.DoubleTriggerDoElement.cs" />
-    <Compile Include="DSL.DoubleTriggerAfterElement.cs" />
-    <Compile Include="DSL.SingleTriggerDoElement.cs" />
-    <Compile Include="DSL.IfDoubleTriggerButtonElement.cs" />
-    <Compile Include="DSL.IfSingleTriggerButtonElement.cs" />
-    <Compile Include="DSL.IfStrokeElement.cs" />
-    <Compile Include="DSL.OnElement.cs" />
-    <Compile Include="DSL.Root.cs" />
-    <Compile Include="DSL.WhenElement.cs" />
-    <Compile Include="UI.LauncherForm.cs">
+    <Compile Include="Core.DSL.Def.cs" />
+    <Compile Include="Core.DSL.DoubleTriggerBeforeElement.cs" />
+    <Compile Include="Core.DSL.DoubleTriggerDoElement.cs" />
+    <Compile Include="Core.DSL.DoubleTriggerAfterElement.cs" />
+    <Compile Include="Core.DSL.SingleTriggerDoElement.cs" />
+    <Compile Include="Core.DSL.IfDoubleTriggerButtonElement.cs" />
+    <Compile Include="Core.DSL.IfSingleTriggerButtonElement.cs" />
+    <Compile Include="Core.DSL.IfStrokeElement.cs" />
+    <Compile Include="Core.DSL.OnElement.cs" />
+    <Compile Include="Core.DSL.Root.cs" />
+    <Compile Include="Core.DSL.WhenElement.cs" />
+    <Compile Include="App.UI.LauncherForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.LauncherForm.Designer.cs">
-      <DependentUpon>UI.LauncherForm.cs</DependentUpon>
+    <Compile Include="App.UI.LauncherForm.Designer.cs">
+      <DependentUpon>App.UI.LauncherForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI.MainForm.cs">
+    <Compile Include="App.UI.MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.MainForm.Designer.cs">
-      <DependentUpon>UI.MainForm.cs</DependentUpon>
+    <Compile Include="App.UI.MainForm.Designer.cs">
+      <DependentUpon>App.UI.MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI.MouseGestureForm.cs">
+    <Compile Include="App.UI.MouseGestureForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.ProductInfoForm.cs">
+    <Compile Include="App.UI.ProductInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.ProductInfoForm.Designer.cs">
-      <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
+    <Compile Include="App.UI.ProductInfoForm.Designer.cs">
+      <DependentUpon>App.UI.ProductInfoForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Logging.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="App.Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Threading.cs" />
+    <Compile Include="Core.Threading.cs" />
     <Compile Include="Core.Config.UserConfig.cs" />
     <Compile Include="Core.UserActionExecutionContext.cs" />
-    <Compile Include="UI.TooltipNotifier.cs" />
+    <Compile Include="App.UI.TooltipNotifier.cs" />
     <Compile Include="WinAPI.Constants.WindowsMessages.cs" />
     <Compile Include="WinAPI.Console.cs" />
     <Compile Include="WinAPI.Helper.cs" />
     <Compile Include="WinAPI.Constants.VirtualKeys.cs" />
     <Compile Include="WinAPI.SendInput.cs" />
-    <EmbeddedResource Include="UI.LauncherForm.resx">
-      <DependentUpon>UI.LauncherForm.cs</DependentUpon>
+    <EmbeddedResource Include="App.UI.LauncherForm.resx">
+      <DependentUpon>App.UI.LauncherForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI.MainForm.resx">
-      <DependentUpon>UI.MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="App.UI.MainForm.resx">
+      <DependentUpon>App.UI.MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI.MouseGestureForm.resx">
-      <DependentUpon>UI.MouseGestureForm.cs</DependentUpon>
+    <EmbeddedResource Include="App.UI.MouseGestureForm.resx">
+      <DependentUpon>App.UI.MouseGestureForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI.ProductInfoForm.resx">
-      <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
+    <EmbeddedResource Include="App.UI.ProductInfoForm.resx">
+      <DependentUpon>App.UI.ProductInfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

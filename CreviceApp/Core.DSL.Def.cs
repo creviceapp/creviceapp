@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.DSL
+namespace CreviceApp.Core.DSL
 {
     /**
     * BNF of Gesture Definition DSL 
@@ -43,10 +43,10 @@ namespace CreviceApp.DSL
 
     public static class Def
     {
-        public delegate bool WhenFunc(Core.UserActionExecutionContext ctx);
-        public delegate void BeforeFunc(Core.UserActionExecutionContext ctx);
-        public delegate void DoFunc(Core.UserActionExecutionContext ctx);
-        public delegate void AfterFunc(Core.UserActionExecutionContext ctx);
+        public delegate bool WhenFunc(UserActionExecutionContext ctx);
+        public delegate void BeforeFunc(UserActionExecutionContext ctx);
+        public delegate void DoFunc(UserActionExecutionContext ctx);
+        public delegate void AfterFunc(UserActionExecutionContext ctx);
 
         public interface Button { }
         public interface AcceptableInOnClause : Button { }

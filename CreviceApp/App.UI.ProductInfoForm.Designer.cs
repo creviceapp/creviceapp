@@ -1,4 +1,4 @@
-﻿namespace CreviceApp
+﻿namespace CreviceApp.App.UI
 {
     partial class ProductInfoForm
     {
