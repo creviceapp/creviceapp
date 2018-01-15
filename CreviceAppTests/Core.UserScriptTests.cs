@@ -16,6 +16,13 @@ namespace CreviceApp
     [TestClass()]
     public class UserScriptTests
     {
+        [ClassInitialize()]
+        public static void CreateApplicationDirectory(TestContext context)
+        {
+            var appConfig = new AppConfig();
+            Directory.CreateDirectory(appConfig.DefaultUserDirectory);
+        }
+
         private static string GetBaseTemporaryDirectory()
         {
             return Path.Combine(Path.GetTempPath(), "Crevice3Test");

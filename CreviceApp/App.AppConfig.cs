@@ -16,11 +16,9 @@ namespace CreviceApp.App
         public readonly Core.Config.UserConfig UserConfig;
         public readonly UI.MainForm MainForm; // Todo: Should not have this instance as a member.
 
-        public AppConfig()
+        public AppConfig() : this(App.CLIOption.ParseEnvironmentCommandLine())
         {
-            this.CLIOption = App.CLIOption.ParseEnvironmentCommandLine();
-            this.UserConfig = new Core.Config.UserConfig();
-            this.MainForm = new UI.MainForm(this);
+                        
         }
 
         public AppConfig(CLIOption.Result CLIOption)
@@ -28,6 +26,7 @@ namespace CreviceApp.App
             this.CLIOption = CLIOption;
             this.UserConfig = new Core.Config.UserConfig();
             this.MainForm = new UI.MainForm(this);
+            Directory.CreateDirectory(DefaultUserDirectory);
         }
 
         // %USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp
