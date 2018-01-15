@@ -27,7 +27,7 @@ namespace CreviceApp.Threading
 
         private void Main()
         {
-            Verbose.Print("SingleThreadScheduler was started; Thread ID: 0x{0:X}", Thread.CurrentThread.ManagedThreadId);
+            Verbose.Print("SingleThreadScheduler(ThreadID: 0x{0:X}) was started.", Thread.CurrentThread.ManagedThreadId);
             foreach (var t in tasks.GetConsumingEnumerable())
             {
                 TryExecuteTask(t);
