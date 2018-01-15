@@ -47,7 +47,7 @@ namespace CreviceApp
         {
             Task.Run(() =>
             {
-                ReloadableGestureMachine.RequestReload();
+                ReloadableGestureMachine.HotReload();
             });
         }
 
@@ -65,7 +65,7 @@ namespace CreviceApp
             RegisterNotifyIcon();
             UpdateTasktrayMessage("Configuration not loaded.");
             SetupUserScriptWatcher();
-            ReloadableGestureMachine.RequestReload();
+            ReloadableGestureMachine.HotReload();
             try
             {
                 CaptureMouse = true;

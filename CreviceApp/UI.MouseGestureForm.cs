@@ -221,7 +221,7 @@ namespace CreviceApp
         private bool reloadRequest = false;
         private bool reloading = false;
 
-        public void RequestReload()
+        public void HotReload()
         {
             using (Verbose.PrintElapsed("Request hot-reload GestureMachine"))
             {
