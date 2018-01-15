@@ -56,7 +56,6 @@ namespace CreviceApp.Core.Stroke
                 
         internal readonly List<Stroke> strokes = new List<Stroke>();
         internal readonly BlockingCollection<Point> queue = new BlockingCollection<Point>();
-        internal readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
         internal readonly Task task;
 
         public StrokeWatcher(
@@ -75,7 +74,7 @@ namespace CreviceApp.Core.Stroke
                 
         public virtual void Queue(Point point)
         {
-            if (MustBeProcessed(currentTime: timeGetTime()))
+            if (MustBeProcessed(currentTime: timeGetTime()) && !disposed)
             {
                 queue.Add(point);
             }
@@ -89,7 +88,7 @@ namespace CreviceApp.Core.Stroke
             {
                 try
                 {
-                    foreach (var point in queue.GetConsumingEnumerable(tokenSource.Token))
+                    foreach (var point in queue.GetConsumingEnumerable())
                     {
                         buffer.Add(point);
                         if (buffer.Count < 2)
@@ -125,28 +124,14 @@ namespace CreviceApp.Core.Stroke
         {
             return new Def.Stroke(strokes.Select(x => x.Direction));
         }
-                
-        private async void AsyncDispose()
-        {
-            try
-            {
-                tokenSource.Cancel();
-                await task;
-            }
-            catch (OperationCanceledException) { }
-            catch (ObjectDisposedException) { }
-            finally
-            {
-                tokenSource.Dispose();
-                queue.Dispose();
-                Verbose.Print("StrokeWatcher(0x{0:X}) was released", GetHashCode());
-            }
-        }
 
+        private bool disposed = false;
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            AsyncDispose();
+            disposed = true;
+            queue.CompleteAdding();
+            Verbose.Print("StrokeWatcher(HashCode: 0x{0:X}) was released.", GetHashCode());
         }
 
         ~StrokeWatcher()
