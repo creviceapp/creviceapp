@@ -11,328 +11,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 
 namespace CreviceApp
 {
+    using Core.App;
     using WinAPI.WindowsHookEx;
-
-    using GetGestureMachineResult = 
-        Tuple<Core.FSM.GestureMachine,
-            System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
-            Exception>;
-
-    public class ReloadableGestureMachine : IDisposable
-    {
-        public class NullGestureMachine : Core.FSM.GestureMachine
-        {
-            public NullGestureMachine() : base(new Core.Config.UserConfig(), new List<Core.GestureDefinition>())
-            {
-
-            }
-        }
-
-        public class GestureMachineCandidate
-        {
-            public readonly DateTime Created;
-            public readonly bool RestoreFromCache;
-            public readonly string UserScriptString;
-
-            private readonly UserScript userScript;
-            
-            public GestureMachineCandidate(
-                UserScript userScript, 
-                bool restoreFromCache)
-            {
-                this.userScript = userScript;
-                this.RestoreFromCache = restoreFromCache;
-                this.Created = DateTime.Now;
-                this.UserScriptString = this.userScript.GetUserScriptString();
-            }
-
-            private Script _parsedUserScript = null;
-            public Script ParsedUserScript
-            {
-                get
-                {
-                    if (_parsedUserScript == null)
-                    {
-                        _parsedUserScript = userScript.ParseScript(UserScriptString);
-                    }
-                    return _parsedUserScript;
-                }
-                private set
-                {
-                    _parsedUserScript = value;
-                }
-            }
-            
-            private System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> _errors;
-            public System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> Errors
-            {
-                get
-                {
-                    if (_errors == null)
-                    {
-                        _errors = userScript.CompileUserScript(ParsedUserScript);
-                    }
-                    return _errors;
-                }
-                private set
-                {
-                    _errors = value;
-                }
-            }
-
-            private UserScriptAssembly.Cache _restorationCache = null;
-            public UserScriptAssembly.Cache RestorationCache
-            {
-                get
-                {
-                    if (_restorationCache == null && RestoreFromCache)
-                    {
-                        _restorationCache = userScript.LoadUserScriptAssemblyCache(UserScriptString);
-                    }
-                    return _restorationCache;
-                }
-                private set
-                {
-                    _restorationCache = value;
-                }
-            }
-            public bool IsRestorable
-            {
-                get { return RestorationCache != null; }
-            }
-
-            private UserScriptAssembly.Cache _userScriptAssemblyCache = null;
-            public UserScriptAssembly.Cache UserScriptAssemblyCache
-            {
-                get
-                {
-                    if (_userScriptAssemblyCache == null)
-                    {
-                        _userScriptAssemblyCache = userScript.GenerateUserScriptAssemblyCache(UserScriptString, ParsedUserScript);
-                    }
-                    return _userScriptAssemblyCache;
-                }
-                private set
-                {
-                    _userScriptAssemblyCache = value;
-                }
-            }
-        }
-
-        private Core.FSM.GestureMachine _instance;
-        public Core.FSM.GestureMachine Instance
-        {
-            get { return _instance; }
-            private set
-            {
-                var old = Instance;
-                _instance = value;
-                if (old != null)
-                {
-                    old.Dispose();
-                }
-            }
-        }
-        public bool IsActivated()
-        {
-            return Instance.GetType() != typeof(NullGestureMachine);
-        }
-
-        private readonly AppGlobal Global;
-        private readonly UserScript userScript;
-
-        public ReloadableGestureMachine(AppGlobal Global, UserScript UserScript)
-        {
-            this.Global = Global;
-            this.userScript = UserScript;
-            this.Instance = new NullGestureMachine();
-        }
-
-        private GetGestureMachineResult GetGestureMachine()
-        {
-            var restoreFromCache = !IsActivated() || !Global.CLIOption.NoCache;
-            var saveCache = !Global.CLIOption.NoCache;
-            var candidate = new GestureMachineCandidate(userScript, restoreFromCache);
-
-            Verbose.Print("restoreFromCache: {0}", restoreFromCache);
-            Verbose.Print("saveCache: {0}", saveCache);
-            Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
-
-            if (candidate.IsRestorable)
-            {
-                try
-                {
-                    var ctx = new Core.UserScriptExecutionContext(Global);
-                    userScript.EvaluateUserScriptAssembly(ctx, candidate.RestorationCache);
-                    var gestureDef = ctx.GetGestureDefinition();
-                    return new GetGestureMachineResult(new Core.FSM.GestureMachine(Global.UserConfig, gestureDef), null, null);
-                }
-                catch (Exception ex)
-                {
-                    Verbose.Print("GestureMachine restoration was failed; fallback to normal compilation. {0}", ex.ToString());
-                }
-            }
-
-            if (candidate.Errors.Count() > 0)
-            {
-                Verbose.Print("Error(s) found in the UserScript on compilation phase.");
-                return new GetGestureMachineResult(null, candidate.Errors, null);
-            }
-                
-            Verbose.Print("No error found in the UserScript on compilation phase.");
-            {
-                var ctx = new Core.UserScriptExecutionContext(Global);
-                try
-                {
-                    userScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
-                    if (saveCache)
-                    {
-                        try
-                        {
-                            userScript.SaveUserScriptAssemblyCache(candidate.UserScriptAssemblyCache);
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Print("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
-                        }
-                    }
-                    Verbose.Print("Error ocurred in the UserScript on evaluation phase.");
-                    var gestureDef = ctx.GetGestureDefinition();
-                    var gestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
-                    return new GetGestureMachineResult(gestureMachine, null, null);
-                }
-                catch (Exception ex)
-                {
-                    Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
-                    var gestureDef = ctx.GetGestureDefinition();
-                    var gestureMachine = new Core.FSM.GestureMachine(Global.UserConfig, gestureDef);
-                    return new GetGestureMachineResult(gestureMachine, null, ex);
-                }
-            }
-        }
-
-        private object lockObject = new object();
-        private bool reloadRequest = false;
-        private bool reloading = false;
-
-        public void HotReload()
-        {
-            using (Verbose.PrintElapsed("Request hot-reload GestureMachine"))
-            {
-                if (reloading && !disposed)
-                {
-                    Verbose.Print("Hot-reload request was queued.");
-                    reloadRequest = true;
-                    return;
-                }
-                lock (lockObject)
-                {
-                    if (disposed)
-                    {
-                        return;
-                    }
-                    reloading = true;
-                    while (true)
-                    {
-                        using (Verbose.PrintElapsed("Hot-reload GestureMachine"))
-                        {
-                            reloadRequest = false;
-                            try
-                            {
-                                var result = GetGestureMachine();
-                                var gestureMachine = result.Item1;
-                                var compilationErrors = result.Item2;
-                                var runtimeError = result.Item3;
-
-                                var balloonIconTitle = "";
-                                var balloonIconMessage = "";
-                                var balloonIcon = ToolTipIcon.None;
-                                var lastErrorMessage = "";
-                                if (gestureMachine == null)
-                                {
-                                    balloonIconTitle = "UserScript Compilation Error";
-                                    balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.",
-                                        compilationErrors.GetValueOrDefault().Count());
-                                    balloonIcon = ToolTipIcon.Error;
-                                    lastErrorMessage = userScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
-                                }
-                                else
-                                {
-                                    var gestures = gestureMachine.GestureDefinition.Count();
-                                    var activatedMessage = string.Format("{0} Gestures Activated", gestures);
-
-                                    Instance = gestureMachine;
-                                    if (runtimeError == null)
-                                    {
-                                        balloonIcon = ToolTipIcon.Info;
-                                        balloonIconMessage = activatedMessage;
-                                        lastErrorMessage = "";
-                                    }
-                                    else
-                                    {
-                                        balloonIcon = ToolTipIcon.Warning;
-                                        balloonIconTitle = activatedMessage;
-                                        balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
-                                        lastErrorMessage = runtimeError.ToString();
-                                    }
-                                    Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
-                                }
-                                Global.MainForm.LastErrorMessage = lastErrorMessage;
-                                Global.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
-
-                                if (!reloadRequest)
-                                {
-                                    ReleaseUnusedMemory();
-                                }
-                            }
-                            finally
-                            {
-                                reloading = false;
-                            }
-                        }
-                        if (!reloadRequest)
-                        {
-                            break;
-                        }
-                        Verbose.Print("Hot reload request exists; Retrying...");
-                    }
-                }
-            }
-        }
-        
-        private void ReleaseUnusedMemory()
-        {
-            using (Verbose.PrintElapsed("Release unused memory"))
-            {
-                var totalMemory = GC.GetTotalMemory(false);
-                GC.Collect(2);
-                Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
-            }
-        }
-
-        private bool disposed = false;
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            lock (lockObject)
-            {
-                reloadRequest = false;
-                disposed = true;
-                Instance = null;
-            }
-        }
-
-        ~ReloadableGestureMachine()
-        {
-            Dispose();
-        }
-    }
 
     public class MouseGestureForm : Form
     {
@@ -363,12 +47,6 @@ namespace CreviceApp
         public readonly UserScript UserScript;
         protected readonly ReloadableGestureMachine ReloadableGestureMachine;
 
-        // Designer requires this dummy constuctor.
-        public MouseGestureForm() : this(new AppGlobal())
-        {
-
-        }
-
         public MouseGestureForm(AppGlobal Global)
         {
             this.mouseHook = new LowLevelMouseHook(MouseProc);
@@ -383,22 +61,22 @@ namespace CreviceApp
             ReloadableGestureMachine.Dispose();
         }
 
-        private const int WM_DISPLAYCHANGE = 0x007E;
-        private const int WM_POWERBROADCAST = 0x0218;
+        protected const int WM_DISPLAYCHANGE = 0x007E;
+        protected const int WM_POWERBROADCAST = 0x0218;
 
-        private const int PBT_APMQUERYSUSPEND = 0x0000;
-        private const int PBT_APMQUERYSTANDBY = 0x0001;
-        private const int PBT_APMQUERYSUSPENDFAILED = 0x0002;
-        private const int PBT_APMQUERYSTANDBYFAILED = 0x0003;
-        private const int PBT_APMSUSPEND = 0x0004;
-        private const int PBT_APMSTANDBY = 0x0005;
-        private const int PBT_APMRESUMECRITICAL = 0x0006;
-        private const int PBT_APMRESUMESUSPEND = 0x0007;
-        private const int PBT_APMRESUMESTANDBY = 0x0008;
-        private const int PBT_APMBATTERYLOW = 0x0009;
-        private const int PBT_APMPOWERSTATUSCHANGE = 0x000A;
-        private const int PBT_APMOEMEVENT = 0x000B;
-        private const int PBT_APMRESUMEAUTOMATIC = 0x0012;
+        protected const int PBT_APMQUERYSUSPEND = 0x0000;
+        protected const int PBT_APMQUERYSTANDBY = 0x0001;
+        protected const int PBT_APMQUERYSUSPENDFAILED = 0x0002;
+        protected const int PBT_APMQUERYSTANDBYFAILED = 0x0003;
+        protected const int PBT_APMSUSPEND = 0x0004;
+        protected const int PBT_APMSTANDBY = 0x0005;
+        protected const int PBT_APMRESUMECRITICAL = 0x0006;
+        protected const int PBT_APMRESUMESUSPEND = 0x0007;
+        protected const int PBT_APMRESUMESTANDBY = 0x0008;
+        protected const int PBT_APMBATTERYLOW = 0x0009;
+        protected const int PBT_APMPOWERSTATUSCHANGE = 0x000A;
+        protected const int PBT_APMOEMEVENT = 0x000B;
+        protected const int PBT_APMRESUMEAUTOMATIC = 0x0012;
 
         protected override void WndProc(ref Message m)
         {
@@ -539,7 +217,7 @@ namespace CreviceApp
             return WindowsHook.Result.Transfer;
         }
 
-        private WindowsHook.Result Convert(bool consumed)
+        protected WindowsHook.Result Convert(bool consumed)
         {
             if (consumed)
             {
@@ -549,19 +227,6 @@ namespace CreviceApp
             {
                 return WindowsHook.Result.Transfer;
             }
-        }
-        
-        private void InitializeComponent()
-        {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MouseGestureForm));
-            this.SuspendLayout();
-            // 
-            // MouseGestureForm
-            // 
-            this.ClientSize = new System.Drawing.Size(278, 244);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MouseGestureForm";
-            this.ResumeLayout(false);
         }
     }
 }

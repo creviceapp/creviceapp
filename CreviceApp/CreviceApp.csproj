@@ -161,6 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLIOption.cs" />
+    <Compile Include="Core.App.GestureMachineCandidate.cs" />
+    <Compile Include="Core.App.ReloadableGestureMachine.cs" />
     <Compile Include="Core.AppGlobal.cs" />
     <Compile Include="Core.Config.GestureConfig.cs" />
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />

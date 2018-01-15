@@ -9,6 +9,20 @@ using System.Timers;
 
 namespace CreviceApp.Core.FSM
 {
+    /// <summary>
+    /// Dummy GestureMachine which have only one state and passthrough all inputs.
+    /// </summary>
+    public class NullGestureMachine : GestureMachine
+    {
+        public NullGestureMachine() : base(new Config.UserConfig(), new List<GestureDefinition>())
+        {
+
+        }
+    }
+
+    /// <summary>
+    /// FSM GestureMachine implimentation.
+    /// </summary>
     public class GestureMachine : IDisposable
     {
         public StateGlobal Global { get; private set; }

@@ -14,8 +14,6 @@ using System.Windows.Forms;
 
 namespace CreviceApp
 {
-    using Microsoft.CodeAnalysis.Scripting;
-
     public partial class MainForm : MouseGestureForm
     {
         // Forcely make this application invisible from task switcher applications.

@@ -19,9 +19,9 @@ namespace CreviceApp
 {
     public class UserScript
     {
-        public class EvaluationAbortException : Exception
+        public class EvaluationAbortedException : Exception
         {
-            public EvaluationAbortException(Exception innerException) : 
+            public EvaluationAbortedException(Exception innerException) : 
                 base("UserScript evaluation was aborted!", innerException)
             {
                 // Todo: Display preview of the point the exception thrown on UserScript and how to debug the dll
@@ -174,7 +174,7 @@ namespace CreviceApp
                 }
                 catch (AggregateException ex)
                 {
-                    throw new EvaluationAbortException(ex.InnerException);
+                    throw new EvaluationAbortedException(ex.InnerException);
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace CreviceApp
                 }
                 catch (AggregateException ex)
                 {
-                    throw new EvaluationAbortException(ex.InnerException);
+                    throw new EvaluationAbortedException(ex.InnerException);
                 }
             }
         }

@@ -15,7 +15,6 @@ namespace CreviceApp
         public readonly CLIOption.Result CLIOption;
         public readonly Core.Config.UserConfig UserConfig;
         public readonly MainForm MainForm;
-        public readonly LauncherForm LauncherForm;
 
         public AppGlobal()
         {
