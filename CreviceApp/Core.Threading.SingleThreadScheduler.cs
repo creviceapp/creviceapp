@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.Core
+namespace CreviceApp.Core.Threading
 {
     // http://www.codeguru.com/csharp/article.php/c18931/Understanding-the-NET-Task-Parallel-Library-TaskScheduler.htm
     public class SingleThreadScheduler : TaskScheduler, IDisposable

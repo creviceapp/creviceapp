@@ -47,8 +47,9 @@ namespace CreviceApp.Core.FSM.Tests
 
         class StrokeWatcherMock : Stroke.StrokeWatcher
         {
+            // Remove and share it with another State tests.
             private StrokeWatcherMock(TaskFactory taskFactory) : base(taskFactory, 0, 0, 0, 0) { }
-            public StrokeWatcherMock() : this(new TaskFactory(new SingleThreadScheduler())) { }
+            public StrokeWatcherMock() : this(new TaskFactory(new Threading.SingleThreadScheduler())) { }
 
             internal new readonly List<Point> queue = new List<Point>();
             public override void Queue(Point point)

@@ -10,9 +10,9 @@ namespace CreviceApp.Core.FSM
 {
     public class StateGlobal : IDisposable
     {
-        private readonly SingleThreadScheduler StrokeWatcherScheduler;
-        private readonly SingleThreadScheduler LowPriorityScheduler;
-        private readonly SingleThreadScheduler UserActionScheduler;
+        private readonly Threading.SingleThreadScheduler StrokeWatcherScheduler;
+        private readonly Threading.SingleThreadScheduler LowPriorityScheduler;
+        private readonly Threading.SingleThreadScheduler UserActionScheduler;
         public readonly TaskFactory StrokeWatcherTaskFactory;
         public readonly TaskFactory LowPriorityTaskFactory;
         public readonly TaskFactory UserActionTaskFactory;
@@ -30,9 +30,9 @@ namespace CreviceApp.Core.FSM
 
         public StateGlobal(Config.UserConfig userConfig)
         {
-            this.StrokeWatcherScheduler = new SingleThreadScheduler(ThreadPriority.AboveNormal);
-            this.LowPriorityScheduler = new SingleThreadScheduler(ThreadPriority.Lowest);
-            this.UserActionScheduler = new SingleThreadScheduler();
+            this.StrokeWatcherScheduler = new Threading.SingleThreadScheduler(ThreadPriority.AboveNormal);
+            this.LowPriorityScheduler = new Threading.SingleThreadScheduler(ThreadPriority.Lowest);
+            this.UserActionScheduler = new Threading.SingleThreadScheduler();
             this.StrokeWatcherTaskFactory = new TaskFactory(StrokeWatcherScheduler);
             this.LowPriorityTaskFactory = new TaskFactory(LowPriorityScheduler);
             this.UserActionTaskFactory = new TaskFactory(UserActionScheduler);
