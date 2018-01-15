@@ -26,8 +26,6 @@ namespace CreviceApp
 
     public class ReloadableGestureMachine : IDisposable
     {
-
-
         public class NullGestureMachine : Core.FSM.GestureMachine
         {
             public NullGestureMachine() : base(new Core.Config.UserConfig(), new List<Core.GestureDefinition>())
@@ -225,96 +223,97 @@ namespace CreviceApp
 
         public void RequestReload()
         {
-            Verbose.Print("Hot reload was started.");
-            if (reloading && !disposed)
+            using (Verbose.PrintElapsed("Request hot-reload GestureMachine"))
             {
-                Verbose.Print("Hot reload request was queued because the reloading is already processing; This request will be processed after current reload is finished.");
-                reloadRequest = true;
-                return;
-            }
-
-            lock (lockObject)
-            {
-                reloading = true;
-                while (true)
+                if (reloading && !disposed)
                 {
-                    reloadRequest = false;
-                    try
+                    Verbose.Print("Hot-reload request was queued.");
+                    reloadRequest = true;
+                    return;
+                }
+                lock (lockObject)
+                {
+                    if (disposed)
                     {
-                        var result = GetGestureMachine();
-                        var gestureMachine = result.Item1;
-                        var compilationErrors = result.Item2;
-                        var runtimeError = result.Item3;
-                        if (!reloadRequest && !disposed)
+                        return;
+                    }
+                    reloading = true;
+                    while (true)
+                    {
+                        using (Verbose.PrintElapsed("Hot-reload GestureMachine"))
                         {
-                            var balloonIconTitle = "";
-                            var balloonIconMessage = "";
-                            var balloonIcon = ToolTipIcon.None;
-                            var lastErrorMessage = "";
-                            if (gestureMachine == null)
+                            reloadRequest = false;
+                            try
                             {
-                                balloonIconTitle = "UserScript Compilation Error";
-                                balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.", 
-                                    compilationErrors.GetValueOrDefault().Count());
-                                balloonIcon = ToolTipIcon.Error;
-                                lastErrorMessage = userScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
-                            }
-                            else
-                            {
-                                var gestures = gestureMachine.GestureDefinition.Count();
-                                var activatedMessage = string.Format("{0} Gestures Activated", gestures);
-                                    
-                                Instance = gestureMachine;
-                                if (runtimeError == null)
+                                var result = GetGestureMachine();
+                                var gestureMachine = result.Item1;
+                                var compilationErrors = result.Item2;
+                                var runtimeError = result.Item3;
+
+                                var balloonIconTitle = "";
+                                var balloonIconMessage = "";
+                                var balloonIcon = ToolTipIcon.None;
+                                var lastErrorMessage = "";
+                                if (gestureMachine == null)
                                 {
-                                    balloonIcon = ToolTipIcon.Info;
-                                    balloonIconMessage = activatedMessage;
-                                    lastErrorMessage = "";
+                                    balloonIconTitle = "UserScript Compilation Error";
+                                    balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.",
+                                        compilationErrors.GetValueOrDefault().Count());
+                                    balloonIcon = ToolTipIcon.Error;
+                                    lastErrorMessage = userScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
                                 }
                                 else
                                 {
-                                    balloonIcon = ToolTipIcon.Warning;
-                                    balloonIconTitle = activatedMessage;
-                                    balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
-                                    lastErrorMessage = runtimeError.ToString();
-                                }
-                                Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
-                            }
-                            Global.MainForm.LastErrorMessage = lastErrorMessage;
-                            Global.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
+                                    var gestures = gestureMachine.GestureDefinition.Count();
+                                    var activatedMessage = string.Format("{0} Gestures Activated", gestures);
 
-                            // If an error to be thrown, users may retry compilation. So, for more quickly response,
-                            // we should not release unused memory, then. 
-                            if (gestureMachine != null)
+                                    Instance = gestureMachine;
+                                    if (runtimeError == null)
+                                    {
+                                        balloonIcon = ToolTipIcon.Info;
+                                        balloonIconMessage = activatedMessage;
+                                        lastErrorMessage = "";
+                                    }
+                                    else
+                                    {
+                                        balloonIcon = ToolTipIcon.Warning;
+                                        balloonIconTitle = activatedMessage;
+                                        balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
+                                        lastErrorMessage = runtimeError.ToString();
+                                    }
+                                    Global.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
+                                }
+                                Global.MainForm.LastErrorMessage = lastErrorMessage;
+                                Global.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
+
+                                if (!reloadRequest)
+                                {
+                                    ReleaseUnusedMemory();
+                                }
+                            }
+                            finally
                             {
-                                ReleaseUnusedMemory();
+                                reloading = false;
                             }
                         }
+                        if (!reloadRequest)
+                        {
+                            break;
+                        }
+                        Verbose.Print("Hot reload request exists; Retrying...");
                     }
-                    finally
-                    {
-                        reloading = false;
-                    }
-                    if (!reloadRequest || disposed)
-                    {
-                        break;
-                    }
-                    Verbose.Print("Retrying Hot reload...");
                 }
             }
-            Verbose.Print("Hot reload was finished.");
         }
         
         private void ReleaseUnusedMemory()
         {
-            var stopwatch = new Stopwatch();
-            var totalMemory = GC.GetTotalMemory(false);
-            Verbose.Print("Releasing unused memory...");
-            stopwatch.Start();
-            GC.Collect(2);
-            stopwatch.Stop();
-            Verbose.Print("Unused memory releasing finished. ({0})", stopwatch.Elapsed);
-            Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
+            using (Verbose.PrintElapsed("Release unused memory"))
+            {
+                var totalMemory = GC.GetTotalMemory(false);
+                GC.Collect(2);
+                Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
+            }
         }
 
         private bool disposed = false;

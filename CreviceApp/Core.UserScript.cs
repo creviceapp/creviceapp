@@ -114,134 +114,130 @@ namespace CreviceApp
 
         public Script ParseScript(string userScriptString)
         {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Parsing UserScript...");
-            stopwatch.Start();
-            var script = CSharpScript.Create(
-                userScriptString,
-                ScriptOptions.Default
-                    .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
-                    .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
-                    .WithReferences(
-                        typeof(object).Assembly,      // mscorlib.dll
-                        typeof(Uri).Assembly,         // System.dll
-                        typeof(Enumerable).Assembly,  // System.Core.dll
-                        // For the reference to CreviceApp.exe, `Assembly.GetEntryAssembly()` does not work
-                        // properly in the test environment. So instead of it, we should use `typeof(Program).Assembly)` here.
-                        typeof(Program).Assembly),    // CreviceApp.exe
-                globalsType: typeof(Core.UserScriptExecutionContext));
-            stopwatch.Stop();
-            Verbose.Print("UserScript parse finished. ({0})", stopwatch.Elapsed);
-            return script;
+            using (Verbose.PrintElapsed("Parse UserScript"))
+            {
+                var script = CSharpScript.Create(
+                    userScriptString,
+                    ScriptOptions.Default
+                        .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(UserDirectory))
+                        .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(UserDirectory))
+                        .WithReferences(
+                            // mscorlib.dll
+                            typeof(object).Assembly,
+                            // System.dll
+                            typeof(Uri).Assembly,
+                            // System.Core.dll
+                            typeof(Enumerable).Assembly,
+                            // CreviceApp.exe
+                            // Note: For the reference to CreviceApp.exe, `Assembly.GetEntryAssembly()` does not work
+                            // properly in the test environment. So instead of it, we should use `typeof(Program).Assembly)` here.
+                            typeof(Program).Assembly),    
+                    globalsType: typeof(Core.UserScriptExecutionContext));
+                return script;
+            }
         }
 
         public UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string userScriptString, Script parsedScript)
         {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Generating UserScriptAssemblyCache...");
-            stopwatch.Start();
-            var compilation = parsedScript.GetCompilation();
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssemblyCache generating finished. ({0})", stopwatch.Elapsed);
-
-            var peStream = new MemoryStream();
-            var pdbStream = new MemoryStream();
-            Verbose.Print("Genarating UserScriptAssembly...");
-            stopwatch.Restart();
-            compilation.Emit(peStream, pdbStream);
+            using (Verbose.PrintElapsed("Generate UserScriptAssemblyCache"))
+            {
+                var compilation = parsedScript.GetCompilation();
+                var peStream = new MemoryStream();
+                var pdbStream = new MemoryStream();
+                compilation.Emit(peStream, pdbStream);
 #if DEBUG
-            File.WriteAllBytes((UserScriptFile + ".debug.dll"), peStream.GetBuffer());
-            File.WriteAllBytes((UserScriptFile + ".debug.pdb"), pdbStream.GetBuffer());
+                using (Verbose.PrintElapsed("Debug| Output UserScriptAssemblies"))
+                {
+                    File.WriteAllBytes((UserScriptFile + ".debug.dll"), peStream.GetBuffer());
+                    File.WriteAllBytes((UserScriptFile + ".debug.pdb"), pdbStream.GetBuffer());
+                }
 #endif
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssembly generation finished. ({0})", stopwatch.Elapsed);
-            return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
+                return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
+            }
         }
 
         public System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> CompileUserScript(Script parsedScript)
         {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Compiling UserScript...");
-            stopwatch.Start();
-            var diagnostic = parsedScript.Compile();
-            stopwatch.Stop();
-            Verbose.Print("UserScript compilation finished. ({0})", stopwatch.Elapsed);
-            return diagnostic;
+            using (Verbose.PrintElapsed("Compile UserScript"))
+            {
+                return parsedScript.Compile();
+            }
         }
 
         public void EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
         {
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Evaluating UserScript...");
-            stopwatch.Start();
-            try
+            using (Verbose.PrintElapsed("Evaluate UserScript"))
             {
-                parsedScript.RunAsync(ctx).Wait();
+                try
+                {
+                    parsedScript.RunAsync(ctx).Wait();
+                }
+                catch (AggregateException ex)
+                {
+                    throw new EvaluationAbortException(ex.InnerException);
+                }
             }
-            catch (AggregateException ex)
+        }
+
+        public Assembly LoadUserScriptAssembly(UserScriptAssembly.Cache userScriptAssemblyCache)
+        {
+            using (Verbose.PrintElapsed("Load UserScriptAssembly"))
             {
-                throw new EvaluationAbortException(ex.InnerException);
+                return Assembly.Load(userScriptAssemblyCache.pe, userScriptAssemblyCache.pdb);
             }
-            stopwatch.Stop();
-            Verbose.Print("UserScript evaluation finished. ({0})", stopwatch.Elapsed);
+        }
+
+        public void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, Assembly userScriptAssembly)
+        {
+            using (Verbose.PrintElapsed("Evaluate UserScriptAssembly"))
+            {
+                var type = userScriptAssembly.GetType("Submission#0");
+                var factory = type.GetMethod("<Factory>");
+                var parameters = new object[] { new object[] { ctx, null } };
+                try
+                {
+                    var result = factory.Invoke(null, parameters);
+                    (result as Task<object>).Wait();
+                }
+                catch (AggregateException ex)
+                {
+                    throw new EvaluationAbortException(ex.InnerException);
+                }
+            }
         }
 
         public void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
         {
-            // todo: using(Verbose.StopWatch("Loading", "UserScriptAssembly")){}
-            var stopwatch = new Stopwatch();
-            Verbose.Print("Loading UserScriptAssembly...");
-            stopwatch.Start();
-            var assembly = Assembly.Load(userScriptAssemblyCache.pe, userScriptAssemblyCache.pdb);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssembly loading finished. ({0})", stopwatch.Elapsed);
-            Verbose.Print("Evaluating UserScriptAssembly...");
-            stopwatch.Restart();
-            var type = assembly.GetType("Submission#0");
-            var factory = type.GetMethod("<Factory>");
-            var parameters = new object[] { new object[] { ctx, null } };
-            try
-            {
-                var result = factory.Invoke(null, parameters);
-                (result as Task<object>).Wait();
-            }
-            catch (AggregateException ex)
-            {
-                throw new EvaluationAbortException(ex.InnerException);
-            }
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssembly evaluation finished. ({0})", stopwatch.Elapsed);
+            var userScriptAssembly = LoadUserScriptAssembly(userScriptAssemblyCache);
+            EvaluateUserScriptAssembly(ctx, userScriptAssembly);
         }
 
         public UserScriptAssembly.Cache LoadUserScriptAssemblyCache(string userScriptString)
         {
-            var stopwatch = new Stopwatch();
-            var cacheFile = UserScriptCacheFile;
-            if (File.Exists(cacheFile))
+            using (Verbose.PrintElapsed("Load UserScriptAssemblyCache"))
             {
-                Verbose.Print("Loading UserScriptAssemblyCache...");
-                stopwatch.Start();
-                var loadedCache = UserScriptAssembly.Load(cacheFile);
-                stopwatch.Stop();
-                Verbose.Print("UserScriptAssemblyCache loading finished. ({0})", stopwatch.Elapsed);
-                if (UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
+                var cacheFile = UserScriptCacheFile;
+                if (!File.Exists(cacheFile))
                 {
-                    return loadedCache;
+                    Verbose.Print("UserScriptCacheFile: '{0}' did not exist.", cacheFile);
+                    return null;
                 }
-                Verbose.Print("UserScriptAssemblyCache was discarded because of the signature was not match with this application.");
+                var loadedCache = UserScriptAssembly.Load(UserScriptCacheFile);
+                if (!UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
+                {
+                    Verbose.Print("UserScriptCacheFile was discarded because the signature was not match with this application.");
+                    return null;
+                }
+                return loadedCache;
             }
-            return null;
         }
 
         public void SaveUserScriptAssemblyCache(UserScriptAssembly.Cache userScriptAssemblyCache)
         {
-            var stopwatch = new Stopwatch();
-            var cacheFile = UserScriptCacheFile;
-            Verbose.Print("Saving UserScriptAssemblyCache...");
-            stopwatch.Start();
-            UserScriptAssembly.Save(cacheFile, userScriptAssemblyCache);
-            stopwatch.Stop();
-            Verbose.Print("UserScriptAssemblyCache saving finished. ({0})", stopwatch.Elapsed);
+            using (Verbose.PrintElapsed("Save UserScriptAssemblyCache"))
+            {
+                UserScriptAssembly.Save(UserScriptCacheFile, userScriptAssemblyCache);
+            }
         }
         
         private string GetHighlightedUserScriptString(Microsoft.CodeAnalysis.Diagnostic error)
