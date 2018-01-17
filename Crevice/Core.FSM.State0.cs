@@ -5,6 +5,8 @@ using System.Text;
 
 namespace Crevice.Core.FSM
 {
+    using GestureActionContext;
+
     public class State0 : State
     {
         internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<IfButtonGestureDefinition>> T0;
@@ -34,7 +36,7 @@ namespace Crevice.Core.FSM
                 var ev = evnt as Def.Event.ISingleAction;
                 if (T0.Keys.Contains(ev))
                 {
-                    var ctx = new UserActionExecutionContextBase(point);
+                    var ctx = Global.ActionContextFactory.CreateEvaluationContext(point);
                     var _T0 = FilterByWhenClause(ctx, T0[ev]);
                     if (_T0.Count() > 0)
                     {
@@ -49,7 +51,7 @@ namespace Crevice.Core.FSM
                 var ev = evnt as Def.Event.IDoubleActionSet;
                 if (T1.Keys.Contains(ev) || T2.Keys.Contains(ev))
                 {
-                    var ctx = new UserActionExecutionContextBase(point);
+                    var ctx = Global.ActionContextFactory.CreateEvaluationContext(point);
                     var cache = new Dictionary<DSL.Def.WhenFunc, bool>();
                     var _T1 = T1.Keys.Contains(ev) ? FilterByWhenClause(ctx, T1[ev], cache) : new List<OnButtonGestureDefinition>();
                     var _T2 = T2.Keys.Contains(ev) ? FilterByWhenClause(ctx, T2[ev], cache) : new List<IfButtonGestureDefinition>();
@@ -71,23 +73,23 @@ namespace Crevice.Core.FSM
         }
 
         internal static IEnumerable<T> FilterByWhenClause<T>(
-            UserActionExecutionContextBase ctx,
-            IEnumerable<T> gestureDef) 
+            ActionContext ctx,
+            IEnumerable<T> gestureDef)
             where T : IWhenEvaluatable
         {
             return FilterByWhenClause(ctx, gestureDef, new Dictionary<DSL.Def.WhenFunc, bool>());
         }
 
         internal static IEnumerable<T> FilterByWhenClause<T>(
-            UserActionExecutionContextBase ctx,
+            ActionContext ctx,
             IEnumerable<T> gestureDef,
-            Dictionary<DSL.Def.WhenFunc, bool> cache) 
+            Dictionary<DSL.Def.WhenFunc, bool> cache)
             where T : IWhenEvaluatable
         {
             // This evaluation of functions given as the parameter of `@when` clause can be executed in parallel, 
             // but executing it in sequential order here for simplicity.
             return gestureDef
-                .Where(x => x.EvaluateUserWhenFunc(ctx, cache))
+                .Where(x => x.EvaluateWhenFunc(ctx, cache))
                 .ToList();
         }
     }

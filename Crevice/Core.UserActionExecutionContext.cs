@@ -5,79 +5,176 @@ using System.Text;
 
 namespace Crevice.Core
 {
-    namespace UserActionContext
-    {
-        using System.Drawing;
-        using System.Reflection;
-        using System.Linq.Expressions;
-        
-        public class UserActionEvaluationContext
-        {
-            public Point EvaluatedPoint;
+    using System.Drawing;
+    using System.Reflection;
+    using System.Linq.Expressions;
 
-            public UserActionEvaluationContext(
-                Point evaluatedPoint)
+    // Todo generics
+
+        // ExecutionPoint
+        // EvaluationPoint
+    public abstract class ActionContext
+    {
+        public Point EvaluatePoint;
+        public Point ExecutePoint;
+
+        public ActionContext(Point evaluatePoint)
+        { 
+            this.EvaluatePoint = evaluatePoint;
+        }
+
+        public ActionContext(ActionContext evaluationContext, Point executePoint)
+        {
+            this.EvaluatePoint = evaluationContext.EvaluatePoint;
+            this.ExecutePoint = executePoint;
+        }
+    }
+
+    public class ActionContextFactory<T>
+        where T : ActionContext
+    {
+        public readonly Func<Point, T> CreateEvaluationContext = GetEvaluationContextFactory();
+
+        private static Func<Point, T> GetEvaluationContextFactory()
+        {
+            var argsTypes = new[] { typeof(Point) };
+            var constructor = typeof(T).GetConstructor(BindingFlags.Public | BindingFlags.Instance, Type.DefaultBinder, argsTypes, null);
+            var args = argsTypes.Select(Expression.Parameter).ToArray();
+            return Expression.Lambda<Func<Point, T>>(Expression.New(constructor, args), args).Compile();
+        }
+
+        public T Create(
+            Point evaluatePoint)
+        {
+            return CreateEvaluationContext(evaluatePoint);
+        }
+
+        public readonly Func<T, Point, T> CreateExecutionContext = GetExecutionContextFactory();
+
+        private static Func<T, Point, T> GetExecutionContextFactory()
+        {
+            var argsTypes = new[] { typeof(T), typeof(Point) };
+            var constructor = typeof(T).GetConstructor(BindingFlags.Public | BindingFlags.Instance, Type.DefaultBinder, argsTypes, null);
+            var args = argsTypes.Select(Expression.Parameter).ToArray();
+            return Expression.Lambda<Func<T, Point, T>>(Expression.New(constructor, args), args).Compile();
+        }
+
+        public T Create(
+            T evaluationContext,
+            Point executePoint)
+        {
+            return CreateExecutionContext(evaluationContext, executePoint);
+        }
+
+    }
+    
+    public class DefaultActionContext : ActionContext
+    {
+        public DefaultActionContext(Point evaluatePoint) : base(evaluatePoint)
+        { }
+
+        public DefaultActionContext(DefaultActionContext evaluationContext, Point executePoint) : base(evaluationContext, executePoint)
+        { }
+    }
+
+    /*
+
+    public abstract class GestureExecutionContext
+    {
+        public Point EvaluatePoint;
+        public Point ExcutePoint;
+
+        public GestureExecutionContext(
+            GestureEvaluationContext evaluateContext,
+            Point excutePoint)
+        {
+            this.EvaluatePoint = evaluateContext.EvaluatePoint;
+            this.ExcutePoint = excutePoint;
+        }
+    }
+
+    public class ExecutionContextFactory<A, B>
+        where A : GestureEvaluationContext
+        where B : GestureExecutionContext
+    {
+        public readonly Func<A, Point, B> CreateInstance = GetFactory();
+ 
+        private static Func<A, Point, B> GetFactory()
+        {
+            var argsTypes = new[] { typeof(A) , typeof(Point) };
+            var constructor = typeof(B).GetConstructor(BindingFlags.Public | BindingFlags.Instance, Type.DefaultBinder, argsTypes, null);
+            var args = argsTypes.Select(Expression.Parameter).ToArray();
+            return Expression.Lambda<Func<A, Point, B>>(Expression.New(constructor, args), args).Compile();
+        }
+ 
+        public B Create(
+            A evaluationContext,
+            Point executePoint)
+        {
+            return CreateInstance(evaluationContext, executePoint);
+        }
+    }
+         
+
+    public class ActionContextFactory<A, B>
+        where A : GestureEvaluationContext
+        where B : GestureExecutionContext
+    {
+        public readonly EvaluationContextFactory<A> EvaluationContextFactory
+          = new EvaluationContextFactory<A>();
+
+        public readonly ExecutionContextFactory<A, B> ExecutionContextFactory
+            = new ExecutionContextFactory<A, B>();
+
+        public GestureEvaluationContext CreateEvaluationContext(Point evaluatePoint)
+        {
+            return EvaluationContextFactory.Create(evaluatePoint);
+        }
+
+        public GestureExecutionContext CreateExcutionContext(A evaluationContext, Point excutionPoint)
+        {
+            return ExecutionContextFactory.Create(evaluationContext, excutionPoint);
+        }
+    }
+    */
+
+
+    namespace GestureActionContext
+    {
+        /*
+        using System.Drawing;
+        
+        public class EvaluationContext
+        {
+            public Point EvaluatePoint;
+
+            public EvaluationContext(
+                Point evaluatePoint)
             {
-                this.EvaluatedPoint = evaluatedPoint;
+                this.EvaluatePoint = evaluatePoint;
             }
         }
 
-        public class UserActionExecutionContext
+        public class ExecutionContext
         {
-            public Point EvaluatedPoint;
-            public Point ExcutedPoint;
+            public Point EvaluatePoint;
+            public Point ExcutePoint;
 
-            public UserActionExecutionContext(
+            public ExecutionContext(
                 Point evaluatedPoint,
                 Point excutedPoint)
             {
-                this.EvaluatedPoint = evaluatedPoint;
-                this.ExcutedPoint = excutedPoint;
+                this.EvaluatePoint = evaluatedPoint;
+                this.ExcutePoint = excutedPoint;
             }
         }
+        */
 
-        public class UserActionEvaluationContextFactory<T>
-            where T : UserActionEvaluationContext
-        {
-            public readonly Func<Point, T> CreateInstance = GetFactory();
-
-            private static Func<Point, T> GetFactory()
-            {
-                var argsTypes = new[] { typeof(Point) };
-                var constructor = typeof(T).GetConstructor(BindingFlags.Public | BindingFlags.Instance, Type.DefaultBinder, argsTypes, null);
-                var args = argsTypes.Select(Expression.Parameter).ToArray();
-                return Expression.Lambda<Func<Point, T>>(Expression.New(constructor, args), args).Compile();
-            }
-
-            public T Create(
-                Point evaluatedPoint)
-            {
-                return CreateInstance(evaluatedPoint);
-            }
-        }
-
-        public class UserActionExecutionContextFactory<T>
-            where T : UserActionExecutionContext
-        {
-            public readonly Func<Point, Point, T> CreateInstance = GetFactory();
-
-            private static Func<Point, Point, T> GetFactory()
-            {
-                var argsTypes = new[] { typeof(Point) , typeof(Point) };
-                var constructor = typeof(T).GetConstructor(BindingFlags.Public | BindingFlags.Instance, Type.DefaultBinder, argsTypes, null);
-                var args = argsTypes.Select(Expression.Parameter).ToArray();
-                return Expression.Lambda<Func<Point, Point, T>>(Expression.New(constructor, args), args).Compile();
-            }
-
-            public T Create(
-                Point evaluatedPoint,
-                Point executedPoint)
-            {
-                return CreateInstance(evaluatedPoint, executedPoint);
-            }
-        }
+        // GestureConditionEvaluationContext
+        // SingleActionGestureExecutionActionContext
+        // DoubleActionGestureExecutionActionContext
+        // StrokeGestureExecutionActionContext
     }
-}
 
     /*
     public abstract class UserActionExecutionContextCreator<T>

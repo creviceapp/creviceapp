@@ -23,7 +23,7 @@ namespace Crevice.Core.FSM
     // The state holding primary and secondary double action mouse buttons.
     #endregion
         
-    using UserActionContext;
+    using GestureActionContext;
 
     public interface IState
     {
@@ -31,14 +31,12 @@ namespace Crevice.Core.FSM
         IState Reset();
     }
     
-    public abstract class State<E, X> 
+    public abstract class State
         : IState
-        where E : UserActionEvaluationContext
-        where X : UserActionExecutionContext
     {
-        protected internal readonly StateGlobal<E, X> Global;
+        protected internal readonly StateGlobal Global;
 
-        public State(StateGlobal<E, X> Global)
+        public State(StateGlobal Global)
         {
             this.Global = Global;
         }
@@ -53,38 +51,40 @@ namespace Crevice.Core.FSM
             throw new InvalidOperationException();
         }
 
+        // TOdo move to Global
+
         protected internal void ExecuteUserBeforeFuncInBackground(
-            E ctx,
+            ActionContext ctx,
             IEnumerable<IBeforeExecutable> gestureDef)
         {
             Global.UserActionTaskFactory.StartNew(() => {
                 foreach (var gDef in gestureDef)
                 {
-                    gDef.ExecuteUserBeforeFunc(ctx);
+                    gDef.ExecuteBeforeFunc(ctx);
                 }
             });
         }
 
         protected internal void ExecuteUserDoFuncInBackground(
-            E ctx,
+            ActionContext ctx,
             IEnumerable<IDoExecutable> gestureDef)
         {
             Global.UserActionTaskFactory.StartNew(() => {
                 foreach (var gDef in gestureDef)
                 {
-                    gDef.ExecuteUserDoFunc(ctx);
+                    gDef.ExecuteDoFunc(ctx);
                 }
             });
         }
 
         protected internal void ExecuteUserAfterFuncInBackground(
-            E ctx,
+            ActionContext ctx,
             IEnumerable<IAfterExecutable> gestureDef)
         {
             Global.UserActionTaskFactory.StartNew(() => {
                 foreach (var gDef in gestureDef)
                 {
-                    gDef.ExecuteUserAfterFunc(ctx);
+                    gDef.ExecuteAfterFunc(ctx);
                 }
             });
         }

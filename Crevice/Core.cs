@@ -4,132 +4,146 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+// TOdo パッケージ名はいいんだけど、ディレクトリはCreviceLib? nugetでわかりやすければそれでいい
+
 namespace Crevice.Core
 {
-    using UserActionContext;
-
     public static class TestClass
     {
         public static void Test()
         {
-            var userConfig = new Config.UserConfig();
-            var global = new FSM.StateGlobal<UserActionEvaluationContext, UserActionExecutionContext>(userConfig);
-            var gestureDef = new List<GestureDefinition>();
-            var gestureMachine = new FSM.GestureMachine<UserActionEvaluationContext, UserActionExecutionContext>(userConfig, gestureDef);
+            var context = new ActionContextFactory<DefaultActionContext>();
 
+            var config = new DefaultGestureMachineConfig();
+            var gestureDef = new List<GestureDefinition>();
+
+            var gestureMachine = new FSM.GestureMachine<DefaultGestureMachineConfig, DefaultActionContext>(config, gestureDef);
+            var global = gestureMachine.Global;
+
+
+
+            var nullGestureMachine0 = FSM.NullGestureMachine.Create();
+            var nullGestureMachine1 = FSM.NullGestureMachine.Create(new DefaultGestureMachineConfig());
 
         }
     }
+
+    // Configはやはり継承する場合があるのでジェネリクスを使わざるをえない
+    // 各コンフィグの分のパラメーターが必要、かな
+
+
+    // OnGestureStart()
+
+    // OnGestureEnd (  )NeedToRestore~ をStateに生やす？ 
+
+    // OnGestureCanelled
+
+    // OnGestureTimeout
+
+    // RestorePrimaryButtonDownEventHandler 
+
+    // OnStrokeUudate
+
+
+    // StrokeUpdateEventHandler
+
+    // Configはデフォルトで見せる？見せない？とかそういうの
+
+
+    // OnGestureTimeoutRequest(State1 S1) これは成否で2分岐する
+
+    // OnGestureCancel() これは分岐なし // OnGestureEndでCancelかどうかを知れたほうがいいかな
+
+    // これをGestureMachineにしてFSMのほうは単なるFSMに？
+    public abstract class GestureMachineConfig
+    {
+        public static Func<System.Drawing.Point, System.Drawing.Point> DefaultPositionBinding
+        {
+            get
+            {
+                return (point) =>
+                {
+                    return point;
+                };
+            }
+        }
+
+        //Todo: null check in bindings
+        //public Def.PointBinding TooltipPositionBinding = Def.DefaultPointBinding;
+        public event EventHandler OnMachineStart;
+        public event EventHandler OnMachineReset;
+        public event EventHandler OnMachineEnd;
+
+        public event EventHandler OnGestureStart;
+        public event EventHandler OnGestureCancel;
+        public event System.ComponentModel.CancelEventHandler OnGestureTimeout;
+        public event EventHandler OnGestureEnd;
+
+        public int GestureTimeout = 1000;
+
+        public event EventHandler OnStrokeUpdate;
+
+        public int StrokeStartThreshold = 10;
+        public int StrokeDirectionChangeThreshold = 20;
+        public int StrokeExtensionThreshold = 10;
+        public int StrokeWatchInterval = 10;
+    }
+
+    public class DefaultGestureMachineConfig : GestureMachineConfig
+    { }
 
     namespace Config
     {
         public static class Def
         {
-            public delegate System.Drawing.Point PointBinding(System.Drawing.Point point);
-            public delegate bool WhenClauseBinding(UserActionEvaluationContext ctx, DSL.Def.WhenFunc whenFunc);
-            public delegate void BeforeClauseBinding(UserActionExecutionContext ctx, DSL.Def.BeforeFunc beforeFunc);
-            public delegate void DoClauseBinding(UserActionExecutionContext ctx, DSL.Def.DoFunc doFunc);
-            public delegate void AfterClauseBinding(UserActionExecutionContext ctx, DSL.Def.AfterFunc afterFunc);
+            public delegate System.Drawing.Point PositionBinding(System.Drawing.Point point);
 
-
-            public static PointBinding DefaultPointBinding
-            {
-                get { return (point) => { return point; }; }
-            }
-
-            public static WhenClauseBinding DefaultWhenClauseBinding
+            public static PositionBinding DefaultPositionBinding
             {
                 get
                 {
-                    return (ctx, whenFunc) =>
+                    return (point) => 
                     {
-                        try
-                        {
-                            return whenFunc(ctx);
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Print(
-                                "An exception was thrown when executing a WhenFunc of a gesture. " +
-                                "This error may automatically be recovered.\n{0} :\n{1}",
-                                ex.GetType().Name,
-                                ex.StackTrace);
-                        }
-                        return false;
+                        return point;
                     };
                 }
             }
 
-            public static BeforeClauseBinding DefaultBeforeClauseBinding
+            /*
+            public delegate bool GestureTimeoutBinding(FSM.State1 S1);
+
+            
+            public static GestureTimeoutBinding DefaultGestureTimeoutBinding
             {
                 get
                 {
-                    return (ctx, beforeFunc) =>
+                    // Todo test
+                    return (S1) => 
                     {
-                        try
-                        {
-                            beforeFunc(ctx);
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Print(
-                                "An exception was thrown when executing a BeforeFunc of a gesture. " +
-                                "This error may automatically be recovered.\n{0} :\n{1}",
-                                ex.GetType().Name,
-                                ex.StackTrace);
-                        }
+                        S1.IgnoreNext(S1.primaryEvent.GetPair());
+                        return S1.S0;
                     };
                 }
             }
+            
+            public delegate FSM.State GestureCancelBinding(FSM.State1 S1);
 
-
-            public static DoClauseBinding DefaultDoClauseBinding
+            public static GestureCancelBinding DefaultGestureCancelBinding
             {
                 get
                 {
-                    return (ctx, doFunc) =>
+                    // Todo test
+                    return (S1) =>
                     {
-                        try
-                        {
-                            return doFunc(ctx);
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Print(
-                                "An exception was thrown when executing a DoFunc of a gesture. " +
-                                "This error may automatically be recovered.\n{0} :\n{1}",
-                                ex.GetType().Name,
-                                ex.StackTrace);
-                        }
+                        return S1.S0;
                     };
                 }
             }
-
-
-            public static AfterClauseBinding DefaultAfterClauseBinding
-            {
-                get
-                {
-                    return (ctx, afterFunc) =>
-                    {
-                        try
-                        {
-                            return afterFunc(ctx);
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Print(
-                                "An exception was thrown when executing a AfterFunc of a gesture. " +
-                                "This error may automatically be recovered.\n{0} :\n{1}",
-                                ex.GetType().Name,
-                                ex.StackTrace);
-                        }
-                    };
-                }
-            }
-
+            */
         }
 
+        /*
         public class GestureConfig
         {
             public int InitialStrokeThreshold = 10;
@@ -137,31 +151,27 @@ namespace Crevice.Core
             public int StrokeExtensionThreshold = 10;
             public int WatchInterval = 10;
             public int Timeout = 1000;
+
+
         }
 
         public class UserInterfaceConfig
         {
-            public Def.PointBinding TooltipPositionBinding = Def.DefaultPointBinding;
+            public Def.PositionBinding TooltipPositionBinding = Def.DefaultPositionBinding;
             public int TooltipTimeout = 3000;
             public int BalloonTimeout = 10000;
         }
+        */
 
-        public class SystemConfig
-        {
-            //Todo: null check in bindings
-            public Def.PointBinding TooltipPositionBinding = Def.DefaultPointBinding;
 
-            public Def.WhenClauseBinding WhenClauseBinding = Def.DefaultWhenClauseBinding;
-            public Def.BeforeClauseBinding BeforeClauseBinding = Def.DefaultBeforeClauseBinding;
-            public Def.DoClauseBinding DoClauseBinding = Def.DefaultDoClauseBinding;
-            public Def.AfterClauseBinding AfterClauseBinding = Def.DefaultAfterClauseBinding;
-        }
+        /*
 
         public class UserConfig
         {
-            public readonly SystemConfig System = new SystemConfig();
-            public readonly GestureConfig Gesture = new GestureConfig();
-            public readonly UserInterfaceConfig UI = new UserInterfaceConfig();
+            public SystemConfig System = new SystemConfig();
+            public GestureConfig Gesture = new GestureConfig();
+            public UserInterfaceConfig UI = new UserInterfaceConfig();
         }
+        */
     }
 }

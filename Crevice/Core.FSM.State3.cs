@@ -5,11 +5,13 @@ using System.Text;
 
 namespace Crevice.Core.FSM
 {
+    using GestureActionContext;
+
     public class State3 : State
     {
         internal readonly State0 S0;
         internal readonly State2 S2;
-        internal readonly UserActionExecutionContextBase ctx;
+        internal readonly ActionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly Def.Event.IDoubleActionSet secondaryEvent;
         internal readonly IEnumerable<IfButtonGestureDefinition> T0;
@@ -19,7 +21,7 @@ namespace Crevice.Core.FSM
             StateGlobal Global,
             State0 S0,
             State2 S2,
-            UserActionExecutionContextBase ctx,
+            ActionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             Def.Event.IDoubleActionSet secondaryEvent,
             IEnumerable<IfButtonGestureDefinition> T0,

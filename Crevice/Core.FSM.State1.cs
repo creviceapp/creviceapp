@@ -5,25 +5,24 @@ using System.Text;
 
 namespace Crevice.Core.FSM
 {
-    using WinAPI.SendInput;
-
     public class State1 : State
     {
         internal readonly State0 S0;
         internal readonly State2 S2;
-        internal readonly UserActionExecutionContextBase ctx;
+        internal readonly ActionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T0;
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T1;
         internal readonly IDictionary<Def.Stroke, IEnumerable<OnButtonWithIfStrokeGestureDefinition>> T2;
         internal readonly IEnumerable<IfButtonGestureDefinition> T3;
 
-        private readonly SingleInputSender InputSender = new SingleInputSender();
+        //todo
+        //private readonly SingleInputSender InputSender = new SingleInputSender();
         
         public State1(
             StateGlobal Global,
             State0 S0,
-            UserActionExecutionContextBase ctx,
+            ActionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             IEnumerable<OnButtonGestureDefinition> T1,
             IEnumerable<IfButtonGestureDefinition> T2
@@ -96,7 +95,8 @@ namespace Crevice.Core.FSM
                         else
                         {
                             Verbose.Print("[Transition 1_4]");
-                            ExecuteInBackground(ctx, RestorePrimaryButtonClickEvent());
+                            //todo
+                            //ExecuteInBackground(ctx, RestorePrimaryButtonClickEvent());
                         }
                     }
                     return Result.EventIsConsumed(nextState: S0);
@@ -105,16 +105,29 @@ namespace Crevice.Core.FSM
             return base.Input(evnt, point);
         }
 
+        // TOdo: 
+
+        // Todo: IsCancellable を共通インターフェイスにする or IsTimeoutable
+
+        // Todo: んで、IsRestorable
+
         public IState Cancel()
         {
-            if (!HasBeforeOrAfter)
+            if (!HasBeforeOrAfter) // Todo: IsCancelable がいいかな
             {
+                // リストア可能でないなら、IgnoreNext、かな。IgnoreNextがデフォルト？ eventhanderかな
+
+                // これはストロークの数が０であることも復元の条件（なのでポインタの原点を持っていなくてもうまくいっている）
+                // ポインタの初期位置を復元するのもおかしいので難しいところだが、この実装が正しいと思う
+
                 Verbose.Print("[Transition 1_5]");
-                ExecuteInBackground(ctx, RestorePrimaryButtonDownEvent());
+                //todo
+                //ExecuteInBackground(ctx, RestorePrimaryButtonDownEvent()); 
                 return S0;
             }
             else
             {
+                // キャンセルを無視するフロー
                 return this;
             }
         }

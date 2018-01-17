@@ -134,7 +134,7 @@ namespace Crevice.Core.FSM
                 .ToDictionary(x => x.Key as Def.Event.IDoubleActionSet, x => x.Select(y => y));
         }
 
-        // Transition 1_4 (restoration of the `set` event)
+        // Transition 1_4 (restoration of the `set` event) // Todo: `set` ?  or `set` and `release` ?
         //
         // State1 -> State0
         //

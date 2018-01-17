@@ -5,12 +5,10 @@ using System.Text;
 
 namespace Crevice.Core.FSM
 {
-    using WinAPI.SendInput;
-
     public class State2 : State
     {
         internal readonly State0 S0;
-        internal readonly UserActionExecutionContextBase ctx;
+        internal readonly ActionContext ctx;
         internal readonly Def.Event.IDoubleActionSet primaryEvent;
         internal readonly IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T0;
         internal readonly IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T1;
@@ -20,7 +18,7 @@ namespace Crevice.Core.FSM
         public State2(
             StateGlobal Global,
             State0 S0,
-            UserActionExecutionContextBase ctx,
+            ActionContext ctx,
             Def.Event.IDoubleActionSet primaryEvent,
             IDictionary<Def.Event.ISingleAction, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T0,
             IDictionary<Def.Event.IDoubleActionSet, IEnumerable<OnButtonWithIfButtonGestureDefinition>> T1,

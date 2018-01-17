@@ -40,12 +40,14 @@ namespace Crevice.Core.DSL
     * 
     */
 
+    using GestureActionContext;
+
     public static class Def
     {
-        public delegate bool WhenFunc(UserActionExecutionContextBase ctx);
-        public delegate void BeforeFunc(UserActionExecutionContextBase ctx);
-        public delegate void DoFunc(UserActionExecutionContextBase ctx);
-        public delegate void AfterFunc(UserActionExecutionContextBase ctx);
+        public delegate bool WhenFunc(ActionContext ctx);
+        public delegate void BeforeFunc(ActionContext ctx);
+        public delegate void DoFunc(ActionContext ctx);
+        public delegate void AfterFunc(ActionContext ctx);
 
         public interface Button { }
         public interface AcceptableInOnClause : Button { }

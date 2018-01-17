@@ -8,38 +8,52 @@ namespace Crevice.Core.FSM
     /// <summary>
     /// Dummy GestureMachine which have only one state and passthrough all inputs.
     /// </summary>
-    public class NullGestureMachine 
-        : GestureMachine<UserActionContext.UserActionEvaluationContext, UserActionContext.UserActionExecutionContext>
+    public class NullGestureMachine<A, B> : GestureMachine<A, DefaultActionContext>
+        where A : GestureMachineConfig
+        where B : ActionContext
     {
-        public NullGestureMachine() : base(new Config.UserConfig(), new List<GestureDefinition>())
-        {
+        public NullGestureMachine(A config) : base(config as A, new List<GestureDefinition>())
+        { }
+    }
 
+    public static class NullGestureMachine
+    {
+        public static NullGestureMachine<A, DefaultActionContext> Create<A>(A config)
+            where A : GestureMachineConfig
+        {
+            return new NullGestureMachine<A, DefaultActionContext>(config);
+        }
+
+        public static NullGestureMachine<DefaultGestureMachineConfig, DefaultActionContext> Create()
+        {
+            return Create(new DefaultGestureMachineConfig());
         }
     }
 
     /// <summary>
     /// FSM GestureMachine implimentation.
     /// </summary>
-    public class GestureMachine<E, X> 
+    public class GestureMachine<A, B>
         : IDisposable
-        where E : UserActionContext.UserActionEvaluationContext
-        where X : UserActionContext.UserActionExecutionContext
+        where A : GestureMachineConfig
+        where B : ActionContext
     {
-        public StateGlobal<E, X> Global { get; private set; }
+        public readonly StateGlobal Global;
         public IState State { get; private set; }
         public IEnumerable<GestureDefinition> GestureDefinition { get; private set; }
 
         private System.Timers.Timer timer = new System.Timers.Timer();
         private readonly object lockObject = new object();
 
-        public GestureMachine(Config.UserConfig<E, X> userConfig, IEnumerable<GestureDefinition> gestureDef)
+        public GestureMachine(A config, IEnumerable<GestureDefinition> gestureDef)
         {
-            this.Global = new StateGlobal<E, X>(userConfig);
+            var actionFactory = new ActionContextFactory<B>() as ActionContextFactory<ActionContext>;
+            this.Global = new StateGlobal(config, actionFactory); // will work?
             this.State = new State0(Global, gestureDef);
             this.GestureDefinition = gestureDef;
 
             timer.Elapsed += new System.Timers.ElapsedEventHandler(TryGestureTimeout);
-            timer.Interval = Global.Config.Gesture.Timeout;
+            timer.Interval = Global.Config.GestureTimeout;
             timer.AutoReset = false;
         }
 
@@ -63,7 +77,7 @@ namespace Crevice.Core.FSM
                     {
                         timer.Stop();
                         // Reflect current config value
-                        timer.Interval = Global.Config.Gesture.Timeout;
+                        timer.Interval = Global.Config.GestureTimeout;
                         timer.Start();
                     }
                 }
