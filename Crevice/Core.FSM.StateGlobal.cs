@@ -5,13 +5,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("CreviceTests")]
+
 namespace Crevice.Core.FSM
 {
+
+    /*
     public class ExternalInterface<T>
         where T : ActionContext
     {
         public readonly ActionContextFactory<T> Factory = new ActionContextFactory<T>();
     }
+    */
 
     public class StateGlobal
         : IDisposable

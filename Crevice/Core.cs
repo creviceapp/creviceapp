@@ -95,6 +95,8 @@ namespace Crevice.Core
 
     namespace Config
     {
+        // Defは悪い文化
+
         public static class Def
         {
             public delegate System.Drawing.Point PositionBinding(System.Drawing.Point point);

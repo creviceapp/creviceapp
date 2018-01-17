@@ -12,7 +12,12 @@ Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceAppUniversal", "Crev
 		{67EC531C-07C7-463A-87CE-F5F49496E271} = {67EC531C-07C7-463A-87CE-F5F49496E271}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crevice", "Crevice\Crevice.csproj", "{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crevice", "Crevice\Crevice.csproj", "{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceTests", "CreviceTests\CreviceTests.csproj", "{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3} = {662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +99,22 @@ Global
 		{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}.Release|x64.Build.0 = Release|Any CPU
 		{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}.Release|x86.ActiveCfg = Release|Any CPU
 		{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}.Release|x86.Build.0 = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|x64.Build.0 = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|ARM.Build.0 = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|x64.ActiveCfg = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|x64.Build.0 = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
