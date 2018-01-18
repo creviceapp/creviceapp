@@ -10,14 +10,77 @@ namespace Crevice.Core
     using System.Linq.Expressions;
 
     // Todo generics
+    public interface IExcutionContextFactory
+    {
+        IExcutionContextFactory CreateExcutionContext(IExcutionContextFactory factory);
+    }
 
-        // ExecutionPoint
-        // EvaluationPoint
+
+    // Stateが状態を持つという設計なので、Contextを持たいないといけない
+    
+
+
+
+    // 結局のところ、この型を@doのctxとして使えるようにする、というのがGenerics上の問題。
+    // どこで評価するかはもんだいではない。
+
+    public abstract class NewActionContext
+    {
+        public abstract void Setup(object gestureStartContext, Point currentPoint);
+    }
+
+    public class NewActionContextA : NewActionContext
+    {
+        public Point StartPoint { get; private set; }
+
+        // このシグネチャのコンストラクタを持つ、という制約よりはわかりやすいかな
+        public override void Setup(object gestureStartContext, Point currentPoint)
+        {
+            if (gestureStartContext == null)
+            {
+                StartPoint = currentPoint;
+            }
+        }
+
+        //
+        // Setup(Point currentPoint)
+        // Setup(object, Point currentPoint)
+        //
+        
+    }
+
+    
+    // これをActionRunner<抽象クラス>としたときに正しく動作するか？
+    
+    // 動くとして、パフォーマンスの劣化はないか？
+
+
+    public class ActionRunner<T>
+        where T : NewActionContext
+    {
+        public bool RunAndReturn() { return false; }
+        public void Run() { }
+    }
+
+
+    // 前のContextが必要になる場合以外はアクセスしないので、Lazyな感じでいいのでは
+    // object evaculationContext に値が入ることだけ保証？
+    // コンストラクタに来ることだけ保証
+    // →微妙。Evaluationなときにthisを入れられない
+    //    ->コンストラクタで入れればいいのでは
+
+
+
+    // ExecutionPoint
+    // EvaluationPoint
     public abstract class ActionContext
     {
+        // これらのプロパティは強制ではない。なくてもいい
+
         public Point EvaluatePoint;
         public Point ExecutePoint;
 
+        /*
         public ActionContext(Point evaluatePoint)
         { 
             this.EvaluatePoint = evaluatePoint;
@@ -28,6 +91,7 @@ namespace Crevice.Core
             this.EvaluatePoint = evaluationContext.EvaluatePoint;
             this.ExecutePoint = executePoint;
         }
+        */
     }
 
     public class ActionContextFactory<T>
@@ -70,11 +134,25 @@ namespace Crevice.Core
     
     public class DefaultActionContext : ActionContext
     {
+        /*
         public DefaultActionContext(Point evaluatePoint) : base(evaluatePoint)
         { }
 
-        public DefaultActionContext(DefaultActionContext evaluationContext, Point executePoint) : base(evaluationContext, executePoint)
+        public DefaultActionContext(Get evaluationContext, Point executePoint) : base(evaluationContext, executePoint)
         { }
+        */
+
+        public DefaultActionContext(Point evaluatePoint)
+        {
+            this.EvaluatePoint = evaluatePoint;
+        }
+        
+
+        public DefaultActionContext(DefaultActionContext evaluationContext, Point executePoint)
+        {
+            this.EvaluatePoint = evaluationContext.EvaluatePoint;
+            this.ExecutePoint = executePoint;
+        }
     }
 
     /*

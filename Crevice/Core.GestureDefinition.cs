@@ -38,7 +38,7 @@ namespace Crevice.Core
             this.whenFunc = whenFunc;
         }
 
-        virtual public bool IsComplete
+        virtual public bool IsComplete //HasAction
         {
             get { return false; }
         }

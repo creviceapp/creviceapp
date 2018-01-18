@@ -31,6 +31,7 @@ namespace Crevice.Core.FSM
                 return Result.EventIsConsumed(nextState: this);
             }
 
+            // todo ビット演算でやるとよさげ
             if (evnt is Def.Event.ISingleAction)
             {
                 var ev = evnt as Def.Event.ISingleAction;
@@ -72,6 +73,8 @@ namespace Crevice.Core.FSM
             return this;
         }
 
+
+        // tupleで戻り値を扱うとスマートでは
         internal static IEnumerable<T> FilterByWhenClause<T>(
             ActionContext ctx,
             IEnumerable<T> gestureDef)
