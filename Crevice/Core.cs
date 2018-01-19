@@ -5,8 +5,504 @@ using System.Text;
 using System.Threading.Tasks;
 
 
+// CreviceLib
 
-namespace Crevice.Dev {
+/*
+ * Strokeの描写などをするにはGestureMachineのイベントが取れればいけそうかな
+ * 
+ * 
+ * Linuxなどのマルチプラットフォーム対応、
+ * キーボードやマウスパッドの入力への対応を考えると、InputデータとFSMをもっと抽象化する必要がある。
+ * また、ジェスチャの深さは本来的には制限をなくせるはず。
+ * 
+ * 複数デバイスの対応は、イベントの同一判定と定義を工夫することで可能になる、ような気がする。
+ * 
+ * var Whenever = @when(ctx => { return true; });
+ * Whenever.
+ * @if().
+ * @if().
+ * ...
+ * @press(ctx => {
+ *     //
+ * }).
+ * @do(ctx => {
+ *     //
+ * }).
+ * @release(ctx => {
+ *     //
+ * }).
+ * @as("name"); // // @as({"name": "hogehoge", "icon": "path", "url": "path" ... });
+ * 
+ * でSingleActionかDoubleActionで次の型が変わる
+ * 
+ * 互換性のために@ifと@onはどっちでもいいとか
+ * 
+ * 
+ * 
+ * ジェスチャの候補の列挙
+ * →ジェスチャのステート切替時がイベントとして存在して、マシンにデータが有るなら可能
+ * 
+ */
+namespace Crevice.Future
+{
+    using System.Drawing;
+
+    /* ・マルチプラットフォーム対応（設計のみ）
+     * ・深さ無段階のジェスチャ定義
+     * ・マウス/キーボード/ゲームパッド入力対応
+     * ・
+     * ・
+     */
+     
+    public abstract class Event 
+    {
+        public int EventId { get; }
+
+        public Event(int eventId)
+        {
+            this.EventId = eventId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj != null && this.GetType() == obj.GetType();
+        }
+
+        public override int GetHashCode()
+        {
+            return EventId;
+        }
+    }
+
+    public interface ILogicalEvent { }
+
+    public interface IPysicalEvent<T>
+        where T : ILogicalEvent
+    {
+        bool LogicallyEquals(object obj);
+    }
+    
+    public abstract class FireEvent : Event, ILogicalEvent
+    {
+        public FireEvent(int eventId) : base(eventId) { }
+    }
+
+    /*
+    abstract class MouseInput : Event
+    {
+        public virtual Point? CursorPosition
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+    }
+    */
+
+    // ctxの型を～を考えたが、これDynamicでいいんでは…
+    // ctxをDynamicにするとジェスチャのセッションを越えたようなデータを持てる…
+    // -> がIDE補完は微妙かな。そういうデータ入れを持っておければよいような
+    // ctx.session = かな
+
+    /*
+     * 設定を拡張したいというのはあるがどうか
+     * 
+     * @do(ctx =>
+     * {
+     *     var config = new Config();
+     *     return config; // 戻り値で型推論できる
+     * }, ctx=>
+     * {
+     *     //
+     * })
+     * 
+     * @on().
+     * @with(config=hogeConfig). // 2重設定は実行時にエラー？ 警告かな
+     * @do(ctx => {
+     *     //
+     * });
+     */
+
+    public abstract class PressEvent : Event, ILogicalEvent
+    {
+        public abstract ReleaseEvent OppositeEvent { get; }
+
+        public PressEvent(int eventId) : base(eventId) { }
+    }
+
+    public abstract class ReleaseEvent : Event, ILogicalEvent
+    {
+        public abstract PressEvent OppositeEvent { get; }
+
+        public ReleaseEvent(int eventId) : base(eventId) { }
+    }
+
+    public abstract class PhysicalFireEvent<T> : FireEvent, IPysicalEvent<T>
+        where T : FireEvent, ILogicalEvent
+    {
+        public abstract T LogicalEquivalent { get; }
+
+        public bool LogicallyEquals(object obj)
+        {
+            return Equals(obj) || obj is T;
+        }
+
+        public PhysicalFireEvent(int eventId) : base(eventId) { }
+
+        public override int GetHashCode()
+        {
+            return LogicalEquivalent. EventId;
+        }
+    }
+
+    public abstract class PhysicalPressEvent<T> : PressEvent, IPysicalEvent<T>
+        where T : PressEvent, ILogicalEvent
+    {
+        public abstract T LogicalEquivalent { get; }
+        
+        public bool LogicallyEquals(object obj)
+        {
+            return Equals(obj) || obj is T;
+        }
+
+        public PhysicalPressEvent(int eventId) : base(eventId) { }
+
+        public override int GetHashCode()
+        {
+            return LogicalEquivalent.EventId;
+        }
+    }
+
+    public abstract class PhysicalReleaseEvent<T> : ReleaseEvent, IPysicalEvent<T>
+    where T : ReleaseEvent, ILogicalEvent
+    {
+        public abstract T LogicalEquivalent { get; }
+        
+        public bool LogicallyEquals(object obj)
+        {
+            return Equals(obj) || obj is T;
+        }
+
+        public PhysicalReleaseEvent(int eventId) : base(eventId) { }
+
+        public override int GetHashCode()
+        {
+            return LogicalEquivalent.EventId;
+        }
+    }
+
+    /* Keys.Left
+     * Buttons. //これだけは展開しておく
+     * Pads.
+     */
+
+        /*
+    abstract class MouseFireEvent : FireEvent { }
+
+    abstract class MousePressEvent : PressEvent { }
+
+    abstract class MouseReleaseEvent : ReleaseEvent { }
+
+    abstract class KeyboardPressEvent : PressEvent { }
+
+    abstract class KeyboardReleaseEvent : ReleaseEvent { }
+
+    abstract class GamepadPressEvent : PressEvent { }
+
+    abstract class GamepadReleaseEvent : ReleaseEvent { }
+    */
+
+    public class Events
+    {
+        public readonly Move Move;
+        public readonly LeftButtonDown LeftButtonDown;
+        public readonly LeftButtonUp LeftButtonUp;
+        public readonly MiddleButtonDown MiddleButtonDown;
+        public readonly MiddleButtonUp MiddleButtonUp;
+        public readonly RightButtonDown RightButtonDown;
+        public readonly RightButtonUp RightButtonUp;
+        public readonly WheelDown WheelDown;
+        public readonly WheelUp WheelUp;
+        public readonly WheelLeft WheelLeft;
+        public readonly WheelRight WheelRight;
+        public readonly X1ButtonDown X1ButtonDown;
+        public readonly X1ButtonUp X1ButtonUp;
+        public readonly X2ButtonDown X2ButtonDown;
+        public readonly X2ButtonUp X2ButtonUp;
+
+        public readonly LeftButtonDownP0 LeftButtonDownP0;
+        public readonly LeftButtonUpP0 LeftButtonUpP0;
+
+        public Events()
+        {
+            var id = 0;
+            // 0         Logical Stroke event.
+            // 0 - 99    Reserved for physical StrokeEvents.
+
+            // 100       Logical Move event.
+            // 100- 199  Reserved for physical StrokeEvents.
+            id = 100;
+            Move = new Move(id);
+            // and so on.
+
+            id =  200;
+            LeftButtonDown = new LeftButtonDown(id);
+            LeftButtonDownP0 = new LeftButtonDownP0(id+1);
+
+
+            id =  300;
+            LeftButtonUp = new LeftButtonUp(id);
+            LeftButtonUpP0 = new LeftButtonUpP0(id + 1);
+
+            id =  400;
+            MiddleButtonDown = new MiddleButtonDown(id);
+
+            id =  500;
+            MiddleButtonUp = new MiddleButtonUp(id);
+
+            id =  600;
+            RightButtonDown = new RightButtonDown(id);
+
+            id =  700;
+            RightButtonUp = new RightButtonUp(id);
+
+            id =  800;
+            WheelDown = new WheelDown(id);
+
+            id =  900;
+            WheelUp = new WheelUp(id);
+
+            id = 1000;
+            WheelLeft = new WheelLeft(id);
+
+            id = 1100;
+            WheelRight = new WheelRight(id);
+
+            id = 1200;
+            X1ButtonDown = new X1ButtonDown(id);
+
+            id = 1300;
+            X1ButtonUp = new X1ButtonUp(id);
+
+            id = 1400;
+            X2ButtonDown = new X2ButtonDown(id);
+            X2ButtonUp = new X2ButtonUp(id);
+        }
+
+        private static Events singleton = new Events();
+        public static Events Constants
+        {
+            get { return singleton;  }
+        }
+    }
+
+    public class Move : FireEvent
+    {
+        public Move(int eventId) : base(eventId) { }
+    }
+
+    public class LeftButtonDown : PressEvent
+    {
+        public LeftButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent OppositeEvent { get { return Events.Constants.LeftButtonUp; } }
+    }
+
+    public class LeftButtonUp : ReleaseEvent
+    {
+        public LeftButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent OppositeEvent { get { return Events.Constants.LeftButtonDown; } }
+    }
+
+    public class LeftButtonDownP0 : PhysicalPressEvent<LeftButtonDown>
+    {
+        public LeftButtonDownP0(int eventId) : base(eventId) { }
+        public override LeftButtonDown LogicalEquivalent { get { return Events.Constants.LeftButtonDown; } }
+        public override ReleaseEvent OppositeEvent { get { return Events.Constants.LeftButtonUpP0; } }
+    }
+
+    public class LeftButtonUpP0 : PhysicalReleaseEvent<LeftButtonUp>
+    {
+        public LeftButtonUpP0(int eventId) : base(eventId) { }
+        public override LeftButtonUp LogicalEquivalent { get { return Events.Constants.LeftButtonUp; } }
+        public override PressEvent OppositeEvent { get { return Events.Constants.LeftButtonDownP0; } }
+    }
+
+
+    public class MiddleButtonDown : PressEvent
+    {
+        public MiddleButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent OppositeEvent { get { return Events.Constants.MiddleButtonUp; } }
+    }
+
+    public class MiddleButtonUp : ReleaseEvent
+    {
+        public MiddleButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent OppositeEvent { get { return Events.Constants.MiddleButtonDown; } }
+    }
+
+    public class RightButtonDown : PressEvent
+    {
+        public RightButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent OppositeEvent { get { return Events.Constants.RightButtonUp; } }
+    }
+
+    public class RightButtonUp : ReleaseEvent
+    {
+        public RightButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent OppositeEvent { get { return Events.Constants.RightButtonDown; } }
+    }
+
+    public class WheelDown : FireEvent
+    {
+        public WheelDown(int eventId) : base(eventId) { }
+    }
+
+    public class WheelUp : FireEvent
+    {
+        public WheelUp(int eventId) : base(eventId) { }
+    }
+
+    public class WheelLeft : FireEvent
+    {
+        public WheelLeft(int eventId) : base(eventId) { }
+    }
+
+    public class WheelRight : FireEvent
+    {
+        public WheelRight(int eventId) : base(eventId) { }
+    }
+    public class X1ButtonDown : PressEvent
+    {
+        public X1ButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent OppositeEvent { get { return Events.Constants.X1ButtonUp; } }
+    }
+
+    public class X1ButtonUp : ReleaseEvent
+    {
+        public X1ButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent OppositeEvent { get { return Events.Constants.X1ButtonDown; } }
+    }
+
+    public class X2ButtonDown : PressEvent
+    {
+        public X2ButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent OppositeEvent { get { return Events.Constants.X2ButtonUp; } }
+    }
+
+    public class X2ButtonUp : ReleaseEvent
+    {
+        public X2ButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent OppositeEvent { get { return Events.Constants.X2ButtonDown; } }
+    }
+
+
+
+    /*
+     * 関係ないが、IEQuatable<>というのは、～のアップデート処理を行えますよ、というのにつかえそう
+     */
+
+
+    // Strokeをどういう扱いにするか、
+    // システム組み込みなのでライブラリユーザーが触る必要はなさげ
+    class Stroke : FireEvent, IEquatable<Stroke>
+    {
+        public enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
+        public readonly IEnumerable<Direction> Directions;
+
+        public Stroke(int eventId, IEnumerable<Direction> directions) : base(eventId)
+        {
+            this.Directions = directions;
+        }
+
+        public bool Equals(Stroke that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+            return (this.Directions.SequenceEqual(that.Directions));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+            return Equals(obj as Stroke);
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = 0x00;
+            foreach (var move in this.Directions)
+            {
+                hash = hash << 2;
+                switch (move)
+                {
+                    case Direction.Up:
+                        hash = hash | 0x00;
+                        break;
+                    case Direction.Down:
+                        hash = hash | 0x01;
+                        break;
+                    case Direction.Left:
+                        hash = hash | 0x02;
+                        break;
+                    case Direction.Right:
+                        hash = hash | 0x03;
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+            }
+            return hash;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (var move in this.Directions)
+            {
+                switch (move)
+                {
+                    case Direction.Up:
+                        sb.Append("U");
+                        break;
+                    case Direction.Down:
+                        sb.Append("D");
+                        break;
+                    case Direction.Left:
+                        sb.Append("L");
+                        break;
+                    case Direction.Right:
+                        sb.Append("R");
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+    }
+
+    // スタックマシン？
+    
+
+
+
+
+}
+
+namespace Crevice.Dev
+{
     using System.Drawing;
 
     public abstract class ActionContext
@@ -22,6 +518,9 @@ namespace Crevice.Dev {
 
         // これもイベントにすれば？
         // 無意味っぽい
+
+        // ここにプラットフォームごとに拡張したInputで与えられる、Pointを統合したクラスが
+        // 来るなら拡張がさらに容易かな
         public override void Setup(object gestureStartContext, Point currentPoint)
         {
             if (gestureStartContext == null)
@@ -138,6 +637,10 @@ namespace Crevice.Dev {
     public class DefaultGestureMachineConfig : GestureMachineConfig
     { }
 
+
+    // イミュータブルなConfigは微妙なので実装しない
+    // Configはここではキャッシュせず、毎回アクセスすることを保証する。実装はConfigに任せる
+    // ホットスワップ使うとよろし
 
     public class GestureMachine<A, B>
                 : IDisposable
@@ -395,7 +898,10 @@ namespace Crevice.Dev {
                 return Result.EventIsConsumed(nextState: this);
             }
 
-            // todo ビット演算でやるとよさげ
+            // todo ビット演算でやるとよさげ 
+            // ただし、プラットフォーム互換になる仕組みが必要
+            // GestureMachineは消費したかどうかだけをboolで返すので、ジェスチャ内
+
             if (evnt is Core.Def.Event.ISingleAction)
             {
                 var ev = evnt as Core.Def.Event.ISingleAction;
