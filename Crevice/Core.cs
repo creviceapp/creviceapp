@@ -43,6 +43,432 @@ using System.Threading.Tasks;
  * →ジェスチャのステート切替時がイベントとして存在して、マシンにデータが有るなら可能
  * 
  */
+ namespace Crevice.Future2
+{
+
+    using System.Drawing;
+
+    /* ・マルチプラットフォーム対応（設計のみ）
+     * ・深さ無段階のジェスチャ定義
+     * ・マウス/キーボード/ゲームパッド入力対応
+     * ・
+     * ・
+     */
+
+    public abstract class Source { }
+    public abstract class FireSource { }
+    public abstract class PressReleaseSource { }
+
+    public class StrokeSource : FireSource { }
+    public class MoveSource : FireSource { }
+
+    public class WheelDownSource : FireSource { }
+    public class WheelUpSource : FireSource { }
+    public class WheelLeftSource : FireSource { }
+    public class WHeelRightSource : FireSource { }
+
+    public class LeftButtonSource : PressReleaseSource { }
+    public class MiddleButtonSource : PressReleaseSource { }
+    public class RightButtonSource : PressReleaseSource { }
+    public class X1ButtonSource : PressReleaseSource { }
+    public class X2ButtonSource : PressReleaseSource { }
+
+
+
+    public abstract class Event
+    {
+        public int EventId { get; }
+
+        public Event(int eventId)
+        {
+            this.EventId = eventId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj != null && this.GetType() == obj.GetType();
+        }
+
+        public override int GetHashCode()
+        {
+            return EventId;
+        }
+    }
+
+    public interface ILogicalEvent
+    {
+
+    }
+
+    public interface IPysicalEvent
+    {
+        bool LogicallyEquals(object obj);
+    }
+
+    public abstract class FireEvent<T> : Event, ILogicalEvent
+        where T : FireSource
+    {
+        public FireEvent(int eventId) : base(eventId) { }
+    }
+
+    public abstract class PressEvent<A> : Event, ILogicalEvent
+        where A : PressReleaseSource
+    {
+        public abstract ReleaseEvent<A> OppositeEvent { get; }
+        public PressEvent(int eventId) : base(eventId) { }
+    }
+
+    public abstract class ReleaseEvent<A> : Event, ILogicalEvent
+        where A : PressReleaseSource
+    {
+        public abstract PressEvent<A> OppositeEvent { get; }
+        public ReleaseEvent(int eventId) : base(eventId) { }
+    }
+
+    public abstract class PhysicalFireEvent<T> : Event, IPysicalEvent
+        where T : FireSource
+    {
+        public abstract FireEvent<T> LogicalEquivalent { get; }
+
+        public bool LogicallyEquals(object obj)
+        {
+            return Equals(obj) || LogicalEquivalent.Equals(obj);
+        }
+
+        public PhysicalFireEvent(int eventId) : base(eventId) { }
+
+        public override int GetHashCode()
+        {
+            return LogicalEquivalent.EventId;
+        }
+    }
+
+    public abstract class PhysicalPressEvent<T> : Event, IPysicalEvent
+        where T : PressReleaseSource
+    {
+        public abstract PhysicalReleaseEvent<T> OppositeEvent { get; }
+
+        public abstract PressEvent<T> LogicalEquivalent { get; }
+
+        public bool LogicallyEquals(object obj)
+        {
+            return Equals(obj) || LogicalEquivalent.Equals(obj);
+        }
+
+        public PhysicalPressEvent(int eventId) : base(eventId) { }
+
+        public override int GetHashCode()
+        {
+            return LogicalEquivalent.EventId;
+        }
+    }
+
+    public abstract class PhysicalReleaseEvent<T> : Event, IPysicalEvent
+        where T : PressReleaseSource
+    {
+        public abstract PhysicalPressEvent<T> OppositeEvent { get; }
+
+        public abstract ReleaseEvent<T> LogicalEquivalent { get; }
+
+        public bool LogicallyEquals(object obj)
+        {
+            return Equals(obj) || LogicalEquivalent.Equals(obj);
+        }
+
+        public PhysicalReleaseEvent(int eventId) : base(eventId) { }
+
+        public override int GetHashCode()
+        {
+            return LogicalEquivalent.EventId;
+        }
+    }
+
+    public class Events
+    {
+        public readonly Move Move;
+        public readonly LeftButtonDown LeftButtonDown;
+        public readonly LeftButtonUp LeftButtonUp;
+        public readonly MiddleButtonDown MiddleButtonDown;
+        public readonly MiddleButtonUp MiddleButtonUp;
+        public readonly RightButtonDown RightButtonDown;
+        public readonly RightButtonUp RightButtonUp;
+        public readonly WheelDown WheelDown;
+        public readonly WheelUp WheelUp;
+        public readonly WheelLeft WheelLeft;
+        public readonly WheelRight WheelRight;
+        public readonly X1ButtonDown X1ButtonDown;
+        public readonly X1ButtonUp X1ButtonUp;
+        public readonly X2ButtonDown X2ButtonDown;
+        public readonly X2ButtonUp X2ButtonUp;
+
+        public readonly LeftButtonDownP0 LeftButtonDownP0;
+        public readonly LeftButtonUpP0 LeftButtonUpP0;
+
+        public Events()
+        {
+            var id = 0;
+            // 0         Logical Stroke event.
+            // 0 - 99    Reserved for physical StrokeEvents.
+
+            // 100       Logical Move event.
+            // 100- 199  Reserved for physical StrokeEvents.
+            id = 100;
+            Move = new Move(id);
+            // and so on.
+
+            id = 200;
+            LeftButtonDown = new LeftButtonDown(id);
+            LeftButtonDownP0 = new LeftButtonDownP0(id + 1);
+
+
+            id = 300;
+            LeftButtonUp = new LeftButtonUp(id);
+            LeftButtonUpP0 = new LeftButtonUpP0(id + 1);
+
+            id = 400;
+            MiddleButtonDown = new MiddleButtonDown(id);
+
+            id = 500;
+            MiddleButtonUp = new MiddleButtonUp(id);
+
+            id = 600;
+            RightButtonDown = new RightButtonDown(id);
+
+            id = 700;
+            RightButtonUp = new RightButtonUp(id);
+
+            id = 800;
+            WheelDown = new WheelDown(id);
+
+            id = 900;
+            WheelUp = new WheelUp(id);
+
+            id = 1000;
+            WheelLeft = new WheelLeft(id);
+
+            id = 1100;
+            WheelRight = new WheelRight(id);
+
+            id = 1200;
+            X1ButtonDown = new X1ButtonDown(id);
+
+            id = 1300;
+            X1ButtonUp = new X1ButtonUp(id);
+
+            id = 1400;
+            X2ButtonDown = new X2ButtonDown(id);
+            X2ButtonUp = new X2ButtonUp(id);
+        }
+
+        private static Events singleton = new Events();
+        public static Events Constants
+        {
+            get { return singleton; }
+        }
+    }
+
+    public class Move : FireEvent<MoveSource>
+    {
+        public Move(int eventId) : base(eventId) { }
+    }
+
+    public class LeftButtonDown : PressEvent<LeftButtonSource>
+    {
+        public LeftButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent<LeftButtonSource> OppositeEvent { get { return Events.Constants.LeftButtonUp; } }
+    }
+
+    public class LeftButtonUp : ReleaseEvent<LeftButtonSource>
+    {
+        public LeftButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent<LeftButtonSource> OppositeEvent { get { return Events.Constants.LeftButtonDown; } }
+    }
+
+    public class LeftButtonDownP0 : PhysicalPressEvent<LeftButtonSource>
+    {
+        public LeftButtonDownP0(int eventId) : base(eventId) { }
+        public override PressEvent<LeftButtonSource> LogicalEquivalent { get { return Events.Constants.LeftButtonDown; } }
+        public override PhysicalReleaseEvent<LeftButtonSource> OppositeEvent { get { return Events.Constants.LeftButtonUpP0; } }
+    }
+
+    public class LeftButtonUpP0 : PhysicalReleaseEvent<LeftButtonSource>
+    {
+        public LeftButtonUpP0(int eventId) : base(eventId) { }
+        public override ReleaseEvent<LeftButtonSource> LogicalEquivalent { get { return Events.Constants.LeftButtonUp; } }
+        public override PhysicalPressEvent<LeftButtonSource> OppositeEvent { get { return Events.Constants.LeftButtonDownP0; } }
+    }
+
+
+    public class MiddleButtonDown : PressEvent<MiddleButtonSource>
+    {
+        public MiddleButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent<MiddleButtonSource> OppositeEvent { get { return Events.Constants.MiddleButtonUp; } }
+    }
+
+    public class MiddleButtonUp : ReleaseEvent<MiddleButtonSource>
+    {
+        public MiddleButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent<MiddleButtonSource> OppositeEvent { get { return Events.Constants.MiddleButtonDown; } }
+    }
+
+    public class RightButtonDown : PressEvent<RightButtonSource>
+    {
+        public RightButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent<RightButtonSource> OppositeEvent { get { return Events.Constants.RightButtonUp; } }
+    }
+
+    public class RightButtonUp : ReleaseEvent<RightButtonSource>
+    {
+        public RightButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent<RightButtonSource> OppositeEvent { get { return Events.Constants.RightButtonDown; } }
+    }
+
+    public class WheelDown : FireEvent<MoveSource>
+    {
+        public WheelDown(int eventId) : base(eventId) { }
+    }
+
+    public class WheelUp : FireEvent<MoveSource>
+    {
+        public WheelUp(int eventId) : base(eventId) { }
+    }
+
+    public class WheelLeft : FireEvent<MoveSource>
+    {
+        public WheelLeft(int eventId) : base(eventId) { }
+    }
+
+    public class WheelRight : FireEvent<MoveSource>
+    {
+        public WheelRight(int eventId) : base(eventId) { }
+    }
+    public class X1ButtonDown : PressEvent<X1ButtonSource>
+    {
+        public X1ButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent<X1ButtonSource> OppositeEvent { get { return Events.Constants.X1ButtonUp; } }
+    }
+
+    public class X1ButtonUp : ReleaseEvent<X1ButtonSource>
+    {
+        public X1ButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent<X1ButtonSource> OppositeEvent { get { return Events.Constants.X1ButtonDown; } }
+    }
+
+    public class X2ButtonDown : PressEvent<X2ButtonSource>
+    {
+        public X2ButtonDown(int eventId) : base(eventId) { }
+        public override ReleaseEvent<X2ButtonSource> OppositeEvent { get { return Events.Constants.X2ButtonUp; } }
+    }
+
+    public class X2ButtonUp : ReleaseEvent<X2ButtonSource>
+    {
+        public X2ButtonUp(int eventId) : base(eventId) { }
+        public override PressEvent<X2ButtonSource> OppositeEvent { get { return Events.Constants.X2ButtonDown; } }
+    }
+
+
+
+    /*
+     * 関係ないが、IEQuatable<>というのは、～のアップデート処理を行えますよ、というのにつかえそう
+     */
+
+
+    // Strokeをどういう扱いにするか、
+    // システム組み込みなのでライブラリユーザーが触る必要はなさげ
+    class Stroke : FireEvent<StrokeSource>, IEquatable<Stroke>
+    {
+        public enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
+        public readonly IEnumerable<Direction> Directions;
+
+        public Stroke(int eventId, IEnumerable<Direction> directions) : base(eventId)
+        {
+            this.Directions = directions;
+        }
+
+        public bool Equals(Stroke that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+            return (this.Directions.SequenceEqual(that.Directions));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+            return Equals(obj as Stroke);
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = 0x00;
+            foreach (var move in this.Directions)
+            {
+                hash = hash << 2;
+                switch (move)
+                {
+                    case Direction.Up:
+                        hash = hash | 0x00;
+                        break;
+                    case Direction.Down:
+                        hash = hash | 0x01;
+                        break;
+                    case Direction.Left:
+                        hash = hash | 0x02;
+                        break;
+                    case Direction.Right:
+                        hash = hash | 0x03;
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+            }
+            return hash;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (var move in this.Directions)
+            {
+                switch (move)
+                {
+                    case Direction.Up:
+                        sb.Append("U");
+                        break;
+                    case Direction.Down:
+                        sb.Append("D");
+                        break;
+                    case Direction.Left:
+                        sb.Append("L");
+                        break;
+                    case Direction.Right:
+                        sb.Append("R");
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+    }
+
+    // スタックマシン？
+
+
+
+
+}
+
 namespace Crevice.Future
 {
     using System.Drawing;
@@ -81,7 +507,7 @@ namespace Crevice.Future
     {
         bool LogicallyEquals(object obj);
     }
-    
+
     public abstract class FireEvent : Event, ILogicalEvent
     {
         public FireEvent(int eventId) : base(eventId) { }
@@ -124,6 +550,7 @@ namespace Crevice.Future
      *     //
      * });
      */
+
 
     public abstract class PressEvent : Event, ILogicalEvent
     {
