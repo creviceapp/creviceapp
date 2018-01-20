@@ -39,17 +39,15 @@ namespace Crevice.Future
     }
 
 
-
     public delegate bool ActionEvaluator<in T>(T ctx);
     public delegate void ActionExecutor<in T>(T ctx);
 
 
-
-    /* Root
+    /* RootElement
      * 
      * .When() -> new WhenElement
      */
-    public class Root<T>
+    public class RootElement<T>
         where T : ActionContext
     {
         private List<WhenElement<T>> whenElements = new List<WhenElement<T>>();
@@ -97,29 +95,27 @@ namespace Crevice.Future
      * 
      */
 
-
-
     /* WhenElement
      * 
-     * .On(FireEvent) -> new OnFireElement
+     * .On(FireEvent) -> new SingleThrowElement
      * 
-     * .On(PressEvent) -> new OnPressElement
+     * .On(PressEvent) -> new DoubleThrowElement
      */
     public class WhenElement<T>
         where T : ActionContext
     {
         public ActionEvaluator<T> WhenEvaluator { get; private set; }
 
-        private List<OnFireElement<T>> onFireElements = new List<OnFireElement<T>>();
-        public IReadOnlyCollection<OnFireElement<T>> OnFireElements
+        private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
+        public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements
         {
-            get { return onFireElements.ToList(); }
+            get { return singleThrowElements.ToList(); }
         }
 
-        private List<OnPressElement<T>> onPressElements = new List<OnPressElement<T>>();
-        public IReadOnlyCollection<OnPressElement<T>> OnPressElements
+        private List<DoubleThrowElement<T>> doubleThrowElements = new List<DoubleThrowElement<T>>();
+        public IReadOnlyCollection<DoubleThrowElement<T>> DoubleThrowElements
         {
-            get { return onPressElements.ToList(); }
+            get { return doubleThrowElements.ToList(); }
         }
 
         public WhenElement(ActionEvaluator<T> evaluator)
@@ -127,26 +123,26 @@ namespace Crevice.Future
             WhenEvaluator = evaluator;
         }
 
-        public OnFireElement<T> On(IFireEvent triggerEvent)
+        public SingleThrowElement<T> On(IFireEvent triggerEvent)
         {
-            var elm = new OnFireElement<T>(triggerEvent);
-            onFireElements.Add(elm);
+            var elm = new SingleThrowElement<T>(triggerEvent);
+            singleThrowElements.Add(elm);
             return elm;
         }
 
-        public OnPressElement<T> On(IPressEvent triggerEvent)
+        public DoubleThrowElement<T> On(IPressEvent triggerEvent)
         {
-            var elm = new OnPressElement<T>(triggerEvent);
-            onPressElements.Add(elm);
+            var elm = new DoubleThrowElement<T>(triggerEvent);
+            doubleThrowElements.Add(elm);
             return elm;
         }
     }
 
-    /* OnFireElement
+    /* SingleThrowElement
      * 
-     * .Do() -> this OnFireElement
+     * .Do() -> this
      */
-    public class OnFireElement<T>
+    public class SingleThrowElement<T>
         where T : ActionContext
     {
         public IFireEvent Trigger { get; private set; }
@@ -157,59 +153,58 @@ namespace Crevice.Future
             get { return doExecutors.ToList(); }
         }
 
-        public OnFireElement(IFireEvent triggerEvent)
+        public SingleThrowElement(IFireEvent triggerEvent)
         {
             Trigger = triggerEvent;
         }
 
-        public OnFireElement<T> Do(ActionExecutor<T> executor)
+        public SingleThrowElement<T> Do(ActionExecutor<T> executor)
         {
             doExecutors.Add(executor);
             return this;
         }
     }
 
-    /* OnPressElement
+    /* 
+     * .Press() -> this 
      * 
-     * .DoBefore() -> this OnPressElement
+     * .Do() -> this 
      * 
-     * .Do() -> this OnPressElement
+     * .Release() -> this 
      * 
-     * .DoAfter() -> this OnPressElement
+     * .On(FireEvent) -> new SingleThrowElement
      * 
-     * .On(FireEvent) -> new OnFireEvent
+     * .On(PressEvent) -> new DoubleThrowElement
      * 
-     * .On(PressEvent) -> new OnPressEvent
-     * 
-     * .On(StrokeEvent) -> new StrokeEvent
+     * .On(StrokeEvent) -> new StrokeEelement
      */
-    public class OnPressElement<T>
+    public class DoubleThrowElement<T>
         where T : ActionContext
     {
         public IPressEvent Trigger { get; private set; }
 
-        private List<OnFireElement<T>> onFireElements = new List<OnFireElement<T>>();
-        public IReadOnlyCollection<OnFireElement<T>> OnFireElements
+        private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
+        public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements
         {
-            get { return onFireElements.ToList(); }
+            get { return singleThrowElements.ToList(); }
         }
 
-        private List<OnPressElement<T>> onPressElements = new List<OnPressElement<T>>();
-        public IReadOnlyCollection<OnPressElement<T>> OnPressElements
+        private List<DoubleThrowElement<T>> doubleThrowElements = new List<DoubleThrowElement<T>>();
+        public IReadOnlyCollection<DoubleThrowElement<T>> DoubleThrowElements
         {
-            get { return onPressElements.ToList(); }
+            get { return doubleThrowElements.ToList(); }
         }
 
-        private List<OnStrokeElement<T>> onStrokeElements = new List<OnStrokeElement<T>>();
-        public IReadOnlyCollection<OnStrokeElement<T>> OnStrokeElements
+        private List<StrokeElement<T>> strokeElements = new List<StrokeElement<T>>();
+        public IReadOnlyCollection<StrokeElement<T>> StrokeElements
         {
-            get { return onStrokeElements.ToList(); }
+            get { return strokeElements.ToList(); }
         }
 
-        private List<ActionExecutor<T>> doBeforeExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> DoBeforeExecutors
+        private List<ActionExecutor<T>> pressExecutors = new List<ActionExecutor<T>>();
+        public IReadOnlyCollection<ActionExecutor<T>> PressExecutors
         {
-            get { return doBeforeExecutors.ToList(); }
+            get { return pressExecutors.ToList(); }
         }
 
         private List<ActionExecutor<T>> doExecutors = new List<ActionExecutor<T>>();
@@ -218,62 +213,61 @@ namespace Crevice.Future
             get { return doExecutors.ToList(); }
         }
 
-        private List<ActionExecutor<T>> doAfterExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> DoAfterExecutors
+        private List<ActionExecutor<T>> releaseExecutors = new List<ActionExecutor<T>>();
+        public IReadOnlyCollection<ActionExecutor<T>> ReleaseExecutors
         {
-            get { return doAfterExecutors.ToList(); }
+            get { return releaseExecutors.ToList(); }
         }
 
-        public OnPressElement(IPressEvent triggerEvent)
+        public DoubleThrowElement(IPressEvent triggerEvent)
         {
             Trigger = triggerEvent;
         }
 
-        public OnFireElement<T> On(IFireEvent triggerEvent)
+        public SingleThrowElement<T> On(IFireEvent triggerEvent)
         {
-            var elm = new OnFireElement<T>(triggerEvent);
-            onFireElements.Add(elm);
+            var elm = new SingleThrowElement<T>(triggerEvent);
+            singleThrowElements.Add(elm);
             return elm;
         }
 
-        public OnPressElement<T> On(IPressEvent triggerEvent)
+        public DoubleThrowElement<T> On(IPressEvent triggerEvent)
         {
-            var elm = new OnPressElement<T>(triggerEvent);
-            onPressElements.Add(elm);
+            var elm = new DoubleThrowElement<T>(triggerEvent);
+            doubleThrowElements.Add(elm);
             return elm;
         }
 
-        public OnStrokeElement<T> On(params StrokeEvent.Direction[] strokeDirections)
+        public StrokeElement<T> On(params StrokeEvent.Direction[] strokeDirections)
         {
-            var elm = new OnStrokeElement<T>(strokeDirections);
-            onStrokeElements.Add(elm);
+            var elm = new StrokeElement<T>(strokeDirections);
+            strokeElements.Add(elm);
             return elm;
         }
 
-        public OnPressElement<T> DoBefore(ActionExecutor<T> executor)
+        public DoubleThrowElement<T> Press(ActionExecutor<T> executor)
         {
-            doBeforeExecutors.Add(executor);
+            pressExecutors.Add(executor);
             return this;
         }
 
-        public OnPressElement<T> Do(ActionExecutor<T> executor)
+        public DoubleThrowElement<T> Do(ActionExecutor<T> executor)
         {
             doExecutors.Add(executor);
             return this;
         }
 
-        public OnPressElement<T> DoAfter(ActionExecutor<T> executor)
+        public DoubleThrowElement<T> Release(ActionExecutor<T> executor)
         {
-            doAfterExecutors.Add(executor);
+            releaseExecutors.Add(executor);
             return this;
         }
     }
 
-    /* StrokeEvent
-     * 
-     * .Do() -> this StrokeEvent
+    /* 
+     * .Do() -> this 
      */
-    public class OnStrokeElement<T>
+    public class StrokeElement<T>
         where T : ActionContext
     {
         public IReadOnlyCollection<StrokeEvent.Direction> Strokes { get; private set; }
@@ -284,12 +278,12 @@ namespace Crevice.Future
             get { return doExecutors.ToList(); }
         }
 
-        public OnStrokeElement(params StrokeEvent.Direction[] strokes)
+        public StrokeElement(params StrokeEvent.Direction[] strokes)
         {
             Strokes = strokes;
         }
 
-        public OnStrokeElement<T> Do(ActionExecutor<T> executor)
+        public StrokeElement<T> Do(ActionExecutor<T> executor)
         {
             doExecutors.Add(executor);
             return this;
