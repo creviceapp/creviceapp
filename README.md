@@ -244,7 +244,7 @@ Config.UI.TooltipPositionBinding = (point) =>
 }
 ```
 
-## Comamnd line interface
+## Command-line interface
 
 ```
 Usage:
