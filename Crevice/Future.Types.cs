@@ -92,37 +92,43 @@ namespace Crevice.Future
         }
     }
 
-    public interface IFireEvent { }
+    public interface IFireEvent
+    {
+        IFireEvent LogicalNormalized { get; }
+    }
 
     public interface IPressEvent
     {
-        object OppositeObject { get; }
+        IReleaseEvent Opposition { get; }
+        IPressEvent LogicalNormalized { get; }
     }
 
     public interface IReleaseEvent
     {
-        object OppositeObject { get; }
+        IPressEvent Opposition { get; }
+        IReleaseEvent LogicalNormalized { get; }
     }
 
     public interface ILogicalEvent { }
 
-    public interface IPysicalEvent
-    {
-        bool LogicallyEquals(object obj);
-    }
+    public interface IPhysicalEvent { }
 
     public abstract class FireEvent<T> : Event, IFireEvent, ILogicalEvent
         where T : SingleThrowSwitch
     {
+        public IFireEvent LogicalNormalized { get { return this; } }
+
         public FireEvent(int eventId) : base(eventId) { }
     }
 
     public abstract class PressEvent<T> : Event, IPressEvent, ILogicalEvent
         where T : DoubleThrowSwitch
     {
-        public object OppositeObject { get { return OppositeEvent; } }
+        public IReleaseEvent Opposition { get { return OppositePressEvent; } }
 
-        public abstract ReleaseEvent<T> OppositeEvent { get; }
+        public abstract ReleaseEvent<T> OppositePressEvent { get; }
+        
+        public IPressEvent LogicalNormalized { get { return this; } }
 
         public PressEvent(int eventId) : base(eventId) { }
     }
@@ -130,73 +136,51 @@ namespace Crevice.Future
     public abstract class ReleaseEvent<T> : Event, IReleaseEvent, ILogicalEvent
         where T : DoubleThrowSwitch
     {
-        public object OppositeObject { get { return OppositeEvent; } }
+        public IPressEvent Opposition { get { return OppositeReleaseEvent; } }
 
-        public abstract PressEvent<T> OppositeEvent { get; }
+        public abstract PressEvent<T> OppositeReleaseEvent { get; }
+
+        public IReleaseEvent LogicalNormalized { get { return this; } }
 
         public ReleaseEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class PhysicalFireEvent<T> : Event, IFireEvent, IPysicalEvent
+    public abstract class PhysicalFireEvent<T> : Event, IFireEvent, IPhysicalEvent
         where T : SingleThrowSwitch
     {
-        public abstract FireEvent<T> LogicalEquivalent { get; }
+        public IFireEvent LogicalNormalized { get { return LogicalEquivalentFireEvent; } }
 
-        public bool LogicallyEquals(object obj)
-        {
-            return Equals(obj) || LogicalEquivalent.Equals(obj);
-        }
-
+        public abstract FireEvent<T> LogicalEquivalentFireEvent { get; }
+        
         public PhysicalFireEvent(int eventId) : base(eventId) { }
-
-        public override int GetHashCode()
-        {
-            return LogicalEquivalent.EventId;
-        }
     }
 
-    public abstract class PhysicalPressEvent<T> : Event, IPressEvent, IPysicalEvent
+    public abstract class PhysicalPressEvent<T> : Event, IPressEvent, IPhysicalEvent
         where T : DoubleThrowSwitch
     {
-        public object OppositeObject { get { return OppositeEvent; } }
+        public IReleaseEvent Opposition { get { return OppositeReleaseEvent; } }
 
-        public abstract PhysicalReleaseEvent<T> OppositeEvent { get; }
+        public abstract PhysicalReleaseEvent<T> OppositeReleaseEvent { get; }
 
-        public abstract PressEvent<T> LogicalEquivalent { get; }
+        public IPressEvent LogicalNormalized { get { return LogicalEquivalentPressEvent; } }
 
-        public bool LogicallyEquals(object obj)
-        {
-            return Equals(obj) || LogicalEquivalent.Equals(obj);
-        }
+        public abstract PressEvent<T> LogicalEquivalentPressEvent { get; }
 
         public PhysicalPressEvent(int eventId) : base(eventId) { }
-
-        public override int GetHashCode()
-        {
-            return LogicalEquivalent.EventId;
-        }
     }
 
-    public abstract class PhysicalReleaseEvent<T> : Event, IReleaseEvent, IPysicalEvent
+    public abstract class PhysicalReleaseEvent<T> : Event, IReleaseEvent, IPhysicalEvent
         where T : DoubleThrowSwitch
     {
-        public object OppositeObject { get { return OppositeEvent; } }
+        public IPressEvent Opposition { get { return OppositePressEvent; } }
 
-        public abstract PhysicalPressEvent<T> OppositeEvent { get; }
+        public abstract PhysicalPressEvent<T> OppositePressEvent { get; }
 
-        public abstract ReleaseEvent<T> LogicalEquivalent { get; }
+        public IReleaseEvent LogicalNormalized { get { return LogicalEquivalentReleaseEvent; } }
 
-        public bool LogicallyEquals(object obj)
-        {
-            return Equals(obj) || LogicalEquivalent.Equals(obj);
-        }
+        public abstract ReleaseEvent<T> LogicalEquivalentReleaseEvent { get; }
 
         public PhysicalReleaseEvent(int eventId) : base(eventId) { }
-
-        public override int GetHashCode()
-        {
-            return LogicalEquivalent.EventId;
-        }
     }
 
     /*

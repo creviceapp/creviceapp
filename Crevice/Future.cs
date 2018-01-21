@@ -8,6 +8,8 @@ namespace Crevice.Future
 {
     using System.Drawing;
 
+    // interface ISetupable
+
     public abstract class ActionContext // todo ISetupable<T> 
     {
         public abstract void Setup(object gestureStartContext, Point currentPoint);
@@ -39,24 +41,456 @@ namespace Crevice.Future
     }
 
 
-    public delegate bool ActionEvaluator<in T>(T ctx);
-    public delegate void ActionExecutor<in T>(T ctx);
+    public delegate bool EvaluateAction<in T>(T ctx);
+    public delegate void ExecuteAction<in T>(T ctx);
 
+    public class Result
+    {
+        public class EventResult
+        {
+            public readonly bool IsConsumed;
+            public EventResult(bool consumed)
+            {
+                IsConsumed = consumed;
+            }
+        }
+
+        public EventResult Event;
+        public State NextState { get; private set; }
+
+        private Result(bool consumed, State nextState)
+        {
+            this.Event = new EventResult(consumed);
+            this.NextState = nextState;
+        }
+
+        public static Result EventIsConsumed(State nextState)
+        {
+            return new Result(true, nextState);
+        }
+
+        public static Result EventIsRemained(State nextState)
+        {
+            return new Result(false, nextState);
+        }
+    }
+
+    public class GestureMachine
+    {
+        public IEnumerable<StrokeEvent.Direction> GetStroke()
+        {
+            return new List<StrokeEvent.Direction>();
+        }
+    }
+
+
+    public abstract class State
+    {
+        // global variable
+        public GestureMachine Machine;
+        public NaturalNumberCounter<IReleaseEvent> InvalidReleaseEvents;
+
+        public virtual Result Input(Event evnt, Point point) // ここのPointは抽象化するとよさげ
+        {
+            return Result.EventIsRemained(nextState: this);
+        }
+
+        public bool MustBeIgnored(IReleaseEvent releaseEvent)
+        {
+            if (InvalidReleaseEvents[releaseEvent] > 0)
+            {
+                InvalidReleaseEvents.CountDown(releaseEvent);
+                return true;
+            }
+            else if (releaseEvent is IPhysicalEvent)
+            {
+                var logicalEquivalent = releaseEvent.LogicalNormalized;
+
+                if (InvalidReleaseEvents[logicalEquivalent] > 0)
+                {
+                    InvalidReleaseEvents.CountDown(logicalEquivalent);
+                }
+                return true;
+            }
+            return false;
+        }
+
+
+    }
+
+    public class NaturalNumberCounter<T> {
+        private readonly Dictionary<T, int> Dictionary = new Dictionary<T, int>();
+
+        public int this[T key]
+        {
+            get
+            {
+                return Dictionary.TryGetValue(key, out int count) ? count : 0;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("Natural number >= 0");
+                }
+                Dictionary[key] = value;
+            }
+        }
+
+        public void CountDown(T key)
+        {
+            Dictionary[key] = Dictionary[key] + 1;
+        }
+
+        public void CountUp(T key)
+        {
+            Dictionary[key] = Dictionary[key] - 1;
+        }
+    }
+
+
+    public class State0<T> : State
+        where T : ActionContext, new()
+    {
+        public readonly RootElement<T> RootElement;
+
+        public State0(
+            GestureMachine gestureMachine,
+            RootElement<T> rootElement
+            ) : this(
+            gestureMachine,
+            rootElement,
+            new NaturalNumberCounter<IReleaseEvent>())
+        {
+
+        }
+
+        public State0(
+            GestureMachine gestureMachine,
+            RootElement<T> rootElement,
+            NaturalNumberCounter<IReleaseEvent> invalidReleaseEvents)
+        {
+            Machine = gestureMachine;
+            RootElement = rootElement; 
+            InvalidReleaseEvents = invalidReleaseEvents;
+        }
+
+        public override Result Input(Event evnt, Point point)
+        {
+            if (evnt is IFireEvent fireEvent && SingleThrowTriggers.Contains(fireEvent))
+            {
+                var ctx = CreateActionContext();
+                foreach(var st in GetActiveSingleThrowElements(ctx, fireEvent))
+                {
+                    foreach (var doExecutor in st.DoExecutors)
+                    {
+                        doExecutor(ctx);
+                    }
+                }
+                return Result.EventIsConsumed(nextState: this);
+
+            }
+            else if (evnt is IPressEvent pressEvent && DoubleThrowTriggers.Contains(pressEvent))
+            {
+                var ctx = CreateActionContext();
+                var doubleThrowElements = GetActiveDoubleThrowElements(ctx, pressEvent);
+                if (doubleThrowElements.Count() > 0)
+                {
+                    foreach (var dt in doubleThrowElements)
+                    {
+                        foreach (var pressExecutor in dt.PressExecutors)
+                        {
+                            pressExecutor(ctx);
+                        }
+                    }
+                    return Result.EventIsConsumed(nextState: new StateN<T>(this, ));
+                }
+            }
+            else if (evnt is IReleaseEvent releaseEvent)
+            {
+                if (MustBeIgnored(releaseEvent))
+                {
+                    return Result.EventIsConsumed(nextState: this);
+                }
+            }
+            
+            return base.Input(evnt, point);
+        }
+
+        public T CreateActionContext()
+        {
+            // Todo: setup
+            return new T();
+        }
+
+        public IEnumerable<DoubleThrowElement<T>> GetActiveDoubleThrowElements(T ctx, IPressEvent triggerEvent)
+        {
+            return (
+                from w in RootElement.WhenElements
+                where w.IsFull &&
+                      w.WhenEvaluator(ctx)
+                select (
+                    from d in w.DoubleThrowElements
+                    where d.IsFull && (
+                              d.Trigger == triggerEvent ||
+                              d.Trigger == triggerEvent.LogicalNormalized)
+                    select d))
+                .Aggregate(new List<DoubleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; });
+        }
+
+        public IEnumerable<SingleThrowElement<T>> GetActiveSingleThrowElements(T ctx, IFireEvent triggerEvent)
+        {
+            return (
+                from w in RootElement.WhenElements
+                where w.IsFull && 
+                      w.WhenEvaluator(ctx)
+                select (
+                    from s in w.SingleThrowElements
+                    where s.IsFull && (
+                              s.Trigger == triggerEvent || 
+                              s.Trigger == triggerEvent.LogicalNormalized)
+                    select s))
+                .Aggregate(new List<SingleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; } );
+        }
+
+        public IEnumerable<IFireEvent> SingleThrowTriggers
+        {
+            get
+            {
+                return (
+                    from w in RootElement.WhenElements
+                    where w.IsFull
+                    select (
+                        from s in w.SingleThrowElements
+                        where s.IsFull
+                        select s.Trigger))
+                    .Aggregate(new HashSet<IFireEvent>(), (a, b) => { a.UnionWith(b); return a; });
+            }
+        }
+
+        public IEnumerable<IPressEvent> DoubleThrowTriggers
+        {
+            get
+            {
+                return (
+                    from w in RootElement.WhenElements
+                    where w.IsFull
+                    select (
+                        from d in w.DoubleThrowElements
+                        where d.IsFull
+                        select d.Trigger))
+                    .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+            }
+        }
+    }
+    
+    public class StateN<T> : State
+        where T : ActionContext
+    {
+        public readonly IReleaseEvent EndTrigger;
+        public readonly T Ctx;
+        public readonly IReadOnlyList<Tuple<IReleaseEvent, State>> History;
+        public readonly IReadOnlyList<DoubleThrowElement<T>> DoubleThrowElements;
+
+        public bool IsCancelable { get; private set; }
+
+        public StateN(
+            IReleaseEvent endTrigger,
+            T ctx,
+            IReadOnlyList<Tuple<IReleaseEvent, State>> history,
+            IReadOnlyList<DoubleThrowElement<T>> doubleThrowElements
+            )
+        {
+            EndTrigger = endTrigger;
+            Ctx = ctx;
+            History = history;
+            DoubleThrowElements = doubleThrowElements;
+        }
+
+        public override Result Input(Event evnt, Point point)
+        {
+            // Todo: storkewatcher
+
+            if (evnt is IFireEvent fireEvent)
+            {
+                foreach (var st in GetActiveSingleThrowElements(Ctx, fireEvent))
+                {
+                    foreach (var doExecutor in st.DoExecutors)
+                    {
+                        doExecutor(Ctx);
+                    }
+                }
+                return Result.EventIsConsumed(nextState: this);
+
+            }
+            else if (evnt is IPressEvent pressEvent)
+            {
+                var doubleThrowElements = GetActiveDoubleThrowElements(Ctx, pressEvent);
+                if (doubleThrowElements.Count() > 0)
+                {
+                    foreach (var dt in doubleThrowElements)
+                    {
+                        foreach (var pressExecutor in dt.PressExecutors)
+                        {
+                            pressExecutor(Ctx);
+                        }
+                    }
+                    return Result.EventIsConsumed(nextState: new StateN<T>(this, ));
+                }
+            }
+            else if (evnt is IReleaseEvent releaseEvent)
+            {
+                if (MustBeIgnored(releaseEvent))
+                {
+                    return Result.EventIsConsumed(nextState: this);
+                }
+
+                if (releaseEvent == EndTrigger)
+                {
+                    var (_, previousState) = History.Last();
+                    return Result.EventIsConsumed(nextState: previousState);
+                }
+                
+                if (AbnormalEndTriggers.Contains(releaseEvent))
+                {
+
+
+                    // Append EndTrigger
+                }
+
+                var 
+                var (nextStack, broken) = SplitHistory(releaseEvent);
+
+                    
+                return Result.EventIsConsumed(nextState: this);
+             
+
+
+                var strokes = Machine.GetStroke();
+                if (strokes.Count() > 0)
+                {
+                    // if match
+                    // Do strokeElements -> DoExecutors
+                    return Result.EventIsConsumed
+                }
+                else
+                {
+
+                }
+            }
+
+            return base.Input(evnt, point);
+        }
+
+        public IReadOnlyCollection<IReleaseEvent> AbnormalEndTriggers
+        {
+            get
+            {
+                return new HashSet<IReleaseEvent>(from h in History select h.Item1);
+            }
+        }
+
+        public (State, IReadOnlyList<IReleaseEvent>) FindFromHistory(IReleaseEvent releaseEvent)
+        {
+
+            var skipped = History
+                .Reverse()
+                .TakeWhile(t =>
+                    t.Item1 != releaseEvent &&
+                    t.Item1 != releaseEvent.LogicalNormalized);
+            var skippedReleaseEvents = from r in skipped select r.Item1;
+            var state = 
+
+            return state;
+        }
+
+
+        public IReadOnlyList<DoubleThrowElement<T>> GetActiveDoubleThrowElements(T ctx, IPressEvent triggerEvent)
+        {
+            return (
+                from d in DoubleThrowElements
+                where d.IsFull
+                select (
+                    from dd in d.DoubleThrowElements
+                    where dd.IsFull && (
+                              dd.Trigger == triggerEvent ||
+                              dd.Trigger == triggerEvent.LogicalNormalized)
+
+                    select dd))
+                .Aggregate(new List<DoubleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; });
+        }
+
+        public IReadOnlyList<SingleThrowElement<T>> GetActiveSingleThrowElements(T ctx, IFireEvent triggerEvent)
+        {
+            return (
+                from d in DoubleThrowElements
+                where d.IsFull
+                select (
+                    from st in d.SingleThrowElements
+                    where st.IsFull && (
+                              st.Trigger == triggerEvent ||
+                              st.Trigger == triggerEvent.LogicalNormalized)
+                    select st))
+                .Aggregate(new List<SingleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; });
+        }
+
+        public IEnumerable<IFireEvent> SingleThrowTriggers
+        {
+            get
+            {
+                return (
+                    from d in DoubleThrowElements
+                    where d.IsFull
+                    select (
+                        from s in d.SingleThrowElements
+                        where s.IsFull
+                        select s.Trigger))
+                    .Aggregate(new HashSet<IFireEvent>(), (a, b) => { a.UnionWith(b); return a; });
+            }
+        }
+
+        public IEnumerable<IPressEvent> DoubleThrowTriggers
+        {
+            get
+            {
+                return (
+                    from d in DoubleThrowElements
+                    where d.IsFull
+                    select (
+                        from dd in d.DoubleThrowElements
+                        where dd.IsFull
+                        select dd.Trigger))
+                    .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+            }
+        }
+
+    }
+
+    public abstract class Element
+    {
+        public abstract bool IsFull { get; }
+    }
 
     /* RootElement
      * 
      * .When() -> new WhenElement
      */
-    public class RootElement<T>
+    public class RootElement<T> : Element
         where T : ActionContext
     {
+        public override bool IsFull
+        {
+            get => WhenElements.Any(e => e.IsFull);
+        }
+
         private List<WhenElement<T>> whenElements = new List<WhenElement<T>>();
+
         public IReadOnlyCollection<WhenElement<T>> WhenElements
         {
             get { return whenElements.ToList(); }
         }
 
-        public WhenElement<T> When(ActionEvaluator<T> evaluator)
+        public WhenElement<T> When(EvaluateAction<T> evaluator)
         {
             var elm = new WhenElement<T>(evaluator);
             whenElements.Add(elm);
@@ -101,10 +535,17 @@ namespace Crevice.Future
      * 
      * .On(PressEvent) -> new DoubleThrowElement
      */
-    public class WhenElement<T>
+    public class WhenElement<T> : Element
         where T : ActionContext
     {
-        public ActionEvaluator<T> WhenEvaluator { get; private set; }
+        public override bool IsFull
+        {
+            get => WhenEvaluator != null &&
+                SingleThrowElements.Any(e => e.IsFull) ||
+                DoubleThrowElements.Any(e => e.IsFull);
+        }
+
+        public EvaluateAction<T> WhenEvaluator { get; private set; }
 
         private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
         public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements
@@ -118,7 +559,7 @@ namespace Crevice.Future
             get { return doubleThrowElements.ToList(); }
         }
 
-        public WhenElement(ActionEvaluator<T> evaluator)
+        public WhenElement(EvaluateAction<T> evaluator)
         {
             WhenEvaluator = evaluator;
         }
@@ -142,13 +583,19 @@ namespace Crevice.Future
      * 
      * .Do() -> this
      */
-    public class SingleThrowElement<T>
+    public class SingleThrowElement<T> : Element
         where T : ActionContext
     {
+        public override bool IsFull
+        {
+            get => Trigger != null &&
+                DoExecutors.Count > 0 && DoExecutors.Any(e => e != null);
+        }
+
         public IFireEvent Trigger { get; private set; }
         
-        private List<ActionExecutor<T>> doExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> DoExecutors
+        private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
         {
             get { return doExecutors.ToList(); }
         }
@@ -158,7 +605,7 @@ namespace Crevice.Future
             Trigger = triggerEvent;
         }
 
-        public SingleThrowElement<T> Do(ActionExecutor<T> executor)
+        public SingleThrowElement<T> Do(ExecuteAction<T> executor)
         {
             doExecutors.Add(executor);
             return this;
@@ -178,9 +625,20 @@ namespace Crevice.Future
      * 
      * .On(StrokeEvent) -> new StrokeEelement
      */
-    public class DoubleThrowElement<T>
+    public class DoubleThrowElement<T> : Element
         where T : ActionContext
     {
+        public override bool IsFull
+        {
+            get => Trigger != null &&
+                PressExecutors.Count > 0 && PressExecutors.Any(e => e != null) ||
+                DoExecutors.Count > 0 && DoExecutors.Any(e => e != null) ||
+                ReleaseExecutors.Count > 0 && ReleaseExecutors.Any(e => e != null) ||
+                SingleThrowElements.Any(e => e.IsFull) ||
+                DoubleThrowElements.Any(e => e.IsFull) ||
+                StrokeElements.Any(e => e.IsFull);
+        }
+
         public IPressEvent Trigger { get; private set; }
 
         private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
@@ -201,20 +659,20 @@ namespace Crevice.Future
             get { return strokeElements.ToList(); }
         }
 
-        private List<ActionExecutor<T>> pressExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> PressExecutors
+        private List<ExecuteAction<T>> pressExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> PressExecutors
         {
             get { return pressExecutors.ToList(); }
         }
 
-        private List<ActionExecutor<T>> doExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> DoExecutors
+        private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
         {
             get { return doExecutors.ToList(); }
         }
 
-        private List<ActionExecutor<T>> releaseExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> ReleaseExecutors
+        private List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> ReleaseExecutors
         {
             get { return releaseExecutors.ToList(); }
         }
@@ -245,19 +703,19 @@ namespace Crevice.Future
             return elm;
         }
 
-        public DoubleThrowElement<T> Press(ActionExecutor<T> executor)
+        public DoubleThrowElement<T> Press(ExecuteAction<T> executor)
         {
             pressExecutors.Add(executor);
             return this;
         }
 
-        public DoubleThrowElement<T> Do(ActionExecutor<T> executor)
+        public DoubleThrowElement<T> Do(ExecuteAction<T> executor)
         {
             doExecutors.Add(executor);
             return this;
         }
 
-        public DoubleThrowElement<T> Release(ActionExecutor<T> executor)
+        public DoubleThrowElement<T> Release(ExecuteAction<T> executor)
         {
             releaseExecutors.Add(executor);
             return this;
@@ -267,13 +725,19 @@ namespace Crevice.Future
     /* 
      * .Do() -> this 
      */
-    public class StrokeElement<T>
+    public class StrokeElement<T> : Element
         where T : ActionContext
     {
+        public override bool IsFull
+        {
+            get => Strokes != null && Strokes.Count > 0 &&
+                DoExecutors.Count > 0 && DoExecutors.Any(e => e != null); 
+        }
+
         public IReadOnlyCollection<StrokeEvent.Direction> Strokes { get; private set; }
 
-        private List<ActionExecutor<T>> doExecutors = new List<ActionExecutor<T>>();
-        public IReadOnlyCollection<ActionExecutor<T>> DoExecutors
+        private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
         {
             get { return doExecutors.ToList(); }
         }
@@ -283,7 +747,7 @@ namespace Crevice.Future
             Strokes = strokes;
         }
 
-        public StrokeElement<T> Do(ActionExecutor<T> executor)
+        public StrokeElement<T> Do(ExecuteAction<T> executor)
         {
             doExecutors.Add(executor);
             return this;
