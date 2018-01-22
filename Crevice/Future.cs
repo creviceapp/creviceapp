@@ -606,14 +606,14 @@ namespace Crevice.Future
                 DoExecutors.Count > 0 && DoExecutors.Any(e => e != null);
         }
 
-        public IFireEvent Trigger { get; private set; }
+        public readonly IFireEvent Trigger;
         
         private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
         public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
         {
             get { return doExecutors.ToList(); }
         }
-
+        
         public SingleThrowElement(IFireEvent triggerEvent)
         {
             Trigger = triggerEvent;
@@ -653,7 +653,8 @@ namespace Crevice.Future
                 StrokeElements.Any(e => e.IsFull);
         }
 
-        public IPressEvent Trigger { get; private set; }
+        public readonly IReadOnlyCollection<IPressEvent> AlreadyPressed;
+        public readonly IPressEvent Trigger;
 
         private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
         public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements
@@ -691,9 +692,28 @@ namespace Crevice.Future
             get { return releaseExecutors.ToList(); }
         }
 
-        public DoubleThrowElement(IPressEvent triggerEvent)
+        public DoubleThrowElement(
+            IPressEvent triggerEvent) 
+            : this(
+                triggerEvent,
+                new HashSet<IPressEvent>()
+            )
         {
+
+        }
+
+        public DoubleThrowElement(
+            IPressEvent triggerEvent,
+            IReadOnlyCollection<IPressEvent> inheritedPressEvents)
+        {
+            if (inheritedPressEvents.Contains(triggerEvent))
+            {
+                throw new ArgumentException();
+            }
             Trigger = triggerEvent;
+            var alreadyPressed = inheritedPressEvents.ToList();
+            alreadyPressed.Add(triggerEvent);
+            AlreadyPressed = alreadyPressed;
         }
 
         public SingleThrowElement<T> On(IFireEvent triggerEvent)
@@ -705,7 +725,7 @@ namespace Crevice.Future
 
         public DoubleThrowElement<T> On(IPressEvent triggerEvent)
         {
-            var elm = new DoubleThrowElement<T>(triggerEvent);
+            var elm = new DoubleThrowElement<T>(triggerEvent, AlreadyPressed);
             doubleThrowElements.Add(elm);
             return elm;
         }
