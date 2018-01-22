@@ -256,6 +256,13 @@ namespace Crevice.Future
             }
         }
     }
+
+    /*
+     * InputにはPhysicalなキーだけが来て、
+     * HistoryにPhysicalなキーだけを残すなら、
+     * Containsのところをフィルタリング結果>=0で判断できるし、
+     * Releaseのところも特に問題ないのでは
+     */
     
     public class StateN<T> : State
         where T : ActionContext
@@ -263,7 +270,7 @@ namespace Crevice.Future
         public readonly T Ctx;
         public readonly IReadOnlyList<Tuple<IReleaseEvent, State>> History;
         public readonly IReadOnlyList<DoubleThrowElement<T>> DoubleThrowElements;
-        public readonly bool AllowCancel;
+        public readonly bool CancelAllowed;
 
         public StateN(
             T ctx,
@@ -275,7 +282,7 @@ namespace Crevice.Future
             Ctx = ctx;
             History = history;
             DoubleThrowElements = doubleThrowElements;
-            AllowCancel = allowCancel;
+            CancelAllowed = allowCancel;
         }
 
         public override Result Input(Event evnt, Point point)
@@ -343,7 +350,7 @@ namespace Crevice.Future
                         }
                         else
                         {
-                            if (AllowCancel)
+                            if (CancelAllowed)
                             {
                                 // Machine.OnCancel()
                             }
@@ -367,14 +374,6 @@ namespace Crevice.Future
             get { return History.Last().Item2; }
         }
         
-        public bool IsCancelable
-        {
-            get
-            {
-                return AllowCancel && !ShouldFinalize;
-            }
-        }
-
         public bool ShouldFinalize
         {
             get

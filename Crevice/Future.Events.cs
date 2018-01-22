@@ -24,9 +24,12 @@ namespace Crevice.Future
         public readonly X2ButtonDownEvent X2ButtonDownEvent;
         public readonly X2ButtonUpEvent X2ButtonUpEvent;
 
+        public readonly PhysicalLeftButtonDownEvent LeftButtonDownP0Event;
+        public readonly PhysicalLeftButtonUpEvent LeftButtonUpP0Event;
         public Events()
         {
             var id = 0;
+            // 0 is reserved for StrokeEvent.
             Move = new MoveEventEvent(++id);
             MiddleButtonDownEvent = new MiddleButtonDownEvent(++id);
             MiddleButtonUpEvent = new MiddleButtonUpEvent(++id);
@@ -40,6 +43,10 @@ namespace Crevice.Future
             X1ButtonUpEvent = new X1ButtonUpEvent(++id);
             X2ButtonDownEvent = new X2ButtonDownEvent(++id);
             X2ButtonUpEvent = new X2ButtonUpEvent(++id);
+
+            id = 99;
+            LeftButtonDownP0Event = new PhysicalLeftButtonDownEvent(++id);
+            LeftButtonUpP0Event = new PhysicalLeftButtonUpEvent(++id);
         }
 
         private static Events singleton = new Events();
@@ -151,5 +158,19 @@ namespace Crevice.Future
 
         public override PressEvent<X2ButtonSwitch> OppositeReleaseEvent
         { get { return Events.Constants.X2ButtonDownEvent; } }
+    }
+
+    public class PhysicalLeftButtonDownEvent : PhysicalPressEvent<LeftButtonSwitch>
+    {
+        public PhysicalLeftButtonDownEvent(int eventId) : base(eventId) { }
+        public override PressEvent<LeftButtonSwitch> LogicalEquivalentPressEvent { get { return Events.Constants.LeftButtonDownEvent; } }
+        public override PhysicalReleaseEvent<LeftButtonSwitch> OppositePhysicalReleaseEvent { get { return Events.Constants.LeftButtonUpP0Event; } }
+    }
+
+    public class PhysicalLeftButtonUpEvent : PhysicalReleaseEvent<LeftButtonSwitch>
+    {
+        public PhysicalLeftButtonUpEvent(int eventId) : base(eventId) { }
+        public override ReleaseEvent<LeftButtonSwitch> LogicalEquivalentReleaseEvent { get { return Events.Constants.LeftButtonUpEvent; } }
+        public override PhysicalPressEvent<LeftButtonSwitch> OppositePhysicalPressEvent { get { return Events.Constants.LeftButtonDownP0Event; } }
     }
 }
