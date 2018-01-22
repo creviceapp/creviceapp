@@ -91,96 +91,46 @@ namespace Crevice.Future
             return EventId;
         }
     }
-
+    
     public interface IFireEvent
     {
-        IFireEvent LogicalNormalized { get; }
+
     }
 
     public interface IPressEvent
     {
         IReleaseEvent Opposition { get; }
-        IPressEvent LogicalNormalized { get; }
     }
 
     public interface IReleaseEvent
     {
         IPressEvent Opposition { get; }
-        IReleaseEvent LogicalNormalized { get; }
     }
 
-    public interface ILogicalEvent { }
-
-    public interface IPhysicalEvent { }
-
-    public abstract class FireEvent<T> : Event, IFireEvent, ILogicalEvent
+    public abstract class FireEvent<T> : Event, IFireEvent
         where T : SingleThrowSwitch
     {
-        public IFireEvent LogicalNormalized { get { return this; } }
-
         public FireEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class PressEvent<T> : Event, IPressEvent, ILogicalEvent
+    public abstract class PressEvent<T> : Event, IPressEvent
         where T : DoubleThrowSwitch
     {
         public IReleaseEvent Opposition { get { return OppositePressEvent; } }
 
         public abstract ReleaseEvent<T> OppositePressEvent { get; }
         
-        public IPressEvent LogicalNormalized { get { return this; } }
-
         public PressEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class ReleaseEvent<T> : Event, IReleaseEvent, ILogicalEvent
+    public abstract class ReleaseEvent<T> : Event, IReleaseEvent
         where T : DoubleThrowSwitch
     {
         public IPressEvent Opposition { get { return OppositeReleaseEvent; } }
 
         public abstract PressEvent<T> OppositeReleaseEvent { get; }
-
-        public IReleaseEvent LogicalNormalized { get { return this; } }
-
-        public ReleaseEvent(int eventId) : base(eventId) { }
-    }
-
-    public abstract class PhysicalFireEvent<T> : Event, IFireEvent, IPhysicalEvent
-        where T : SingleThrowSwitch
-    {
-        public IFireEvent LogicalNormalized { get { return LogicalEquivalentFireEvent; } }
-
-        public abstract FireEvent<T> LogicalEquivalentFireEvent { get; }
         
-        public PhysicalFireEvent(int eventId) : base(eventId) { }
-    }
-
-    public abstract class PhysicalPressEvent<T> : Event, IPressEvent, IPhysicalEvent
-        where T : DoubleThrowSwitch
-    {
-        public IReleaseEvent Opposition { get { return OppositeReleaseEvent; } }
-
-        public abstract PhysicalReleaseEvent<T> OppositeReleaseEvent { get; }
-
-        public IPressEvent LogicalNormalized { get { return LogicalEquivalentPressEvent; } }
-
-        public abstract PressEvent<T> LogicalEquivalentPressEvent { get; }
-
-        public PhysicalPressEvent(int eventId) : base(eventId) { }
-    }
-
-    public abstract class PhysicalReleaseEvent<T> : Event, IReleaseEvent, IPhysicalEvent
-        where T : DoubleThrowSwitch
-    {
-        public IPressEvent Opposition { get { return OppositePressEvent; } }
-
-        public abstract PhysicalPressEvent<T> OppositePressEvent { get; }
-
-        public IReleaseEvent LogicalNormalized { get { return LogicalEquivalentReleaseEvent; } }
-
-        public abstract ReleaseEvent<T> LogicalEquivalentReleaseEvent { get; }
-
-        public PhysicalReleaseEvent(int eventId) : base(eventId) { }
+        public ReleaseEvent(int eventId) : base(eventId) { }
     }
 
     /*
