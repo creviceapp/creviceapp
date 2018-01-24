@@ -497,7 +497,6 @@ namespace Crevice.Future
             return this;
         }
 
-
         public IState Reset()
         {
             // Machine.OnGestureReset()
@@ -602,17 +601,10 @@ namespace Crevice.Future
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public override bool IsFull
-        {
-            get => WhenElements.Any(e => e.IsFull);
-        }
-
-        private List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
-
-        public IReadOnlyCollection<WhenElement<TEvalContext, TExecContext>> WhenElements
-        {
-            get { return whenElements.ToList(); }
-        }
+        public override bool IsFull => WhenElements.Any(e => e.IsFull);
+        
+        private readonly List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
+        public IReadOnlyCollection<WhenElement<TEvalContext, TExecContext>> WhenElements => whenElements.ToList();
 
         public WhenElement<TEvalContext, TExecContext> When(EvaluateAction<TEvalContext> evaluator)
         {
@@ -663,27 +655,19 @@ namespace Crevice.Future
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public override bool IsFull
-        {
-            get => WhenEvaluator != null &&
-                SingleThrowElements.Any(e => e.IsFull) ||
-                DoubleThrowElements.Any(e => e.IsFull);
-        }
+        public override bool IsFull 
+            => WhenEvaluator != null &&
+                (SingleThrowElements.Any(e => e.IsFull) ||
+                 DoubleThrowElements.Any(e => e.IsFull));
 
-        public EvaluateAction<TEvalContext> WhenEvaluator { get; private set; }
+        public readonly EvaluateAction<TEvalContext> WhenEvaluator;
 
-        private List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
-        public IReadOnlyCollection<SingleThrowElement<TExecContext>> SingleThrowElements
-        {
-            get { return singleThrowElements.ToList(); }
-        }
-
-        private List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
-        public IReadOnlyCollection<DoubleThrowElement<TExecContext>> DoubleThrowElements
-        {
-            get { return doubleThrowElements.ToList(); }
-        }
-
+        private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
+        public IReadOnlyCollection<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements.ToList();
+        
+        private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
+        public IReadOnlyCollection<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements.ToList();
+        
         public WhenElement(EvaluateAction<TEvalContext> evaluator)
         {
             WhenEvaluator = evaluator;
@@ -711,19 +695,12 @@ namespace Crevice.Future
     public class SingleThrowElement<T> : Element
         where T : ExecutionContext
     {
-        public override bool IsFull
-        {
-            get => Trigger != null &&
-                DoExecutors.Count > 0 && DoExecutors.Any(e => e != null);
-        }
+        public override bool IsFull => Trigger != null && DoExecutors.Any(e => e != null);
 
         public readonly IFireEvent Trigger;
         
-        private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
-        {
-            get { return doExecutors.ToList(); }
-        }
+        private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
         
         public SingleThrowElement(IFireEvent triggerEvent)
         {
@@ -753,54 +730,34 @@ namespace Crevice.Future
     public class DoubleThrowElement<T> : Element
         where T : ExecutionContext
     {
-        public override bool IsFull
-        {
-            get => Trigger != null &&
-                PressExecutors.Count > 0 && PressExecutors.Any(e => e != null) ||
-                DoExecutors.Count > 0 && DoExecutors.Any(e => e != null) ||
-                ReleaseExecutors.Count > 0 && ReleaseExecutors.Any(e => e != null) ||
-                SingleThrowElements.Any(e => e.IsFull) ||
-                DoubleThrowElements.Any(e => e.IsFull) ||
-                StrokeElements.Any(e => e.IsFull);
-        }
-
+        public override bool IsFull 
+            => Trigger != null && 
+                (PressExecutors.Any(e => e != null) ||
+                 DoExecutors.Any(e => e != null) ||
+                 ReleaseExecutors.Any(e => e != null) ||
+                 SingleThrowElements.Any(e => e.IsFull) ||
+                 DoubleThrowElements.Any(e => e.IsFull) ||
+                 StrokeElements.Any(e => e.IsFull));
+        
         public readonly IPressEvent Trigger;
 
-        private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
-        public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements
-        {
-            get { return singleThrowElements.ToList(); }
-        }
+        private readonly List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
+        public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements => singleThrowElements.ToList(); 
 
-        private List<DoubleThrowElement<T>> doubleThrowElements = new List<DoubleThrowElement<T>>();
-        public IReadOnlyCollection<DoubleThrowElement<T>> DoubleThrowElements
-        {
-            get { return doubleThrowElements.ToList(); }
-        }
+        private readonly List<DoubleThrowElement<T>> doubleThrowElements = new List<DoubleThrowElement<T>>();
+        public IReadOnlyCollection<DoubleThrowElement<T>> DoubleThrowElements => doubleThrowElements.ToList(); 
 
-        private List<StrokeElement<T>> strokeElements = new List<StrokeElement<T>>();
-        public IReadOnlyCollection<StrokeElement<T>> StrokeElements
-        {
-            get { return strokeElements.ToList(); }
-        }
+        private readonly List<StrokeElement<T>> strokeElements = new List<StrokeElement<T>>();
+        public IReadOnlyCollection<StrokeElement<T>> StrokeElements => strokeElements.ToList();
 
-        private List<ExecuteAction<T>> pressExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> PressExecutors
-        {
-            get { return pressExecutors.ToList(); }
-        }
+        private readonly List<ExecuteAction<T>> pressExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> PressExecutors => pressExecutors.ToList();
 
-        private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
-        {
-            get { return doExecutors.ToList(); }
-        }
+        private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
-        private List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> ReleaseExecutors
-        {
-            get { return releaseExecutors.ToList(); }
-        }
+        private readonly List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> ReleaseExecutors => releaseExecutors.ToList(); 
 
         public DoubleThrowElement(IPressEvent triggerEvent)
         {
@@ -853,19 +810,12 @@ namespace Crevice.Future
     public class StrokeElement<T> : Element
         where T : ExecutionContext
     {
-        public override bool IsFull
-        {
-            get => Strokes != null && Strokes.Count > 0 &&
-                DoExecutors.Count > 0 && DoExecutors.Any(e => e != null); 
-        }
+        public override bool IsFull => Strokes.Count > 0 && DoExecutors.Any(e => e != null);
 
-        public IReadOnlyCollection<StrokeEvent.Direction> Strokes { get; private set; }
+        public readonly IReadOnlyCollection<StrokeEvent.Direction> Strokes;
 
-        private List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors
-        {
-            get { return doExecutors.ToList(); }
-        }
+        private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
+        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
         public StrokeElement(params StrokeEvent.Direction[] strokes)
         {
