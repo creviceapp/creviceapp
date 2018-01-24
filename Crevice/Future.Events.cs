@@ -31,6 +31,8 @@ namespace Crevice.Future
             var id = 0;
             // 0 is reserved for StrokeEvent.
             Move = new MoveEventEvent(++id);
+            LeftButtonDownEvent = new LeftButtonDownEvent(++id);
+            LeftButtonUpEvent = new LeftButtonUpEvent(++id);
             MiddleButtonDownEvent = new MiddleButtonDownEvent(++id);
             MiddleButtonUpEvent = new MiddleButtonUpEvent(++id);
             RightButtonDownEvent = new RightButtonDownEvent(++id);

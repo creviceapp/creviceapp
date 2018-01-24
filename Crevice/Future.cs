@@ -10,8 +10,17 @@ namespace Crevice.Future
 
     // interface ISetupable
 
+
+    // EvaluationContextはVoid -> EvaluationContextはVoidな任意のGeneratorを渡して生成できる？
+    // ExecutionContextは同様にEvaluationContext -> ExecutionContextで？
+
+    // todo
+    public class EvaluationContext { }
+    public class ExecutionContext { }
+
     public abstract class ActionContext // todo ISetupable<T> 
     {
+        // Pointの型は任意でいいと思う
         public abstract void Setup(object gestureStartContext, Point currentPoint);
     }
 
@@ -26,7 +35,8 @@ namespace Crevice.Future
 
         // ここにプラットフォームごとに拡張したInputで与えられる、Pointを統合したクラスが
         // 来るなら拡張がさらに容易かな
-        public override void Setup(object gestureStartContext, Point currentPoint)
+        public override void Setup(object gestureStartContext, Point currentPoint) // この型はあえて？
+        //  必要なら<T>でいけそう
         {
             if (gestureStartContext == null)
             {
@@ -39,7 +49,6 @@ namespace Crevice.Future
         // Setup(object, Point currentPoint)
         //
     }
-
 
     public delegate bool EvaluateAction<in T>(T ctx);
     public delegate void ExecuteAction<in T>(T ctx);
@@ -82,6 +91,9 @@ namespace Crevice.Future
             return new List<StrokeEvent.Direction>();
         }
 
+
+        // inputを physicalな型にするとよい？
+
         private readonly HashSet<IReleaseEvent> invalidReleaseEvents = new HashSet<IReleaseEvent>();
 
         public bool IsIgnored(IReleaseEvent releaseEvent)
@@ -119,7 +131,8 @@ namespace Crevice.Future
         // global variable
         public GestureMachine Machine;
 
-        public virtual Result Input(Event evnt, Point point) // ここのPointは抽象化するとよさげ
+        public virtual Result Input(IPhysicalEvent evnt, Point point) // ここのPointは抽象化するとよさげ
+            // というか、いらなくない？
         {
             return Result.EventIsRemained(nextState: this);
         }
@@ -138,22 +151,29 @@ namespace Crevice.Future
             RootElement = rootElement; 
         }
 
-        public override Result Input(Event evnt, Point point)
+        public override Result Input(IPhysicalEvent evnt, Point point)
         {
-            if (evnt is IFireEvent fireEvent && SingleThrowTriggers.Contains(fireEvent))
+            if (evnt is IFireEvent fireEvent && 
+                   (SingleThrowTriggers.Contains(fireEvent) || 
+                    SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
             {
                 var ctx = CreateActionContext();
-                foreach(var st in GetActiveSingleThrowElements(ctx, fireEvent))
+                var singleThrowElements = GetActiveSingleThrowElements(ctx, fireEvent);
+                if (singleThrowElements.Count > 0)
                 {
-                    foreach (var doExecutor in st.DoExecutors)
+                    foreach (var st in singleThrowElements)
                     {
-                        doExecutor(ctx);
+                        foreach (var doExecutor in st.DoExecutors)
+                        {
+                            doExecutor(ctx);
+                        }
                     }
+                    return Result.EventIsConsumed(nextState: this);
                 }
-                return Result.EventIsConsumed(nextState: this);
-
             }
-            else if (evnt is IPressEvent pressEvent && DoubleThrowTriggers.Contains(pressEvent))
+            else if (evnt is IPressEvent pressEvent && 
+                        (DoubleThrowTriggers.Contains(pressEvent) ||
+                         DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
             {
                 var ctx = CreateActionContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(ctx, pressEvent);
@@ -176,6 +196,7 @@ namespace Crevice.Future
                     return Result.EventIsConsumed(nextState: state);
                 }
             }
+            // これはMachineが担当したほうがよさげ
             else if (evnt is IReleaseEvent releaseEvent)
             {
                 if (Machine.IsIgnored(releaseEvent))
@@ -193,13 +214,14 @@ namespace Crevice.Future
             return new T();
         }
 
-        public IReadOnlyList<Tuple<IReleaseEvent, State>> CreateHistory(IPressEvent pressEvent, State state)
+        public IReadOnlyList<(IReleaseEvent, State)> CreateHistory(IPressEvent pressEvent, State state)
         {
-            return new List<Tuple<IReleaseEvent, State>>() {
-                Tuple.Create(pressEvent.Opposition, state)
+            return new List<(IReleaseEvent, State)>() {
+                (pressEvent.Opposition, state)
             };
         }
 
+        // Filter
         public IReadOnlyList<DoubleThrowElement<T>> GetActiveDoubleThrowElements(T ctx, IPressEvent triggerEvent)
         {
             return (
@@ -208,7 +230,8 @@ namespace Crevice.Future
                       w.WhenEvaluator(ctx)
                 select (
                     from d in w.DoubleThrowElements
-                    where d.IsFull && d.Trigger == triggerEvent
+                    where d.IsFull && (d.Trigger == triggerEvent || 
+                                       d.Trigger == triggerEvent.LogicalNormalized)
                     select d))
                 .Aggregate(new List<DoubleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; });
         }
@@ -221,7 +244,8 @@ namespace Crevice.Future
                       w.WhenEvaluator(ctx)
                 select (
                     from s in w.SingleThrowElements
-                    where s.IsFull && s.Trigger == triggerEvent
+                    where s.IsFull && (s.Trigger == triggerEvent ||
+                                       s.Trigger == triggerEvent.LogicalNormalized)
                     select s))
                 .Aggregate(new List<SingleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; } );
         }
@@ -268,13 +292,13 @@ namespace Crevice.Future
         where T : ActionContext
     {
         public readonly T Ctx;
-        public readonly IReadOnlyList<Tuple<IReleaseEvent, State>> History;
+        public readonly IReadOnlyList<(IReleaseEvent ReleaseEvent, State State)> History;
         public readonly IReadOnlyList<DoubleThrowElement<T>> DoubleThrowElements;
         public readonly bool CancelAllowed;
 
         public StateN(
             T ctx,
-            IReadOnlyList<Tuple<IReleaseEvent, State>> history,
+            IReadOnlyList<(IReleaseEvent, State)> history,
             IReadOnlyList<DoubleThrowElement<T>> doubleThrowElements,
             bool allowCancel = true
             )
@@ -285,15 +309,16 @@ namespace Crevice.Future
             CancelAllowed = allowCancel;
         }
 
-        public override Result Input(Event evnt, Point point)
+        public override Result Input(IPhysicalEvent evnt, Point point)
         {
             // Todo: storkewatcher
 
             if (evnt is IFireEvent fireEvent)
             {
-                if (SingleThrowTriggers.Contains(fireEvent))
+                var singleThrowElements = GetSingleThrowElements(fireEvent);
+                if (singleThrowElements.Count > 0)
                 {
-                    foreach (var st in GetSingleThrowElements(fireEvent))
+                    foreach (var st in singleThrowElements)
                     {
                         foreach (var doExecutor in st.DoExecutors)
                         {
@@ -310,9 +335,10 @@ namespace Crevice.Future
             }
             else if (evnt is IPressEvent pressEvent)
             {
-                if (DoubleThrowTriggers.Contains(pressEvent))
+                var doubleThrowElements = GetDoubleThrowElements(pressEvent);
+                if (doubleThrowElements.Count > 0)
                 {
-                    foreach (var dt in GetDoubleThrowElements(pressEvent))
+                    foreach (var dt in doubleThrowElements)
                     {
                         foreach (var pressExecutor in dt.PressExecutors)
                         {
@@ -330,6 +356,7 @@ namespace Crevice.Future
             else if (evnt is IReleaseEvent releaseEvent)
             {
                 if (Machine.IsIgnored(releaseEvent))
+                    // Machineにやらせたほうがよさげ
                 {
                     return Result.EventIsConsumed(nextState: this);
                 }
@@ -339,22 +366,40 @@ namespace Crevice.Future
                     if (strokes.Count() > 0)
                     {
                         // if match
-                        // Do strokeElements -> DoExecutors
-                    }
-                    else
-                    {
-                        //normal end
-                        if (ShouldFinalize)
+                        foreach (var doubleThrowElements in DoubleThrowElements)
                         {
-                            // execute Do and Press 
-                        }
-                        else
-                        {
-                            if (CancelAllowed)
+                            foreach (var doExecutor in doubleThrowElements.DoExecutors)
                             {
-                                // Machine.OnCancel()
+                                doExecutor(Ctx);
+                            }
+                            foreach (var releaseExecutor in doubleThrowElements.ReleaseExecutors)
+                            {
+                                releaseExecutor(Ctx);
                             }
                         }
+                    }
+                    else if (ShouldFinalize)
+                    {
+                        //normal end
+                        foreach (var doubleThrowElements in DoubleThrowElements)
+                        {
+                            foreach (var doExecutor in doubleThrowElements.DoExecutors)
+                            {
+                                doExecutor(Ctx);
+                            }
+                            foreach (var releaseExecutor in doubleThrowElements.ReleaseExecutors)
+                            {
+                                releaseExecutor(Ctx);
+                            }
+                        }
+                    }
+                    else if (CancelAllowed)
+                    {
+                        // Machine.OnGestureCancel()
+
+                        //何のインスタンスが来るかによって対応を変える必要がある
+                        //例えばゲームパッドであれば何もする必要がない
+                        return Result.EventIsConsumed(nextState: LastState);
                     }
                     return Result.EventIsConsumed(nextState: LastState);
                 }
@@ -369,9 +414,31 @@ namespace Crevice.Future
             return base.Input(evnt, point);
         }
 
+        public State RequestTimeout()
+        {
+            if (CancelAllowed && !ShouldFinalize)
+            {
+                // Machine.OnGestureTimeout()
+
+                return History.First().State;
+            }
+            return this;
+        }
+
+
+        public State RequestCancel()
+        {
+            // Machine.OnGestureCancel()
+            Machine.IgnoreNext(NormalEndTrigger);
+            // Do Release 
+
+            return History.First().State;
+        }
+
+
         public State LastState
         {
-            get { return History.Last().Item2; }
+            get { return History.Last().State; }
         }
         
         public bool ShouldFinalize
@@ -384,19 +451,19 @@ namespace Crevice.Future
             }
         }
 
-        public IReadOnlyList<Tuple<IReleaseEvent, State>> CreateHistory(
-            IReadOnlyList<Tuple<IReleaseEvent, State>> history, 
+        public IReadOnlyList<(IReleaseEvent, State)> CreateHistory(
+            IReadOnlyList<(IReleaseEvent, State)> history, 
             IPressEvent pressEvent, 
             State state)
         {
             var newHistory = history.ToList();
-            newHistory.Add(Tuple.Create(pressEvent.Opposition, state));
+            newHistory.Add((pressEvent.Opposition, state));
             return newHistory;
         }
 
         public IReleaseEvent NormalEndTrigger
         {
-            get { return History.Last().Item1; }
+            get { return History.Last().ReleaseEvent; }
         }
 
         public bool IsNormalEndTrigger(IReleaseEvent releaseEvent)
@@ -409,16 +476,18 @@ namespace Crevice.Future
         {
             get
             {
-                return new HashSet<IReleaseEvent>(from h in History select h.Item1);
+                return new HashSet<IReleaseEvent>(
+                    from h in History.Reverse().Skip(1)
+                    select h.ReleaseEvent);
             }
         }
 
         public (State, IReadOnlyList<IReleaseEvent>) FindStateFromHistory(IReleaseEvent releaseEvent)
         {
 
-            var nextHistory = History.TakeWhile(t => t.Item1 != releaseEvent);
-            var nextState = History[nextHistory.Count()].Item2;
-            var skippedReleaseEvents = History.Skip(nextHistory.Count()).Select(t => t.Item1).ToList();
+            var nextHistory = History.TakeWhile(t => t.ReleaseEvent != releaseEvent);
+            var nextState = History[nextHistory.Count()].State;
+            var skippedReleaseEvents = History.Skip(nextHistory.Count()).Select(t => t.ReleaseEvent).ToList();
             return (nextState, skippedReleaseEvents);
         }
 
@@ -430,7 +499,8 @@ namespace Crevice.Future
                 where d.IsFull
                 select (
                     from dd in d.DoubleThrowElements
-                    where dd.IsFull && dd.Trigger == triggerEvent
+                    where dd.IsFull && (dd.Trigger == triggerEvent ||
+                                        dd.Trigger == triggerEvent.LogicalNormalized)
                     select dd))
                 .Aggregate(new List<DoubleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; });
         }
@@ -442,7 +512,8 @@ namespace Crevice.Future
                 where d.IsFull
                 select (
                     from s in d.SingleThrowElements
-                    where s.IsFull && s.Trigger == triggerEvent
+                    where s.IsFull && (s.Trigger == triggerEvent ||
+                                       s.Trigger == triggerEvent.LogicalNormalized)
                     select s))
                 .Aggregate(new List<SingleThrowElement<T>>(), (a, b) => { a.AddRange(b); return a; });
         }
@@ -652,7 +723,6 @@ namespace Crevice.Future
                 StrokeElements.Any(e => e.IsFull);
         }
 
-        public readonly IReadOnlyCollection<IPressEvent> AlreadyPressed;
         public readonly IPressEvent Trigger;
 
         private List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
@@ -691,28 +761,9 @@ namespace Crevice.Future
             get { return releaseExecutors.ToList(); }
         }
 
-        public DoubleThrowElement(
-            IPressEvent triggerEvent) 
-            : this(
-                triggerEvent,
-                new HashSet<IPressEvent>()
-            )
+        public DoubleThrowElement(IPressEvent triggerEvent)
         {
-
-        }
-
-        public DoubleThrowElement(
-            IPressEvent triggerEvent,
-            IReadOnlyCollection<IPressEvent> inheritedPressEvents)
-        {
-            if (inheritedPressEvents.Contains(triggerEvent))
-            {
-                throw new ArgumentException();
-            }
             Trigger = triggerEvent;
-            var alreadyPressed = inheritedPressEvents.ToList();
-            alreadyPressed.Add(triggerEvent);
-            AlreadyPressed = alreadyPressed;
         }
 
         public SingleThrowElement<T> On(IFireEvent triggerEvent)
@@ -724,7 +775,7 @@ namespace Crevice.Future
 
         public DoubleThrowElement<T> On(IPressEvent triggerEvent)
         {
-            var elm = new DoubleThrowElement<T>(triggerEvent, AlreadyPressed);
+            var elm = new DoubleThrowElement<T>(triggerEvent);
             doubleThrowElements.Add(elm);
             return elm;
         }
