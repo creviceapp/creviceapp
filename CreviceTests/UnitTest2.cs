@@ -32,7 +32,7 @@ namespace CreviceTests
         [TestMethod]
         public void TestDSLSyntex()
         {
-            var r = new RootElement<DefaultActionContext>();
+            var r = new RootElement<EvaluationContext, ExecutionContext>();
 
             Assert.AreEqual(r.WhenElements.Count, 0);
             var w = r.When(ctx => { return true; });
@@ -136,11 +136,29 @@ namespace CreviceTests
                 
             }
         }
+        
+        class TestGestureMachine : GestureMachine<EvaluationContext, ExecutionContext>
+        {
+            public override EvaluationContext CreateEvaluateContext()
+            {
+                return new EvaluationContext();
+            }
+
+            public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
+            {
+                return new ExecutionContext();
+            }
+        }
 
         [TestMethod]
-        public void TestState()
+        public void TestState0()
         {
-            
+            var gm = new TestGestureMachine();
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
+            var result = s0.Input(Events.Constants.LeftButtonDownP0Event);
+            Assert.AreEqual(result.NextState, s0);
+            Assert.AreEqual(result.Event.IsConsumed, false);
         }
     }
 }
