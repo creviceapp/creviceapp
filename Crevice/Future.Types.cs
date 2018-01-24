@@ -112,25 +112,23 @@ namespace Crevice.Future
         IPressEvent Opposition { get; }
         IReleaseEvent LogicalNormalized { get; }
     }
-
-    // todo rewrite to => syntax
-
+    
     public abstract class FireEvent<T> : Event, IFireEvent, ILogicalEvent
         where T : SingleThrowSwitch
     {
-        public IFireEvent LogicalNormalized { get { return this; } }
-
+        public IFireEvent LogicalNormalized => this;
+        
         public FireEvent(int eventId) : base(eventId) { }
     }
 
     public abstract class PressEvent<T> : Event, IPressEvent, ILogicalEvent
         where T : DoubleThrowSwitch
     {
-        public IReleaseEvent Opposition { get { return OppositeReleaseEvent; } }
+        public IReleaseEvent Opposition => OppositeReleaseEvent;
 
         public abstract ReleaseEvent<T> OppositeReleaseEvent { get; }
-        
-        public IPressEvent LogicalNormalized { get { return this; } }
+
+        public IPressEvent LogicalNormalized => this;
 
         public PressEvent(int eventId) : base(eventId) { }
     }
@@ -138,11 +136,11 @@ namespace Crevice.Future
     public abstract class ReleaseEvent<T> : Event, IReleaseEvent, ILogicalEvent
         where T : DoubleThrowSwitch
     {
-        public IPressEvent Opposition { get { return OppositePressEvent; } }
+        public IPressEvent Opposition => OppositePressEvent;
 
         public abstract PressEvent<T> OppositePressEvent { get; }
 
-        public IReleaseEvent LogicalNormalized { get { return this; } }
+        public IReleaseEvent LogicalNormalized => this;
 
         public ReleaseEvent(int eventId) : base(eventId) { }
     }
@@ -150,7 +148,7 @@ namespace Crevice.Future
     public abstract class PhysicalFireEvent<T> : Event, IFireEvent, IPhysicalEvent
        where T : SingleThrowSwitch
     {
-        public IFireEvent LogicalNormalized { get { return LogicalEquivalentFireEvent; } }
+        public IFireEvent LogicalNormalized => LogicalEquivalentFireEvent;
 
         public abstract FireEvent<T> LogicalEquivalentFireEvent { get; }
 
@@ -160,11 +158,11 @@ namespace Crevice.Future
     public abstract class PhysicalPressEvent<T> : Event, IPressEvent, IPhysicalEvent
         where T : DoubleThrowSwitch
     {
-        public IReleaseEvent Opposition { get { return OppositePhysicalReleaseEvent; } }
+        public IReleaseEvent Opposition => OppositePhysicalReleaseEvent;
 
         public abstract PhysicalReleaseEvent<T> OppositePhysicalReleaseEvent { get; }
 
-        public IPressEvent LogicalNormalized { get { return LogicalEquivalentPressEvent; } }
+        public IPressEvent LogicalNormalized => LogicalEquivalentPressEvent;
 
         public abstract PressEvent<T> LogicalEquivalentPressEvent { get; }
 
@@ -174,11 +172,11 @@ namespace Crevice.Future
     public abstract class PhysicalReleaseEvent<T> : Event, IReleaseEvent, IPhysicalEvent
         where T : DoubleThrowSwitch
     {
-        public IPressEvent Opposition { get { return OppositePhysicalPressEvent; } }
+        public IPressEvent Opposition => OppositePhysicalPressEvent;
 
         public abstract PhysicalPressEvent<T> OppositePhysicalPressEvent { get; }
 
-        public IReleaseEvent LogicalNormalized { get { return LogicalEquivalentReleaseEvent; } }
+        public IReleaseEvent LogicalNormalized => LogicalEquivalentReleaseEvent;
 
         public abstract ReleaseEvent<T> LogicalEquivalentReleaseEvent { get; }
 
@@ -192,6 +190,7 @@ namespace Crevice.Future
 
     // Strokeをどういう扱いにするか、
     // システム組み込みなのでライブラリユーザーが触る必要はなさげ
+    // イベントとして実装する意味はなさげ
     public class StrokeEvent : FireEvent<StrokeSwitch>, IEquatable<StrokeEvent>
     {
         public enum Direction

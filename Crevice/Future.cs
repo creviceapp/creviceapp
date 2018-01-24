@@ -112,8 +112,7 @@ namespace Crevice.Future
         }
         */
 
-
-
+            
         // inputを physicalな型にするとよい？
         // HashSetでは微妙かな やはりカウンターがよさげ
         private readonly NaturalNumberCounter<IReleaseEvent> invalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
@@ -140,10 +139,92 @@ namespace Crevice.Future
                 IgnoreNext(releaseEvent);
             }
         }
+
+
+        public bool EvaluateWhenEvaluatorSafely(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
+        {
+            try
+            {
+                return whenElement.WhenEvaluator(evalContext);
+            }
+            catch (Exception)
+            {
+                // todo
+            }
+            return false;
+        }
+
+        public void ExecuteSafely(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
+        {
+            try
+            {
+                executeAction(execContext);
+            }
+            catch (Exception)
+            {
+                // todo
+            }
+        }
+
+        public void ExecutePressExecutorsSafely(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        {
+            foreach (var element in doubleThrowElements)
+            {
+                foreach (var executor in element.PressExecutors)
+                {
+                    ExecuteSafely(execContext, executor);
+                }
+            }
+        }
+
+        public void ExecuteDoExecutorsSafely(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        {
+            foreach (var element in doubleThrowElements)
+            {
+                foreach (var executor in element.DoExecutors)
+                {
+                    ExecuteSafely(execContext, executor);
+                }
+            }
+        }
+
+        public void ExecuteDoExecutorsSafely(TExecContext execContext, IEnumerable<SingleThrowElement<TExecContext>> singleThrowElements)
+        {
+            foreach (var element in singleThrowElements)
+            {
+                foreach (var executor in element.DoExecutors)
+                {
+                    ExecuteSafely(execContext, executor);
+                }
+            }
+        }
+
+        public void ExecuteDoExecutorsSafely(TExecContext execContext, IEnumerable<StrokeElement<TExecContext>> strokeElements)
+        {
+            foreach (var element in strokeElements)
+            {
+                foreach (var executor in element.DoExecutors)
+                {
+                    ExecuteSafely(execContext, executor);
+                }
+            }
+        }
+
+        public void ExecuteReleaseExecutorsSafely(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        {
+            foreach (var element in doubleThrowElements)
+            {
+                foreach (var executor in element.ReleaseExecutors)
+                {
+                    ExecuteSafely(execContext, executor);
+                }
+            }
+        }
     }
 
     public interface IState
     {
+        // Point? pointを必須にしつつ、渡さないオーバーロードも
         Result Input(IPhysicalEvent evnt);
     }
 
@@ -177,8 +258,8 @@ namespace Crevice.Future
         public override Result Input(IPhysicalEvent evnt)
         {
             if (evnt is IFireEvent fireEvent && 
-                   (SingleThrowTriggers.Contains(fireEvent) || 
-                    SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
+                    (SingleThrowTriggers.Contains(fireEvent) || 
+                     SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
             {
                 var evalContext = Machine.CreateEvaluateContext();
 
@@ -186,32 +267,20 @@ namespace Crevice.Future
                 if (singleThrowElements.Count > 0)
                 {
                     var execContext = Machine.CreateExecutionContext(evalContext);
-                    foreach (var st in singleThrowElements)
-                    {
-                        foreach (var doExecutor in st.DoExecutors)
-                        {
-                            doExecutor(execContext);
-                        }
-                    }
+                    Machine.ExecuteDoExecutorsSafely(execContext, singleThrowElements);
                     return Result.EventIsConsumed(nextState: this);
                 }
             }
             else if (evnt is IPressEvent pressEvent && 
                         (DoubleThrowTriggers.Contains(pressEvent) ||
-                         DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
+                        DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
             {
                 var evalContext = Machine.CreateEvaluateContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
                 if (doubleThrowElements.Count() > 0)
                 {
                     var execContext = Machine.CreateExecutionContext(evalContext);
-                    foreach (var dt in doubleThrowElements)
-                    {
-                        foreach (var pressExecutor in dt.PressExecutors)
-                        {
-                            pressExecutor(execContext);
-                        }
-                    }
+                    Machine.ExecutePressExecutorsSafely(execContext, doubleThrowElements);
                     var state = new StateN<TEvalContext, TExecContext>(
                         evalContext,
                         CreateHistory(pressEvent, this),
@@ -247,7 +316,7 @@ namespace Crevice.Future
             return (
                 from w in RootElement.WhenElements
                 where w.IsFull &&
-                      w.WhenEvaluator(ctx)
+                      w.WhenEvaluator(ctx) // todo evaluate safely
                 select (
                     from d in w.DoubleThrowElements
                     where d.IsFull && (d.Trigger == triggerEvent || 
@@ -341,13 +410,7 @@ namespace Crevice.Future
                 if (singleThrowElements.Count > 0)
                 {
                     var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                    foreach (var st in singleThrowElements)
-                    {
-                        foreach (var doExecutor in st.DoExecutors)
-                        {
-                            doExecutor(execContext);
-                        }
-                    }
+                    Machine.ExecuteDoExecutorsSafely(execContext, singleThrowElements);
                     var notCancellableCopyState = new StateN<TEvalContext, TExecContext>(
                         EvaluationContext,
                         History,
@@ -362,13 +425,7 @@ namespace Crevice.Future
                 if (doubleThrowElements.Count > 0)
                 {
                     var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                    foreach (var dt in doubleThrowElements)
-                    {
-                        foreach (var pressExecutor in dt.PressExecutors)
-                        {
-                            pressExecutor(execContext);
-                        }
-                    }
+                    Machine.ExecutePressExecutorsSafely(execContext, doubleThrowElements);
                     var nextState = new StateN<TEvalContext, TExecContext>(
                         EvaluationContext,
                         CreateHistory(History, pressEvent, this),
@@ -389,34 +446,22 @@ namespace Crevice.Future
                     var strokes = Machine.GetStroke();
                     if (strokes.Count() > 0)
                     {
-                        var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                        // if match
-                        foreach (var doubleThrowElements in DoubleThrowElements)
+                        var strokeElements = GetStrokeElements(strokes);
+                        if (strokeElements.Count > 0)
                         {
-                            foreach (var doExecutor in doubleThrowElements.DoExecutors)
-                            {
-                                doExecutor(execContext);
-                            }
-                            foreach (var releaseExecutor in doubleThrowElements.ReleaseExecutors)
-                            {
-                                releaseExecutor(execContext);
-                            }
+                            var execContext = Machine.CreateExecutionContext(EvaluationContext);
+                            Machine.ExecuteDoExecutorsSafely(execContext, strokeElements);
+                            Machine.ExecuteReleaseExecutorsSafely(execContext, DoubleThrowElements);
                         }
                     }
                     else if (ShouldFinalize)
                     {
-                        var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                        //normal end
-                        foreach (var doubleThrowElements in DoubleThrowElements)
+                        if (HasReleaseExecutors)
                         {
-                            foreach (var doExecutor in doubleThrowElements.DoExecutors)
-                            {
-                                doExecutor(execContext);
-                            }
-                            foreach (var releaseExecutor in doubleThrowElements.ReleaseExecutors)
-                            {
-                                releaseExecutor(execContext);
-                            }
+                            //normal end
+                            var execContext = Machine.CreateExecutionContext(EvaluationContext);
+                            Machine.ExecuteDoExecutorsSafely(execContext, DoubleThrowElements);
+                            Machine.ExecuteReleaseExecutorsSafely(execContext, DoubleThrowElements);
                         }
                     }
                     else if (CancelAllowed)
@@ -425,7 +470,8 @@ namespace Crevice.Future
 
                         //何のインスタンスが来るかによって対応を変える必要がある
                         //例えばゲームパッドであれば何もする必要がない
-                        return Result.EventIsConsumed(nextState: LastState);
+
+                        // ボタンであればクリックの復元を
                     }
                     return Result.EventIsConsumed(nextState: LastState);
                 }
@@ -440,7 +486,7 @@ namespace Crevice.Future
             return base.Input(evnt);
         }
 
-        public IState RequestTimeout()
+        public IState TimeoutRequest()
         {
             if (CancelAllowed && !ShouldFinalize)
             {
@@ -452,30 +498,31 @@ namespace Crevice.Future
         }
 
 
-        public IState RequestCancel()
+        public IState Reset()
         {
-            // Machine.OnGestureCancel()
+            // Machine.OnGestureReset()
             Machine.IgnoreNext(NormalEndTrigger);
-            // Do Release 
-
+            // 再帰的に行う必要がある。
+            // Machineのイベントを扱わないといけないので、Machine側で舐めて処理する？
+            if (HasReleaseExecutors)
+            {
+                var execContext = Machine.CreateExecutionContext(EvaluationContext);
+                Machine.ExecuteReleaseExecutorsSafely(execContext, DoubleThrowElements);
+            }
             return LastState;
         }
-
-
-        public IState LastState
-        {
-            get { return History.Last().Item2; }
-        }
         
-        public bool ShouldFinalize
-        {
-            get
-            {
-                return DoubleThrowElements.All(d =>
-                        d.DoExecutors.Count == 0 &&
-                        d.PressExecutors.Count == 0);
-            }
-        }
+        public IReleaseEvent NormalEndTrigger => History.Last().Item1;
+
+        public IState LastState => History.Last().Item2;
+
+        public bool HasPressExecutors => DoubleThrowElements.Any(d => d.PressExecutors.Count > 0);
+
+        public bool HasDoExecutors => DoubleThrowElements.Any(d => d.DoExecutors.Count > 0);
+
+        public bool HasReleaseExecutors => DoubleThrowElements.Any(d => d.ReleaseExecutors.Count > 0);
+
+        public bool ShouldFinalize => HasPressExecutors || HasReleaseExecutors;
 
         public IReadOnlyList<(IReleaseEvent, IState)> CreateHistory(
             IReadOnlyList<(IReleaseEvent, IState)> history, 
@@ -486,37 +533,22 @@ namespace Crevice.Future
             newHistory.Add((pressEvent.Opposition, state));
             return newHistory;
         }
-
-        public IReleaseEvent NormalEndTrigger
-        {
-            get { return History.Last().Item1; }
-        }
-
+        
         public bool IsNormalEndTrigger(IReleaseEvent releaseEvent)
         {
             return releaseEvent == NormalEndTrigger;
         }
 
-
         public IReadOnlyCollection<IReleaseEvent> AbnormalEndTriggers
-        {
-            get
-            {
-                return new HashSet<IReleaseEvent>(
-                    from h in History.Reverse().Skip(1)
-                    select h.Item1);
-            }
-        }
+            => new HashSet<IReleaseEvent>(from h in History.Reverse().Skip(1) select h.Item1);
 
         public (IState, IReadOnlyList<IReleaseEvent>) FindStateFromHistory(IReleaseEvent releaseEvent)
         {
-
             var nextHistory = History.TakeWhile(t => t.Item1 != releaseEvent);
             var nextState = History[nextHistory.Count()].Item2;
             var skippedReleaseEvents = History.Skip(nextHistory.Count()).Select(t => t.Item1).ToList();
             return (nextState, skippedReleaseEvents);
         }
-
 
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(IPressEvent triggerEvent)
         {
@@ -531,6 +563,18 @@ namespace Crevice.Future
                 .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
         }
 
+        public IReadOnlyList<StrokeElement<TExecContext>> GetStrokeElements(IReadOnlyList<StrokeEvent.Direction> strokes)
+        {
+            return (
+                from d in DoubleThrowElements
+                where d.IsFull
+                select (
+                    from s in d.StrokeElements
+                    where s.IsFull && s.Strokes.SequenceEqual(strokes)
+                    select s))
+                .Aggregate(new List<StrokeElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+        }
+
         public IReadOnlyList<SingleThrowElement<TExecContext>> GetSingleThrowElements(IFireEvent triggerEvent)
         {
             return (
@@ -543,37 +587,6 @@ namespace Crevice.Future
                     select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
         }
-
-        public IEnumerable<IFireEvent> SingleThrowTriggers
-        {
-            get
-            {
-                return (
-                    from d in DoubleThrowElements
-                    where d.IsFull
-                    select (
-                        from s in d.SingleThrowElements
-                        where s.IsFull
-                        select s.Trigger))
-                    .Aggregate(new HashSet<IFireEvent>(), (a, b) => { a.UnionWith(b); return a; });
-            }
-        }
-
-        public IEnumerable<IPressEvent> DoubleThrowTriggers
-        {
-            get
-            {
-                return (
-                    from d in DoubleThrowElements
-                    where d.IsFull
-                    select (
-                        from dd in d.DoubleThrowElements
-                        where dd.IsFull
-                        select dd.Trigger))
-                    .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
-            }
-        }
-
     }
 
     public abstract class Element

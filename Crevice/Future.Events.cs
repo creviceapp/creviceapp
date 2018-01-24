@@ -68,50 +68,50 @@ namespace Crevice.Future
 
     public class LeftButtonDownEvent : PressEvent<LeftButtonSwitch>
     {
-        public LeftButtonDownEvent(int eventId) : base(eventId) { }
-
         public override ReleaseEvent<LeftButtonSwitch> OppositeReleaseEvent
-        { get { return Events.Constants.LeftButtonUpEvent; } }
+            => Events.Constants.LeftButtonUpEvent;
+
+        public LeftButtonDownEvent(int eventId) : base(eventId) { }
     }
 
     public class LeftButtonUpEvent : ReleaseEvent<LeftButtonSwitch>
     {
-        public LeftButtonUpEvent(int eventId) : base(eventId) { }
-
         public override PressEvent<LeftButtonSwitch> OppositePressEvent
-        { get { return Events.Constants.LeftButtonDownEvent; } }
+            => Events.Constants.LeftButtonDownEvent;
+
+        public LeftButtonUpEvent(int eventId) : base(eventId) { }
     }
     
     public class MiddleButtonDownEvent : PressEvent<MiddleButtonSwitch>
     {
-        public MiddleButtonDownEvent(int eventId) : base(eventId) { }
-
         public override ReleaseEvent<MiddleButtonSwitch> OppositeReleaseEvent
-        { get { return Events.Constants.MiddleButtonUpEvent; } }
+            => Events.Constants.MiddleButtonUpEvent;
+
+        public MiddleButtonDownEvent(int eventId) : base(eventId) { }
     }
 
     public class MiddleButtonUpEvent : ReleaseEvent<MiddleButtonSwitch>
     {
-        public MiddleButtonUpEvent(int eventId) : base(eventId) { }
-
         public override PressEvent<MiddleButtonSwitch> OppositePressEvent
-        { get { return Events.Constants.MiddleButtonDownEvent; } }
+            => Events.Constants.MiddleButtonDownEvent;
+
+        public MiddleButtonUpEvent(int eventId) : base(eventId) { }
     }
 
     public class RightButtonDownEvent : PressEvent<RightButtonSwitch>
     {
-        public RightButtonDownEvent(int eventId) : base(eventId) { }
-
         public override ReleaseEvent<RightButtonSwitch> OppositeReleaseEvent
-        { get { return Events.Constants.RightButtonUpEvent; } }
+            => Events.Constants.RightButtonUpEvent;
+
+        public RightButtonDownEvent(int eventId) : base(eventId) { }
     }
 
     public class RightButtonUpEvent : ReleaseEvent<RightButtonSwitch>
     {
-        public RightButtonUpEvent(int eventId) : base(eventId) { }
-
         public override PressEvent<RightButtonSwitch> OppositePressEvent
-        { get { return Events.Constants.RightButtonDownEvent; } }
+            => Events.Constants.RightButtonDownEvent;
+
+        public RightButtonUpEvent(int eventId) : base(eventId) { }
     }
 
     public class WheelDownEvent : FireEvent<MoveSwich>
@@ -135,64 +135,64 @@ namespace Crevice.Future
     }
     public class X1ButtonDownEvent : PressEvent<X1ButtonSwitch>
     {
-        public X1ButtonDownEvent(int eventId) : base(eventId) { }
-
         public override ReleaseEvent<X1ButtonSwitch> OppositeReleaseEvent
-        { get { return Events.Constants.X1ButtonUpEvent; } }
+            => Events.Constants.X1ButtonUpEvent;
+
+        public X1ButtonDownEvent(int eventId) : base(eventId) { }
     }
 
     public class X1ButtonUpEvent : ReleaseEvent<X1ButtonSwitch>
     {
-        public X1ButtonUpEvent(int eventId) : base(eventId) { }
-
         public override PressEvent<X1ButtonSwitch> OppositePressEvent
-        { get { return Events.Constants.X1ButtonDownEvent; } }
+            => Events.Constants.X1ButtonDownEvent;
+
+        public X1ButtonUpEvent(int eventId) : base(eventId) { }
     }
 
     public class X2ButtonDownEvent : PressEvent<X2ButtonSwitch>
     {
-        public X2ButtonDownEvent(int eventId) : base(eventId) { }
-
         public override ReleaseEvent<X2ButtonSwitch> OppositeReleaseEvent
-        { get { return Events.Constants.X2ButtonUpEvent; } }
+            => Events.Constants.X2ButtonUpEvent;
+
+        public X2ButtonDownEvent(int eventId) : base(eventId) { }
     }
 
     public class X2ButtonUpEvent : ReleaseEvent<X2ButtonSwitch>
     {
-        public X2ButtonUpEvent(int eventId) : base(eventId) { }
-
         public override PressEvent<X2ButtonSwitch> OppositePressEvent
-        { get { return Events.Constants.X2ButtonDownEvent; } }
+            => Events.Constants.X2ButtonDownEvent;
+
+        public X2ButtonUpEvent(int eventId) : base(eventId) { }
     }
 
     public class PhysicalLeftButtonDownEvent : PhysicalPressEvent<LeftButtonSwitch>
     {
-        public PhysicalLeftButtonDownEvent(int eventId) : base(eventId) { }
-
         public override PressEvent<LeftButtonSwitch> LogicalEquivalentPressEvent
-        { get { return Events.Constants.LeftButtonDownEvent; } }
+            => Events.Constants.LeftButtonDownEvent;
 
         public override PhysicalReleaseEvent<LeftButtonSwitch> OppositePhysicalReleaseEvent
-        { get { return Events.Constants.PhysicalLeftButtonUpEvent; } }
+            => Events.Constants.PhysicalLeftButtonUpEvent;
+
+        public PhysicalLeftButtonDownEvent(int eventId) : base(eventId) { }
     }
 
     public class PhysicalLeftButtonUpEvent : PhysicalReleaseEvent<LeftButtonSwitch>
     {
-        public PhysicalLeftButtonUpEvent(int eventId) : base(eventId) { }
-
         public override ReleaseEvent<LeftButtonSwitch> LogicalEquivalentReleaseEvent
-        { get { return Events.Constants.LeftButtonUpEvent; } }
+            => Events.Constants.LeftButtonUpEvent;
 
         public override PhysicalPressEvent<LeftButtonSwitch> OppositePhysicalPressEvent
-        { get { return Events.Constants.PhysicalLeftButtonDownEvent; } }
+            => Events.Constants.PhysicalLeftButtonDownEvent;
+
+        public PhysicalLeftButtonUpEvent(int eventId) : base(eventId) { }
     }
 
 
     public class PhysicalWheelDownEvent : PhysicalFireEvent<MoveSwich>
     {
-        public PhysicalWheelDownEvent(int eventId) : base(eventId) { }
-
         public override FireEvent<MoveSwich> LogicalEquivalentFireEvent
-        { get { return Events.Constants.WheelDownEvent; } }
+            => Events.Constants.WheelDownEvent;
+
+        public PhysicalWheelDownEvent(int eventId) : base(eventId) { }
     }
 }
