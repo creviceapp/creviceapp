@@ -52,6 +52,37 @@ namespace Crevice.Future
         }
     }
 
+    public class NaturalNumberCounter<T>
+    {
+        private readonly Dictionary<T, int> Dictionary = new Dictionary<T, int>();
+
+        public int this[T key]
+        {
+            get
+            {
+                return Dictionary.TryGetValue(key, out int count) ? count : 0;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("Natural number >= 0");
+                }
+                Dictionary[key] = value;
+            }
+        }
+
+        public void CountDown(T key)
+        {
+            Dictionary[key] = this[key] - 1;
+        }
+
+        public void CountUp(T key)
+        {
+            Dictionary[key] = this[key] + 1;
+        }
+    }
+
     public abstract class GestureMachine<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
@@ -73,15 +104,25 @@ namespace Crevice.Future
         }
 
 
+        // PointはStrokeのために必要
+        /*
+        public Result Input(IPhysicalEvent evnt, Point point)
+        {
+            //if ()
+        }
+        */
+
+
+
         // inputを physicalな型にするとよい？
         // HashSetでは微妙かな やはりカウンターがよさげ
-        private readonly HashSet<IReleaseEvent> invalidReleaseEvents = new HashSet<IReleaseEvent>();
+        private readonly NaturalNumberCounter<IReleaseEvent> invalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
 
         public bool IsIgnored(IReleaseEvent releaseEvent)
         {
-            if (invalidReleaseEvents.Contains(releaseEvent))
+            if (invalidReleaseEvents[releaseEvent] > 0)
             {
-                invalidReleaseEvents.Remove(releaseEvent);
+                invalidReleaseEvents.CountDown(releaseEvent);
                 return true;
             }
             return false;
@@ -89,10 +130,7 @@ namespace Crevice.Future
         
         public void IgnoreNext(IReleaseEvent releaseEvent)
         {
-            if (!invalidReleaseEvents.Add(releaseEvent))
-            {
-                throw new InvalidOperationException();
-            }
+            invalidReleaseEvents.CountUp(releaseEvent);
         }
 
         public void IgnoreNext(IEnumerable<IReleaseEvent> releaseEvents)
@@ -115,9 +153,6 @@ namespace Crevice.Future
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        // global variable
-        public GestureMachine<TEvalContext, TExecContext> Machine;
-
         public virtual Result Input(IPhysicalEvent evnt)
         {
             return Result.EventIsRemained(nextState: this);
@@ -128,6 +163,7 @@ namespace Crevice.Future
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
+        public readonly GestureMachine<TEvalContext, TExecContext> Machine;
         public readonly RootElement<TEvalContext, TExecContext> RootElement;
 
         public State0(
@@ -276,6 +312,7 @@ namespace Crevice.Future
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
+        public readonly GestureMachine<TEvalContext, TExecContext> Machine;
         public readonly TEvalContext EvaluationContext;
         public readonly IReadOnlyList<(IReleaseEvent, IState)> History;
         public readonly IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements;

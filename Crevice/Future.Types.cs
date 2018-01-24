@@ -113,6 +113,8 @@ namespace Crevice.Future
         IReleaseEvent LogicalNormalized { get; }
     }
 
+    // todo rewrite to => syntax
+
     public abstract class FireEvent<T> : Event, IFireEvent, ILogicalEvent
         where T : SingleThrowSwitch
     {
@@ -124,9 +126,9 @@ namespace Crevice.Future
     public abstract class PressEvent<T> : Event, IPressEvent, ILogicalEvent
         where T : DoubleThrowSwitch
     {
-        public IReleaseEvent Opposition { get { return OppositePressEvent; } }
+        public IReleaseEvent Opposition { get { return OppositeReleaseEvent; } }
 
-        public abstract ReleaseEvent<T> OppositePressEvent { get; }
+        public abstract ReleaseEvent<T> OppositeReleaseEvent { get; }
         
         public IPressEvent LogicalNormalized { get { return this; } }
 
@@ -136,9 +138,9 @@ namespace Crevice.Future
     public abstract class ReleaseEvent<T> : Event, IReleaseEvent, ILogicalEvent
         where T : DoubleThrowSwitch
     {
-        public IPressEvent Opposition { get { return OppositeReleaseEvent; } }
+        public IPressEvent Opposition { get { return OppositePressEvent; } }
 
-        public abstract PressEvent<T> OppositeReleaseEvent { get; }
+        public abstract PressEvent<T> OppositePressEvent { get; }
 
         public IReleaseEvent LogicalNormalized { get { return this; } }
 

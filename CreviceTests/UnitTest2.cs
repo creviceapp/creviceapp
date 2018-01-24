@@ -19,14 +19,14 @@ namespace CreviceTests
             Assert.IsTrue(Events.Constants.LeftButtonDownEvent is PressEvent<LeftButtonSwitch>);
             Assert.IsTrue(Events.Constants.LeftButtonDownEvent is ILogicalEvent);
             Assert.IsTrue(Events.Constants.LeftButtonDownEvent is IPhysicalEvent == false);
-            Assert.AreEqual(Events.Constants.LeftButtonDownEvent.OppositePressEvent, Events.Constants.LeftButtonUpEvent);
+            Assert.AreEqual(Events.Constants.LeftButtonDownEvent.OppositeReleaseEvent, Events.Constants.LeftButtonUpEvent);
             Assert.AreEqual(Events.Constants.LeftButtonDownEvent.EventId, 2);
 
-            Assert.IsTrue(Events.Constants.LeftButtonDownP0Event is PhysicalPressEvent<LeftButtonSwitch>);
-            Assert.IsTrue(Events.Constants.LeftButtonDownP0Event is ILogicalEvent == false);
-            Assert.IsTrue(Events.Constants.LeftButtonDownP0Event is IPhysicalEvent);
-            Assert.AreEqual(Events.Constants.LeftButtonDownP0Event.OppositePhysicalReleaseEvent, Events.Constants.LeftButtonUpP0Event);
-            Assert.AreEqual(Events.Constants.LeftButtonDownP0Event.EventId, 100);
+            Assert.IsTrue(Events.Constants.PhysicalLeftButtonDownEvent is PhysicalPressEvent<LeftButtonSwitch>);
+            Assert.IsTrue(Events.Constants.PhysicalLeftButtonDownEvent is ILogicalEvent == false);
+            Assert.IsTrue(Events.Constants.PhysicalLeftButtonDownEvent is IPhysicalEvent);
+            Assert.AreEqual(Events.Constants.PhysicalLeftButtonDownEvent.OppositePhysicalReleaseEvent, Events.Constants.PhysicalLeftButtonUpEvent);
+            Assert.AreEqual(Events.Constants.PhysicalLeftButtonDownEvent.EventId, 100);
         }
 
         [TestMethod]
@@ -150,15 +150,181 @@ namespace CreviceTests
             }
         }
 
+        public class TestEvents
+        {
+            public readonly TestFireEvent TestFireEvent;
+            public readonly TestPressEvent TestPressEvent;
+            public readonly TestReleaseEvent TestReleaseEvent;
+            public readonly TestPhysicalFireEvent TestPhysicalFireEvent;
+            public readonly TestPhysicalPressEvent TestPhysicalPressEvent;
+            public readonly TestPhysicalReleaseEvent TestPhysicalReleaseEvent;
+            public TestEvents()
+            {
+                var id = 0;
+                TestFireEvent = new TestFireEvent(++id);
+                TestPressEvent = new TestPressEvent(++id);
+                TestReleaseEvent = new TestReleaseEvent(++id);
+                TestPhysicalFireEvent = new TestPhysicalFireEvent(++id);
+                TestPhysicalPressEvent = new TestPhysicalPressEvent(++id);
+                TestPhysicalReleaseEvent = new TestPhysicalReleaseEvent(++id);
+            }
+
+            private static TestEvents singleton = new TestEvents();
+            public static TestEvents Constants
+            {
+                get { return singleton; }
+            }
+        }
+
+        public class TestSwitchA : SingleThrowSwitch { }
+
+        public class TestSwitchB : DoubleThrowSwitch { }
+
+        public class TestFireEvent : FireEvent<TestSwitchA>
+        {
+            public TestFireEvent(int eventId) : base(eventId) { }
+        }
+
+        public class TestPressEvent : PressEvent<TestSwitchB>
+        {
+            public TestPressEvent(int eventId) : base(eventId) { }
+
+            public override ReleaseEvent<TestSwitchB> OppositeReleaseEvent 
+                => TestEvents.Constants.TestReleaseEvent;
+        }
+
+        public class TestReleaseEvent : ReleaseEvent<TestSwitchB>
+        {
+            public TestReleaseEvent(int eventId) : base(eventId) { }
+
+            public override PressEvent<TestSwitchB> OppositePressEvent
+                => TestEvents.Constants.TestPressEvent;
+        }
+
+        public class TestPhysicalFireEvent : PhysicalFireEvent<TestSwitchA>
+        {
+            public TestPhysicalFireEvent(int eventId) : base(eventId) { }
+
+            public override FireEvent<TestSwitchA> LogicalEquivalentFireEvent
+                => TestEvents.Constants.TestFireEvent;
+        }
+
+        public class TestPhysicalPressEvent : PhysicalPressEvent<TestSwitchB>
+        {
+            public TestPhysicalPressEvent(int eventId) : base(eventId) { }
+
+            public override PressEvent<TestSwitchB> LogicalEquivalentPressEvent
+                => TestEvents.Constants.TestPressEvent;
+
+            public override PhysicalReleaseEvent<TestSwitchB> OppositePhysicalReleaseEvent
+                => TestEvents.Constants.TestPhysicalReleaseEvent;
+        }
+
+        public class TestPhysicalReleaseEvent : PhysicalReleaseEvent<TestSwitchB>
+        {
+            public TestPhysicalReleaseEvent(int eventId) : base(eventId) { }
+            
+            public override ReleaseEvent<TestSwitchB> LogicalEquivalentReleaseEvent
+                => TestEvents.Constants.TestReleaseEvent;
+
+            public override PhysicalPressEvent<TestSwitchB> OppositePhysicalPressEvent
+                => TestEvents.Constants.TestPhysicalPressEvent;
+        }
+
         [TestMethod]
-        public void TestState0()
+        public void TestState0_DoesNotConsumeGivenInputWhenNoDefinition()
         {
             var gm = new TestGestureMachine();
             var root = new RootElement<EvaluationContext, ExecutionContext>();
             var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
-            var result = s0.Input(Events.Constants.LeftButtonDownP0Event);
-            Assert.AreEqual(result.NextState, s0);
-            Assert.AreEqual(result.Event.IsConsumed, false);
+            {
+                var result = s0.Input(TestEvents.Constants.TestPhysicalFireEvent);
+                Assert.AreEqual(result.NextState, s0);
+                Assert.AreEqual(result.Event.IsConsumed, false);
+            }
+            {
+                var result = s0.Input(TestEvents.Constants.TestPhysicalPressEvent);
+                Assert.AreEqual(result.NextState, s0);
+                Assert.AreEqual(result.Event.IsConsumed, false);
+            }
+            {
+                var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEvent);
+                Assert.AreEqual(result.NextState, s0);
+                Assert.AreEqual(result.Event.IsConsumed, false);
+            }
         }
+
+        [TestMethod]
+        public void TestState0_ConsumeGivenInputWhenPhysicalSingleThrowDefinisitonExists()
+        {
+            var gm = new TestGestureMachine();
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var when = root.When((ctx) => { return true; });
+            when.On(TestEvents.Constants.TestFireEvent)
+                .Do((ctx) => { });
+            var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
+            var result = s0.Input(TestEvents.Constants.TestPhysicalFireEvent);
+            Assert.AreEqual(result.NextState, s0);
+            Assert.AreEqual(result.Event.IsConsumed, true);
+        }
+
+        [TestMethod]
+        public void TestState0_ConsumeGivenInputWhenLogicalSingleThrowDefinisitonExists()
+        {
+            var gm = new TestGestureMachine();
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var when = root.When((ctx) => { return true; });
+            when.On(TestEvents.Constants.TestPhysicalFireEvent)
+                .Do((ctx) => { });
+            var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
+            var result = s0.Input(TestEvents.Constants.TestPhysicalFireEvent);
+            Assert.AreEqual(result.NextState, s0);
+            Assert.AreEqual(result.Event.IsConsumed, true);
+        }
+
+        [TestMethod]
+        public void TestState0_ConsumeGivenInputWhenPhysicalDoubleThrowDefinisitonExists()
+        {
+            var gm = new TestGestureMachine();
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var when = root.When((ctx) => { return true; });
+            when.On(TestEvents.Constants.TestPhysicalPressEvent)
+                .Do((ctx) => { });
+            var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
+            var result = s0.Input(TestEvents.Constants.TestPhysicalPressEvent);
+            Assert.IsTrue(result.NextState is StateN<EvaluationContext, ExecutionContext>);
+            Assert.AreEqual(result.Event.IsConsumed, true);
+        }
+
+        [TestMethod]
+        public void TestState0_ConsumeGivenInputWhenLogicalDoubleThrowDefinisitonExists()
+        {
+            var gm = new TestGestureMachine();
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var when = root.When((ctx) => { return true; });
+            when.On(TestEvents.Constants.TestPressEvent)
+                .Do((ctx) => { });
+            var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
+            var result = s0.Input(TestEvents.Constants.TestPhysicalPressEvent);
+            Assert.IsTrue(result.NextState is StateN<EvaluationContext, ExecutionContext>);
+            Assert.AreEqual(result.Event.IsConsumed, true);
+        }
+
+        [TestMethod]
+        public void TestState0_ConsumeGivenInputWhenItInIgnoreList()
+        {
+            var gm = new TestGestureMachine();
+            gm.IgnoreNext(TestEvents.Constants.TestPhysicalReleaseEvent);
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var when = root.When((ctx) => { return true; });
+            when.On(TestEvents.Constants.TestPhysicalPressEvent)
+                .Do((ctx) => { });
+            var s0 = new State0<EvaluationContext, ExecutionContext>(gm, root);
+            var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEvent);
+            Assert.AreEqual(result.NextState, s0);
+            Assert.AreEqual(result.Event.IsConsumed, true);
+        }
+
+
     }
 }
