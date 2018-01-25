@@ -262,7 +262,6 @@ namespace Crevice.Future
                      SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
             {
                 var evalContext = Machine.CreateEvaluateContext();
-
                 var singleThrowElements = GetActiveSingleThrowElements(evalContext, fireEvent);
                 if (singleThrowElements.Count > 0)
                 {
@@ -273,7 +272,7 @@ namespace Crevice.Future
             }
             else if (evnt is IPressEvent pressEvent && 
                         (DoubleThrowTriggers.Contains(pressEvent) ||
-                        DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
+                         DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
             {
                 var evalContext = Machine.CreateEvaluateContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
@@ -282,12 +281,12 @@ namespace Crevice.Future
                     var execContext = Machine.CreateExecutionContext(evalContext);
                     Machine.ExecutePressExecutorsSafely(execContext, doubleThrowElements);
                     var state = new StateN<TEvalContext, TExecContext>(
+                        Machine,
                         evalContext,
-                        CreateHistory(pressEvent, this),
+                        CreateHistory(pressEvent),
                         doubleThrowElements,
                         allowCancel: true
                         );
-
                     return Result.EventIsConsumed(nextState: state);
                 }
             }
@@ -303,71 +302,45 @@ namespace Crevice.Future
             return base.Input(evnt);
         }
 
-        public IReadOnlyList<(IReleaseEvent, IState)> CreateHistory(IPressEvent pressEvent, IState state)
-        {
-            return new List<(IReleaseEvent, IState)>() {
-                (pressEvent.Opposition, state)
-            };
-        }
-
+        public IReadOnlyList<(IReleaseEvent, IState)> CreateHistory(IPressEvent pressEvent)
+            => new List<(IReleaseEvent, IState)>() { (pressEvent.Opposition, this) };
+        
         // Filter
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetActiveDoubleThrowElements(TEvalContext ctx, IPressEvent triggerEvent)
-        {
-            return (
-                from w in RootElement.WhenElements
-                where w.IsFull &&
-                      w.WhenEvaluator(ctx) // todo evaluate safely
-                select (
-                    from d in w.DoubleThrowElements
-                    where d.IsFull && (d.Trigger == triggerEvent || 
-                                       d.Trigger == triggerEvent.LogicalNormalized)
-                    select d))
-                .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
-        }
+            => (from w in RootElement.WhenElements
+                where w.IsFull && Machine.EvaluateWhenEvaluatorSafely(ctx, w)
+                select (from d in w.DoubleThrowElements
+                        where d.IsFull && (d.Trigger == triggerEvent ||
+                                           d.Trigger == triggerEvent.LogicalNormalized)
+                        select d))
+            .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
         public IReadOnlyList<SingleThrowElement<TExecContext>> GetActiveSingleThrowElements(TEvalContext ctx, IFireEvent triggerEvent)
-        {
-            return (
-                from w in RootElement.WhenElements
-                where w.IsFull && 
-                      w.WhenEvaluator(ctx)
-                select (
-                    from s in w.SingleThrowElements
-                    where s.IsFull && (s.Trigger == triggerEvent ||
-                                       s.Trigger == triggerEvent.LogicalNormalized)
-                    select s))
+            => (from w in RootElement.WhenElements
+                where w.IsFull && Machine.EvaluateWhenEvaluatorSafely(ctx, w)
+                select (from s in w.SingleThrowElements
+                        where s.IsFull && (s.Trigger == triggerEvent ||
+                                           s.Trigger == triggerEvent.LogicalNormalized)
+                        select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; } );
-        }
 
         public IReadOnlyCollection<IFireEvent> SingleThrowTriggers
-        {
-            get
-            {
-                return (
-                    from w in RootElement.WhenElements
-                    where w.IsFull
-                    select (
-                        from s in w.SingleThrowElements
-                        where s.IsFull
-                        select s.Trigger))
-                    .Aggregate(new HashSet<IFireEvent>(), (a, b) => { a.UnionWith(b); return a; });
-            }
-        }
+            => (from w in RootElement.WhenElements
+                where w.IsFull
+                select (
+                    from s in w.SingleThrowElements
+                    where s.IsFull
+                    select s.Trigger))
+                .Aggregate(new HashSet<IFireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
         public IReadOnlyCollection<IPressEvent> DoubleThrowTriggers
-        {
-            get
-            {
-                return (
-                    from w in RootElement.WhenElements
-                    where w.IsFull
-                    select (
-                        from d in w.DoubleThrowElements
-                        where d.IsFull
-                        select d.Trigger))
-                    .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
-            }
-        }
+            => (from w in RootElement.WhenElements
+                where w.IsFull
+                select (
+                    from d in w.DoubleThrowElements
+                    where d.IsFull
+                    select d.Trigger))
+                .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
     }
 
     /*
@@ -388,12 +361,14 @@ namespace Crevice.Future
         public readonly bool CancelAllowed;
 
         public StateN(
+            GestureMachine<TEvalContext, TExecContext> machine,
             TEvalContext ctx,
             IReadOnlyList<(IReleaseEvent, IState)> history,
             IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements,
             bool allowCancel = true
             )
         {
+            Machine = machine;
             EvaluationContext = ctx;
             History = history;
             DoubleThrowElements = doubleThrowElements;
@@ -412,6 +387,7 @@ namespace Crevice.Future
                     var execContext = Machine.CreateExecutionContext(EvaluationContext);
                     Machine.ExecuteDoExecutorsSafely(execContext, singleThrowElements);
                     var notCancellableCopyState = new StateN<TEvalContext, TExecContext>(
+                        Machine,
                         EvaluationContext,
                         History,
                         DoubleThrowElements,
@@ -427,9 +403,10 @@ namespace Crevice.Future
                     var execContext = Machine.CreateExecutionContext(EvaluationContext);
                     Machine.ExecutePressExecutorsSafely(execContext, doubleThrowElements);
                     var nextState = new StateN<TEvalContext, TExecContext>(
+                        Machine,
                         EvaluationContext,
                         CreateHistory(History, pressEvent, this),
-                        DoubleThrowElements,
+                        doubleThrowElements,
                         allowCancel: true);
                     return Result.EventIsConsumed(nextState: nextState);
                 }
@@ -534,9 +511,7 @@ namespace Crevice.Future
         }
         
         public bool IsNormalEndTrigger(IReleaseEvent releaseEvent)
-        {
-            return releaseEvent == NormalEndTrigger;
-        }
+            => releaseEvent == NormalEndTrigger;
 
         public IReadOnlyCollection<IReleaseEvent> AbnormalEndTriggers
             => new HashSet<IReleaseEvent>(from h in History.Reverse().Skip(1) select h.Item1);
@@ -544,15 +519,13 @@ namespace Crevice.Future
         public (IState, IReadOnlyList<IReleaseEvent>) FindStateFromHistory(IReleaseEvent releaseEvent)
         {
             var nextHistory = History.TakeWhile(t => t.Item1 != releaseEvent);
-            var nextState = History[nextHistory.Count()].Item2;
+            var foundState = History[nextHistory.Count()].Item2;
             var skippedReleaseEvents = History.Skip(nextHistory.Count()).Select(t => t.Item1).ToList();
-            return (nextState, skippedReleaseEvents);
+            return (foundState, skippedReleaseEvents);
         }
 
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(IPressEvent triggerEvent)
-        {
-            return (
-                from d in DoubleThrowElements
+            => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
                     from dd in d.DoubleThrowElements
@@ -560,24 +533,18 @@ namespace Crevice.Future
                                         dd.Trigger == triggerEvent.LogicalNormalized)
                     select dd))
                 .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
-        }
 
         public IReadOnlyList<StrokeElement<TExecContext>> GetStrokeElements(IReadOnlyList<StrokeEvent.Direction> strokes)
-        {
-            return (
-                from d in DoubleThrowElements
+            => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
                     from s in d.StrokeElements
                     where s.IsFull && s.Strokes.SequenceEqual(strokes)
                     select s))
                 .Aggregate(new List<StrokeElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
-        }
 
         public IReadOnlyList<SingleThrowElement<TExecContext>> GetSingleThrowElements(IFireEvent triggerEvent)
-        {
-            return (
-                from d in DoubleThrowElements
+            => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
                     from s in d.SingleThrowElements
@@ -585,7 +552,6 @@ namespace Crevice.Future
                                        s.Trigger == triggerEvent.LogicalNormalized)
                     select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
-        }
     }
 
     public abstract class Element
@@ -604,7 +570,7 @@ namespace Crevice.Future
         public override bool IsFull => WhenElements.Any(e => e.IsFull);
         
         private readonly List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
-        public IReadOnlyCollection<WhenElement<TEvalContext, TExecContext>> WhenElements => whenElements.ToList();
+        public IReadOnlyList<WhenElement<TEvalContext, TExecContext>> WhenElements => whenElements.ToList();
 
         public WhenElement<TEvalContext, TExecContext> When(EvaluateAction<TEvalContext> evaluator)
         {
@@ -663,10 +629,10 @@ namespace Crevice.Future
         public readonly EvaluateAction<TEvalContext> WhenEvaluator;
 
         private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
-        public IReadOnlyCollection<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements.ToList();
+        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements.ToList();
         
         private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
-        public IReadOnlyCollection<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements.ToList();
+        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements.ToList();
         
         public WhenElement(EvaluateAction<TEvalContext> evaluator)
         {
@@ -700,7 +666,7 @@ namespace Crevice.Future
         public readonly IFireEvent Trigger;
         
         private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
         
         public SingleThrowElement(IFireEvent triggerEvent)
         {
@@ -742,22 +708,22 @@ namespace Crevice.Future
         public readonly IPressEvent Trigger;
 
         private readonly List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
-        public IReadOnlyCollection<SingleThrowElement<T>> SingleThrowElements => singleThrowElements.ToList(); 
+        public IReadOnlyList<SingleThrowElement<T>> SingleThrowElements => singleThrowElements.ToList(); 
 
         private readonly List<DoubleThrowElement<T>> doubleThrowElements = new List<DoubleThrowElement<T>>();
-        public IReadOnlyCollection<DoubleThrowElement<T>> DoubleThrowElements => doubleThrowElements.ToList(); 
+        public IReadOnlyList<DoubleThrowElement<T>> DoubleThrowElements => doubleThrowElements.ToList(); 
 
         private readonly List<StrokeElement<T>> strokeElements = new List<StrokeElement<T>>();
-        public IReadOnlyCollection<StrokeElement<T>> StrokeElements => strokeElements.ToList();
+        public IReadOnlyList<StrokeElement<T>> StrokeElements => strokeElements.ToList();
 
         private readonly List<ExecuteAction<T>> pressExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> PressExecutors => pressExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<T>> PressExecutors => pressExecutors.ToList();
 
         private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
         private readonly List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> ReleaseExecutors => releaseExecutors.ToList(); 
+        public IReadOnlyList<ExecuteAction<T>> ReleaseExecutors => releaseExecutors.ToList(); 
 
         public DoubleThrowElement(IPressEvent triggerEvent)
         {
@@ -812,10 +778,10 @@ namespace Crevice.Future
     {
         public override bool IsFull => Strokes.Count > 0 && DoExecutors.Any(e => e != null);
 
-        public readonly IReadOnlyCollection<StrokeEvent.Direction> Strokes;
+        public readonly IReadOnlyList<StrokeEvent.Direction> Strokes;
 
         private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyCollection<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
         public StrokeElement(params StrokeEvent.Direction[] strokes)
         {
