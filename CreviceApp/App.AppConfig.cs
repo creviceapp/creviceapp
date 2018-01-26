@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace CreviceApp.App
 {
-    public class AppConfig
+    public class AppConfig // Todo: extract interface and make application to use CreviceAppConfig class.
     {
-        public readonly CLIOption.Result CLIOption;
+        public readonly CLIOption.Result CLIOption; // Todo: extract this option into this class.
         public readonly Core.Config.UserConfig UserConfig;
         public readonly UI.MainForm MainForm; // Todo: Should not have this instance as a member.
 

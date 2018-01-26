@@ -61,6 +61,8 @@ namespace CreviceApp
         {
             enable = true;
         }
+
+        // Todo: Verbose.Error()
         
         public static void Print(string message)
         {

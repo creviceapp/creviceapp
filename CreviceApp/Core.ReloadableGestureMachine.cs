@@ -13,6 +13,7 @@ namespace CreviceApp.Core
                System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
                Exception>;
 
+    // GestureMachine でいいのでは
     public class ReloadableGestureMachine : IDisposable
     {
         private FSM.GestureMachine _instance;
@@ -34,9 +35,9 @@ namespace CreviceApp.Core
             return Instance.GetType() != typeof(FSM.NullGestureMachine);
         }
 
-        private readonly CreviceApp.App.AppConfig appConfig;
+        private readonly App.AppConfig appConfig;
 
-        public ReloadableGestureMachine(CreviceApp.App.AppConfig appConfig)
+        public ReloadableGestureMachine(App.AppConfig appConfig)
         {
             this.appConfig = appConfig;
             this.Instance = new FSM.NullGestureMachine();
@@ -44,9 +45,14 @@ namespace CreviceApp.Core
 
         private GetGestureMachineResult GetGestureMachine()
         {
-            var restoreFromCache = !IsActivated() || !appConfig.CLIOption.NoCache;
+            var restoreFromCache = !IsActivated() || !appConfig.CLIOption.NoCache; // should not use CLIOption here
             var saveCache = !appConfig.CLIOption.NoCache;
-            var candidate = new GestureMachineCandidate(appConfig, restoreFromCache);
+            var userScriptString = appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            var candidate = new GestureMachineCandidate(
+                userScriptString, 
+                appConfig.UserScriptCacheFile,
+                true,
+                appConfig.UserDirectory, appConfig.UserDirectory);
 
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
@@ -102,6 +108,7 @@ namespace CreviceApp.Core
         private bool reloadRequest = false;
         private bool reloading = false;
 
+        // Reloadでいいのでは
         public void HotReload()
         {
             using (Verbose.PrintElapsed("Request hot-reload GestureMachine"))
@@ -197,6 +204,7 @@ namespace CreviceApp.Core
             }
         }
 
+        // Todo: IIsDisposed
         private bool disposed = false;
         public void Dispose()
         {

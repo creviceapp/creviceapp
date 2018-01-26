@@ -8,23 +8,29 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace CreviceApp.Core
 {
-
+    // GestureMachineFactory
     public class GestureMachineCandidate
     {
-        public readonly DateTime Created;
-        public readonly bool RestoreFromCache;
         public readonly string UserScriptString;
-
-        private readonly CreviceApp.App.AppConfig appConfig;
-
+        public readonly string UserScriptCacheFile;
+        public readonly bool RestoreAllowed;
+        public readonly string ScriptSourceResolverBaseDirectory;
+        public readonly string ScriptMetadataResolverBaseDirectory;
+        
         public GestureMachineCandidate(
-            CreviceApp.App.AppConfig appConfig,
-            bool restoreFromCache)
+            string userScriptString,
+            string userScriptCacheFile,
+            bool allowRestore,
+            string scriptSourceResolverBaseDirectory,
+            string scriptMetadataResolverBaseDirectory
+            )
         {
-            this.appConfig = appConfig;
-            this.RestoreFromCache = restoreFromCache;
-            this.Created = DateTime.Now;
-            this.UserScriptString = appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            this.UserScriptString = userScriptString;
+            this.UserScriptCacheFile = userScriptCacheFile;
+            this.RestoreAllowed = allowRestore;
+            this.ScriptSourceResolverBaseDirectory = scriptSourceResolverBaseDirectory;
+            this.ScriptMetadataResolverBaseDirectory = scriptMetadataResolverBaseDirectory;
+            // appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript))
         }
 
         private Script _parsedUserScript = null;
@@ -34,7 +40,10 @@ namespace CreviceApp.Core
             {
                 if (_parsedUserScript == null)
                 {
-                    _parsedUserScript = UserScript.ParseScript(UserScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
+                    _parsedUserScript = UserScript.ParseScript(
+                        UserScriptString, 
+                        ScriptSourceResolverBaseDirectory, 
+                        ScriptMetadataResolverBaseDirectory);
                 }
                 return _parsedUserScript;
             }
@@ -61,27 +70,6 @@ namespace CreviceApp.Core
             }
         }
 
-        private UserScriptAssembly.Cache _restorationCache = null;
-        public UserScriptAssembly.Cache RestorationCache
-        {
-            get
-            {
-                if (_restorationCache == null && RestoreFromCache)
-                {
-                    _restorationCache = UserScript.LoadUserScriptAssemblyCache(appConfig.UserScriptCacheFile, UserScriptString);
-                }
-                return _restorationCache;
-            }
-            private set
-            {
-                _restorationCache = value;
-            }
-        }
-        public bool IsRestorable
-        {
-            get { return RestorationCache != null; }
-        }
-
         private UserScriptAssembly.Cache _userScriptAssemblyCache = null;
         public UserScriptAssembly.Cache UserScriptAssemblyCache
         {
@@ -99,36 +87,45 @@ namespace CreviceApp.Core
             }
         }
 
-        private FSM.GestureMachine Create(
-            CreviceApp.App.AppConfig AppConfig,
+        protected FSM.GestureMachine Create(
+            Config.UserConfig userConfig,
             UserScriptExecutionContext ctx,
             UserScriptAssembly.Cache userScriptAssembly)
         {
             UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
             var gestureDef = ctx.GetGestureDefinition();
-            return new FSM.GestureMachine(AppConfig.UserConfig, gestureDef);
+            return new FSM.GestureMachine(userConfig, gestureDef);
         }
 
-        public FSM.GestureMachine Restore(CreviceApp.App.AppConfig AppConfig, UserScriptExecutionContext ctx)
+        public FSM.GestureMachine CreateNew(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
         {
-            return Create(AppConfig, ctx, RestorationCache);
+            return Create(userConfig, ctx, UserScriptAssemblyCache);
         }
 
-        public FSM.GestureMachine Restore(CreviceApp.App.AppConfig AppConfig)
+        private UserScriptAssembly.Cache _restorationCache = null;
+        public UserScriptAssembly.Cache RestorationCache
         {
-            var ctx = new UserScriptExecutionContext(AppConfig);
-            return Restore(AppConfig, ctx);
+            get
+            {
+                if (_restorationCache == null)
+                {
+                    _restorationCache = UserScript.LoadUserScriptAssemblyCache(UserScriptCacheFile, UserScriptString);
+                }
+                return _restorationCache;
+            }
+            private set
+            {
+                _restorationCache = value;
+            }
+        }
+        public bool IsRestorable
+        {
+            get { return RestorationCache != null; }
         }
 
-        public FSM.GestureMachine CreateNew(CreviceApp.App.AppConfig AppConfig, UserScriptExecutionContext ctx)
+        public FSM.GestureMachine Restore(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
         {
-            return Create(AppConfig, ctx, UserScriptAssemblyCache);
-        }
-
-        public FSM.GestureMachine CreateNew(CreviceApp.App.AppConfig AppConfig)
-        {
-            var ctx = new UserScriptExecutionContext(AppConfig);
-            return CreateNew(AppConfig, ctx);
+            return Create(userConfig, ctx, RestorationCache);
         }
     }
 }
