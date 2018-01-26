@@ -28,6 +28,8 @@ namespace Crevice.Future
      *              
      * Todo: ベンチマーク
      * 
+     * Todo: On() と If() を区別するのは？ SingleThrowとStrokeはIfのほうがよいような…
+     * 
      */
 
 
@@ -43,18 +45,6 @@ namespace Crevice.Future
 
     public delegate bool EvaluateAction<in T>(T ctx);
     public delegate void ExecuteAction<in T>(T ctx);
-
-    public class Result
-    {
-        public readonly bool EventIsConsumed;
-        public readonly IState NextState;
-
-        public Result(bool eventIsConsumed, IState nextState)
-        {
-            EventIsConsumed = eventIsConsumed;
-            NextState = nextState;
-        }
-    }
 
     public class NaturalNumberCounter<T>
     {
@@ -530,6 +520,7 @@ namespace Crevice.Future
                         {
                             if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
                             {
+                                // OnStroke~
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
                                 Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeEvent.Direction), stroke.Direction));
                                 strokes.Add(stroke);
@@ -541,6 +532,7 @@ namespace Crevice.Future
                             var res = stroke.Input(buffer);
                             if (stroke != res)
                             {
+                                // OnStroke~
                                 Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeEvent.Direction), res.Direction));
                                 strokes.Add(res);
                             }
