@@ -8,6 +8,29 @@ namespace Crevice.Future
 {
     using System.Drawing;
 
+
+    /**
+     * Todo: キーボードと組み合わせる関係で、
+     * SendInput関係に、recapture = false 的な機能が必要っぽい
+     * 例えばあるマウスボタンをCtrlとして使うようなシーンで、Ctrlをジェスチャに組み込む場合、
+     * アプリケーション側でReCaptureしないといけない
+     * 
+     * Todo: 現在のコンテキストを表示するようなビュー。コールバックだけあればユーザーサイドでやれる？
+     * 
+     * Todo: カーソルの軌跡的なビュー。これもジェスチャ状態だけ貰えればあとは定期的にポーリングすればいける
+     *          あるいはストローク情報に開始終了位置を含むとか
+     * 
+     * Todo: 複数のプロファイルを読み込むような機能。これはAppで実装できるかな
+     *          複数のアプリを実行するより、優先度の管理がしやすい
+     *              DeclareProfile("ProfileName");
+     *              SubProfile("ProfileName");
+     *              Using(new Profile("ProfileName")) {}
+     *              
+     * Todo: ベンチマーク
+     * 
+     */
+
+
     // interface ISetupable
 
 
@@ -23,32 +46,13 @@ namespace Crevice.Future
 
     public class Result
     {
-        public class EventResult
-        {
-            public readonly bool IsConsumed;
-            public EventResult(bool consumed)
-            {
-                IsConsumed = consumed;
-            }
-        }
+        public readonly bool EventIsConsumed;
+        public readonly IState NextState;
 
-        public EventResult Event;
-        public IState NextState { get; private set; }
-
-        private Result(bool consumed, IState nextState)
+        public Result(bool eventIsConsumed, IState nextState)
         {
-            this.Event = new EventResult(consumed);
-            this.NextState = nextState;
-        }
-
-        public static Result EventIsConsumed(IState nextState)
-        {
-            return new Result(true, nextState);
-        }
-
-        public static Result EventIsRemained(IState nextState)
-        {
-            return new Result(false, nextState);
+            EventIsConsumed = eventIsConsumed;
+            NextState = nextState;
         }
     }
 
@@ -87,49 +91,153 @@ namespace Crevice.Future
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public IReadOnlyList<StrokeEvent.Direction> GetStroke()
-        {
-            throw new NotImplementedException();
-        }
+        private readonly object LockObject = new object();
+        private readonly System.Timers.Timer GestureTimeoutTimer = new System.Timers.Timer();
+        private readonly NaturalNumberCounter<IReleaseEvent> InvalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
+
+        public int GestureTimeout { get; set; } = 1000; // ms
+
+        public int StrokeStartThreshold { get; set; } = 10; // px
+        public int StrokeDirectionChangeThreshold { get; set; } = 20; // px
+        public int StrokeExtensionThreshold { get; set; } = 10; // px
+        public int StrokeWatchInterval { get; set; } = 10; // ms
+
+        public StrokeWatcher StrokeWatcher { get; private set; } = null;
+
+        public readonly RootElement<TEvalContext, TExecContext> RootElement;
+
+        public IState CurrentState { get; private set; }
 
         public virtual TEvalContext CreateEvaluateContext()
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
 
         public virtual TExecContext CreateExecutionContext(TEvalContext evaluationContext)
-        {
+            => throw new NotImplementedException();
 
-            throw new NotImplementedException();
+        public virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
+        public virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
+
+        public GestureMachine(RootElement<TEvalContext, TExecContext> rootElement)
+        {
+            RootElement = rootElement;
+            CurrentState = new State0<TEvalContext, TExecContext>(this, rootElement);
+
+            GestureTimeoutTimer.Elapsed += new System.Timers.ElapsedEventHandler(TryTimeout);
+            GestureTimeoutTimer.Interval = GestureTimeout;
+            GestureTimeoutTimer.AutoReset = false;
         }
 
+        public bool Input(IPhysicalEvent evnt) => Input(evnt, null);
 
-        // PointはStrokeのために必要
-        /*
-        public Result Input(IPhysicalEvent evnt, Point point)
+        public bool Input(IPhysicalEvent evnt, Point? point)
         {
-            //if ()
-        }
-        */
-
-            
-        // inputを physicalな型にするとよい？
-        // HashSetでは微妙かな やはりカウンターがよさげ
-        private readonly NaturalNumberCounter<IReleaseEvent> invalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
-
-        public bool IsIgnored(IReleaseEvent releaseEvent)
-        {
-            if (invalidReleaseEvents[releaseEvent] > 0)
+            lock (LockObject)
             {
-                invalidReleaseEvents.CountDown(releaseEvent);
-                return true;
+                if (evnt is IReleaseEvent releaseEvent && InvalidReleaseEvents[releaseEvent] > 0)
+                {
+                    InvalidReleaseEvents.CountDown(releaseEvent);
+                    return true;
+                }
+
+                if (point.HasValue && CurrentState is StateN<TEvalContext, TExecContext>)
+                {
+                    StrokeWatcher.Queue(point.Value);
+                }
+
+                var res = CurrentState.Input(evnt);
+                if (CurrentState != res.NextState)
+                {
+                    if (res.NextState is State0<TEvalContext, TExecContext> S0)
+                    {
+                        ReleaseStrokeWatcher();
+
+                        GestureTimeoutTimer.Stop();
+                    }
+                    else if (res.NextState is StateN<TEvalContext, TExecContext> SN)
+                    {
+                        ResetStrokeWatcher();
+
+                        GestureTimeoutTimer.Stop();
+                        GestureTimeoutTimer.Interval = GestureTimeout;
+                        GestureTimeoutTimer.Start();
+                    }
+                }
+                CurrentState = res.NextState;
+                return res.EventIsConsumed;
             }
-            return false;
         }
-        
+
+        private StrokeWatcher CreateStrokeWatcher()
+            => new StrokeWatcher(
+                StrokeWatcherTaskFactory,
+                StrokeStartThreshold,
+                StrokeDirectionChangeThreshold,
+                StrokeExtensionThreshold,
+                StrokeWatchInterval);
+
+        private void ReleaseStrokeWatcher() => LazyRelease(StrokeWatcher);
+
+        private void LazyRelease(StrokeWatcher strokeWatcher)
+        {
+            if (strokeWatcher != null)
+            {
+                LowPriorityTaskFactory.StartNew(() => {
+                    strokeWatcher.Dispose();
+                });
+            }
+        }
+
+        private void ResetStrokeWatcher()
+        {
+            var strokeWatcher = StrokeWatcher;
+            StrokeWatcher = CreateStrokeWatcher();
+            LazyRelease(strokeWatcher);
+        }
+
+        private void TryTimeout(object sender, System.Timers.ElapsedEventArgs args)
+        {
+            lock (LockObject)
+            {
+                if (CurrentState is StateN<TEvalContext, TExecContext>)
+                {
+                    var state = CurrentState;
+                    var _state = CurrentState.Timeout();
+                    while (state != _state)
+                    {
+                        state = _state;
+                        _state = state.Timeout();
+                    }
+                    if (CurrentState != state)
+                    {
+                        // OnGestureTimeout
+                        CurrentState = state;
+                    }
+                }
+            }
+        }
+
+        public void Reset()
+        {
+            lock (LockObject)
+            {
+                if (CurrentState is StateN<TEvalContext, TExecContext>)
+                {
+                    var state = CurrentState;
+                    var _state = CurrentState.Reset();
+                    while (state != _state)
+                    {
+                        state = _state;
+                        _state = state.Reset();
+                    }
+                    CurrentState = state;
+                }
+                // OnReset
+            }
+        }
+
         public void IgnoreNext(IReleaseEvent releaseEvent)
         {
-            invalidReleaseEvents.CountUp(releaseEvent);
+            InvalidReleaseEvents.CountUp(releaseEvent);
         }
 
         public void IgnoreNext(IEnumerable<IReleaseEvent> releaseEvents)
@@ -140,103 +248,354 @@ namespace Crevice.Future
             }
         }
 
+        public bool EvaluateWhenEvaluator(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
+            => whenElement.WhenEvaluator(evalContext);
 
-        public bool EvaluateWhenEvaluatorSafely(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
-        {
-            try
-            {
-                return whenElement.WhenEvaluator(evalContext);
-            }
-            catch (Exception)
-            {
-                // todo
-            }
-            return false;
-        }
+        public void ExecuteExcutor(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
+            => executeAction(execContext);
 
-        public void ExecuteSafely(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
-        {
-            try
-            {
-                executeAction(execContext);
-            }
-            catch (Exception)
-            {
-                // todo
-            }
-        }
-
-        public void ExecutePressExecutorsSafely(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecutePressExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             foreach (var element in doubleThrowElements)
             {
                 foreach (var executor in element.PressExecutors)
                 {
-                    ExecuteSafely(execContext, executor);
+                    ExecuteExcutor(execContext, executor);
                 }
             }
         }
 
-        public void ExecuteDoExecutorsSafely(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteDoExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             foreach (var element in doubleThrowElements)
             {
                 foreach (var executor in element.DoExecutors)
                 {
-                    ExecuteSafely(execContext, executor);
+                    ExecuteExcutor(execContext, executor);
                 }
             }
         }
 
-        public void ExecuteDoExecutorsSafely(TExecContext execContext, IEnumerable<SingleThrowElement<TExecContext>> singleThrowElements)
+        public void ExecuteDoExecutors(TExecContext execContext, IEnumerable<SingleThrowElement<TExecContext>> singleThrowElements)
         {
             foreach (var element in singleThrowElements)
             {
                 foreach (var executor in element.DoExecutors)
                 {
-                    ExecuteSafely(execContext, executor);
+                    ExecuteExcutor(execContext, executor);
                 }
             }
         }
 
-        public void ExecuteDoExecutorsSafely(TExecContext execContext, IEnumerable<StrokeElement<TExecContext>> strokeElements)
+        public void ExecuteDoExecutors(TExecContext execContext, IEnumerable<StrokeElement<TExecContext>> strokeElements)
         {
             foreach (var element in strokeElements)
             {
                 foreach (var executor in element.DoExecutors)
                 {
-                    ExecuteSafely(execContext, executor);
+                    ExecuteExcutor(execContext, executor);
                 }
             }
         }
 
-        public void ExecuteReleaseExecutorsSafely(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteReleaseExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             foreach (var element in doubleThrowElements)
             {
                 foreach (var executor in element.ReleaseExecutors)
                 {
-                    ExecuteSafely(execContext, executor);
+                    ExecuteExcutor(execContext, executor);
                 }
             }
         }
     }
 
-    public interface IState
+    public class Stroke
     {
-        // Point? pointを必須にしつつ、渡さないオーバーロードも
-        Result Input(IPhysicalEvent evnt);
+        public readonly StrokeEvent.Direction Direction;
+        internal readonly int strokeDirectionChangeThreshold;
+        internal readonly int strokeExtensionThreshold;
+
+        private readonly List<System.Drawing.Point> points = new List<System.Drawing.Point>();
+
+        public Stroke(
+            int strokeDirectionChangeThreshold,
+            int strokeExtensionThreshold,
+            StrokeEvent.Direction dir)
+        {
+            this.Direction = dir;
+            this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            this.strokeExtensionThreshold = strokeExtensionThreshold;
+        }
+
+        public Stroke(
+            int strokeDirectionChangeThreshold,
+            int strokeExtensionThreshold,
+            List<System.Drawing.Point> input)
+        {
+            this.Direction = NextDirection(GetAngle(input.First(), input.Last()));
+            this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            this.strokeExtensionThreshold = strokeExtensionThreshold;
+            Absorb(input);
+        }
+
+        public virtual Stroke Input(List<System.Drawing.Point> input)
+        {
+            var p0 = input.First();
+            var p1 = input.Last();
+            var dx = Math.Abs(p0.X - p1.X);
+            var dy = Math.Abs(p0.Y - p1.Y);
+            var angle = GetAngle(p0, p1);
+            if (dx > strokeDirectionChangeThreshold || dy > strokeDirectionChangeThreshold)
+            {
+                var dir = NextDirection(angle);
+                if (IsSameDirection(dir))
+                {
+                    Absorb(input);
+                    return this;
+                }
+                var stroke = CreateNew(dir);
+                stroke.Absorb(input);
+                return stroke;
+            }
+
+            if (dx > strokeExtensionThreshold || dy > strokeExtensionThreshold)
+            {
+                if (IsExtensionable(angle))
+                {
+                    Absorb(input);
+                }
+            }
+            return this;
+        }
+
+        public void Absorb(List<System.Drawing.Point> points)
+        {
+            this.points.AddRange(points);
+            points.Clear();
+        }
+
+        private static StrokeEvent.Direction NextDirection(double angle)
+        {
+            if (-135 <= angle && angle < -45)
+            {
+                return StrokeEvent.Direction.Up;
+            }
+            else if (-45 <= angle && angle < 45)
+            {
+                return StrokeEvent.Direction.Right;
+            }
+            else if (45 <= angle && angle < 135)
+            {
+                return StrokeEvent.Direction.Down;
+            }
+            else // if (135 <= angle || angle < -135)
+            {
+                return StrokeEvent.Direction.Left;
+            }
+        }
+
+        private bool IsSameDirection(StrokeEvent.Direction dir)
+        {
+            return dir == Direction;
+        }
+
+        private bool IsExtensionable(double angle)
+        {
+            return Direction == NextDirection(angle);
+        }
+
+        private Stroke CreateNew(StrokeEvent.Direction dir)
+        {
+            return new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, dir);
+        }
+
+        public static bool CanCreate(int initialStrokeThreshold, System.Drawing.Point p0, System.Drawing.Point p1)
+        {
+            var dx = Math.Abs(p0.X - p1.X);
+            var dy = Math.Abs(p0.Y - p1.Y);
+            if (dx > initialStrokeThreshold || dy > initialStrokeThreshold)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static double GetAngle(System.Drawing.Point p0, System.Drawing.Point p1)
+        {
+            return Math.Atan2(p1.Y - p0.Y, p1.X - p0.X) * 180 / Math.PI;
+        }
+    }
+
+    public abstract class PointProcessor
+    {
+        public readonly int WatchInterval;
+
+        private int lastTickCount;
+
+        public PointProcessor(int watchInterval)
+        {
+            this.WatchInterval = watchInterval;
+            this.lastTickCount = 0;
+        }
+
+        private bool MustBeProcessed(int currentTickCount)
+        {
+            if (WatchInterval == 0)
+            {
+                return true;
+            }
+            if (currentTickCount < lastTickCount || lastTickCount + WatchInterval < currentTickCount)
+            {
+                lastTickCount = currentTickCount;
+                return true;
+            }
+            return false;
+        }
+
+        public bool Process(System.Drawing.Point point)
+        {
+            if (!MustBeProcessed(currentTickCount: Environment.TickCount))
+            {
+                return false;
+            }
+            OnProcess(point);
+            return true;
+        }
+
+        internal abstract void OnProcess(System.Drawing.Point point);
+    }
+
+    public abstract class QueuedPointProcessor : PointProcessor
+    {
+        internal readonly System.Collections.Concurrent.BlockingCollection<System.Drawing.Point> queue 
+            = new System.Collections.Concurrent.BlockingCollection<System.Drawing.Point>();
+
+        public QueuedPointProcessor(int watchInterval) : base(watchInterval) { }
+
+        internal override void OnProcess(System.Drawing.Point point)
+        {
+            queue.Add(point);
+        }
+    }
+    
+    public class StrokeWatcher : QueuedPointProcessor, IDisposable
+    {
+        internal readonly TaskFactory taskFactory;
+        internal readonly int initialStrokeThreshold;
+        internal readonly int strokeDirectionChangeThreshold;
+        internal readonly int strokeExtensionThreshold;
+
+        internal readonly List<Stroke> strokes = new List<Stroke>();
+        internal readonly Task task;
+
+        public StrokeWatcher(
+            TaskFactory taskFactory,
+            int initialStrokeThreshold,
+            int strokeDirectionChangeThreshold,
+            int strokeExtensionThreshold,
+            int watchInterval) : base(watchInterval)
+        {
+            this.taskFactory = taskFactory;
+            this.initialStrokeThreshold = initialStrokeThreshold;
+            this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            this.strokeExtensionThreshold = strokeExtensionThreshold;
+            this.task = Start();
+        }
+
+        public virtual void Queue(System.Drawing.Point point)
+        {
+            if (!IsDisposed)
+            {
+                Process(point);
+            }
+        }
+
+        internal readonly List<System.Drawing.Point> buffer = new List<System.Drawing.Point>();
+
+        private Task Start()
+        {
+            return taskFactory.StartNew(() =>
+            {
+                try
+                {
+                    foreach (var point in queue.GetConsumingEnumerable())
+                    {
+                        buffer.Add(point);
+                        if (buffer.Count < 2)
+                        {
+                            continue;
+                        }
+                        if (strokes.Count == 0)
+                        {
+                            if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
+                            {
+                                var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
+                                Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeEvent.Direction), stroke.Direction));
+                                strokes.Add(stroke);
+                            }
+                        }
+                        else
+                        {
+                            var stroke = strokes.Last();
+                            var res = stroke.Input(buffer);
+                            if (stroke != res)
+                            {
+                                Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeEvent.Direction), res.Direction));
+                                strokes.Add(res);
+                            }
+                        }
+                    }
+                }
+                catch (OperationCanceledException) { }
+            });
+        }
+
+        public IReadOnlyList<StrokeEvent.Direction> GetStorkes()
+            => strokes.Select(x => x.Direction).ToList();
+
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            IsDisposed = true;
+            queue.CompleteAdding();
+            Verbose.Print("StrokeWatcher(HashCode: 0x{0:X}) was released.", GetHashCode());
+        }
+
+        ~StrokeWatcher()
+        {
+            Dispose();
+        }
     }
 
 
-    // todo type
+
+    public interface IState
+    {
+        (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt);
+        IState Timeout();
+        IState Reset();
+    }
+
     public abstract class State<TEvalContext, TExecContext> : IState
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public virtual Result Input(IPhysicalEvent evnt)
+        public virtual (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
-            return Result.EventIsRemained(nextState: this);
+            return (EventIsConsumed: false, NextState: this);
+        }
+
+        public virtual IState Timeout()
+        {
+            return this;
+        }
+
+        public virtual IState Reset()
+        {
+            return this;
         }
     }
     
@@ -255,7 +614,7 @@ namespace Crevice.Future
             RootElement = rootElement; 
         }
 
-        public override Result Input(IPhysicalEvent evnt)
+        public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
             if (evnt is IFireEvent fireEvent && 
                     (SingleThrowTriggers.Contains(fireEvent) || 
@@ -263,11 +622,11 @@ namespace Crevice.Future
             {
                 var evalContext = Machine.CreateEvaluateContext();
                 var singleThrowElements = GetActiveSingleThrowElements(evalContext, fireEvent);
-                if (singleThrowElements.Count > 0)
+                if (singleThrowElements.Any())
                 {
                     var execContext = Machine.CreateExecutionContext(evalContext);
-                    Machine.ExecuteDoExecutorsSafely(execContext, singleThrowElements);
-                    return Result.EventIsConsumed(nextState: this);
+                    Machine.ExecuteDoExecutors(execContext, singleThrowElements);
+                    return (EventIsConsumed: true, NextState: this);
                 }
             }
             else if (evnt is IPressEvent pressEvent && 
@@ -276,26 +635,18 @@ namespace Crevice.Future
             {
                 var evalContext = Machine.CreateEvaluateContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
-                if (doubleThrowElements.Count() > 0)
+                if (doubleThrowElements.Any())
                 {
                     var execContext = Machine.CreateExecutionContext(evalContext);
-                    Machine.ExecutePressExecutorsSafely(execContext, doubleThrowElements);
-                    var state = new StateN<TEvalContext, TExecContext>(
+                    Machine.ExecutePressExecutors(execContext, doubleThrowElements);
+                    var nextState = new StateN<TEvalContext, TExecContext>(
                         Machine,
                         evalContext,
                         CreateHistory(pressEvent),
                         doubleThrowElements,
-                        allowCancel: true
+                        canCancel: true
                         );
-                    return Result.EventIsConsumed(nextState: state);
-                }
-            }
-            // これはMachineが担当したほうがよさげ
-            else if (evnt is IReleaseEvent releaseEvent)
-            {
-                if (Machine.IsIgnored(releaseEvent))
-                {
-                    return Result.EventIsConsumed(nextState: this);
+                    return (EventIsConsumed: true, NextState: nextState);
                 }
             }
             
@@ -308,7 +659,7 @@ namespace Crevice.Future
         // Filter
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetActiveDoubleThrowElements(TEvalContext ctx, IPressEvent triggerEvent)
             => (from w in RootElement.WhenElements
-                where w.IsFull && Machine.EvaluateWhenEvaluatorSafely(ctx, w)
+                where w.IsFull && Machine.EvaluateWhenEvaluator(ctx, w)
                 select (from d in w.DoubleThrowElements
                         where d.IsFull && (d.Trigger == triggerEvent ||
                                            d.Trigger == triggerEvent.LogicalNormalized)
@@ -317,7 +668,7 @@ namespace Crevice.Future
 
         public IReadOnlyList<SingleThrowElement<TExecContext>> GetActiveSingleThrowElements(TEvalContext ctx, IFireEvent triggerEvent)
             => (from w in RootElement.WhenElements
-                where w.IsFull && Machine.EvaluateWhenEvaluatorSafely(ctx, w)
+                where w.IsFull && Machine.EvaluateWhenEvaluator(ctx, w)
                 select (from s in w.SingleThrowElements
                         where s.IsFull && (s.Trigger == triggerEvent ||
                                            s.Trigger == triggerEvent.LogicalNormalized)
@@ -343,13 +694,6 @@ namespace Crevice.Future
                 .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
     }
 
-    /*
-     * InputにはPhysicalなキーだけが来て、
-     * HistoryにPhysicalなキーだけを残すなら、
-     * Containsのところをフィルタリング結果>=0で判断できるし、
-     * Releaseのところも特に問題ないのでは
-     */
-    
     public class StateN<TEvalContext, TExecContext> : State<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
@@ -358,90 +702,79 @@ namespace Crevice.Future
         public readonly TEvalContext EvaluationContext;
         public readonly IReadOnlyList<(IReleaseEvent, IState)> History;
         public readonly IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements;
-        public readonly bool CancelAllowed;
+        public readonly bool CanCancel;
 
         public StateN(
             GestureMachine<TEvalContext, TExecContext> machine,
             TEvalContext ctx,
             IReadOnlyList<(IReleaseEvent, IState)> history,
             IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements,
-            bool allowCancel = true
-            )
+            bool canCancel = true)
         {
             Machine = machine;
             EvaluationContext = ctx;
             History = history;
             DoubleThrowElements = doubleThrowElements;
-            CancelAllowed = allowCancel;
+            CanCancel = canCancel;
         }
 
-        public override Result Input(IPhysicalEvent evnt)
+        public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
-            // Todo: storkewatcher
-
             if (evnt is IFireEvent fireEvent)
             {
                 var singleThrowElements = GetSingleThrowElements(fireEvent);
-                if (singleThrowElements.Count > 0)
+                if (singleThrowElements.Any())
                 {
                     var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                    Machine.ExecuteDoExecutorsSafely(execContext, singleThrowElements);
+                    Machine.ExecuteDoExecutors(execContext, singleThrowElements);
                     var notCancellableCopyState = new StateN<TEvalContext, TExecContext>(
                         Machine,
                         EvaluationContext,
                         History,
                         DoubleThrowElements,
-                        allowCancel: false);
-                    return Result.EventIsConsumed(nextState: notCancellableCopyState);
+                        canCancel: false);
+                    return (EventIsConsumed: true, NextState: notCancellableCopyState);
                 }
             }
             else if (evnt is IPressEvent pressEvent)
             {
                 var doubleThrowElements = GetDoubleThrowElements(pressEvent);
-                if (doubleThrowElements.Count > 0)
+                if (doubleThrowElements.Any())
                 {
                     var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                    Machine.ExecutePressExecutorsSafely(execContext, doubleThrowElements);
+                    Machine.ExecutePressExecutors(execContext, doubleThrowElements);
                     var nextState = new StateN<TEvalContext, TExecContext>(
                         Machine,
                         EvaluationContext,
                         CreateHistory(History, pressEvent, this),
                         doubleThrowElements,
-                        allowCancel: true);
-                    return Result.EventIsConsumed(nextState: nextState);
+                        canCancel: CanCancel);
+                    return (EventIsConsumed: true, NextState: nextState);
                 }
             }
             else if (evnt is IReleaseEvent releaseEvent)
             {
-                if (Machine.IsIgnored(releaseEvent))
-                    // Machineにやらせたほうがよさげ
+                if (IsNormalEndTrigger(releaseEvent))
                 {
-                    return Result.EventIsConsumed(nextState: this);
-                }
-                else if (IsNormalEndTrigger(releaseEvent))
-                {
-                    var strokes = Machine.GetStroke();
-                    if (strokes.Count() > 0)
+                    var strokes = Machine.StrokeWatcher.GetStorkes();
+                    if (strokes.Any())
                     {
                         var strokeElements = GetStrokeElements(strokes);
-                        if (strokeElements.Count > 0)
+                        if (strokeElements.Any())
                         {
                             var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                            Machine.ExecuteDoExecutorsSafely(execContext, strokeElements);
-                            Machine.ExecuteReleaseExecutorsSafely(execContext, DoubleThrowElements);
+                            Machine.ExecuteDoExecutors(execContext, strokeElements);
+                            Machine.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
                         }
                     }
-                    else if (ShouldFinalize)
+                    else if (HasDoExecutors || HasReleaseExecutors)
                     {
-                        if (HasReleaseExecutors)
-                        {
-                            //normal end
-                            var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                            Machine.ExecuteDoExecutorsSafely(execContext, DoubleThrowElements);
-                            Machine.ExecuteReleaseExecutorsSafely(execContext, DoubleThrowElements);
-                        }
+                        //normal end
+                        var execContext = Machine.CreateExecutionContext(EvaluationContext);
+                        Machine.ExecuteDoExecutors(execContext, DoubleThrowElements);
+                        Machine.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
                     }
-                    else if (CancelAllowed)
+                    else if (/* !HasDoExecutors && !HasReleaseExecutors && */ CanCancel)
                     {
                         // Machine.OnGestureCancel()
 
@@ -450,31 +783,30 @@ namespace Crevice.Future
 
                         // ボタンであればクリックの復元を
                     }
-                    return Result.EventIsConsumed(nextState: LastState);
+                    return (EventIsConsumed: true, NextState: LastState);
                 }
                 else if (AbnormalEndTriggers.Contains(releaseEvent))
                 {
                     var (oldState, skippedReleaseEvents) = FindStateFromHistory(releaseEvent);
                     Machine.IgnoreNext(skippedReleaseEvents);
-                    return Result.EventIsConsumed(nextState: oldState);
+                    return (EventIsConsumed: true, NextState: oldState);
                 }
             }
 
             return base.Input(evnt);
         }
 
-        public IState TimeoutRequest()
+        public override IState Timeout()
         {
-            if (CancelAllowed && !ShouldFinalize)
+            if (!HasDoExecutors && !HasReleaseExecutors && CanCancel)
             {
-                // Machine.OnGestureTimeout()
-
+                //Machine.OnGestureTimeout()
                 return LastState;
             }
             return this;
         }
 
-        public IState Reset()
+        public override IState Reset()
         {
             // Machine.OnGestureReset()
             Machine.IgnoreNext(NormalEndTrigger);
@@ -483,7 +815,7 @@ namespace Crevice.Future
             if (HasReleaseExecutors)
             {
                 var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                Machine.ExecuteReleaseExecutorsSafely(execContext, DoubleThrowElements);
+                Machine.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
             }
             return LastState;
         }
@@ -492,13 +824,11 @@ namespace Crevice.Future
 
         public IState LastState => History.Last().Item2;
 
-        public bool HasPressExecutors => DoubleThrowElements.Any(d => d.PressExecutors.Count > 0);
+        public bool HasPressExecutors => DoubleThrowElements.Any(d => d.PressExecutors.Any());
 
-        public bool HasDoExecutors => DoubleThrowElements.Any(d => d.DoExecutors.Count > 0);
+        public bool HasDoExecutors => DoubleThrowElements.Any(d => d.DoExecutors.Any());
 
-        public bool HasReleaseExecutors => DoubleThrowElements.Any(d => d.ReleaseExecutors.Count > 0);
-
-        public bool ShouldFinalize => HasPressExecutors || HasReleaseExecutors;
+        public bool HasReleaseExecutors => DoubleThrowElements.Any(d => d.ReleaseExecutors.Any());
 
         public IReadOnlyList<(IReleaseEvent, IState)> CreateHistory(
             IReadOnlyList<(IReleaseEvent, IState)> history, 
@@ -776,7 +1106,7 @@ namespace Crevice.Future
     public class StrokeElement<T> : Element
         where T : ExecutionContext
     {
-        public override bool IsFull => Strokes.Count > 0 && DoExecutors.Any(e => e != null);
+        public override bool IsFull => Strokes.Any() && DoExecutors.Any(e => e != null);
 
         public readonly IReadOnlyList<StrokeEvent.Direction> Strokes;
 
