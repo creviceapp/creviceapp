@@ -7,8 +7,8 @@
     <ProjectGuid>{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CreviceTests</RootNamespace>
-    <AssemblyName>CreviceTests</AssemblyName>
+    <RootNamespace>CreviceLibTests</RootNamespace>
+    <AssemblyName>CreviceLibTests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -54,24 +54,6 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core.DSL.DoubleTriggerAfterElementTests.cs" />
-    <Compile Include="Core.DSL.DoubleTriggerBeforeElementTests.cs" />
-    <Compile Include="Core.DSL.DoubleTriggerDoElementTests.cs" />
-    <Compile Include="Core.DSL.IfDoubleTriggerButtonElementTests.cs" />
-    <Compile Include="Core.DSL.IfSingleTriggerButtonElementTests.cs" />
-    <Compile Include="Core.DSL.IfStrokeElementTests.cs" />
-    <Compile Include="Core.DSL.OnElementTests.cs" />
-    <Compile Include="Core.DSL.RootTests.cs" />
-    <Compile Include="Core.DSL.SingleTriggerDoElementTests.cs" />
-    <Compile Include="Core.DSL.WhenElementTests.cs" />
-    <Compile Include="Core.FSM.State0Tests.cs" />
-    <Compile Include="Core.FSM.State1Tests.cs" />
-    <Compile Include="Core.FSM.State2Tests.cs" />
-    <Compile Include="Core.FSM.State3Tests.cs" />
-    <Compile Include="Core.FSM.TestDef.cs" />
-    <Compile Include="Core.FSM.TransitionTests.cs" />
-    <Compile Include="Core.StrokeTests.cs" />
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest2.cs" />
   </ItemGroup>
@@ -79,7 +61,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Crevice\Crevice.csproj">
+    <ProjectReference Include="..\CreviceLib\CreviceLib.csproj">
       <Project>{662d9d0f-7361-42ac-b7cf-1ee7eecad5b3}</Project>
       <Name>Crevice</Name>
     </ProjectReference>

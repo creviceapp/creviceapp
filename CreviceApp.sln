@@ -12,9 +12,9 @@ Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceAppUniversal", "Crev
 		{67EC531C-07C7-463A-87CE-F5F49496E271} = {67EC531C-07C7-463A-87CE-F5F49496E271}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crevice", "Crevice\Crevice.csproj", "{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreviceLib", "CreviceLib\CreviceLib.csproj", "{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceTests", "CreviceTests\CreviceTests.csproj", "{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceLibTests", "CreviceLibTests\CreviceLibTests.csproj", "{CDD992C1-AA0E-4244-9C37-BBA81EE9A18E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3} = {662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}
 	EndProjectSection

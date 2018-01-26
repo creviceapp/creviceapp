@@ -522,7 +522,7 @@ namespace Crevice.Future
                             {
                                 // OnStroke~
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
-                                Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeEvent.Direction), stroke.Direction));
+                                // Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeEvent.Direction), stroke.Direction));
                                 strokes.Add(stroke);
                             }
                         }
@@ -533,7 +533,7 @@ namespace Crevice.Future
                             if (stroke != res)
                             {
                                 // OnStroke~
-                                Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeEvent.Direction), res.Direction));
+                                // Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeEvent.Direction), res.Direction));
                                 strokes.Add(res);
                             }
                         }
@@ -553,7 +553,7 @@ namespace Crevice.Future
             GC.SuppressFinalize(this);
             IsDisposed = true;
             queue.CompleteAdding();
-            Verbose.Print("StrokeWatcher(HashCode: 0x{0:X}) was released.", GetHashCode());
+            // Verbose.Print("StrokeWatcher(HashCode: 0x{0:X}) was released.", GetHashCode());
         }
 
         ~StrokeWatcher()

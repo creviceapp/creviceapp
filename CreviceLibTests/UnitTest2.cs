@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CreviceTests
+namespace CreviceLib.Tests
 {
     using Crevice.Future;
     using System.Linq;
