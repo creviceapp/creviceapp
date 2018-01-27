@@ -29,6 +29,8 @@ namespace Crevice.Future
      * Todo: ベンチマーク
      * 
      * Todo: On() と If() を区別するのは？ SingleThrowとStrokeはIfのほうがよいような…
+     *          →これだと互換性アリにできる？
+     *              →DoubleThrowが常にOnな点が違う
      * 
      */
 
@@ -46,202 +48,34 @@ namespace Crevice.Future
     public delegate bool EvaluateAction<in T>(T ctx);
     public delegate void ExecuteAction<in T>(T ctx);
 
-    public class NaturalNumberCounter<T>
+    public class GestureMachineConfig
     {
-        private readonly Dictionary<T, int> Dictionary = new Dictionary<T, int>();
-
-        public int this[T key]
-        {
-            get
-            {
-                return Dictionary.TryGetValue(key, out int count) ? count : 0;
-            }
-            set
-            {
-                if (value < 0)
-                {
-                    throw new InvalidOperationException("Natural number >= 0");
-                }
-                Dictionary[key] = value;
-            }
-        }
-
-        public void CountDown(T key)
-        {
-            Dictionary[key] = this[key] - 1;
-        }
-
-        public void CountUp(T key)
-        {
-            Dictionary[key] = this[key] + 1;
-        }
+        // ms
+        public int GestureTimeout { get; set; } = 1000;
+        // px
+        public int StrokeStartThreshold { get; set; } = 10;
+        // px
+        public int StrokeDirectionChangeThreshold { get; set; } = 20;
+        // px
+        public int StrokeExtensionThreshold { get; set; } = 10;
+        // ms
+        public int StrokeWatchInterval { get; set; } = 10;
     }
 
-    public abstract class GestureMachine<TEvalContext, TExecContext>
+    public class ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        private readonly object LockObject = new object();
-        private readonly System.Timers.Timer GestureTimeoutTimer = new System.Timers.Timer();
-        private readonly NaturalNumberCounter<IReleaseEvent> InvalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
-
-        public int GestureTimeout { get; set; } = 1000; // ms
-
-        public int StrokeStartThreshold { get; set; } = 10; // px
-        public int StrokeDirectionChangeThreshold { get; set; } = 20; // px
-        public int StrokeExtensionThreshold { get; set; } = 10; // px
-        public int StrokeWatchInterval { get; set; } = 10; // ms
-
-        public StrokeWatcher StrokeWatcher { get; private set; } = null;
-
-        public readonly RootElement<TEvalContext, TExecContext> RootElement;
-
-        public IState CurrentState { get; private set; }
-
         public virtual TEvalContext CreateEvaluateContext()
             => throw new NotImplementedException();
 
         public virtual TExecContext CreateExecutionContext(TEvalContext evaluationContext)
             => throw new NotImplementedException();
 
-        public virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
-        public virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
-
-        public GestureMachine(RootElement<TEvalContext, TExecContext> rootElement)
-        {
-            RootElement = rootElement;
-            CurrentState = new State0<TEvalContext, TExecContext>(this, rootElement);
-
-            GestureTimeoutTimer.Elapsed += new System.Timers.ElapsedEventHandler(TryTimeout);
-            GestureTimeoutTimer.Interval = GestureTimeout;
-            GestureTimeoutTimer.AutoReset = false;
-        }
-
-        public bool Input(IPhysicalEvent evnt) => Input(evnt, null);
-
-        public bool Input(IPhysicalEvent evnt, Point? point)
-        {
-            lock (LockObject)
-            {
-                if (evnt is IReleaseEvent releaseEvent && InvalidReleaseEvents[releaseEvent] > 0)
-                {
-                    InvalidReleaseEvents.CountDown(releaseEvent);
-                    return true;
-                }
-
-                if (point.HasValue && CurrentState is StateN<TEvalContext, TExecContext>)
-                {
-                    StrokeWatcher.Queue(point.Value);
-                }
-
-                var res = CurrentState.Input(evnt);
-                if (CurrentState != res.NextState)
-                {
-                    if (res.NextState is State0<TEvalContext, TExecContext> S0)
-                    {
-                        ReleaseStrokeWatcher();
-
-                        GestureTimeoutTimer.Stop();
-                    }
-                    else if (res.NextState is StateN<TEvalContext, TExecContext> SN)
-                    {
-                        ResetStrokeWatcher();
-
-                        GestureTimeoutTimer.Stop();
-                        GestureTimeoutTimer.Interval = GestureTimeout;
-                        GestureTimeoutTimer.Start();
-                    }
-                }
-                CurrentState = res.NextState;
-                return res.EventIsConsumed;
-            }
-        }
-
-        private StrokeWatcher CreateStrokeWatcher()
-            => new StrokeWatcher(
-                StrokeWatcherTaskFactory,
-                StrokeStartThreshold,
-                StrokeDirectionChangeThreshold,
-                StrokeExtensionThreshold,
-                StrokeWatchInterval);
-
-        private void ReleaseStrokeWatcher() => LazyRelease(StrokeWatcher);
-
-        private void LazyRelease(StrokeWatcher strokeWatcher)
-        {
-            if (strokeWatcher != null)
-            {
-                LowPriorityTaskFactory.StartNew(() => {
-                    strokeWatcher.Dispose();
-                });
-            }
-        }
-
-        private void ResetStrokeWatcher()
-        {
-            var strokeWatcher = StrokeWatcher;
-            StrokeWatcher = CreateStrokeWatcher();
-            LazyRelease(strokeWatcher);
-        }
-
-        private void TryTimeout(object sender, System.Timers.ElapsedEventArgs args)
-        {
-            lock (LockObject)
-            {
-                if (CurrentState is StateN<TEvalContext, TExecContext>)
-                {
-                    var state = CurrentState;
-                    var _state = CurrentState.Timeout();
-                    while (state != _state)
-                    {
-                        state = _state;
-                        _state = state.Timeout();
-                    }
-                    if (CurrentState != state)
-                    {
-                        // OnGestureTimeout
-                        CurrentState = state;
-                    }
-                }
-            }
-        }
-
-        public void Reset()
-        {
-            lock (LockObject)
-            {
-                if (CurrentState is StateN<TEvalContext, TExecContext>)
-                {
-                    var state = CurrentState;
-                    var _state = CurrentState.Reset();
-                    while (state != _state)
-                    {
-                        state = _state;
-                        _state = state.Reset();
-                    }
-                    CurrentState = state;
-                }
-                // OnReset
-            }
-        }
-
-        public void IgnoreNext(IReleaseEvent releaseEvent)
-        {
-            InvalidReleaseEvents.CountUp(releaseEvent);
-        }
-
-        public void IgnoreNext(IEnumerable<IReleaseEvent> releaseEvents)
-        {
-            foreach (var releaseEvent in releaseEvents)
-            {
-                IgnoreNext(releaseEvent);
-            }
-        }
-
-        public bool EvaluateWhenEvaluator(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
+        public virtual bool EvaluateWhenEvaluator(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
             => whenElement.WhenEvaluator(evalContext);
 
-        public void ExecuteExcutor(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
+        public virtual void ExecuteExcutor(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
             => executeAction(execContext);
 
         public void ExecutePressExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
@@ -296,6 +130,231 @@ namespace Crevice.Future
                 {
                     ExecuteExcutor(execContext, executor);
                 }
+            }
+        }
+    }
+
+    public class InvalidReleaseEventManager
+    {
+        public class NaturalNumberCounter<T>
+        {
+            private readonly Dictionary<T, int> Dictionary = new Dictionary<T, int>();
+
+            public int this[T key]
+            {
+                get
+                {
+                    return Dictionary.TryGetValue(key, out int count) ? count : 0;
+                }
+                set
+                {
+                    if (value < 0)
+                    {
+                        throw new InvalidOperationException("n >= 0");
+                    }
+                    Dictionary[key] = value;
+                }
+            }
+
+            public void CountDown(T key)
+            {
+                Dictionary[key] = this[key] - 1;
+            }
+
+            public void CountUp(T key)
+            {
+                Dictionary[key] = this[key] + 1;
+            }
+        }
+
+        private readonly NaturalNumberCounter<IReleaseEvent> InvalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
+
+        public int this[IReleaseEvent key]
+        {
+            get => InvalidReleaseEvents[key];
+        }
+
+        public void IgnoreNext(IReleaseEvent releaseEvent) => InvalidReleaseEvents.CountUp(releaseEvent);
+
+        public void IgnoreNext(IEnumerable<IReleaseEvent> releaseEvents)
+        {
+            foreach (var releaseEvent in releaseEvents)
+            {
+                IgnoreNext(releaseEvent);
+            }
+        }
+
+        public void CountDown(IReleaseEvent key) => InvalidReleaseEvents.CountDown(key);
+    }
+
+    public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
+        where TConfig : GestureMachineConfig
+        where TContextManager : ContextManager<TEvalContext, TExecContext>
+        where TEvalContext : EvaluationContext
+        where TExecContext : ExecutionContext
+    {
+        public readonly TConfig Config;
+        public readonly TContextManager ContextManager;
+        public readonly RootElement<TEvalContext, TExecContext> RootElement;
+
+        private readonly object LockObject = new object();
+
+        private readonly System.Timers.Timer GestureTimeoutTimer = new System.Timers.Timer();
+
+        internal readonly InvalidReleaseEventManager InvalidReleaseEvents = new InvalidReleaseEventManager();
+
+        public StrokeWatcher StrokeWatcher { get; private set; } = null;
+
+        public IState CurrentState { get; private set; } = null;
+
+        public virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
+        public virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
+
+        public GestureMachine(
+            TConfig config,
+            TContextManager contextManager,
+            RootElement<TEvalContext, TExecContext> rootElement)
+        {
+            Config = config;
+            ContextManager = contextManager;
+            RootElement = rootElement;
+
+            CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(
+                this, 
+                rootElement);
+
+            SetupGestureTimeoutTimer();
+        }
+
+        public bool Input(IPhysicalEvent evnt) => Input(evnt, null);
+
+        public bool Input(IPhysicalEvent evnt, Point? point)
+        {
+            lock (LockObject)
+            {
+                if (evnt is IReleaseEvent releaseEvent && InvalidReleaseEvents[releaseEvent] > 0)
+                {
+                    InvalidReleaseEvents.CountDown(releaseEvent);
+                    return true;
+                }
+
+                if (point.HasValue && CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
+                {
+                    StrokeWatcher.Queue(point.Value);
+                }
+
+                var res = CurrentState.Input(evnt);
+                if (CurrentState != res.NextState)
+                {
+                    if (res.NextState is State0<TConfig, TContextManager, TEvalContext, TExecContext> S0)
+                    {
+                        ReleaseStrokeWatcher();
+                        StopGestureTimeoutTimer();
+                    }
+                    else if (res.NextState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> SN)
+                    {
+                        ResetStrokeWatcher();
+                        ResetGestureTimeoutTimer();
+                    }
+                }
+                CurrentState = res.NextState;
+                return res.EventIsConsumed;
+            }
+        }
+
+        private void SetupGestureTimeoutTimer()
+        {
+            GestureTimeoutTimer.Elapsed += new System.Timers.ElapsedEventHandler(TryTimeout);
+            GestureTimeoutTimer.Interval = Config.GestureTimeout;
+            GestureTimeoutTimer.AutoReset = false;
+        }
+
+        private void StopGestureTimeoutTimer()
+        {
+            GestureTimeoutTimer.Stop();
+        }
+
+        private void ResetGestureTimeoutTimer()
+        {
+            GestureTimeoutTimer.Stop();
+            GestureTimeoutTimer.Interval = Config.GestureTimeout;
+            GestureTimeoutTimer.Start();
+        }
+
+        private StrokeWatcher CreateStrokeWatcher()
+            => new StrokeWatcher(
+                StrokeWatcherTaskFactory,
+                Config.StrokeStartThreshold,
+                Config.StrokeDirectionChangeThreshold,
+                Config.StrokeExtensionThreshold,
+                Config.StrokeWatchInterval);
+
+        private void ReleaseStrokeWatcher() => LazyRelease(StrokeWatcher);
+
+        private void LazyRelease(StrokeWatcher strokeWatcher)
+        {
+            if (strokeWatcher != null)
+            {
+                LowPriorityTaskFactory.StartNew(() => {
+                    strokeWatcher.Dispose();
+                });
+            }
+        }
+
+        private void ResetStrokeWatcher()
+        {
+            var strokeWatcher = StrokeWatcher;
+            StrokeWatcher = CreateStrokeWatcher();
+            LazyRelease(strokeWatcher);
+        }
+
+        private void TryTimeout(object sender, System.Timers.ElapsedEventArgs args)
+        {
+            lock (LockObject)
+            {
+                if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
+                {
+                    var state = CurrentState;
+                    var _state = CurrentState.Timeout();
+                    while (state != _state)
+                    {
+                        state = _state;
+                        _state = state.Timeout();
+                    }
+                    if (CurrentState != state)
+                    {
+                        CurrentState = state;
+                        OnGestureTimeout();
+                    }
+                }
+            }
+        }
+
+        public event EventHandler GestureCancelled;
+        internal virtual void OnGestureCancelled() => GestureCancelled?.Invoke(this, EventArgs.Empty);
+
+        public event EventHandler GestureTimeout;
+        internal virtual void OnGestureTimeout() => GestureTimeout?.Invoke(this, EventArgs.Empty);
+
+        public event EventHandler MachineReset;
+        internal virtual void OnMachineReset() => MachineReset?.Invoke(this, EventArgs.Empty);
+
+        public void Reset()
+        {
+            lock (LockObject)
+            {
+                if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
+                {
+                    var state = CurrentState;
+                    var _state = CurrentState.Reset();
+                    while (state != _state)
+                    {
+                        state = _state;
+                        _state = state.Reset();
+                    }
+                    CurrentState = state;
+                }
+                OnMachineReset();
             }
         }
     }
@@ -571,9 +630,7 @@ namespace Crevice.Future
         IState Reset();
     }
 
-    public abstract class State<TEvalContext, TExecContext> : IState
-        where TEvalContext : EvaluationContext
-        where TExecContext : ExecutionContext
+    public abstract class State : IState
     {
         public virtual (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
@@ -590,19 +647,21 @@ namespace Crevice.Future
             return this;
         }
     }
-    
-    public class State0<TEvalContext, TExecContext> : State<TEvalContext, TExecContext>
+
+    public class State0<TConfig, TContextManager, TEvalContext, TExecContext> : State
+        where TConfig : GestureMachineConfig
+        where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public readonly GestureMachine<TEvalContext, TExecContext> Machine;
+        public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
         public readonly RootElement<TEvalContext, TExecContext> RootElement;
 
         public State0(
-            GestureMachine<TEvalContext, TExecContext> gestureMachine,
+            GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             RootElement<TEvalContext, TExecContext> rootElement)
         {
-            Machine = gestureMachine;
+            Machine = machine;
             RootElement = rootElement; 
         }
 
@@ -612,12 +671,12 @@ namespace Crevice.Future
                     (SingleThrowTriggers.Contains(fireEvent) || 
                      SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
             {
-                var evalContext = Machine.CreateEvaluateContext();
+                var evalContext = Machine.ContextManager.CreateEvaluateContext();
                 var singleThrowElements = GetActiveSingleThrowElements(evalContext, fireEvent);
                 if (singleThrowElements.Any())
                 {
-                    var execContext = Machine.CreateExecutionContext(evalContext);
-                    Machine.ExecuteDoExecutors(execContext, singleThrowElements);
+                    var execContext = Machine.ContextManager.CreateExecutionContext(evalContext);
+                    Machine.ContextManager.ExecuteDoExecutors(execContext, singleThrowElements);
                     return (EventIsConsumed: true, NextState: this);
                 }
             }
@@ -625,13 +684,13 @@ namespace Crevice.Future
                         (DoubleThrowTriggers.Contains(pressEvent) ||
                          DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
             {
-                var evalContext = Machine.CreateEvaluateContext();
+                var evalContext = Machine.ContextManager.CreateEvaluateContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
                 if (doubleThrowElements.Any())
                 {
-                    var execContext = Machine.CreateExecutionContext(evalContext);
-                    Machine.ExecutePressExecutors(execContext, doubleThrowElements);
-                    var nextState = new StateN<TEvalContext, TExecContext>(
+                    var execContext = Machine.ContextManager.CreateExecutionContext(evalContext);
+                    Machine.ContextManager.ExecutePressExecutors(execContext, doubleThrowElements);
+                    var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                         Machine,
                         evalContext,
                         CreateHistory(pressEvent),
@@ -651,7 +710,7 @@ namespace Crevice.Future
         // Filter
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetActiveDoubleThrowElements(TEvalContext ctx, IPressEvent triggerEvent)
             => (from w in RootElement.WhenElements
-                where w.IsFull && Machine.EvaluateWhenEvaluator(ctx, w)
+                where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
                 select (from d in w.DoubleThrowElements
                         where d.IsFull && (d.Trigger == triggerEvent ||
                                            d.Trigger == triggerEvent.LogicalNormalized)
@@ -660,7 +719,7 @@ namespace Crevice.Future
 
         public IReadOnlyList<SingleThrowElement<TExecContext>> GetActiveSingleThrowElements(TEvalContext ctx, IFireEvent triggerEvent)
             => (from w in RootElement.WhenElements
-                where w.IsFull && Machine.EvaluateWhenEvaluator(ctx, w)
+                where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
                 select (from s in w.SingleThrowElements
                         where s.IsFull && (s.Trigger == triggerEvent ||
                                            s.Trigger == triggerEvent.LogicalNormalized)
@@ -686,18 +745,45 @@ namespace Crevice.Future
                 .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
     }
 
-    public class StateN<TEvalContext, TExecContext> : State<TEvalContext, TExecContext>
+
+    /*
+         public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
+        where TConfig : GestureMachineConfig
+        where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public readonly GestureMachine<TEvalContext, TExecContext> Machine;
+    public class State0<TConfig, TContextManager, TEvalContext, TExecContext> : State
+        where TConfig : GestureMachineConfig
+        where TContextManager : ContextManager<TEvalContext, TExecContext>
+        where TEvalContext : EvaluationContext
+        where TExecContext : ExecutionContext
+    {
+        public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
+        public readonly RootElement<TEvalContext, TExecContext> RootElement;
+
+        public State0(
+            GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
+            RootElement<TEvalContext, TExecContext> rootElement)
+        {
+            Machine = machine;
+            RootElement = rootElement; 
+        }
+         */
+    public class StateN<TConfig, TContextManager, TEvalContext, TExecContext> : State
+        where TConfig : GestureMachineConfig
+        where TContextManager : ContextManager<TEvalContext, TExecContext>
+        where TEvalContext : EvaluationContext
+        where TExecContext : ExecutionContext
+    {
+        public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
         public readonly TEvalContext EvaluationContext;
         public readonly IReadOnlyList<(IReleaseEvent, IState)> History;
         public readonly IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements;
         public readonly bool CanCancel;
 
         public StateN(
-            GestureMachine<TEvalContext, TExecContext> machine,
+            GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             TEvalContext ctx,
             IReadOnlyList<(IReleaseEvent, IState)> history,
             IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements,
@@ -717,9 +803,9 @@ namespace Crevice.Future
                 var singleThrowElements = GetSingleThrowElements(fireEvent);
                 if (singleThrowElements.Any())
                 {
-                    var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                    Machine.ExecuteDoExecutors(execContext, singleThrowElements);
-                    var notCancellableCopyState = new StateN<TEvalContext, TExecContext>(
+                    var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
+                    Machine.ContextManager.ExecuteDoExecutors(execContext, singleThrowElements);
+                    var notCancellableCopyState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                         Machine,
                         EvaluationContext,
                         History,
@@ -733,9 +819,9 @@ namespace Crevice.Future
                 var doubleThrowElements = GetDoubleThrowElements(pressEvent);
                 if (doubleThrowElements.Any())
                 {
-                    var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                    Machine.ExecutePressExecutors(execContext, doubleThrowElements);
-                    var nextState = new StateN<TEvalContext, TExecContext>(
+                    var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
+                    Machine.ContextManager.ExecutePressExecutors(execContext, doubleThrowElements);
+                    var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                         Machine,
                         EvaluationContext,
                         CreateHistory(History, pressEvent, this),
@@ -754,22 +840,21 @@ namespace Crevice.Future
                         var strokeElements = GetStrokeElements(strokes);
                         if (strokeElements.Any())
                         {
-                            var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                            Machine.ExecuteDoExecutors(execContext, strokeElements);
-                            Machine.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
+                            var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
+                            Machine.ContextManager.ExecuteDoExecutors(execContext, strokeElements);
+                            Machine.ContextManager.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
                         }
                     }
                     else if (HasDoExecutors || HasReleaseExecutors)
                     {
                         //normal end
-                        var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                        Machine.ExecuteDoExecutors(execContext, DoubleThrowElements);
-                        Machine.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
+                        var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
+                        Machine.ContextManager.ExecuteDoExecutors(execContext, DoubleThrowElements);
+                        Machine.ContextManager.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
                     }
                     else if (/* !HasDoExecutors && !HasReleaseExecutors && */ CanCancel)
                     {
-                        // Machine.OnGestureCancel()
-
+                        Machine.OnGestureCancelled();
                         //何のインスタンスが来るかによって対応を変える必要がある
                         //例えばゲームパッドであれば何もする必要がない
 
@@ -780,7 +865,7 @@ namespace Crevice.Future
                 else if (AbnormalEndTriggers.Contains(releaseEvent))
                 {
                     var (oldState, skippedReleaseEvents) = FindStateFromHistory(releaseEvent);
-                    Machine.IgnoreNext(skippedReleaseEvents);
+                    Machine.InvalidReleaseEvents.IgnoreNext(skippedReleaseEvents);
                     return (EventIsConsumed: true, NextState: oldState);
                 }
             }
@@ -792,7 +877,6 @@ namespace Crevice.Future
         {
             if (!HasDoExecutors && !HasReleaseExecutors && CanCancel)
             {
-                //Machine.OnGestureTimeout()
                 return LastState;
             }
             return this;
@@ -800,14 +884,11 @@ namespace Crevice.Future
 
         public override IState Reset()
         {
-            // Machine.OnGestureReset()
-            Machine.IgnoreNext(NormalEndTrigger);
-            // 再帰的に行う必要がある。
-            // Machineのイベントを扱わないといけないので、Machine側で舐めて処理する？
+            Machine.InvalidReleaseEvents.IgnoreNext(NormalEndTrigger);
             if (HasReleaseExecutors)
             {
-                var execContext = Machine.CreateExecutionContext(EvaluationContext);
-                Machine.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
+                var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
+                Machine.ContextManager.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
             }
             return LastState;
         }

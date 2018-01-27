@@ -183,11 +183,6 @@ namespace Crevice.Future
         public PhysicalReleaseEvent(int eventId) : base(eventId) { }
     }
 
-    /*
-     * 関係ないが、IEQuatable<>というのは、～のアップデート処理を行えますよ、というのにつかえそう
-     */
-
-
     // Strokeをどういう扱いにするか、
     // システム組み込みなのでライブラリユーザーが触る必要はなさげ
     // イベントとして実装する意味はなさげ
@@ -279,10 +274,4 @@ namespace Crevice.Future
             return sb.ToString();
         }
     }
-
-    // スタックマシン？
-
-    // When以降の定義は各Eventごとにまとめることができる
-
-
 }

@@ -1,2 +1,1 @@
-﻿using System.Runtime.CompilerServices;
-[assembly: InternalsVisibleTo("CreviceLib.Tests")]
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("CreviceLibTests")]
