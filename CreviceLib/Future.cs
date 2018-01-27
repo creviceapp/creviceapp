@@ -25,6 +25,7 @@ namespace Crevice.Future
      *              DeclareProfile("ProfileName");
      *              SubProfile("ProfileName");
      *              Using(new Profile("ProfileName")) {}
+     *              NextProfile();
      *              
      * Todo: ベンチマーク
      * 
@@ -32,16 +33,11 @@ namespace Crevice.Future
      *          →これだと互換性アリにできる？
      *              →DoubleThrowが常にOnな点が違う
      * 
+     * Todo: WhenやOn, Ifに文字列で記述を追加したい
+     *          Description("hoge", ja="")
+     * 
      */
 
-
-    // interface ISetupable
-
-
-    // EvaluationContextはVoid -> EvaluationContextはVoidな任意のGeneratorを渡して生成できる？
-    // ExecutionContextは同様にEvaluationContext -> ExecutionContextで？
-
-    // todo
     public class EvaluationContext { }
     public class ExecutionContext { }
 
@@ -329,6 +325,12 @@ namespace Crevice.Future
                 }
             }
         }
+
+        // StateChanged
+        //      でStateが来たときに扱いやすいように
+
+        // StrokeReset
+        // StrokeUpdated
 
         public event EventHandler GestureCancelled;
         internal virtual void OnGestureCancelled() => GestureCancelled?.Invoke(this, EventArgs.Empty);
@@ -745,31 +747,6 @@ namespace Crevice.Future
                 .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
     }
 
-
-    /*
-         public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
-        where TConfig : GestureMachineConfig
-        where TContextManager : ContextManager<TEvalContext, TExecContext>
-        where TEvalContext : EvaluationContext
-        where TExecContext : ExecutionContext
-    {
-    public class State0<TConfig, TContextManager, TEvalContext, TExecContext> : State
-        where TConfig : GestureMachineConfig
-        where TContextManager : ContextManager<TEvalContext, TExecContext>
-        where TEvalContext : EvaluationContext
-        where TExecContext : ExecutionContext
-    {
-        public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
-        public readonly RootElement<TEvalContext, TExecContext> RootElement;
-
-        public State0(
-            GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
-            RootElement<TEvalContext, TExecContext> rootElement)
-        {
-            Machine = machine;
-            RootElement = rootElement; 
-        }
-         */
     public class StateN<TConfig, TContextManager, TEvalContext, TExecContext> : State
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
@@ -926,6 +903,8 @@ namespace Crevice.Future
             var skippedReleaseEvents = History.Skip(nextHistory.Count()).Select(t => t.Item1).ToList();
             return (foundState, skippedReleaseEvents);
         }
+
+        // このあたりを扱いやすい型に変換してユーザーサイドで取れるように
 
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(IPressEvent triggerEvent)
             => (from d in DoubleThrowElements

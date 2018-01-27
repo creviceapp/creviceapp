@@ -23,7 +23,15 @@ namespace CreviceLib.Tests
         public TestGestureMachine(RootElement<EvaluationContext, ExecutionContext> rootElement) 
             : base(new TestGestureMachineConfig(), new TestContextManager(),  rootElement)
         {
+            
+        }
 
+        public int OnMachineResetCallCount { get; private set; } = 0;
+
+        internal override void OnMachineReset()
+        {
+            OnMachineResetCallCount += 1;
+            base.OnMachineReset();
         }
     }
 
@@ -983,6 +991,72 @@ namespace CreviceLib.Tests
             {
                 var result = gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
                 Assert.AreEqual(result, true);
+            }
+        }
+
+        [TestMethod]
+        public void ResetTest()
+        {
+            var root = new RootElement<EvaluationContext, ExecutionContext>();
+            var when = root.When((ctx) => { return true; });
+            when.On(TestEvents.Constants.TestPressEventA)
+                .On(TestEvents.Constants.TestPressEventB)
+                .On(TestEvents.Constants.TestPressEventA)
+                .On(TestEvents.Constants.TestPressEventB)
+                .Do((ctx) => { });
+            {
+                var gm = new TestGestureMachine(root);
+                var s0 = gm.CurrentState;
+                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                gm.Reset();
+                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                Assert.AreEqual(s0, gm.CurrentState);
+            }
+            {
+                var gm = new TestGestureMachine(root);
+                var s0 = gm.CurrentState;
+                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.IsTrue(s0 != gm.CurrentState);
+                var s1 = gm.CurrentState;
+                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                gm.Reset();
+                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                Assert.AreEqual(s0, gm.CurrentState);
+            }
+            {
+                var gm = new TestGestureMachine(root);
+                var s0 = gm.CurrentState;
+                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.IsTrue(s0 != gm.CurrentState);
+                var s1 = gm.CurrentState;
+                gm.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.IsTrue(s0 != gm.CurrentState);
+                Assert.IsTrue(s1 != gm.CurrentState);
+                var s2 = gm.CurrentState;
+                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                gm.Reset();
+                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                Assert.AreEqual(s0, gm.CurrentState);
+            }
+            {
+                var gm = new TestGestureMachine(root);
+                var s0 = gm.CurrentState;
+                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.IsTrue(s0 != gm.CurrentState);
+                var s1 = gm.CurrentState;
+                gm.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.IsTrue(s0 != gm.CurrentState);
+                Assert.IsTrue(s1 != gm.CurrentState);
+                var s2 = gm.CurrentState;
+                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.IsTrue(s0 != gm.CurrentState);
+                Assert.IsTrue(s1 != gm.CurrentState);
+                Assert.IsTrue(s2 != gm.CurrentState);
+                var s3 = gm.CurrentState;
+                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                gm.Reset();
+                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                Assert.AreEqual(s0, gm.CurrentState);
             }
         }
     }
