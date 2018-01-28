@@ -27,6 +27,15 @@ namespace CreviceLib.Tests
             
         }
 
+        public System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
+        public int OnGestureCancelledCallCount { get; private set; } = 0;
+
+        internal override void OnGestureCancelled()
+        {
+            OnGestureCancelledCallCount += 1;
+            OnGestureCancelledCDE.Signal();
+            base.OnMachineReset();
+        }
 
         public System.Threading.CountdownEvent OnMachineResetCDE = new System.Threading.CountdownEvent(1);
         public int OnMachineResetCallCount { get; private set; } = 0;
@@ -1162,10 +1171,7 @@ namespace CreviceLib.Tests
                 {
                     var s0 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    Task.Run(() =>
-                    {
-                        gm.Reset();
-                    });
+                    gm.Reset();
                     gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(s0, gm.CurrentState);
@@ -1179,10 +1185,7 @@ namespace CreviceLib.Tests
                     Assert.IsTrue(s0 != gm.CurrentState);
                     var s1 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    Task.Run(() => 
-                    {
-                        gm.Reset();
-                    });
+                    gm.Reset();
                     gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 1);
@@ -1201,10 +1204,7 @@ namespace CreviceLib.Tests
                     Assert.IsTrue(s1 != gm.CurrentState);
                     var s2 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    Task.Run(() =>
-                    {
-                        gm.Reset();
-                    });
+                    gm.Reset();
                     gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 1);
@@ -1229,10 +1229,7 @@ namespace CreviceLib.Tests
                     Assert.IsTrue(s2 != gm.CurrentState);
                     var s3 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    Task.Run(() =>
-                    {
-                        gm.Reset();
-                    });
+                    gm.Reset();
                     gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 2);
@@ -1240,6 +1237,44 @@ namespace CreviceLib.Tests
                     Assert.AreEqual(s0, gm.CurrentState);
                 }
             }
+        }
+
+        [TestMethod]
+        public void OnGestureCancelledTest()
+        {
+            {
+                var root = new RootElement<EvaluationContext, ExecutionContext>();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    Assert.AreEqual(gm.CurrentState is State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(gm.CurrentState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                    Assert.AreEqual(gm.OnGestureCancelledCallCount, 0);
+                    gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(gm.OnGestureCancelledCallCount, 0);
+                }
+            }
+            {
+                var root = new RootElement<EvaluationContext, ExecutionContext>();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .On(TestEvents.Constants.TestPressEventB)
+                     .Do((ctx) => { });
+                    Assert.AreEqual(gm.CurrentState is State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(gm.CurrentState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                    Assert.AreEqual(gm.OnGestureCancelledCallCount, 0);
+                    gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    gm.OnGestureCancelledCDE.Wait(1000);
+                    Assert.AreEqual(gm.OnGestureCancelledCallCount, 1);
+                }
+            }
+            
         }
     }
 }
