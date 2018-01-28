@@ -70,13 +70,20 @@ namespace Crevice.Core
     public class RightButtonSwitch : DoubleThrowSwitch { }
     public class X1ButtonSwitch : DoubleThrowSwitch { }
     public class X2ButtonSwitch : DoubleThrowSwitch { }
-    
-    public abstract class Event
+
+    public class EventLogicalGroup { }
+    public class EventPhysicalGroup { }
+
+    public abstract class Event<L>
+        where L : EventLogicalGroup
     {
+        public L LogicalGroup { get; }
+
         public int EventId { get; }
 
-        public Event(int eventId)
+        public Event(L group, int eventId)
         {
+            this.LogicalGroup = group;
             this.EventId = eventId;
         }
 
@@ -112,80 +119,104 @@ namespace Crevice.Core
         IReleaseEvent LogicalNormalized { get; }
     }
     
-    public abstract class FireEvent<T> : Event, IFireEvent, ILogicalEvent
-        where T : SingleThrowSwitch
+    public abstract class FireEvent<L, SW> : Event<L>, IFireEvent, ILogicalEvent
+        where L : EventLogicalGroup
+        where SW : SingleThrowSwitch
     {
         public IFireEvent LogicalNormalized => this;
         
-        public FireEvent(int eventId) : base(eventId) { }
+        public FireEvent(L logicalGroup, int eventId) : base(logicalGroup, eventId) { }
     }
 
-    public abstract class PressEvent<T> : Event, IPressEvent, ILogicalEvent
-        where T : DoubleThrowSwitch
+    public abstract class PressEvent<L, SW> : Event<L>, IPressEvent, ILogicalEvent
+        where L : EventLogicalGroup
+        where SW : DoubleThrowSwitch
     {
         public IReleaseEvent Opposition => OppositeReleaseEvent;
 
-        public abstract ReleaseEvent<T> OppositeReleaseEvent { get; }
+        public abstract ReleaseEvent<L, SW> OppositeReleaseEvent { get; }
 
         public IPressEvent LogicalNormalized => this;
 
-        public PressEvent(int eventId) : base(eventId) { }
+        public PressEvent(L logicalGroup, int eventId) : base(logicalGroup, eventId) { }
     }
 
-    public abstract class ReleaseEvent<T> : Event, IReleaseEvent, ILogicalEvent
-        where T : DoubleThrowSwitch
+    public abstract class ReleaseEvent<L, SW> : Event<L>, IReleaseEvent, ILogicalEvent
+        where L : EventLogicalGroup
+        where SW : DoubleThrowSwitch
     {
         public IPressEvent Opposition => OppositePressEvent;
 
-        public abstract PressEvent<T> OppositePressEvent { get; }
+        public abstract PressEvent<L, SW> OppositePressEvent { get; }
 
         public IReleaseEvent LogicalNormalized => this;
 
-        public ReleaseEvent(int eventId) : base(eventId) { }
+        public ReleaseEvent(L logicalGroup, int eventId) : base(logicalGroup, eventId) { }
     }
 
-    public abstract class PhysicalFireEvent<T> : Event, IFireEvent, IPhysicalEvent
-       where T : SingleThrowSwitch
+    public abstract class PhysicalFireEvent<L, P, SW> : Event<L>, IFireEvent, IPhysicalEvent
+        where L : EventLogicalGroup
+        where P : EventPhysicalGroup
+        where SW : SingleThrowSwitch
     {
+        public P PhysicalGroup { get; }
+
         public IFireEvent LogicalNormalized => LogicalEquivalentFireEvent;
 
-        public abstract FireEvent<T> LogicalEquivalentFireEvent { get; }
+        public abstract FireEvent<L, SW> LogicalEquivalentFireEvent { get; }
 
-        public PhysicalFireEvent(int eventId) : base(eventId) { }
+        public PhysicalFireEvent(L logicalGroup, P physicalGroup, int eventId) : base(logicalGroup, eventId)
+        {
+            PhysicalGroup = physicalGroup;
+        }
     }
 
-    public abstract class PhysicalPressEvent<T> : Event, IPressEvent, IPhysicalEvent
-        where T : DoubleThrowSwitch
+    public abstract class PhysicalPressEvent<L, P, SW> : Event<L>, IPressEvent, IPhysicalEvent
+        where L : EventLogicalGroup
+        where P : EventPhysicalGroup
+        where SW : DoubleThrowSwitch
     {
+        public P PhysicalGroup { get; }
+
         public IReleaseEvent Opposition => OppositePhysicalReleaseEvent;
 
-        public abstract PhysicalReleaseEvent<T> OppositePhysicalReleaseEvent { get; }
+        public abstract PhysicalReleaseEvent<L, P, SW> OppositePhysicalReleaseEvent { get; }
 
         public IPressEvent LogicalNormalized => LogicalEquivalentPressEvent;
 
-        public abstract PressEvent<T> LogicalEquivalentPressEvent { get; }
+        public abstract PressEvent<L, SW> LogicalEquivalentPressEvent { get; }
 
-        public PhysicalPressEvent(int eventId) : base(eventId) { }
+        public PhysicalPressEvent(L logicalGroup, P physicalGroup, int eventId) : base(logicalGroup, eventId)
+        {
+            PhysicalGroup = physicalGroup;
+        }
     }
 
-    public abstract class PhysicalReleaseEvent<T> : Event, IReleaseEvent, IPhysicalEvent
-        where T : DoubleThrowSwitch
+    public abstract class PhysicalReleaseEvent<L, P, SW> : Event<L>, IReleaseEvent, IPhysicalEvent
+        where L : EventLogicalGroup
+        where P : EventPhysicalGroup
+        where SW : DoubleThrowSwitch
     {
+        public P PhysicalGroup { get; }
+
         public IPressEvent Opposition => OppositePhysicalPressEvent;
 
-        public abstract PhysicalPressEvent<T> OppositePhysicalPressEvent { get; }
+        public abstract PhysicalPressEvent<L, P, SW> OppositePhysicalPressEvent { get; }
 
         public IReleaseEvent LogicalNormalized => LogicalEquivalentReleaseEvent;
 
-        public abstract ReleaseEvent<T> LogicalEquivalentReleaseEvent { get; }
+        public abstract ReleaseEvent<L, SW> LogicalEquivalentReleaseEvent { get; }
 
-        public PhysicalReleaseEvent(int eventId) : base(eventId) { }
+        public PhysicalReleaseEvent(L logicalGroup, P physicalGroup, int eventId) : base(logicalGroup, eventId)
+        {
+            PhysicalGroup = physicalGroup;
+        }
     }
 
     // Strokeをどういう扱いにするか、
     // システム組み込みなのでライブラリユーザーが触る必要はなさげ
     // イベントとして実装する意味はなさげ
-    public class StrokeEvent : FireEvent<StrokeSwitch>, IEquatable<StrokeEvent>
+    public class StrokeEvent : IEquatable<StrokeEvent>
     {
         public enum Direction
         {
@@ -198,8 +229,6 @@ namespace Crevice.Core
         public readonly IEnumerable<Direction> Directions;
 
         public StrokeEvent(IEnumerable<Direction> directions)
-            // Reserved EventId for StrokeEvent is 0.
-            : base(0)
         {
             Directions = directions;
         }
