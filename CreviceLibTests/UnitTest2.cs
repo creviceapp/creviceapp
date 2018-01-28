@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,13 +26,15 @@ namespace CreviceLib.Tests
         {
             
         }
-        // todo CountdownEvent
 
+
+        public System.Threading.CountdownEvent OnMachineResetCDE = new System.Threading.CountdownEvent(1);
         public int OnMachineResetCallCount { get; private set; } = 0;
 
         internal override void OnMachineReset()
         {
             OnMachineResetCallCount += 1;
+            OnMachineResetCDE.Signal();
             base.OnMachineReset();
         }
     }
@@ -1159,7 +1162,11 @@ namespace CreviceLib.Tests
                 {
                     var s0 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    gm.Reset();
+                    Task.Run(() =>
+                    {
+                        gm.Reset();
+                    });
+                    gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(s0, gm.CurrentState);
                 }
@@ -1172,7 +1179,11 @@ namespace CreviceLib.Tests
                     Assert.IsTrue(s0 != gm.CurrentState);
                     var s1 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    gm.Reset();
+                    Task.Run(() => 
+                    {
+                        gm.Reset();
+                    });
+                    gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 1);
                     Assert.AreEqual(s0, gm.CurrentState);
@@ -1190,7 +1201,11 @@ namespace CreviceLib.Tests
                     Assert.IsTrue(s1 != gm.CurrentState);
                     var s2 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    gm.Reset();
+                    Task.Run(() =>
+                    {
+                        gm.Reset();
+                    });
+                    gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventB], 1);
@@ -1214,7 +1229,11 @@ namespace CreviceLib.Tests
                     Assert.IsTrue(s2 != gm.CurrentState);
                     var s3 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                    gm.Reset();
+                    Task.Run(() =>
+                    {
+                        gm.Reset();
+                    });
+                    gm.OnMachineResetCDE.Wait(1000);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 2);
                     Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventB], 1);
