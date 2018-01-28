@@ -25,6 +25,7 @@ namespace CreviceLib.Tests
         {
             
         }
+        // todo CountdownEvent
 
         public int OnMachineResetCallCount { get; private set; } = 0;
 
@@ -362,52 +363,58 @@ namespace CreviceLib.Tests
         public void ConstractorTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            Assert.AreEqual(s0.Machine, gm);
-            Assert.AreEqual(s0.RootElement, root);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                Assert.AreEqual(s0.Machine, gm);
+                Assert.AreEqual(s0.RootElement, root);
+            }
         }
 
         [TestMethod]
         public void CreateHistoryTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res0.EventIsConsumed, true);
+                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            Assert.AreEqual(s1.History.Count, 1);
-            Assert.AreEqual(s1.History[0].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
-            Assert.AreEqual(s1.History[0].Item2, s0);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.History[0].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
+                Assert.AreEqual(s1.History[0].Item2, s0);
+            }
         }
 
         [TestMethod]
         public void DoesNotConsumeGivenInputWhenNoDefinition()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+            using (var gm = new TestGestureMachine(root))
             {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
             }
         }
 
@@ -415,25 +422,27 @@ namespace CreviceLib.Tests
         public void ConsumeGivenPhysicalFireEventWhenPhysicalSingleThrowDefinisitonExists()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestFireEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+            using (var gm = new TestGestureMachine(root))
             {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, true);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestFireEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
             }
         }
 
@@ -441,25 +450,27 @@ namespace CreviceLib.Tests
         public void ConsumeGivenPhysicalFireEventWhenLogicalSingleThrowDefinisitonExists()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPhysicalFireEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+            using (var gm = new TestGestureMachine(root))
             {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, true);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPhysicalFireEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
             }
         }
 
@@ -467,25 +478,27 @@ namespace CreviceLib.Tests
         public void ConsumeGivenPhysicalPressEventWhenPhysicalDoubleThrowDefinisitonExists()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPhysicalPressEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+            using (var gm = new TestGestureMachine(root))
             {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
-            }
-            { 
-                var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.IsTrue(result.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>);
-                Assert.AreEqual(result.EventIsConsumed, true);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPhysicalPressEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.IsTrue(result.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
             }
         }
 
@@ -493,37 +506,41 @@ namespace CreviceLib.Tests
         public void ConsumeGivenPhysicalPressEventWhenLogicalDoubleThrowDefinisitonExists()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+            using (var gm = new TestGestureMachine(root))
             {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.IsTrue(result.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>);
-                Assert.AreEqual(result.EventIsConsumed, true);
-            }
-            {
-                var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
-                Assert.AreEqual(result.NextState, s0);
-                Assert.AreEqual(result.EventIsConsumed, false);
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.IsTrue(result.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                }
+                {
+                    var result = s0.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                }
             }
         }
         [TestMethod]
         public void CreateHistory()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var result = s0.CreateHistory(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
-            Assert.AreEqual(result[0].Item2, s0);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var result = s0.CreateHistory(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
+                Assert.AreEqual(result[0].Item2, s0);
+            }
         }
 
 
@@ -531,58 +548,83 @@ namespace CreviceLib.Tests
         public void GetActiveDoubleThrowElementsTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var evalContext = gm.ContextManager.CreateEvaluateContext();
-            var result = s0.GetActiveDoubleThrowElements(evalContext, TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0], when.DoubleThrowElements[0]);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var result = s0.GetActiveDoubleThrowElements(evalContext, TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0], when.DoubleThrowElements[0]);
+            }
         }
 
         [TestMethod]
         public void GetActiveSingleThrowElementsTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestFireEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var evalContext = gm.ContextManager.CreateEvaluateContext();
-            var result = s0.GetActiveSingleThrowElements(evalContext, TestEvents.Constants.TestPhysicalFireEventA);
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0], when.SingleThrowElements[0]);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestFireEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var result = s0.GetActiveSingleThrowElements(evalContext, TestEvents.Constants.TestPhysicalFireEventA);
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0], when.SingleThrowElements[0]);
+            }
         }
 
         [TestMethod]
         public void SingleThrowTriggersTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestFireEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var result = s0.SingleThrowTriggers;
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result.Contains(when.SingleThrowElements[0].Trigger), true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestFireEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var result = s0.SingleThrowTriggers;
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result.Contains(when.SingleThrowElements[0].Trigger), true);
+            }
         }
 
         [TestMethod]
         public void DoubleThrowTriggersTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var result = s0.DoubleThrowTriggers;
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result.Contains(when.DoubleThrowElements[0].Trigger), true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var result = s0.DoubleThrowTriggers;
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result.Contains(when.DoubleThrowElements[0].Trigger), true);
+            }
+        }
+
+        [TestMethod]
+        public void ResetTest()
+        {
+            {
+                var root = new RootElement<EvaluationContext, ExecutionContext>();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var result = s0.Reset();
+                    Assert.AreEqual(s0, result);
+                }
+            }
         }
     }
 
@@ -593,26 +635,28 @@ namespace CreviceLib.Tests
         public void ConstractorTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var evalContext = gm.ContextManager.CreateEvaluateContext();
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var history = s0.CreateHistory(TestEvents.Constants.TestPhysicalPressEventA);
-            var dt = new List<DoubleThrowElement<ExecutionContext>>();
+            using (var gm = new TestGestureMachine(root))
             {
-                var s1 = new StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, evalContext, history, dt);
-                Assert.AreEqual(s1.Machine, gm);
-                Assert.AreEqual(s1.EvaluationContext, evalContext);
-                Assert.AreEqual(s1.History, history);
-                Assert.AreEqual(s1.DoubleThrowElements, dt);
-                Assert.AreEqual(s1.CanCancel, true);
-            }
-            {
-                var s1 = new StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, evalContext, history, dt, canCancel: false);
-                Assert.AreEqual(s1.Machine, gm);
-                Assert.AreEqual(s1.EvaluationContext, evalContext);
-                Assert.AreEqual(s1.History, history);
-                Assert.AreEqual(s1.DoubleThrowElements, dt);
-                Assert.AreEqual(s1.CanCancel, false);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var history = s0.CreateHistory(TestEvents.Constants.TestPhysicalPressEventA);
+                var dt = new List<DoubleThrowElement<ExecutionContext>>();
+                {
+                    var s1 = new StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, evalContext, history, dt);
+                    Assert.AreEqual(s1.Machine, gm);
+                    Assert.AreEqual(s1.EvaluationContext, evalContext);
+                    Assert.AreEqual(s1.History, history);
+                    Assert.AreEqual(s1.DoubleThrowElements, dt);
+                    Assert.AreEqual(s1.CanCancel, true);
+                }
+                {
+                    var s1 = new StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, evalContext, history, dt, canCancel: false);
+                    Assert.AreEqual(s1.Machine, gm);
+                    Assert.AreEqual(s1.EvaluationContext, evalContext);
+                    Assert.AreEqual(s1.History, history);
+                    Assert.AreEqual(s1.DoubleThrowElements, dt);
+                    Assert.AreEqual(s1.CanCancel, false);
+                }
             }
         }
 
@@ -620,207 +664,199 @@ namespace CreviceLib.Tests
         public void CreateHistoryTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .On(TestEvents.Constants.TestPressEventA)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .On(TestEvents.Constants.TestPressEventA)
+                 .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res0.EventIsConsumed, true);
+                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            Assert.AreEqual(s1.History.Count, 1);
-            Assert.AreEqual(s1.History[0].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
-            Assert.AreEqual(s1.History[0].Item2, s0);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.History[0].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
+                Assert.AreEqual(s1.History[0].Item2, s0);
 
-            var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res1.EventIsConsumed, true);
-            Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            Assert.AreEqual(s2.History.Count, 2);
-            Assert.AreEqual(s2.History[1].Item1, TestEvents.Constants.TestPhysicalReleaseEventB);
-            Assert.AreEqual(s2.History[1].Item2, s1);
+                var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res1.EventIsConsumed, true);
+                Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                Assert.AreEqual(s2.History.Count, 2);
+                Assert.AreEqual(s2.History[1].Item1, TestEvents.Constants.TestPhysicalReleaseEventB);
+                Assert.AreEqual(s2.History[1].Item2, s1);
 
-            var res2 = s2.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res2.EventIsConsumed, true);
-            Assert.AreEqual(res2.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            var s3 = res2.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            Assert.AreEqual(s3.History.Count, 3);
-            Assert.AreEqual(s3.History[2].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
-            Assert.AreEqual(s3.History[2].Item2, s2);
+                var res2 = s2.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res2.EventIsConsumed, true);
+                Assert.AreEqual(res2.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                var s3 = res2.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                Assert.AreEqual(s3.History.Count, 3);
+                Assert.AreEqual(s3.History[2].Item1, TestEvents.Constants.TestPhysicalReleaseEventA);
+                Assert.AreEqual(s3.History[2].Item2, s2);
 
-            var res3 = s3.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res3.EventIsConsumed, true);
-            Assert.AreEqual(res3.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            var s4 = res3.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            Assert.AreEqual(s4.History.Count, 4);
-            Assert.AreEqual(s4.History[3].Item1, TestEvents.Constants.TestPhysicalReleaseEventB);
-            Assert.AreEqual(s4.History[3].Item2, s3);
+                var res3 = s3.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res3.EventIsConsumed, true);
+                Assert.AreEqual(res3.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                var s4 = res3.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                Assert.AreEqual(s4.History.Count, 4);
+                Assert.AreEqual(s4.History[3].Item1, TestEvents.Constants.TestPhysicalReleaseEventB);
+                Assert.AreEqual(s4.History[3].Item2, s3);
+            }
         }
 
         [TestMethod]
         public void AbnormalEndTriggersTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res0.EventIsConsumed, true);
+                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res1.EventIsConsumed, true);
-            Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s1.AbnormalEndTriggers.Count, 0);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res1.EventIsConsumed, true);
+                Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s1.AbnormalEndTriggers.Count, 0);
 
-            var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res2 = s2.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res2.EventIsConsumed, true);
-            Assert.AreEqual(res2.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s2.AbnormalEndTriggers.Count, 1);
-            Assert.AreEqual(s2.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventA), true);
+                var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res2 = s2.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res2.EventIsConsumed, true);
+                Assert.AreEqual(res2.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s2.AbnormalEndTriggers.Count, 1);
+                Assert.AreEqual(s2.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventA), true);
 
-            var s3 = res2.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res3 = s3.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res3.EventIsConsumed, true);
-            Assert.AreEqual(res3.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s3.AbnormalEndTriggers.Count, 2);
-            Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventA), true);
-            Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventB), true);
+                var s3 = res2.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res3 = s3.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res3.EventIsConsumed, true);
+                Assert.AreEqual(res3.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s3.AbnormalEndTriggers.Count, 2);
+                Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventA), true);
+                Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventB), true);
 
-            var s4 = res3.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res4 = s4.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res4.EventIsConsumed, true);
-            Assert.AreEqual(res4.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s4.AbnormalEndTriggers.Count, 2);
-            Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventA), true);
-            Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventB), true);
+                var s4 = res3.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res4 = s4.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res4.EventIsConsumed, true);
+                Assert.AreEqual(res4.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s4.AbnormalEndTriggers.Count, 2);
+                Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventA), true);
+                Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.Constants.TestPhysicalReleaseEventB), true);
+            }
         }
 
         [TestMethod]
         public void FindStateFromHistoryTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .On(TestEvents.Constants.TestPressEventA)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .On(TestEvents.Constants.TestPressEventA)
+                 .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res0.EventIsConsumed, true);
+                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res1.EventIsConsumed, true);
-            Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s1.History.Count, 1);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res1.EventIsConsumed, true);
+                Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s1.History.Count, 1);
 
-            var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res2 = s2.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res2.EventIsConsumed, true);
-            Assert.AreEqual(res2.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s2.History.Count, 2);
+                var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res2 = s2.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res2.EventIsConsumed, true);
+                Assert.AreEqual(res2.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s2.History.Count, 2);
 
-            var s3 = res2.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res3 = s3.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res3.EventIsConsumed, true);
-            Assert.AreEqual(res3.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s3.History.Count, 3);
+                var s3 = res2.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res3 = s3.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res3.EventIsConsumed, true);
+                Assert.AreEqual(res3.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s3.History.Count, 3);
 
-            var (foundState, skippedReleaseEvents) = s3.FindStateFromHistory(TestEvents.Constants.TestPhysicalReleaseEventB);
-            Assert.AreEqual(foundState, s1);
-            Assert.AreEqual(skippedReleaseEvents.Count, 2);
-            Assert.AreEqual(skippedReleaseEvents[0], TestEvents.Constants.TestPhysicalReleaseEventB);
-            Assert.AreEqual(skippedReleaseEvents[1], TestEvents.Constants.TestPhysicalReleaseEventA);
+                var (foundState, skippedReleaseEvents) = s3.FindStateFromHistory(TestEvents.Constants.TestPhysicalReleaseEventB);
+                Assert.AreEqual(foundState, s1);
+                Assert.AreEqual(skippedReleaseEvents.Count, 2);
+                Assert.AreEqual(skippedReleaseEvents[0], TestEvents.Constants.TestPhysicalReleaseEventB);
+                Assert.AreEqual(skippedReleaseEvents[1], TestEvents.Constants.TestPhysicalReleaseEventA);
+            }
         }
 
         [TestMethod]
         public void NormalEndTriggerTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res0.EventIsConsumed, true);
+                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res1.EventIsConsumed, true);
-            Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s1.History.Count, 1);
-            Assert.AreEqual(s1.NormalEndTrigger, TestEvents.Constants.TestPhysicalReleaseEventA);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res1.EventIsConsumed, true);
+                Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.NormalEndTrigger, TestEvents.Constants.TestPhysicalReleaseEventA);
+            }
         }
 
         [TestMethod]
         public void IsNormalEndTriggerTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .On(TestEvents.Constants.TestPressEventB)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                 .On(TestEvents.Constants.TestPressEventB)
+                 .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                Assert.AreEqual(res0.EventIsConsumed, true);
+                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(res1.EventIsConsumed, true);
-            Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-            Assert.AreEqual(s1.History.Count, 1);
-            Assert.AreEqual(s1.IsNormalEndTrigger(TestEvents.Constants.TestPhysicalReleaseEventA), true);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(res1.EventIsConsumed, true);
+                Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.IsNormalEndTrigger(TestEvents.Constants.TestPhysicalReleaseEventA), true);
+            }
         }
 
         [TestMethod]
         public void LastStateTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-             .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            Assert.AreEqual(res0.EventIsConsumed, true);
-            Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
-
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            Assert.AreEqual(s1.History.Count, 1);
-            Assert.AreEqual(s1.LastState, s0);
-        }
-
-        [TestMethod]
-        public void HasPressExecutorsTest()
-        {
+            using (var gm = new TestGestureMachine(root))
             {
-                var root = new RootElement<EvaluationContext, ExecutionContext>();
-                var gm = new TestGestureMachine(root);
                 var when = root.When((ctx) => { return true; });
                 when.On(TestEvents.Constants.TestPressEventA)
                  .Do((ctx) => { });
@@ -830,21 +866,45 @@ namespace CreviceLib.Tests
                 Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
                 var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-                Assert.AreEqual(s1.HasPressExecutors, false);
+                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.LastState, s0);
+            }
+        }
+
+        [TestMethod]
+        public void HasPressExecutorsTest()
+        {
+            {
+                var root = new RootElement<EvaluationContext, ExecutionContext>();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.EventIsConsumed, true);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    Assert.AreEqual(s1.HasPressExecutors, false);
+                }
             }
             {
                 var root = new RootElement<EvaluationContext, ExecutionContext>();
-                var gm = new TestGestureMachine(root);
-                var when = root.When((ctx) => { return true; });
-                when.On(TestEvents.Constants.TestPressEventA)
-                 .Press((ctx) => { });
-                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(res0.EventIsConsumed, true);
-                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Press((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.EventIsConsumed, true);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-                Assert.AreEqual(s1.HasPressExecutors, true);
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    Assert.AreEqual(s1.HasPressExecutors, true);
+                }
             }
         }
 
@@ -853,31 +913,35 @@ namespace CreviceLib.Tests
         {
             {
                 var root = new RootElement<EvaluationContext, ExecutionContext>();
-                var gm = new TestGestureMachine(root);
-                var when = root.When((ctx) => { return true; });
-                when.On(TestEvents.Constants.TestPressEventA)
-                 .Press((ctx) => { });
-                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(res0.EventIsConsumed, true);
-                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Press((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.EventIsConsumed, true);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-                Assert.AreEqual(s1.HasDoExecutors, false);
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    Assert.AreEqual(s1.HasDoExecutors, false);
+                }
             }
             {
                 var root = new RootElement<EvaluationContext, ExecutionContext>();
-                var gm = new TestGestureMachine(root);
-                var when = root.When((ctx) => { return true; });
-                when.On(TestEvents.Constants.TestPressEventA)
-                 .Do((ctx) => { });
-                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(res0.EventIsConsumed, true);
-                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.EventIsConsumed, true);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-                Assert.AreEqual(s1.HasDoExecutors, true);
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    Assert.AreEqual(s1.HasDoExecutors, true);
+                }
             }
         }
 
@@ -886,31 +950,35 @@ namespace CreviceLib.Tests
         {
             {
                 var root = new RootElement<EvaluationContext, ExecutionContext>();
-                var gm = new TestGestureMachine(root);
-                var when = root.When((ctx) => { return true; });
-                when.On(TestEvents.Constants.TestPressEventA)
-                 .Do((ctx) => { });
-                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(res0.EventIsConsumed, true);
-                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.EventIsConsumed, true);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-                Assert.AreEqual(s1.HasReleaseExecutors, false);
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    Assert.AreEqual(s1.HasReleaseExecutors, false);
+                }
             }
             {
                 var root = new RootElement<EvaluationContext, ExecutionContext>();
-                var gm = new TestGestureMachine(root);
-                var when = root.When((ctx) => { return true; });
-                when.On(TestEvents.Constants.TestPressEventA)
-                 .Release((ctx) => { });
-                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(res0.EventIsConsumed, true);
-                Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .Release((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.EventIsConsumed, true);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
-                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-                Assert.AreEqual(s1.HasReleaseExecutors, true);
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    Assert.AreEqual(s1.HasReleaseExecutors, true);
+                }
             }
         }
 
@@ -918,56 +986,110 @@ namespace CreviceLib.Tests
         public void GetDoubleThrowElementsTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-                .On(TestEvents.Constants.TestPressEventB)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var evalContext = gm.ContextManager.CreateEvaluateContext();
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var result = s1.GetDoubleThrowElements(TestEvents.Constants.TestPhysicalPressEventB);
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0], when.DoubleThrowElements[0].DoubleThrowElements[0]);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                    .On(TestEvents.Constants.TestPressEventB)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var result = s1.GetDoubleThrowElements(TestEvents.Constants.TestPhysicalPressEventB);
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0], when.DoubleThrowElements[0].DoubleThrowElements[0]);
+            }
         }
 
         [TestMethod]
         public void GetSingleThrowElementsTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-                .On(TestEvents.Constants.TestFireEventA)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var evalContext = gm.ContextManager.CreateEvaluateContext();
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var result = s1.GetSingleThrowElements(TestEvents.Constants.TestPhysicalFireEventA);
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0], when.DoubleThrowElements[0].SingleThrowElements[0]);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                    .On(TestEvents.Constants.TestFireEventA)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var result = s1.GetSingleThrowElements(TestEvents.Constants.TestPhysicalFireEventA);
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0], when.DoubleThrowElements[0].SingleThrowElements[0]);
+            }
         }
 
         [TestMethod]
         public void GetStrokeElementsTest()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            var when = root.When((ctx) => { return true; });
-            when.On(TestEvents.Constants.TestPressEventA)
-                .On(StrokeEvent.Direction.Up)
-                .Do((ctx) => { });
-            var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
-            var evalContext = gm.ContextManager.CreateEvaluateContext();
-            var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
-            var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
-            var result = s1.GetStrokeElements(new List<StrokeEvent.Direction>() { StrokeEvent.Direction.Up });
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0], when.DoubleThrowElements[0].StrokeElements[0]);
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when.On(TestEvents.Constants.TestPressEventA)
+                    .On(StrokeEvent.Direction.Up)
+                    .Do((ctx) => { });
+                var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                var result = s1.GetStrokeElements(new List<StrokeEvent.Direction>() { StrokeEvent.Direction.Up });
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0], when.DoubleThrowElements[0].StrokeElements[0]);
+            }
         }
+        
+        [TestMethod]
+        public void ResetTest()
+        {
+            {
+                var root = new RootElement<EvaluationContext, ExecutionContext>();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .On(TestEvents.Constants.TestPressEventB)
+                     .On(TestEvents.Constants.TestPressEventA)
+                     .On(TestEvents.Constants.TestPressEventB)
+                     .On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
 
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    var result = s1.Reset();
+                    Assert.AreEqual(s0, result);
+                }
+            }
+            {
+                var root = new RootElement<EvaluationContext, ExecutionContext>();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.Constants.TestPressEventA)
+                     .On(TestEvents.Constants.TestPressEventB)
+                     .On(TestEvents.Constants.TestPressEventA)
+                     .On(TestEvents.Constants.TestPressEventB)
+                     .On(TestEvents.Constants.TestPressEventA)
+                     .Do((ctx) => { });
+                    var s0 = new State0<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(gm, root);
+                    var res0 = s0.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(res0.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+
+                    var s1 = res0.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    var res1 = s1.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                    Assert.AreEqual(res1.NextState is StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>, true);
+
+                    var s2 = res1.NextState as StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>;
+                    var result = s2.Reset();
+                    Assert.AreEqual(s1, result);
+                }
+            }
+        }
     }
 
     [TestClass]
@@ -977,20 +1099,48 @@ namespace CreviceLib.Tests
         public void ConsumeGivenPhysicalReleaseEventWhenItInIgnoreList()
         {
             var root = new RootElement<EvaluationContext, ExecutionContext>();
-            var gm = new TestGestureMachine(root);
-            gm.InvalidReleaseEvents.IgnoreNext(TestEvents.Constants.TestPhysicalReleaseEventA);
-            
+            using (var gm = new TestGestureMachine(root))
             {
-                var result = gm.Input(TestEvents.Constants.TestPhysicalFireEventA);
-                Assert.AreEqual(result, false);
-            }
-            {
-                var result = gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.AreEqual(result, false);
-            }
-            {
-                var result = gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
-                Assert.AreEqual(result, true);
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result, false);
+                }
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(result, false);
+                }
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result, false);
+                }
+
+                gm.InvalidReleaseEvents.IgnoreNext(TestEvents.Constants.TestPhysicalReleaseEventA);
+
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result, false);
+                }
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(result, false);
+                }
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result, true);
+                }
+
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalFireEventA);
+                    Assert.AreEqual(result, false);
+                }
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.AreEqual(result, false);
+                }
+                {
+                    var result = gm.Input(TestEvents.Constants.TestPhysicalReleaseEventA);
+                    Assert.AreEqual(result, false);
+                }
             }
         }
 
@@ -1005,61 +1155,72 @@ namespace CreviceLib.Tests
                 .On(TestEvents.Constants.TestPressEventB)
                 .Do((ctx) => { });
             {
-                var gm = new TestGestureMachine(root);
-                var s0 = gm.CurrentState;
-                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                gm.Reset();
-                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                Assert.AreEqual(s0, gm.CurrentState);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var s0 = gm.CurrentState;
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                    gm.Reset();
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                    Assert.AreEqual(s0, gm.CurrentState);
+                }
             }
             {
-                var gm = new TestGestureMachine(root);
-                var s0 = gm.CurrentState;
-                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.IsTrue(s0 != gm.CurrentState);
-                var s1 = gm.CurrentState;
-                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                gm.Reset();
-                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                Assert.AreEqual(s0, gm.CurrentState);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var s0 = gm.CurrentState;
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.IsTrue(s0 != gm.CurrentState);
+                    var s1 = gm.CurrentState;
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                    gm.Reset();
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 1);
+                    Assert.AreEqual(s0, gm.CurrentState);
+                }
             }
             {
-                var gm = new TestGestureMachine(root);
-                var s0 = gm.CurrentState;
-                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.IsTrue(s0 != gm.CurrentState);
-                var s1 = gm.CurrentState;
-                gm.Input(TestEvents.Constants.TestPhysicalPressEventB);
-                Assert.IsTrue(s0 != gm.CurrentState);
-                Assert.IsTrue(s1 != gm.CurrentState);
-                var s2 = gm.CurrentState;
-                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                gm.Reset();
-                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                Assert.AreEqual(s0, gm.CurrentState);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var s0 = gm.CurrentState;
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.IsTrue(s0 != gm.CurrentState);
+                    var s1 = gm.CurrentState;
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                    Assert.IsTrue(s0 != gm.CurrentState);
+                    Assert.IsTrue(s1 != gm.CurrentState);
+                    var s2 = gm.CurrentState;
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                    gm.Reset();
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 1);
+                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventB], 1);
+                    Assert.AreEqual(s0, gm.CurrentState);
+                }
             }
             {
-                var gm = new TestGestureMachine(root);
-                var s0 = gm.CurrentState;
-                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.IsTrue(s0 != gm.CurrentState);
-                var s1 = gm.CurrentState;
-                gm.Input(TestEvents.Constants.TestPhysicalPressEventB);
-                Assert.IsTrue(s0 != gm.CurrentState);
-                Assert.IsTrue(s1 != gm.CurrentState);
-                var s2 = gm.CurrentState;
-                gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
-                Assert.IsTrue(s0 != gm.CurrentState);
-                Assert.IsTrue(s1 != gm.CurrentState);
-                Assert.IsTrue(s2 != gm.CurrentState);
-                var s3 = gm.CurrentState;
-                Assert.AreEqual(gm.OnMachineResetCallCount, 0);
-                gm.Reset();
-                Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                Assert.AreEqual(s0, gm.CurrentState);
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var s0 = gm.CurrentState;
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.IsTrue(s0 != gm.CurrentState);
+                    var s1 = gm.CurrentState;
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventB);
+                    Assert.IsTrue(s0 != gm.CurrentState);
+                    Assert.IsTrue(s1 != gm.CurrentState);
+                    var s2 = gm.CurrentState;
+                    gm.Input(TestEvents.Constants.TestPhysicalPressEventA);
+                    Assert.IsTrue(s0 != gm.CurrentState);
+                    Assert.IsTrue(s1 != gm.CurrentState);
+                    Assert.IsTrue(s2 != gm.CurrentState);
+                    var s3 = gm.CurrentState;
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 0);
+                    gm.Reset();
+                    Assert.AreEqual(gm.OnMachineResetCallCount, 1);
+                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventA], 2);
+                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Constants.TestPhysicalReleaseEventB], 1);
+                    Assert.AreEqual(s0, gm.CurrentState);
+                }
             }
         }
     }
-    
 }
-

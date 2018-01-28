@@ -27,6 +27,13 @@ namespace Crevice.Future
      *              Using(new Profile("ProfileName")) {}
      *              NextProfile();
      *              
+     *       複数でも、OR的なのと、無関係に並列っぽいのがありえる
+     *              SubProfile
+     *              ParallelProfile
+     *                  として実装はできそう
+     *              SubProfile(); とするよりは、 SubProfile(() => {  }); としたほうがいい？
+     *                  →微妙
+     *              
      * Todo: ベンチマーク
      * 
      * Todo: On() と If() を区別するのは？ SingleThrowとStrokeはIfのほうがよいような…
@@ -35,6 +42,8 @@ namespace Crevice.Future
      * 
      * Todo: WhenやOn, Ifに文字列で記述を追加したい
      *          Description("hoge", ja="")
+     * 
+     * Todo: プロファイルのグラフ出力。ブラウザに出せばいいのでそのように
      * 
      */
 
@@ -183,7 +192,13 @@ namespace Crevice.Future
         public void CountDown(IReleaseEvent key) => InvalidReleaseEvents.CountDown(key);
     }
 
-    public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
+    interface IIsDisposed
+    {
+        bool IsDisposed { get; }
+    }
+
+    public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> 
+        : IIsDisposed, IDisposable
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
@@ -206,6 +221,7 @@ namespace Crevice.Future
         public virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
         public virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
 
+        // todo: IDisposable
         public GestureMachine(
             TConfig config,
             TContextManager contextManager,
@@ -276,6 +292,8 @@ namespace Crevice.Future
             GestureTimeoutTimer.Interval = Config.GestureTimeout;
             GestureTimeoutTimer.Start();
         }
+        
+        private void ReleaseGestureTimeoutTimer() => LazyRelease(GestureTimeoutTimer);
 
         private StrokeWatcher CreateStrokeWatcher()
             => new StrokeWatcher(
@@ -287,12 +305,12 @@ namespace Crevice.Future
 
         private void ReleaseStrokeWatcher() => LazyRelease(StrokeWatcher);
 
-        private void LazyRelease(StrokeWatcher strokeWatcher)
+        private void LazyRelease(IDisposable disposable)
         {
-            if (strokeWatcher != null)
+            if (disposable != null)
             {
                 LowPriorityTaskFactory.StartNew(() => {
-                    strokeWatcher.Dispose();
+                    disposable.Dispose();
                 });
             }
         }
@@ -358,6 +376,24 @@ namespace Crevice.Future
                 }
                 OnMachineReset();
             }
+        }
+
+        public bool IsDisposed { get; private set; } = false;
+
+        public void Dispose()
+        {
+            lock (LockObject)
+            {
+                GC.SuppressFinalize(this);
+                IsDisposed = true;
+                ReleaseGestureTimeoutTimer();
+                ReleaseStrokeWatcher();
+            }
+        }
+
+        ~GestureMachine()
+        {
+            Dispose();
         }
     }
 
@@ -1176,6 +1212,4 @@ namespace Crevice.Future
             return this;
         }
     }
-
-
 }
