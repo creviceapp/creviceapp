@@ -44,7 +44,7 @@ using System.Threading.Tasks;
  * 
  */
 
-namespace Crevice.Future
+namespace Crevice.Core
 {
     /* ・マルチプラットフォーム対応（設計のみ）
          * ・深さ無段階のジェスチャ定義
@@ -70,8 +70,7 @@ namespace Crevice.Future
     public class RightButtonSwitch : DoubleThrowSwitch { }
     public class X1ButtonSwitch : DoubleThrowSwitch { }
     public class X2ButtonSwitch : DoubleThrowSwitch { }
-
-
+    
     public abstract class Event
     {
         public int EventId { get; }

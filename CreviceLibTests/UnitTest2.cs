@@ -5,12 +5,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLib.Tests
 {
-    using Crevice.Future;
+    using Crevice;
+    using Crevice.Core;
     using System.Linq;
 
-    using TestRootElement = Crevice.Future.RootElement<Crevice.Future.EvaluationContext, Crevice.Future.ExecutionContext>;
-    using TestState0 = Crevice.Future.State0<TestGestureMachineConfig, TestContextManager, Crevice.Future.EvaluationContext, Crevice.Future.ExecutionContext>;
-    using TestStateN = Crevice.Future.StateN<TestGestureMachineConfig, TestContextManager, Crevice.Future.EvaluationContext, Crevice.Future.ExecutionContext>;
+    using TestRootElement = Crevice.RootElement<Crevice.EvaluationContext, Crevice.ExecutionContext>;
+    using TestState0 = Crevice.State0<TestGestureMachineConfig, TestContextManager, Crevice.EvaluationContext, Crevice.ExecutionContext>;
+    using TestStateN = Crevice.StateN<TestGestureMachineConfig, TestContextManager, Crevice.EvaluationContext, Crevice.ExecutionContext>;
 
     class TestGestureMachineConfig : GestureMachineConfig { }
 
