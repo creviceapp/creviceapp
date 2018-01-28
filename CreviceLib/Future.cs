@@ -83,57 +83,77 @@ namespace Crevice.Future
         public virtual void ExecuteExcutor(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
             => executeAction(execContext);
 
-        public void ExecutePressExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
         {
-            foreach (var element in doubleThrowElements)
+            if (doubleThrowElements.Any())
             {
-                foreach (var executor in element.PressExecutors)
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in doubleThrowElements)
                 {
-                    ExecuteExcutor(execContext, executor);
+                    foreach (var executor in element.PressExecutors)
+                    {
+                        ExecuteExcutor(execContext, executor);
+                    }
                 }
             }
         }
 
-        public void ExecuteDoExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
         {
-            foreach (var element in doubleThrowElements)
+            if (doubleThrowElements.Any())
             {
-                foreach (var executor in element.DoExecutors)
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in doubleThrowElements)
                 {
-                    ExecuteExcutor(execContext, executor);
+                    foreach (var executor in element.DoExecutors)
+                    {
+                        ExecuteExcutor(execContext, executor);
+                    }
                 }
             }
         }
 
-        public void ExecuteDoExecutors(TExecContext execContext, IEnumerable<SingleThrowElement<TExecContext>> singleThrowElements)
+        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<SingleThrowElement<TExecContext>> singleThrowElements)
         {
-            foreach (var element in singleThrowElements)
+            if (singleThrowElements.Any())
             {
-                foreach (var executor in element.DoExecutors)
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in singleThrowElements)
                 {
-                    ExecuteExcutor(execContext, executor);
+                    foreach (var executor in element.DoExecutors)
+                    {
+                        ExecuteExcutor(execContext, executor);
+                    }
                 }
             }
         }
 
-        public void ExecuteDoExecutors(TExecContext execContext, IEnumerable<StrokeElement<TExecContext>> strokeElements)
+        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<StrokeElement<TExecContext>> strokeElements)
         {
-            foreach (var element in strokeElements)
+            if (strokeElements.Any())
             {
-                foreach (var executor in element.DoExecutors)
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in strokeElements)
                 {
-                    ExecuteExcutor(execContext, executor);
+                    foreach (var executor in element.DoExecutors)
+                    {
+                        ExecuteExcutor(execContext, executor);
+                    }
                 }
             }
         }
 
-        public void ExecuteReleaseExecutors(TExecContext execContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
         {
-            foreach (var element in doubleThrowElements)
+            if (doubleThrowElements.Any())
             {
-                foreach (var executor in element.ReleaseExecutors)
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in doubleThrowElements)
                 {
-                    ExecuteExcutor(execContext, executor);
+                    foreach (var executor in element.ReleaseExecutors)
+                    {
+                        ExecuteExcutor(execContext, executor);
+                    }
                 }
             }
         }
@@ -216,7 +236,29 @@ namespace Crevice.Future
 
         public StrokeWatcher StrokeWatcher { get; private set; } = null;
 
-        public IState CurrentState { get; private set; } = null;
+        private IState _currentState = null;
+        public IState CurrentState
+        {
+            get => _currentState;
+
+            internal set
+            {
+                if (_currentState != value)
+                {
+                    if (value is State0<TConfig, TContextManager, TEvalContext, TExecContext>)
+                    {
+                        ReleaseStrokeWatcher();
+                        StopGestureTimeoutTimer();
+                    }
+                    else if (value is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
+                    {
+                        ResetStrokeWatcher();
+                        ResetGestureTimeoutTimer();
+                    }
+                    _currentState = value;
+                }
+            }
+        }
 
         public virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
         public virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
@@ -231,11 +273,11 @@ namespace Crevice.Future
             ContextManager = contextManager;
             RootElement = rootElement;
 
+            SetupGestureTimeoutTimer();
+
             CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(
                 this, 
                 rootElement);
-
-            SetupGestureTimeoutTimer();
         }
 
         public bool Input(IPhysicalEvent evnt) => Input(evnt, null);
@@ -255,22 +297,9 @@ namespace Crevice.Future
                     StrokeWatcher.Queue(point.Value);
                 }
 
-                var res = CurrentState.Input(evnt);
-                if (CurrentState != res.NextState)
-                {
-                    if (res.NextState is State0<TConfig, TContextManager, TEvalContext, TExecContext> S0)
-                    {
-                        ReleaseStrokeWatcher();
-                        StopGestureTimeoutTimer();
-                    }
-                    else if (res.NextState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> SN)
-                    {
-                        ResetStrokeWatcher();
-                        ResetGestureTimeoutTimer();
-                    }
-                }
-                CurrentState = res.NextState;
-                return res.EventIsConsumed;
+                var (eventIsConsumed, nextState) = CurrentState.Input(evnt);
+                CurrentState = nextState;
+                return eventIsConsumed;
             }
         }
 
@@ -713,8 +742,7 @@ namespace Crevice.Future
                 var singleThrowElements = GetActiveSingleThrowElements(evalContext, fireEvent);
                 if (singleThrowElements.Any())
                 {
-                    var execContext = Machine.ContextManager.CreateExecutionContext(evalContext);
-                    Machine.ContextManager.ExecuteDoExecutors(execContext, singleThrowElements);
+                    Machine.ContextManager.ExecuteDoExecutors(evalContext, singleThrowElements);
                     return (EventIsConsumed: true, NextState: this);
                 }
             }
@@ -726,8 +754,7 @@ namespace Crevice.Future
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
                 if (doubleThrowElements.Any())
                 {
-                    var execContext = Machine.ContextManager.CreateExecutionContext(evalContext);
-                    Machine.ContextManager.ExecutePressExecutors(execContext, doubleThrowElements);
+                    Machine.ContextManager.ExecutePressExecutors(evalContext, doubleThrowElements);
                     var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                         Machine,
                         evalContext,
@@ -790,7 +817,7 @@ namespace Crevice.Future
         where TExecContext : ExecutionContext
     {
         public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
-        public readonly TEvalContext EvaluationContext;
+        public readonly TEvalContext Ctx;
         public readonly IReadOnlyList<(IReleaseEvent, IState)> History;
         public readonly IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements;
         public readonly bool CanCancel;
@@ -803,7 +830,7 @@ namespace Crevice.Future
             bool canCancel = true)
         {
             Machine = machine;
-            EvaluationContext = ctx;
+            Ctx = ctx;
             History = history;
             DoubleThrowElements = doubleThrowElements;
             CanCancel = canCancel;
@@ -816,11 +843,10 @@ namespace Crevice.Future
                 var singleThrowElements = GetSingleThrowElements(fireEvent);
                 if (singleThrowElements.Any())
                 {
-                    var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
-                    Machine.ContextManager.ExecuteDoExecutors(execContext, singleThrowElements);
+                    Machine.ContextManager.ExecuteDoExecutors(Ctx, singleThrowElements);
                     var notCancellableCopyState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                         Machine,
-                        EvaluationContext,
+                        Ctx,
                         History,
                         DoubleThrowElements,
                         canCancel: false);
@@ -832,11 +858,10 @@ namespace Crevice.Future
                 var doubleThrowElements = GetDoubleThrowElements(pressEvent);
                 if (doubleThrowElements.Any())
                 {
-                    var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
-                    Machine.ContextManager.ExecutePressExecutors(execContext, doubleThrowElements);
+                    Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
                     var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                         Machine,
-                        EvaluationContext,
+                        Ctx,
                         CreateHistory(History, pressEvent, this),
                         doubleThrowElements,
                         canCancel: CanCancel);
@@ -851,21 +876,17 @@ namespace Crevice.Future
                     if (strokes.Any())
                     {
                         var strokeElements = GetStrokeElements(strokes);
-                        if (strokeElements.Any())
-                        {
-                            var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
-                            Machine.ContextManager.ExecuteDoExecutors(execContext, strokeElements);
-                            Machine.ContextManager.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
-                        }
+                        Machine.ContextManager.ExecuteDoExecutors(Ctx, strokeElements);
+                        Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
                     }
-                    else if (HasDoExecutors || HasReleaseExecutors)
+                    else if (HasPressExecutors || HasDoExecutors || HasReleaseExecutors)
                     {
                         //normal end
-                        var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
-                        Machine.ContextManager.ExecuteDoExecutors(execContext, DoubleThrowElements);
-                        Machine.ContextManager.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
+                        Machine.ContextManager.ExecuteDoExecutors(Ctx, DoubleThrowElements);
+                        Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
                     }
-                    else if (/* !HasDoExecutors && !HasReleaseExecutors && */ CanCancel)
+                    else if (/* !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && */ 
+                             CanCancel)
                     {
                         Machine.OnGestureCancelled();
                         //何のインスタンスが来るかによって対応を変える必要がある
@@ -888,7 +909,7 @@ namespace Crevice.Future
 
         public override IState Timeout()
         {
-            if (!HasDoExecutors && !HasReleaseExecutors && CanCancel)
+            if (!HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && CanCancel)
             {
                 return LastState;
             }
@@ -898,11 +919,7 @@ namespace Crevice.Future
         public override IState Reset()
         {
             Machine.InvalidReleaseEvents.IgnoreNext(NormalEndTrigger);
-            if (HasReleaseExecutors)
-            {
-                var execContext = Machine.ContextManager.CreateExecutionContext(EvaluationContext);
-                Machine.ContextManager.ExecuteReleaseExecutors(execContext, DoubleThrowElements);
-            }
+            Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }
         
