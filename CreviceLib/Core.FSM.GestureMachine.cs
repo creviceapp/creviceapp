@@ -44,7 +44,7 @@ namespace Crevice.Core.FSM
 
         internal readonly InvalidReleaseEventManager invalidReleaseEvents = new InvalidReleaseEventManager();
 
-        public StrokeWatcher StrokeWatcher { get; private set; } = null;
+        public StrokeWatcher StrokeWatcher { get; internal set; }
 
         private IState _currentState = null;
         public IState CurrentState
@@ -55,14 +55,13 @@ namespace Crevice.Core.FSM
             {
                 if (_currentState != value)
                 {
+                    ResetStrokeWatcher();
                     if (value is State0<TConfig, TContextManager, TEvalContext, TExecContext>)
                     {
-                        ReleaseStrokeWatcher();
                         StopGestureTimeoutTimer();
                     }
                     else if (value is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
                     {
-                        ResetStrokeWatcher();
                         ResetGestureTimeoutTimer();
                     }
                     _currentState = value;

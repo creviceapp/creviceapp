@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLibTests
 {
+    using System.Drawing;
     using Crevice.Core.Stroke;
 
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
@@ -14,6 +15,57 @@ namespace CreviceLibTests
     [TestClass]
     public class GestureMachineTest
     {
+        class StrokeWatcherMock : StrokeWatcher
+        {
+            public StrokeWatcherMock() : base(Task.Factory, 0, 0, 0, 0) { }
+
+            internal new readonly List<Point> queue = new List<Point>();
+            public override void Queue(Point point)
+            {
+                queue.Add(point);
+            }
+        }
+
+        [TestMethod]
+        public void PypassGivenPointToStrokeWatcherWhenCurrentStateIsStateN()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when
+                        .On(TestEvents.Logical.TestPressEventA)
+                        .Do((ctx) => { });
+                    Assert.AreEqual(gm.CurrentState is TestState0, true);
+                    Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
+
+                    gm.Input(TestEvents.Physical.TestPhysicalFireEventA, null);
+                    Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
+
+                    gm.Input(TestEvents.Physical.TestPhysicalFireEventA, new Point(0, 0));
+                    Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
+
+                    gm.Input(TestEvents.Physical.TestPhysicalPressEventA);
+                    Assert.AreEqual(gm.CurrentState is TestStateN, true);
+                    Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
+
+                    var strokeWatcherMock = new StrokeWatcherMock();
+                    gm.StrokeWatcher = strokeWatcherMock;
+                    Assert.AreEqual(strokeWatcherMock.queue.Count, 0);
+
+                    gm.Input(TestEvents.Physical.TestPhysicalFireEventA, null);
+                    Assert.AreEqual(strokeWatcherMock.queue.Count, 0);
+
+                    gm.Input(TestEvents.Physical.TestPhysicalFireEventA, new Point(0, 0));
+                    Assert.AreEqual(strokeWatcherMock.queue.Count, 1);
+
+                    gm.Input(TestEvents.Physical.TestPhysicalFireEventA, new Point(1, 1));
+                    Assert.AreEqual(strokeWatcherMock.queue.Count, 2);
+                }
+            }
+        }
+
         [TestMethod]
         public void ConsumeGivenPhysicalReleaseEventWhenItInIgnoreList()
         {
