@@ -5,13 +5,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLib.Tests
 {
+    using System.Linq;
     using Crevice;
     using Crevice.Core;
-    using System.Linq;
+    using Crevice.Core.Types;
+    using Crevice.Core.Context;
+    using Crevice.Core.FSM;
+    using Crevice.Core.DSL;
+    using Crevice.Core.Stroke;
 
-    using TestRootElement = Crevice.RootElement<Crevice.EvaluationContext, Crevice.ExecutionContext>;
-    using TestState0 = Crevice.State0<TestGestureMachineConfig, TestContextManager, Crevice.EvaluationContext, Crevice.ExecutionContext>;
-    using TestStateN = Crevice.StateN<TestGestureMachineConfig, TestContextManager, Crevice.EvaluationContext, Crevice.ExecutionContext>;
+    using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
+    using TestState0 = Crevice.Core.FSM.State0<TestGestureMachineConfig, TestContextManager, Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
+    using TestStateN = Crevice.Core.FSM.StateN<TestGestureMachineConfig, TestContextManager, Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
 
     class TestGestureMachineConfig : GestureMachineConfig { }
 
@@ -72,7 +77,7 @@ namespace CreviceLib.Tests
         public static TestPhysicalGroup Physical => physical;
     }
 
-    public class TestLogicalGroup : EventLogicalGroup
+    public class TestLogicalGroup : LogicalGroup
     {
         public readonly TestFireEventA TestFireEventA;
         public readonly TestPressEventA TestPressEventA;
@@ -98,7 +103,7 @@ namespace CreviceLib.Tests
         }
     }
 
-    public class TestPhysicalGroup : EventPhysicalGroup
+    public class TestPhysicalGroup : PhysicalGroup
     {
         public readonly TestPhysicalFireEventA TestPhysicalFireEventA;
         public readonly TestPhysicalPressEventA TestPhysicalPressEventA;
@@ -122,24 +127,24 @@ namespace CreviceLib.Tests
 
     public class TestDoubleThrowSwitchA : DoubleThrowSwitch { }
 
-    public class TestFireEventA : FireEvent<TestLogicalGroup, TestSingleThrowSwitchA>
+    public class TestFireEventA : LogicalFireEvent<TestLogicalGroup, TestSingleThrowSwitchA>
     {
         public TestFireEventA(TestLogicalGroup logicalGroup, int eventId) : base(logicalGroup, eventId) { }
     }
 
-    public class TestPressEventA : PressEvent<TestLogicalGroup, TestDoubleThrowSwitchA>
+    public class TestPressEventA : LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchA>
     {
         public TestPressEventA(TestLogicalGroup logicalGroup, int eventId) : base(logicalGroup, eventId) { }
 
-        public override ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA> OppositeReleaseEvent
+        public override LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA> OppositeReleaseEvent
             => LogicalGroup.TestReleaseEventA;
     }
 
-    public class TestReleaseEventA : ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA>
+    public class TestReleaseEventA : LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA>
     {
         public TestReleaseEventA(TestLogicalGroup logicalGroup, int eventId) : base(logicalGroup, eventId) { }
 
-        public override PressEvent<TestLogicalGroup, TestDoubleThrowSwitchA> OppositePressEvent
+        public override LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchA> OppositePressEvent
             => LogicalGroup.TestPressEventA;
     }
 
@@ -152,7 +157,7 @@ namespace CreviceLib.Tests
             : base(logicalGroup, physicalGroup, eventId)
         { }
 
-        public override FireEvent<TestLogicalGroup, TestSingleThrowSwitchA> LogicalEquivalentFireEvent
+        public override LogicalFireEvent<TestLogicalGroup, TestSingleThrowSwitchA> LogicalEquivalentFireEvent
             => LogicalGroup.TestFireEventA;
     }
 
@@ -165,7 +170,7 @@ namespace CreviceLib.Tests
             : base(logicalGroup, physicalGroup, eventId)
         { }
 
-        public override PressEvent<TestLogicalGroup, TestDoubleThrowSwitchA> LogicalEquivalentPressEvent
+        public override LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchA> LogicalEquivalentPressEvent
             => LogicalGroup.TestPressEventA;
 
         public override PhysicalReleaseEvent<TestLogicalGroup, TestPhysicalGroup, TestDoubleThrowSwitchA> OppositePhysicalReleaseEvent
@@ -181,7 +186,7 @@ namespace CreviceLib.Tests
             : base(logicalGroup, physicalGroup, eventId)
         { }
 
-        public override ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA> LogicalEquivalentReleaseEvent
+        public override LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA> LogicalEquivalentReleaseEvent
             => LogicalGroup.TestReleaseEventA;
 
         public override PhysicalPressEvent<TestLogicalGroup, TestPhysicalGroup, TestDoubleThrowSwitchA> OppositePhysicalPressEvent
@@ -192,24 +197,24 @@ namespace CreviceLib.Tests
 
     public class TestDoubleThrowSwitchB : DoubleThrowSwitch { }
 
-    public class TestFireEventB : FireEvent<TestLogicalGroup, TestSingleThrowSwitchB>
+    public class TestFireEventB : LogicalFireEvent<TestLogicalGroup, TestSingleThrowSwitchB>
     {
         public TestFireEventB(TestLogicalGroup logicalGroup, int eventId) : base(logicalGroup, eventId) { }
     }
 
-    public class TestPressEventB : PressEvent<TestLogicalGroup, TestDoubleThrowSwitchB>
+    public class TestPressEventB : LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchB>
     {
         public TestPressEventB(TestLogicalGroup logicalGroup, int eventId) : base(logicalGroup, eventId) { }
 
-        public override ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchB> OppositeReleaseEvent
+        public override LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchB> OppositeReleaseEvent
             => LogicalGroup.TestReleaseEventB;
     }
 
-    public class TestReleaseEventB : ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchB>
+    public class TestReleaseEventB : LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchB>
     {
         public TestReleaseEventB(TestLogicalGroup logicalGroup, int eventId) : base(logicalGroup, eventId) { }
 
-        public override PressEvent<TestLogicalGroup, TestDoubleThrowSwitchB> OppositePressEvent
+        public override LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchB> OppositePressEvent
             => LogicalGroup.TestPressEventB;
     }
 
@@ -223,7 +228,7 @@ namespace CreviceLib.Tests
         { }
 
 
-        public override FireEvent<TestLogicalGroup, TestSingleThrowSwitchB> LogicalEquivalentFireEvent
+        public override LogicalFireEvent<TestLogicalGroup, TestSingleThrowSwitchB> LogicalEquivalentFireEvent
             => LogicalGroup.TestFireEventB;
     }
 
@@ -237,7 +242,7 @@ namespace CreviceLib.Tests
         { }
 
 
-        public override PressEvent<TestLogicalGroup, TestDoubleThrowSwitchB> LogicalEquivalentPressEvent
+        public override LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchB> LogicalEquivalentPressEvent
             => LogicalGroup.TestPressEventB;
 
         public override PhysicalReleaseEvent<TestLogicalGroup, TestPhysicalGroup, TestDoubleThrowSwitchB> OppositePhysicalReleaseEvent
@@ -254,7 +259,7 @@ namespace CreviceLib.Tests
         { }
 
 
-        public override ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchB> LogicalEquivalentReleaseEvent
+        public override LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchB> LogicalEquivalentReleaseEvent
             => LogicalGroup.TestReleaseEventB;
 
         public override PhysicalPressEvent<TestLogicalGroup, TestPhysicalGroup, TestDoubleThrowSwitchB> OppositePhysicalPressEvent
@@ -267,7 +272,7 @@ namespace CreviceLib.Tests
         [TestMethod]
         public void FireEventTest()
         {
-            Assert.IsTrue(TestEvents.Logical.TestFireEventA is FireEvent<TestLogicalGroup, TestSingleThrowSwitchA>);
+            Assert.IsTrue(TestEvents.Logical.TestFireEventA is LogicalFireEvent<TestLogicalGroup, TestSingleThrowSwitchA>);
             Assert.IsTrue(TestEvents.Logical.TestFireEventA is ILogicalEvent);
             Assert.IsTrue(TestEvents.Logical.TestFireEventA is IPhysicalEvent == false);
             Assert.AreEqual(TestEvents.Logical.TestFireEventA.EventId, 1000);
@@ -276,7 +281,7 @@ namespace CreviceLib.Tests
         [TestMethod]
         public void PressEventTest()
         {
-            Assert.IsTrue(TestEvents.Logical.TestPressEventA is PressEvent<TestLogicalGroup, TestDoubleThrowSwitchA>);
+            Assert.IsTrue(TestEvents.Logical.TestPressEventA is LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchA>);
             Assert.IsTrue(TestEvents.Logical.TestPressEventA is ILogicalEvent);
             Assert.IsTrue(TestEvents.Logical.TestPressEventA is IPhysicalEvent == false);
             Assert.AreEqual(TestEvents.Logical.TestPressEventA.OppositeReleaseEvent, TestEvents.Logical.TestReleaseEventA);
@@ -286,7 +291,7 @@ namespace CreviceLib.Tests
         [TestMethod]
         public void ReleaseEventTest()
         {
-            Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is ReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA>);
+            Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA>);
             Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is ILogicalEvent);
             Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is IPhysicalEvent == false);
             Assert.AreEqual(TestEvents.Logical.TestReleaseEventA.OppositePressEvent, TestEvents.Logical.TestPressEventA);
@@ -427,7 +432,7 @@ namespace CreviceLib.Tests
             var press = when.On(TestEvents.Logical.TestPressEventA);
 
             Assert.AreEqual(press.StrokeElements.Count, 0);
-            var press_stroke = press.On(StrokeEvent.Direction.Up);
+            var press_stroke = press.On(StrokeDirection.Up);
             Assert.AreEqual(press.StrokeElements.Count, 1);
 
             Assert.AreEqual(press_stroke.DoExecutors.Count, 0);
@@ -1134,13 +1139,13 @@ namespace CreviceLib.Tests
                 var when = root.When((ctx) => { return true; });
                 when
                     .On(TestEvents.Logical.TestPressEventA)
-                        .On(StrokeEvent.Direction.Up)
+                        .On(StrokeDirection.Up)
                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var res0 = s0.Input(TestEvents.Physical.TestPhysicalPressEventA);
                 var s1 = res0.NextState as TestStateN;
-                var result = s1.GetStrokeElements(new List<StrokeEvent.Direction>() { StrokeEvent.Direction.Up });
+                var result = s1.GetStrokeElements(new List<StrokeDirection>() { StrokeDirection.Up });
                 Assert.AreEqual(result.Count, 1);
                 Assert.AreEqual(result[0], when.DoubleThrowElements[0].StrokeElements[0]);
             }
@@ -1220,7 +1225,7 @@ namespace CreviceLib.Tests
                     Assert.AreEqual(result, false);
                 }
 
-                gm.InvalidReleaseEvents.IgnoreNext(TestEvents.Physical.TestPhysicalReleaseEventA);
+                gm.invalidReleaseEvents.IgnoreNext(TestEvents.Physical.TestPhysicalReleaseEventA);
 
                 {
                     var result = gm.Input(TestEvents.Physical.TestPhysicalFireEventA);
@@ -1283,7 +1288,7 @@ namespace CreviceLib.Tests
                     gm.Reset();
                     Assert.AreEqual(gm.OnMachineResetCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventA], 1);
+                    Assert.AreEqual(gm.invalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventA], 1);
                     Assert.AreEqual(s0, gm.CurrentState);
                 }
             }
@@ -1302,8 +1307,8 @@ namespace CreviceLib.Tests
                     gm.Reset();
                     Assert.AreEqual(gm.OnMachineResetCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventA], 1);
-                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventB], 1);
+                    Assert.AreEqual(gm.invalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventA], 1);
+                    Assert.AreEqual(gm.invalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventB], 1);
                     Assert.AreEqual(s0, gm.CurrentState);
                 }
             }
@@ -1327,8 +1332,8 @@ namespace CreviceLib.Tests
                     gm.Reset();
                     Assert.AreEqual(gm.OnMachineResetCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnMachineResetCallCount, 1);
-                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventA], 2);
-                    Assert.AreEqual(gm.InvalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventB], 1);
+                    Assert.AreEqual(gm.invalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventA], 2);
+                    Assert.AreEqual(gm.invalidReleaseEvents[TestEvents.Physical.TestPhysicalReleaseEventB], 1);
                     Assert.AreEqual(s0, gm.CurrentState);
                 }
             }
@@ -1436,7 +1441,7 @@ namespace CreviceLib.Tests
                     var when = root.When((ctx) => { return true; });
                     when
                         .On(TestEvents.Logical.TestPressEventA)
-                            .On(StrokeEvent.Direction.Up)
+                            .On(StrokeDirection.Up)
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);

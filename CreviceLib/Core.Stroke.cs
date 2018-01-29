@@ -4,24 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crevice
+namespace Crevice.Core.Stroke
 {
-    using Crevice.Core;
+    using System.Collections.Concurrent;
+    using System.Drawing;
+
+    public enum StrokeDirection
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
 
     public class Stroke
     {
-        public readonly StrokeEvent.Direction Direction;
+
+        public readonly StrokeDirection Direction;
         internal readonly int strokeDirectionChangeThreshold;
         internal readonly int strokeExtensionThreshold;
 
-        private readonly List<System.Drawing.Point> points = new List<System.Drawing.Point>();
+        private readonly List<Point> points = new List<Point>();
 
         public Stroke(
             int strokeDirectionChangeThreshold,
             int strokeExtensionThreshold,
-            StrokeEvent.Direction dir)
+            StrokeDirection direction)
         {
-            this.Direction = dir;
+            this.Direction = direction;
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
             this.strokeExtensionThreshold = strokeExtensionThreshold;
         }
@@ -29,7 +39,7 @@ namespace Crevice
         public Stroke(
             int strokeDirectionChangeThreshold,
             int strokeExtensionThreshold,
-            List<System.Drawing.Point> input)
+            List<Point> input)
         {
             this.Direction = NextDirection(GetAngle(input.First(), input.Last()));
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
@@ -37,7 +47,7 @@ namespace Crevice
             Absorb(input);
         }
 
-        public virtual Stroke Input(List<System.Drawing.Point> input)
+        public virtual Stroke Input(List<Point> input)
         {
             var p0 = input.First();
             var p1 = input.Last();
@@ -67,48 +77,39 @@ namespace Crevice
             return this;
         }
 
-        public void Absorb(List<System.Drawing.Point> points)
-        {
-            this.points.AddRange(points);
-            points.Clear();
-        }
+        public void Absorb(IReadOnlyList<Point> points)
+            => this.points.AddRange(points);
 
-        private static StrokeEvent.Direction NextDirection(double angle)
+        private static StrokeDirection NextDirection(double angle)
         {
             if (-135 <= angle && angle < -45)
             {
-                return StrokeEvent.Direction.Up;
+                return StrokeDirection.Up;
             }
             else if (-45 <= angle && angle < 45)
             {
-                return StrokeEvent.Direction.Right;
+                return StrokeDirection.Right;
             }
             else if (45 <= angle && angle < 135)
             {
-                return StrokeEvent.Direction.Down;
+                return StrokeDirection.Down;
             }
             else // if (135 <= angle || angle < -135)
             {
-                return StrokeEvent.Direction.Left;
+                return StrokeDirection.Left;
             }
         }
 
-        private bool IsSameDirection(StrokeEvent.Direction dir)
-        {
-            return dir == Direction;
-        }
+        private bool IsSameDirection(StrokeDirection dir)
+            => dir == Direction;
 
         private bool IsExtensionable(double angle)
-        {
-            return Direction == NextDirection(angle);
-        }
+            => Direction == NextDirection(angle);
 
-        private Stroke CreateNew(StrokeEvent.Direction dir)
-        {
-            return new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, dir);
-        }
+        private Stroke CreateNew(StrokeDirection dir)
+            => new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, dir);
 
-        public static bool CanCreate(int initialStrokeThreshold, System.Drawing.Point p0, System.Drawing.Point p1)
+        public static bool CanCreate(int initialStrokeThreshold, Point p0, Point p1)
         {
             var dx = Math.Abs(p0.X - p1.X);
             var dy = Math.Abs(p0.Y - p1.Y);
@@ -119,22 +120,19 @@ namespace Crevice
             return false;
         }
 
-        private static double GetAngle(System.Drawing.Point p0, System.Drawing.Point p1)
-        {
-            return Math.Atan2(p1.Y - p0.Y, p1.X - p0.X) * 180 / Math.PI;
-        }
+        private static double GetAngle(Point p0, Point p1)
+            => Math.Atan2(p1.Y - p0.Y, p1.X - p0.X) * 180 / Math.PI;
     }
 
     public abstract class PointProcessor
     {
         public readonly int WatchInterval;
 
-        private int lastTickCount;
+        private int lastTickCount = 0;
 
         public PointProcessor(int watchInterval)
         {
             this.WatchInterval = watchInterval;
-            this.lastTickCount = 0;
         }
 
         private bool MustBeProcessed(int currentTickCount)
@@ -151,7 +149,7 @@ namespace Crevice
             return false;
         }
 
-        public bool Process(System.Drawing.Point point)
+        public bool Process(Point point)
         {
             if (!MustBeProcessed(currentTickCount: Environment.TickCount))
             {
@@ -161,20 +159,18 @@ namespace Crevice
             return true;
         }
 
-        internal abstract void OnProcess(System.Drawing.Point point);
+        internal abstract void OnProcess(Point point);
     }
 
     public abstract class QueuedPointProcessor : PointProcessor
     {
-        internal readonly System.Collections.Concurrent.BlockingCollection<System.Drawing.Point> queue
-            = new System.Collections.Concurrent.BlockingCollection<System.Drawing.Point>();
+        internal readonly BlockingCollection<Point> queue
+            = new BlockingCollection<Point>();
 
         public QueuedPointProcessor(int watchInterval) : base(watchInterval) { }
 
-        internal override void OnProcess(System.Drawing.Point point)
-        {
-            queue.Add(point);
-        }
+        internal override void OnProcess(Point point)
+            => queue.Add(point);
     }
 
     public class StrokeWatcher : QueuedPointProcessor, IDisposable
@@ -185,6 +181,7 @@ namespace Crevice
         internal readonly int strokeExtensionThreshold;
 
         internal readonly List<Stroke> strokes = new List<Stroke>();
+        internal readonly List<Point> buffer = new List<Point>();
         internal readonly Task task;
 
         public StrokeWatcher(
@@ -198,10 +195,10 @@ namespace Crevice
             this.initialStrokeThreshold = initialStrokeThreshold;
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
             this.strokeExtensionThreshold = strokeExtensionThreshold;
-            this.task = Start();
+            this.task = CreateTask();
         }
 
-        public virtual void Queue(System.Drawing.Point point)
+        public virtual void Queue(Point point)
         {
             if (!IsDisposed)
             {
@@ -209,9 +206,7 @@ namespace Crevice
             }
         }
 
-        internal readonly List<System.Drawing.Point> buffer = new List<System.Drawing.Point>();
-
-        private Task Start()
+        private Task CreateTask()
         {
             return taskFactory.StartNew(() =>
             {
@@ -230,7 +225,7 @@ namespace Crevice
                             {
                                 // OnStroke~
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
-                                // Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeEvent.Direction), stroke.Direction));
+                                // Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeDirection), stroke.Direction));
                                 strokes.Add(stroke);
                             }
                         }
@@ -241,9 +236,10 @@ namespace Crevice
                             if (stroke != res)
                             {
                                 // OnStroke~
-                                // Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeEvent.Direction), res.Direction));
+                                // Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeDirection), res.Direction));
                                 strokes.Add(res);
                             }
+                            buffer.Clear();
                         }
                     }
                 }
@@ -251,7 +247,7 @@ namespace Crevice
             });
         }
 
-        public IReadOnlyList<StrokeEvent.Direction> GetStorkes()
+        public IReadOnlyList<StrokeDirection> GetStorkes()
             => strokes.Select(x => x.Direction).ToList();
 
         public bool IsDisposed { get; private set; }
@@ -264,9 +260,6 @@ namespace Crevice
             // Verbose.Print("StrokeWatcher(HashCode: 0x{0:X}) was released.", GetHashCode());
         }
 
-        ~StrokeWatcher()
-        {
-            Dispose();
-        }
+        ~StrokeWatcher() => Dispose();
     }
 }

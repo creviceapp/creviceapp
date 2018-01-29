@@ -44,8 +44,11 @@ namespace Crevice.Core
      * 
      */
 
-    interface IIsDisposed
+    namespace Misc
     {
-        bool IsDisposed { get; }
+        interface IIsDisposed
+        {
+            bool IsDisposed { get; }
+        }
     }
 }

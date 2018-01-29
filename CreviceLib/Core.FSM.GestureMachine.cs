@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Crevice
+namespace Crevice.Core.FSM
 {
+    using System.Drawing;
+    using System.Threading.Tasks;
     using Crevice.Core;
+    using Crevice.Core.Types;
+    using Crevice.Core.Context;
+    using Crevice.Core.DSL;
+    using Crevice.Core.Stroke;
+    using Crevice.Core.Misc;
 
     public class GestureMachineConfig
     {
@@ -33,11 +38,11 @@ namespace Crevice
         public readonly TContextManager ContextManager;
         public readonly RootElement<TEvalContext, TExecContext> RootElement;
 
-        private readonly object LockObject = new object();
+        private readonly object lockObject = new object();
 
-        private readonly System.Timers.Timer GestureTimeoutTimer = new System.Timers.Timer();
+        private readonly System.Timers.Timer gestureTimeoutTimer = new System.Timers.Timer();
 
-        internal readonly InvalidReleaseEventManager InvalidReleaseEvents = new InvalidReleaseEventManager();
+        internal readonly InvalidReleaseEventManager invalidReleaseEvents = new InvalidReleaseEventManager();
 
         public StrokeWatcher StrokeWatcher { get; private set; } = null;
 
@@ -79,26 +84,26 @@ namespace Crevice
 
             SetupGestureTimeoutTimer();
 
-            CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(
-                this,
-                rootElement);
+            CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
         }
 
         public bool Input(IPhysicalEvent evnt) => Input(evnt, null);
 
         public bool Input(IPhysicalEvent evnt, Point? point)
         {
-            lock (LockObject)
+            lock (lockObject)
             {
-                if (evnt is IReleaseEvent releaseEvent && InvalidReleaseEvents[releaseEvent] > 0)
-                {
-                    InvalidReleaseEvents.CountDown(releaseEvent);
-                    return true;
-                }
-
                 if (point.HasValue && CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
                 {
                     StrokeWatcher.Queue(point.Value);
+                }
+                
+                // Todo: return false if evnt is INullEvent
+                
+                if (evnt is IReleaseEvent releaseEvent && invalidReleaseEvents[releaseEvent] > 0)
+                {
+                    invalidReleaseEvents.CountDown(releaseEvent);
+                    return true;
                 }
 
                 var (eventIsConsumed, nextState) = CurrentState.Input(evnt);
@@ -109,24 +114,24 @@ namespace Crevice
 
         private void SetupGestureTimeoutTimer()
         {
-            GestureTimeoutTimer.Elapsed += new System.Timers.ElapsedEventHandler(TryTimeout);
-            GestureTimeoutTimer.Interval = Config.GestureTimeout;
-            GestureTimeoutTimer.AutoReset = false;
+            gestureTimeoutTimer.Elapsed += new System.Timers.ElapsedEventHandler(TryTimeout);
+            gestureTimeoutTimer.Interval = Config.GestureTimeout;
+            gestureTimeoutTimer.AutoReset = false;
         }
 
         private void StopGestureTimeoutTimer()
         {
-            GestureTimeoutTimer.Stop();
+            gestureTimeoutTimer.Stop();
         }
 
         private void ResetGestureTimeoutTimer()
         {
-            GestureTimeoutTimer.Stop();
-            GestureTimeoutTimer.Interval = Config.GestureTimeout;
-            GestureTimeoutTimer.Start();
+            gestureTimeoutTimer.Stop();
+            gestureTimeoutTimer.Interval = Config.GestureTimeout;
+            gestureTimeoutTimer.Start();
         }
 
-        private void ReleaseGestureTimeoutTimer() => LazyRelease(GestureTimeoutTimer);
+        private void ReleaseGestureTimeoutTimer() => LazyRelease(gestureTimeoutTimer);
 
         private StrokeWatcher CreateStrokeWatcher()
             => new StrokeWatcher(
@@ -157,7 +162,7 @@ namespace Crevice
 
         private void TryTimeout(object sender, System.Timers.ElapsedEventArgs args)
         {
-            lock (LockObject)
+            lock (lockObject)
             {
                 if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
                 {
@@ -194,7 +199,7 @@ namespace Crevice
 
         public void Reset()
         {
-            lock (LockObject)
+            lock (lockObject)
             {
                 if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
                 {
@@ -215,7 +220,7 @@ namespace Crevice
 
         public void Dispose()
         {
-            lock (LockObject)
+            lock (lockObject)
             {
                 GC.SuppressFinalize(this);
                 IsDisposed = true;

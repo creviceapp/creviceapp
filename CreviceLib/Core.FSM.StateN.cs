@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Crevice
+namespace Crevice.Core.FSM
 {
-    using Crevice.Core;
+    using System.Linq;
+    using Crevice.Core.Types;
+    using Crevice.Core.Context;
+    using Crevice.Core.DSL;
+    using Crevice.Core.Stroke;
 
     public class StateN<TConfig, TContextManager, TEvalContext, TExecContext> : State
         where TConfig : GestureMachineConfig
@@ -96,11 +99,10 @@ namespace Crevice
                 else if (AbnormalEndTriggers.Contains(releaseEvent))
                 {
                     var (oldState, skippedReleaseEvents) = FindStateFromHistory(releaseEvent);
-                    Machine.InvalidReleaseEvents.IgnoreNext(skippedReleaseEvents);
+                    Machine.invalidReleaseEvents.IgnoreNext(skippedReleaseEvents);
                     return (EventIsConsumed: true, NextState: oldState);
                 }
             }
-
             return base.Input(evnt);
         }
 
@@ -115,7 +117,7 @@ namespace Crevice
 
         public override IState Reset()
         {
-            Machine.InvalidReleaseEvents.IgnoreNext(NormalEndTrigger);
+            Machine.invalidReleaseEvents.IgnoreNext(NormalEndTrigger);
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }
@@ -166,7 +168,7 @@ namespace Crevice
                     select dd))
                 .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyList<StrokeElement<TExecContext>> GetStrokeElements(IReadOnlyList<StrokeEvent.Direction> strokes)
+        public IReadOnlyList<StrokeElement<TExecContext>> GetStrokeElements(IReadOnlyList<StrokeDirection> strokes)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (

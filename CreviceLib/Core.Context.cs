@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Crevice
+namespace Crevice.Core.Context
 {
-    public class EvaluationContext { }
-    public class ExecutionContext { }
+    using System.Linq;
+    using Crevice.Core.DSL;
+
+    public class Context { }
+    public class EvaluationContext : Context { }
+    public class ExecutionContext : Context { }
 
     public delegate bool EvaluateAction<in T>(T ctx);
     public delegate void ExecuteAction<in T>(T ctx);

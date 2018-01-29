@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Crevice
+namespace Crevice.Core.DSL
 {
-    using Crevice.Core;
+    using System.Linq;
+    using Crevice.Core.Types;
+    using Crevice.Core.Context;
+    using Crevice.Core.Stroke;
 
     public abstract class Element
     {
@@ -197,7 +199,7 @@ namespace Crevice
             return elm;
         }
 
-        public StrokeElement<T> On(params StrokeEvent.Direction[] strokeDirections)
+        public StrokeElement<T> On(params StrokeDirection[] strokeDirections)
         {
             var elm = new StrokeElement<T>(strokeDirections);
             strokeElements.Add(elm);
@@ -231,12 +233,12 @@ namespace Crevice
     {
         public override bool IsFull => Strokes.Any() && DoExecutors.Any(e => e != null);
 
-        public readonly IReadOnlyList<StrokeEvent.Direction> Strokes;
+        public readonly IReadOnlyList<StrokeDirection> Strokes;
 
         private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
         public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
-        public StrokeElement(params StrokeEvent.Direction[] strokes)
+        public StrokeElement(params StrokeDirection[] strokes)
         {
             Strokes = strokes;
         }

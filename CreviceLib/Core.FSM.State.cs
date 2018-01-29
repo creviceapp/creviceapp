@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Crevice
+namespace Crevice.Core.FSM
 {
-    using Crevice.Core;
+    using Crevice.Core.Types;
 
     public interface IState
     {
