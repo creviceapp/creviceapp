@@ -12,6 +12,26 @@ namespace Crevice.Core.Types
     public class LogicalGroup : Group { }
     public class PhysicalGroup : Group { }
 
+    public interface ILogicalEvent { }
+    public interface IPhysicalEvent { }
+
+    public interface IFireEvent
+    {
+        IFireEvent LogicalNormalized { get; }
+    }
+
+    public interface IPressEvent
+    {
+        IReleaseEvent Opposition { get; }
+        IPressEvent LogicalNormalized { get; }
+    }
+
+    public interface IReleaseEvent
+    {
+        IPressEvent Opposition { get; }
+        IReleaseEvent LogicalNormalized { get; }
+    }
+
     public abstract class Event<TLoG>
         where TLoG : LogicalGroup
     {
@@ -36,27 +56,6 @@ namespace Crevice.Core.Types
         }
     }
 
-    public interface ILogicalEvent { }
-
-    public interface IPhysicalEvent { }
-
-    public interface IFireEvent
-    {
-        IFireEvent LogicalNormalized { get; }
-    }
-
-    public interface IPressEvent
-    {
-        IReleaseEvent Opposition { get; }
-        IPressEvent LogicalNormalized { get; }
-    }
-
-    public interface IReleaseEvent
-    {
-        IPressEvent Opposition { get; }
-        IReleaseEvent LogicalNormalized { get; }
-    }
-    
     public abstract class LogicalFireEvent<TLoG, TSw> : Event<TLoG>, IFireEvent, ILogicalEvent
         where TLoG : LogicalGroup
         where TSw : SingleThrowSwitch

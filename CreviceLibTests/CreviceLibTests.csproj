@@ -54,8 +54,9 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTest2.cs" />
+    <Compile Include="Core.Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
