@@ -28,6 +28,7 @@ namespace Crevice.Core.FSM
 
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
+            // Todo: benchmark switch type expression
             if (evnt is IFireEvent fireEvent &&
                     (SingleThrowTriggers.Contains(fireEvent) ||
                      SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
@@ -69,8 +70,8 @@ namespace Crevice.Core.FSM
             => (from w in RootElement.WhenElements
                 where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
                 select (from d in w.DoubleThrowElements
-                        where d.IsFull && (d.Trigger == triggerEvent ||
-                                           d.Trigger == triggerEvent.LogicalNormalized)
+                        where d.IsFull && (d.Trigger.Equals(triggerEvent)  ||
+                                           d.Trigger.Equals(triggerEvent.LogicalNormalized))
                         select d))
             .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
@@ -78,8 +79,8 @@ namespace Crevice.Core.FSM
             => (from w in RootElement.WhenElements
                 where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
                 select (from s in w.SingleThrowElements
-                        where s.IsFull && (s.Trigger == triggerEvent ||
-                                           s.Trigger == triggerEvent.LogicalNormalized)
+                        where s.IsFull && (s.Trigger.Equals(triggerEvent) ||
+                                           s.Trigger.Equals(triggerEvent.LogicalNormalized))
                         select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 

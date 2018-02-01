@@ -163,8 +163,8 @@ namespace Crevice.Core.FSM
                 where d.IsFull
                 select (
                     from dd in d.DoubleThrowElements
-                    where dd.IsFull && (dd.Trigger == triggerEvent ||
-                                        dd.Trigger == triggerEvent.LogicalNormalized)
+                    where dd.IsFull && (dd.Trigger.Equals(triggerEvent) ||
+                                        dd.Trigger.Equals(triggerEvent.LogicalNormalized))
                     select dd))
                 .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
@@ -182,8 +182,8 @@ namespace Crevice.Core.FSM
                 where d.IsFull
                 select (
                     from s in d.SingleThrowElements
-                    where s.IsFull && (s.Trigger == triggerEvent ||
-                                       s.Trigger == triggerEvent.LogicalNormalized)
+                    where s.IsFull && (s.Trigger.Equals(triggerEvent) ||
+                                       s.Trigger.Equals(triggerEvent.LogicalNormalized))
                     select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
     }

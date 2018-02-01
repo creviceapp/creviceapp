@@ -8,10 +8,6 @@ namespace Crevice.Core.Types
     public abstract class SingleThrowSwitch : Switch { }
     public abstract class DoubleThrowSwitch : Switch { }
 
-    public class Group { }
-    public class LogicalGroup : Group { }
-    public class PhysicalGroup : Group { }
-
     public interface ILogicalEvent { }
     public interface IPhysicalEvent { }
 
@@ -34,15 +30,9 @@ namespace Crevice.Core.Types
 
     public abstract class Event : IEquatable<Event>
     {
-
         public int EventId { get; }
 
-        public Event(int eventId)
-        {
-            EventId = eventId;
-        }
-
-        public bool Equals(Event that) => EventId == that.EventId;
+        public bool Equals(Event that) => this.EventId == that.EventId;
 
         public override bool Equals(object obj)
         {
@@ -54,123 +44,80 @@ namespace Crevice.Core.Types
         }
 
         public override int GetHashCode() => EventId;
-    }
 
-    public abstract class LogicalFireEvent<TLoG, TSw> : Event, IFireEvent, ILogicalEvent
-        where TLoG : LogicalGroup
-        where TSw : SingleThrowSwitch
-    {
-        public TLoG LogicalGroup { get; }
-
-        public IFireEvent LogicalNormalized => this;
-        
-        public LogicalFireEvent(TLoG logicalGroup, int eventId) : base(eventId)
+        public Event(int eventId)
         {
-            LogicalGroup = logicalGroup;
+            EventId = eventId;
         }
     }
 
-    public abstract class LogicalPressEvent<TLoG, TSw> : Event, IPressEvent, ILogicalEvent
-        where TLoG : LogicalGroup
+    public abstract class LogicalFireEvent<TSw> : Event, IFireEvent, ILogicalEvent
+        where TSw : SingleThrowSwitch
+    {
+        public IFireEvent LogicalNormalized => this;
+
+        public LogicalFireEvent(int eventId) : base(eventId) { }
+    }
+
+    public abstract class LogicalPressEvent<TSw> : Event, IPressEvent, ILogicalEvent
         where TSw : DoubleThrowSwitch
     {
-        public TLoG LogicalGroup { get; }
-
         public IReleaseEvent Opposition => OppositeReleaseEvent;
 
-        public abstract LogicalReleaseEvent<TLoG, TSw> OppositeReleaseEvent { get; }
+        public abstract LogicalReleaseEvent<TSw> OppositeReleaseEvent { get; }
 
         public IPressEvent LogicalNormalized => this;
 
-        public LogicalPressEvent(TLoG logicalGroup, int eventId) : base(eventId)
-        {
-            LogicalGroup = logicalGroup;
-        }
+        public LogicalPressEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class LogicalReleaseEvent<TLoG, TSw> : Event, IReleaseEvent, ILogicalEvent
-        where TLoG : LogicalGroup
+    public abstract class LogicalReleaseEvent<TSw> : Event, IReleaseEvent, ILogicalEvent
         where TSw : DoubleThrowSwitch
     {
-        public TLoG LogicalGroup { get; }
-
         public IPressEvent Opposition => OppositePressEvent;
 
-        public abstract LogicalPressEvent<TLoG, TSw> OppositePressEvent { get; }
+        public abstract LogicalPressEvent<TSw> OppositePressEvent { get; }
 
         public IReleaseEvent LogicalNormalized => this;
 
-        public LogicalReleaseEvent(TLoG logicalGroup, int eventId) : base(eventId)
-        {
-            LogicalGroup = logicalGroup;
-        }
+        public LogicalReleaseEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class PhysicalFireEvent<TLoG, TPhyG, TSw> : Event, IFireEvent, IPhysicalEvent
-        where TLoG : LogicalGroup
-        where TPhyG : PhysicalGroup
+    public abstract class PhysicalFireEvent<TSw> : Event, IFireEvent, IPhysicalEvent
         where TSw : SingleThrowSwitch
     {
-        public TLoG LogicalGroup { get; }
-
-        public TPhyG PhysicalGroup { get; }
-
         public IFireEvent LogicalNormalized => LogicalEquivalentFireEvent;
 
-        public abstract LogicalFireEvent<TLoG, TSw> LogicalEquivalentFireEvent { get; }
+        public abstract LogicalFireEvent<TSw> LogicalEquivalentFireEvent { get; }
 
-        public PhysicalFireEvent(TLoG logicalGroup, TPhyG physicalGroup, int eventId) : base(eventId)
-        {
-            LogicalGroup = logicalGroup;
-            PhysicalGroup = physicalGroup;
-        }
+        public PhysicalFireEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class PhysicalPressEvent<TLoG, TPhyG, TSw> : Event, IPressEvent, IPhysicalEvent
-        where TLoG : LogicalGroup
-        where TPhyG : PhysicalGroup
+    public abstract class PhysicalPressEvent<TSw> : Event, IPressEvent, IPhysicalEvent
         where TSw : DoubleThrowSwitch
     {
-        public TLoG LogicalGroup { get; }
-
-        public TPhyG PhysicalGroup { get; }
-
         public IReleaseEvent Opposition => OppositePhysicalReleaseEvent;
 
-        public abstract PhysicalReleaseEvent<TLoG, TPhyG, TSw> OppositePhysicalReleaseEvent { get; }
+        public abstract PhysicalReleaseEvent<TSw> OppositePhysicalReleaseEvent { get; }
 
         public IPressEvent LogicalNormalized => LogicalEquivalentPressEvent;
 
-        public abstract LogicalPressEvent<TLoG, TSw> LogicalEquivalentPressEvent { get; }
+        public abstract LogicalPressEvent<TSw> LogicalEquivalentPressEvent { get; }
 
-        public PhysicalPressEvent(TLoG logicalGroup, TPhyG physicalGroup, int eventId) : base(eventId)
-        {
-            LogicalGroup = logicalGroup;
-            PhysicalGroup = physicalGroup;
-        }
+        public PhysicalPressEvent(int eventId) : base(eventId) { }
     }
 
-    public abstract class PhysicalReleaseEvent<TLoG, TPhyG, TSw> : Event, IReleaseEvent, IPhysicalEvent
-        where TLoG : LogicalGroup
-        where TPhyG : PhysicalGroup
+    public abstract class PhysicalReleaseEvent<TSw> : Event, IReleaseEvent, IPhysicalEvent
         where TSw : DoubleThrowSwitch
     {
-        public TLoG LogicalGroup { get; }
-
-        public TPhyG PhysicalGroup { get; }
-
         public IPressEvent Opposition => OppositePhysicalPressEvent;
 
-        public abstract PhysicalPressEvent<TLoG, TPhyG, TSw> OppositePhysicalPressEvent { get; }
+        public abstract PhysicalPressEvent<TSw> OppositePhysicalPressEvent { get; }
 
         public IReleaseEvent LogicalNormalized => LogicalEquivalentReleaseEvent;
 
-        public abstract LogicalReleaseEvent<TLoG, TSw> LogicalEquivalentReleaseEvent { get; }
+        public abstract LogicalReleaseEvent<TSw> LogicalEquivalentReleaseEvent { get; }
 
-        public PhysicalReleaseEvent(TLoG logicalGroup, TPhyG physicalGroup, int eventId) : base(eventId)
-        {
-            LogicalGroup = logicalGroup;
-            PhysicalGroup = physicalGroup;
-        }
+        public PhysicalReleaseEvent(int eventId) : base(eventId) { }
     }
 }

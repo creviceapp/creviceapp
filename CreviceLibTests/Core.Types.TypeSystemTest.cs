@@ -13,59 +13,55 @@ namespace CreviceLibTests
         [TestMethod]
         public void FireEventTest()
         {
-            Assert.IsTrue(TestEvents.Logical.TestFireEventA is LogicalFireEvent<TestLogicalGroup, TestSingleThrowSwitchA>);
-            Assert.IsTrue(TestEvents.Logical.TestFireEventA is ILogicalEvent);
-            Assert.IsTrue(TestEvents.Logical.TestFireEventA is IPhysicalEvent == false);
-            Assert.AreEqual(TestEvents.Logical.TestFireEventA.EventId, 1000);
+            Assert.IsTrue(TestEvents.LogicalSingleThrowKeys[0].FireEvent is LogicalFireEvent<SingleThrowSwitch>);
+            Assert.IsTrue(TestEvents.LogicalSingleThrowKeys[0].FireEvent is ILogicalEvent);
+            Assert.IsTrue(TestEvents.LogicalSingleThrowKeys[0].FireEvent is IPhysicalEvent == false);
         }
 
         [TestMethod]
         public void PressEventTest()
         {
-            Assert.IsTrue(TestEvents.Logical.TestPressEventA is LogicalPressEvent<TestLogicalGroup, TestDoubleThrowSwitchA>);
-            Assert.IsTrue(TestEvents.Logical.TestPressEventA is ILogicalEvent);
-            Assert.IsTrue(TestEvents.Logical.TestPressEventA is IPhysicalEvent == false);
-            Assert.AreEqual(TestEvents.Logical.TestPressEventA.OppositeReleaseEvent, TestEvents.Logical.TestReleaseEventA);
-            Assert.AreEqual(TestEvents.Logical.TestPressEventA.EventId, 1001);
+            Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].PressEvent is LogicalPressEvent<DoubleThrowSwitch>);
+            Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].PressEvent is ILogicalEvent);
+            Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].PressEvent is IPhysicalEvent == false);
+            Assert.AreEqual(TestEvents.LogicalDoubleThrowKeys[0].PressEvent.OppositeReleaseEvent, TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent);
         }
 
         [TestMethod]
         public void ReleaseEventTest()
         {
-            Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is LogicalReleaseEvent<TestLogicalGroup, TestDoubleThrowSwitchA>);
-            Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is ILogicalEvent);
-            Assert.IsTrue(TestEvents.Logical.TestReleaseEventA is IPhysicalEvent == false);
-            Assert.AreEqual(TestEvents.Logical.TestReleaseEventA.OppositePressEvent, TestEvents.Logical.TestPressEventA);
-            Assert.AreEqual(TestEvents.Logical.TestReleaseEventA.EventId, 1002);
+            Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent is LogicalReleaseEvent<DoubleThrowSwitch>);
+            Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent is ILogicalEvent);
+            Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent is IPhysicalEvent == false);
+            Assert.AreEqual(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent.OppositePressEvent, TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
         }
 
         [TestMethod]
         public void PhysicalFireEventTest()
         {
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalFireEventA is PhysicalFireEvent<TestLogicalGroup, TestPhysicalGroup, TestSingleThrowSwitchA>);
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalFireEventA is ILogicalEvent == false);
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalFireEventA is IPhysicalEvent);
-            Assert.AreEqual(TestEvents.Physical.TestPhysicalFireEventA.EventId, 2000);
+            Assert.IsTrue(TestEvents.PhysicalSingleThrowKeys[0].FireEvent is PhysicalFireEvent<SingleThrowSwitch>);
+            Assert.IsTrue(TestEvents.PhysicalSingleThrowKeys[0].FireEvent is ILogicalEvent == false);
+            Assert.IsTrue(TestEvents.PhysicalSingleThrowKeys[0].FireEvent is IPhysicalEvent);
         }
 
         [TestMethod]
         public void PhysicalPressEventTest()
         {
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalPressEventA is PhysicalPressEvent<TestLogicalGroup, TestPhysicalGroup, TestDoubleThrowSwitchA>);
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalPressEventA is ILogicalEvent == false);
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalPressEventA is IPhysicalEvent);
-            Assert.AreEqual(TestEvents.Physical.TestPhysicalPressEventA.OppositePhysicalReleaseEvent, TestEvents.Physical.TestPhysicalReleaseEventA);
-            Assert.AreEqual(TestEvents.Physical.TestPhysicalPressEventA.EventId, 2001);
+            Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent is PhysicalPressEvent<DoubleThrowSwitch>);
+            Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent is ILogicalEvent == false);
+            Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent is IPhysicalEvent);
+            Assert.AreEqual(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.OppositePhysicalReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
         }
 
         [TestMethod]
         public void PhysicalReleaseEventTest()
         {
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalReleaseEventA is PhysicalReleaseEvent<TestLogicalGroup, TestPhysicalGroup, TestDoubleThrowSwitchA>);
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalReleaseEventA is ILogicalEvent == false);
-            Assert.IsTrue(TestEvents.Physical.TestPhysicalReleaseEventA is IPhysicalEvent);
-            Assert.AreEqual(TestEvents.Physical.TestPhysicalReleaseEventA.OppositePhysicalPressEvent, TestEvents.Physical.TestPhysicalPressEventA);
-            Assert.AreEqual(TestEvents.Physical.TestPhysicalReleaseEventA.EventId, 2002);
+            var pressEvent = TestEvents.PhysicalDoubleThrowKeys[0].PressEvent;
+            var releaseEvent = TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent;
+            Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent is PhysicalReleaseEvent<DoubleThrowSwitch>);
+            Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent is ILogicalEvent == false);
+            Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent is IPhysicalEvent);
+            Assert.AreEqual(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent.OppositePhysicalPressEvent, TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
         }
     }
 }
