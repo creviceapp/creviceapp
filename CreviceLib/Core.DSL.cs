@@ -64,16 +64,30 @@ namespace Crevice.Core.DSL
             WhenEvaluator = evaluator;
         }
 
-        public SingleThrowElement<TExecContext> On(SingleThrowKey singleThrowKey)
+        public SingleThrowElement<TExecContext> On(LogicalSingleThrowKey singleThrowKey)
         {
-            var elm = new SingleThrowElement<TExecContext>(singleThrowKey);
+            var elm = new SingleThrowElement<TExecContext>(singleThrowKey.FireEvent as FireEvent);
             singleThrowElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<TExecContext> On(DoubleThrowKey doubleThrowKey)
+        public SingleThrowElement<TExecContext> On(PhysicalSingleThrowKey singleThrowKey)
         {
-            var elm = new DoubleThrowElement<TExecContext>(doubleThrowKey);
+            var elm = new SingleThrowElement<TExecContext>(singleThrowKey.FireEvent as FireEvent);
+            singleThrowElements.Add(elm);
+            return elm;
+        }
+
+        public DoubleThrowElement<TExecContext> On(LogicalDoubleThrowKey doubleThrowKey)
+        {
+            var elm = new DoubleThrowElement<TExecContext>(doubleThrowKey.PressEvent as PressEvent);
+            doubleThrowElements.Add(elm);
+            return elm;
+        }
+
+        public DoubleThrowElement<TExecContext> On(PhysicalDoubleThrowKey doubleThrowKey)
+        {
+            var elm = new DoubleThrowElement<TExecContext>(doubleThrowKey.PressEvent as PressEvent);
             doubleThrowElements.Add(elm);
             return elm;
         }
@@ -83,24 +97,22 @@ namespace Crevice.Core.DSL
      * 
      * .Do() -> this
      */
-    public class SingleThrowElement<T> : Element
-        where T : ExecutionContext
+    public class SingleThrowElement<TExecContext> : Element
+        where TExecContext : ExecutionContext
     {
         public override bool IsFull => Trigger != null && DoExecutors.Any(e => e != null);
+        
+        public readonly FireEvent Trigger;
 
-        public readonly SingleThrowKey Key;
+        private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
+        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors.ToList();
 
-        public FireEvent Trigger => Key.FireEvent;
-
-        private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
-
-        public SingleThrowElement(SingleThrowKey singleThrowKey)
+        public SingleThrowElement(FireEvent fireEvent)
         {
-            Key = singleThrowKey;
+            Trigger = fireEvent;
         }
 
-        public SingleThrowElement<T> Do(ExecuteAction<T> executor)
+        public SingleThrowElement<TExecContext> Do(ExecuteAction<TExecContext> executor)
         {
             doExecutors.Add(executor);
             return this;
@@ -120,8 +132,8 @@ namespace Crevice.Core.DSL
      * 
      * .On(StrokeEvent) -> new StrokeEelement
      */
-    public class DoubleThrowElement<T> : Element
-        where T : ExecutionContext
+    public class DoubleThrowElement<TExecContext> : Element
+        where TExecContext : ExecutionContext
     {
         public override bool IsFull
             => Trigger != null &&
@@ -132,67 +144,81 @@ namespace Crevice.Core.DSL
                  DoubleThrowElements.Any(e => e.IsFull) ||
                  StrokeElements.Any(e => e.IsFull));
 
-        public readonly DoubleThrowKey Key;
+        public readonly KeyGroup Key;
 
-        public PressEvent Trigger => Key.PressEvent;
+        public readonly PressEvent Trigger;
 
-        private readonly List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
-        public IReadOnlyList<SingleThrowElement<T>> SingleThrowElements => singleThrowElements.ToList();
+        private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
+        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements.ToList();
 
-        private readonly List<DoubleThrowElement<T>> doubleThrowElements = new List<DoubleThrowElement<T>>();
-        public IReadOnlyList<DoubleThrowElement<T>> DoubleThrowElements => doubleThrowElements.ToList();
+        private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
+        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements.ToList();
 
-        private readonly List<StrokeElement<T>> strokeElements = new List<StrokeElement<T>>();
-        public IReadOnlyList<StrokeElement<T>> StrokeElements => strokeElements.ToList();
+        private readonly List<StrokeElement<TExecContext>> strokeElements = new List<StrokeElement<TExecContext>>();
+        public IReadOnlyList<StrokeElement<TExecContext>> StrokeElements => strokeElements.ToList();
 
-        private readonly List<ExecuteAction<T>> pressExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyList<ExecuteAction<T>> PressExecutors => pressExecutors.ToList();
+        private readonly List<ExecuteAction<TExecContext>> pressExecutors = new List<ExecuteAction<TExecContext>>();
+        public IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors => pressExecutors.ToList();
 
-        private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
+        private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
+        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors.ToList();
 
-        private readonly List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyList<ExecuteAction<T>> ReleaseExecutors => releaseExecutors.ToList();
+        private readonly List<ExecuteAction<TExecContext>> releaseExecutors = new List<ExecuteAction<TExecContext>>();
+        public IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors => releaseExecutors.ToList();
 
-        public DoubleThrowElement(DoubleThrowKey doubleThrowKey)
+        public DoubleThrowElement(PressEvent pressEvent)
         {
-            Key = doubleThrowKey;
+            Trigger = pressEvent;
         }
 
-        public SingleThrowElement<T> On(SingleThrowKey singleThrowKey)
+        public SingleThrowElement<TExecContext> On(LogicalSingleThrowKey singleThrowKey)
         {
-            var elm = new SingleThrowElement<T>(singleThrowKey);
+            var elm = new SingleThrowElement<TExecContext>(singleThrowKey.FireEvent as FireEvent);
             singleThrowElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<T> On(DoubleThrowKey doubleThrowKey)
+        public SingleThrowElement<TExecContext> On(PhysicalSingleThrowKey singleThrowKey)
         {
-            var elm = new DoubleThrowElement<T>(doubleThrowKey);
+            var elm = new SingleThrowElement<TExecContext>(singleThrowKey.FireEvent as FireEvent);
+            singleThrowElements.Add(elm);
+            return elm;
+        }
+
+        public DoubleThrowElement<TExecContext> On(LogicalDoubleThrowKey doubleThrowKey)
+        {
+            var elm = new DoubleThrowElement<TExecContext>(doubleThrowKey.PressEvent as PressEvent);
             doubleThrowElements.Add(elm);
             return elm;
         }
 
-        public StrokeElement<T> On(params StrokeDirection[] strokeDirections)
+        public DoubleThrowElement<TExecContext> On(PhysicalDoubleThrowKey doubleThrowKey)
         {
-            var elm = new StrokeElement<T>(strokeDirections);
+            var elm = new DoubleThrowElement<TExecContext>(doubleThrowKey.PressEvent as PressEvent);
+            doubleThrowElements.Add(elm);
+            return elm;
+        }
+
+        public StrokeElement<TExecContext> On(params StrokeDirection[] strokeDirections)
+        {
+            var elm = new StrokeElement<TExecContext>(strokeDirections);
             strokeElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<T> Press(ExecuteAction<T> executor)
+        public DoubleThrowElement<TExecContext> Press(ExecuteAction<TExecContext> executor)
         {
             pressExecutors.Add(executor);
             return this;
         }
 
-        public DoubleThrowElement<T> Do(ExecuteAction<T> executor)
+        public DoubleThrowElement<TExecContext> Do(ExecuteAction<TExecContext> executor)
         {
             doExecutors.Add(executor);
             return this;
         }
 
-        public DoubleThrowElement<T> Release(ExecuteAction<T> executor)
+        public DoubleThrowElement<TExecContext> Release(ExecuteAction<TExecContext> executor)
         {
             releaseExecutors.Add(executor);
             return this;
@@ -202,22 +228,22 @@ namespace Crevice.Core.DSL
     /* 
      * .Do() -> this 
      */
-    public class StrokeElement<T> : Element
-        where T : ExecutionContext
+    public class StrokeElement<TExecContext> : Element
+        where TExecContext : ExecutionContext
     {
         public override bool IsFull => Strokes.Any() && DoExecutors.Any(e => e != null);
 
         public readonly IReadOnlyList<StrokeDirection> Strokes;
 
-        private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
-        public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
+        private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
+        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors.ToList();
 
         public StrokeElement(params StrokeDirection[] strokes)
         {
             Strokes = strokes;
         }
 
-        public StrokeElement<T> Do(ExecuteAction<T> executor)
+        public StrokeElement<TExecContext> Do(ExecuteAction<TExecContext> executor)
         {
             doExecutors.Add(executor);
             return this;

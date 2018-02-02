@@ -36,7 +36,7 @@ namespace CreviceLibTests
             Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].PressEvent is LogicalPressEvent);
             Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].PressEvent is ILogicalEvent);
             Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].PressEvent is IPhysicalEvent == false);
-            Assert.AreEqual(TestEvents.LogicalDoubleThrowKeys[0].LogicalPressEvent.Opposition, TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent);
+            Assert.AreEqual(TestEvents.LogicalDoubleThrowKeys[0].PressEvent.Opposition, TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent);
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace CreviceLibTests
             Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent is LogicalReleaseEvent);
             Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent is ILogicalEvent);
             Assert.IsTrue(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent is IPhysicalEvent == false);
-            Assert.AreEqual(TestEvents.LogicalDoubleThrowKeys[0].LogicalReleaseEvent.Opposition, TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
+            Assert.AreEqual(TestEvents.LogicalDoubleThrowKeys[0].ReleaseEvent.Opposition, TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ namespace CreviceLibTests
             Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent is PhysicalPressEvent);
             Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent is ILogicalEvent == false);
             Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent is IPhysicalEvent);
-            Assert.AreEqual(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent.Opposition, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+            Assert.AreEqual(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace CreviceLibTests
             Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent is PhysicalReleaseEvent);
             Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent is ILogicalEvent == false);
             Assert.IsTrue(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent is IPhysicalEvent);
-            Assert.AreEqual(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalReleaseEvent.Opposition, TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+            Assert.AreEqual(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent.Opposition, TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
         }
     }
 }

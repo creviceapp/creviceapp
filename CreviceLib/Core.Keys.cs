@@ -83,15 +83,18 @@ namespace Crevice.Core.Keys
         public abstract int KeyId { get; }
     }
 
-    public abstract class SingleThrowKey : KeyGroup
+    public abstract class SingleThrowKey<TFireEvent> : KeyGroup
+        where TFireEvent : FireEvent
     {
-        public abstract FireEvent FireEvent { get; }
+        public abstract TFireEvent FireEvent { get; }
     }
     
-    public abstract class DoubleThrowKey : KeyGroup
+    public abstract class DoubleThrowKey<TPressEvent, TReleaseEvent> : KeyGroup
+        where TPressEvent : PressEvent
+        where TReleaseEvent : ReleaseEvent
     {
-        public abstract PressEvent PressEvent { get; }
-        public abstract ReleaseEvent ReleaseEvent { get; }
+        public abstract TPressEvent PressEvent { get; }
+        public abstract TReleaseEvent ReleaseEvent { get; }
     }
 
     public abstract class Keys<TKey>
@@ -166,18 +169,16 @@ namespace Crevice.Core.Keys
             : base(maxSize) { }
     }
 
-    public class LogicalSingleThrowKey : SingleThrowKey
+    public class LogicalSingleThrowKey : SingleThrowKey<LogicalFireEvent>
     {
         public override int KeyId { get; }
 
-        public override FireEvent FireEvent => LogicalFireEvent;
-
-        public LogicalFireEvent LogicalFireEvent { get; }
+        public override LogicalFireEvent FireEvent { get; }
 
         public LogicalSingleThrowKey(int keyId)
         {
             KeyId = keyId;
-            LogicalFireEvent = new LogicalSingleThrowFireEvent();
+            FireEvent = new LogicalSingleThrowFireEvent();
         }
     }
 
@@ -201,18 +202,16 @@ namespace Crevice.Core.Keys
         }
     }
 
-    public class PhysicalSingleThrowKey : SingleThrowKey
+    public class PhysicalSingleThrowKey : SingleThrowKey<PhysicalFireEvent>
     {
         public override int KeyId { get; }
 
-        public override FireEvent FireEvent => PhysicalFireEvent;
-
-        public PhysicalFireEvent PhysicalFireEvent { get; }
-
+        public override PhysicalFireEvent FireEvent { get; }
+        
         public PhysicalSingleThrowKey(LogicalSingleThrowKey logicalKey, int keyId)
         {
             KeyId = keyId;
-            PhysicalFireEvent = new PhysicalSingleThrowFireEvent(logicalKey);
+            FireEvent = new PhysicalSingleThrowFireEvent(logicalKey);
         }
     }
 
@@ -221,7 +220,7 @@ namespace Crevice.Core.Keys
         public LogicalSingleThrowKey LogicalKey { get; }
 
         public override LogicalFireEvent LogicalNormalized
-            => LogicalKey.LogicalFireEvent;
+            => LogicalKey.FireEvent;
 
         public PhysicalSingleThrowFireEvent(LogicalSingleThrowKey logicalKey)
             : base(EventIdGenerator.Generate())
@@ -239,21 +238,18 @@ namespace Crevice.Core.Keys
             : base(maxSize) { }
     }
 
-    public class LogicalDoubleThrowKey : DoubleThrowKey
+    public class LogicalDoubleThrowKey : DoubleThrowKey<LogicalPressEvent, LogicalReleaseEvent>
     {
         public override int KeyId { get; }
 
-        public override PressEvent PressEvent => LogicalPressEvent;
-        public override ReleaseEvent ReleaseEvent => LogicalReleaseEvent;
-
-        public LogicalPressEvent LogicalPressEvent { get; }
-        public LogicalReleaseEvent LogicalReleaseEvent { get; }
-
+        public override LogicalPressEvent PressEvent { get; }
+        public override LogicalReleaseEvent ReleaseEvent { get; }
+        
         public LogicalDoubleThrowKey(int keyId)
         {
             KeyId = keyId;
-            LogicalPressEvent = new LogicalDoubleThrowPressEvent(this);
-            LogicalReleaseEvent = new LogicalDoubleThrowReleaseEvent(this);
+            PressEvent = new LogicalDoubleThrowPressEvent(this);
+            ReleaseEvent = new LogicalDoubleThrowReleaseEvent(this);
         }
     }
 
@@ -262,7 +258,7 @@ namespace Crevice.Core.Keys
         public LogicalDoubleThrowKey LogicalKey { get; }
 
         public override LogicalReleaseEvent Opposition
-            => LogicalKey.LogicalReleaseEvent;
+            => LogicalKey.ReleaseEvent;
 
         public LogicalDoubleThrowPressEvent(LogicalDoubleThrowKey logicalKey)
             : base(EventIdGenerator.Generate())
@@ -276,7 +272,7 @@ namespace Crevice.Core.Keys
         public LogicalDoubleThrowKey LogicalKey { get; }
 
         public override LogicalPressEvent Opposition
-            => LogicalKey.LogicalPressEvent;
+            => LogicalKey.PressEvent;
 
         public LogicalDoubleThrowReleaseEvent(LogicalDoubleThrowKey logicalKey)
             : base(EventIdGenerator.Generate())
@@ -299,21 +295,18 @@ namespace Crevice.Core.Keys
         }
     }
 
-    public class PhysicalDoubleThrowKey : DoubleThrowKey
+    public class PhysicalDoubleThrowKey : DoubleThrowKey<PhysicalPressEvent, PhysicalReleaseEvent>
     {
         public override int KeyId { get; }
 
-        public override PressEvent PressEvent => PhysicalPressEvent;
-        public override ReleaseEvent ReleaseEvent => PhysicalReleaseEvent;
-
-        public PhysicalPressEvent PhysicalPressEvent { get; }
-        public PhysicalReleaseEvent PhysicalReleaseEvent { get; }
-
+        public override PhysicalPressEvent PressEvent { get; }
+        public override PhysicalReleaseEvent ReleaseEvent { get; }
+        
         public PhysicalDoubleThrowKey(LogicalDoubleThrowKey logicalKey, int keyId)
         {
             KeyId = keyId;
-            PhysicalPressEvent = new PhysicalDoubleThrowPressEvent(logicalKey, this);
-            PhysicalReleaseEvent = new PhysicalDoubleThrowReleaseEvent(logicalKey, this);
+            PressEvent = new PhysicalDoubleThrowPressEvent(logicalKey, this);
+            ReleaseEvent = new PhysicalDoubleThrowReleaseEvent(logicalKey, this);
         }
     }
 
@@ -324,10 +317,10 @@ namespace Crevice.Core.Keys
         public PhysicalDoubleThrowKey PhysicalKey { get; }
 
         public override LogicalPressEvent LogicalNormalized
-            => LogicalKey.LogicalPressEvent;
+            => LogicalKey.PressEvent;
 
         public override PhysicalReleaseEvent Opposition
-            => PhysicalKey.PhysicalReleaseEvent;
+            => PhysicalKey.ReleaseEvent;
 
         public PhysicalDoubleThrowPressEvent(LogicalDoubleThrowKey logicalKey, PhysicalDoubleThrowKey physicalKey)
             : base(EventIdGenerator.Generate())
@@ -344,10 +337,10 @@ namespace Crevice.Core.Keys
         public PhysicalDoubleThrowKey PhysicalKey { get; }
 
         public override LogicalReleaseEvent LogicalNormalized
-            => LogicalKey.LogicalReleaseEvent;
+            => LogicalKey.ReleaseEvent;
 
         public override PhysicalPressEvent Opposition
-            => PhysicalKey.PhysicalPressEvent;
+            => PhysicalKey.PressEvent;
 
         public PhysicalDoubleThrowReleaseEvent(LogicalDoubleThrowKey logicalKey, PhysicalDoubleThrowKey physicalKey)
             : base(EventIdGenerator.Generate())
