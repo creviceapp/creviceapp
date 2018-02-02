@@ -35,37 +35,6 @@ namespace Crevice.Core.DSL
         }
     }
 
-    /*
-     *  Triggers | When | Element | Element | ... 
-     * 
-     *  State
-     *      when_elements := when要素の集合
-     *      active_when_elements := 現在のwhen要素の集合
-     *      cursor := 現在のマシンの深さ (初期値: 0)
-     *      triggers := 反応するべきトリガのセット
-     *      
-     *      Init()
-     *      
-     *      
-     *      
-     *      Input(input = 入力されたイベント)
-     *      
-     *          if input in triggers:
-     *              active_when_elements = filter(when_elements, _.evaluator() )
-     *          
-     *              if input is FireEvent:
-     *                  この深さの
-     *                  for elm in active_when_elements[cursor+1].on_fire_elements.trigger == input:
-     *                      elm.executor()
-     *                  
-     *              elif input is PressEvent:
-     *                  次の深さのwhen_elementsでOnPressかOnStrokeに対応していれば、
-     *                      フィルタリングして次の深さへ
-     *
-     *      
-     * 
-     */
-
     /* WhenElement
      * 
      * .On(FireEvent) -> new SingleThrowElement

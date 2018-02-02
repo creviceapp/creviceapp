@@ -21,10 +21,11 @@ namespace Crevice.Core.Stroke
     {
 
         public readonly StrokeDirection Direction;
-        internal readonly int strokeDirectionChangeThreshold;
-        internal readonly int strokeExtensionThreshold;
+        public readonly int StrokeDirectionChangeThreshold;
+        public readonly int StrokeExtensionThreshold;
 
         private readonly List<Point> points = new List<Point>();
+        public IReadOnlyList<Point> Points => points;
 
         public Stroke(
             int strokeDirectionChangeThreshold,
@@ -32,29 +33,29 @@ namespace Crevice.Core.Stroke
             StrokeDirection direction)
         {
             this.Direction = direction;
-            this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
-            this.strokeExtensionThreshold = strokeExtensionThreshold;
+            this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            this.StrokeExtensionThreshold = strokeExtensionThreshold;
         }
 
         public Stroke(
             int strokeDirectionChangeThreshold,
             int strokeExtensionThreshold,
-            List<Point> input)
+            IReadOnlyList<Point> input)
         {
             this.Direction = NextDirection(GetAngle(input.First(), input.Last()));
-            this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
-            this.strokeExtensionThreshold = strokeExtensionThreshold;
+            this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            this.StrokeExtensionThreshold = strokeExtensionThreshold;
             Absorb(input);
         }
 
-        public virtual Stroke Input(List<Point> input)
+        public virtual Stroke Input(IReadOnlyList<Point> input)
         {
             var p0 = input.First();
             var p1 = input.Last();
             var dx = Math.Abs(p0.X - p1.X);
             var dy = Math.Abs(p0.Y - p1.Y);
             var angle = GetAngle(p0, p1);
-            if (dx > strokeDirectionChangeThreshold || dy > strokeDirectionChangeThreshold)
+            if (dx > StrokeDirectionChangeThreshold || dy > StrokeDirectionChangeThreshold)
             {
                 var dir = NextDirection(angle);
                 if (IsSameDirection(dir))
@@ -67,7 +68,7 @@ namespace Crevice.Core.Stroke
                 return stroke;
             }
 
-            if (dx > strokeExtensionThreshold || dy > strokeExtensionThreshold)
+            if (dx > StrokeExtensionThreshold || dy > StrokeExtensionThreshold)
             {
                 if (IsExtensionable(angle))
                 {
@@ -107,7 +108,7 @@ namespace Crevice.Core.Stroke
             => Direction == NextDirection(angle);
 
         private Stroke CreateNew(StrokeDirection dir)
-            => new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, dir);
+            => new Stroke(StrokeDirectionChangeThreshold, StrokeExtensionThreshold, dir);
 
         public static bool CanCreate(int initialStrokeThreshold, Point p0, Point p1)
         {

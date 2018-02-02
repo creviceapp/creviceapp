@@ -88,11 +88,7 @@ namespace Crevice.Core.FSM
                     else if (/* !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && */
                              CanCancel)
                     {
-                        Machine.OnGestureCancelled();
-                        //何のインスタンスが来るかによって対応を変える必要がある
-                        //例えばゲームパッドであれば何もする必要がない
-
-                        // ボタンであればクリックの復元を
+                        Machine.OnGestureCancelled(new GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>.GestureCancelledEventArgs(this));
                     }
                     return (EventIsConsumed: true, NextState: LastState);
                 }

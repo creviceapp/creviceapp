@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CreviceApp</RootNamespace>
     <AssemblyName>CreviceApp</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -166,36 +166,13 @@
     <Compile Include="App.AppConfig.cs" />
     <Compile Include="Core.Config.GestureConfig.cs" />
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
-    <Compile Include="Core.DSLTreeParser.cs" />
-    <Compile Include="Core.Def.cs" />
-    <Compile Include="Core.FSM.State2.cs" />
     <Compile Include="Core.Helper.cs" />
-    <Compile Include="Core.FSM.GestureMachine.cs" />
-    <Compile Include="Core.FSM.StateGlobal.cs" />
-    <Compile Include="Core.FSM.Result.cs" />
-    <Compile Include="Core.FSM.State.cs" />
-    <Compile Include="Core.FSM.State0.cs" />
-    <Compile Include="Core.FSM.State1.cs" />
-    <Compile Include="Core.FSM.State3.cs" />
-    <Compile Include="Core.FSM.Transition.cs" />
-    <Compile Include="Core.GestureDefinition.cs" />
     <Compile Include="Core.Stroke.cs" />
     <Compile Include="Core.StrokeWatcher.cs" />
     <Compile Include="Core.UserScript.cs" />
     <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />
     <Compile Include="Core.Verbose.cs" />
-    <Compile Include="Core.DSL.Def.cs" />
-    <Compile Include="Core.DSL.DoubleTriggerBeforeElement.cs" />
-    <Compile Include="Core.DSL.DoubleTriggerDoElement.cs" />
-    <Compile Include="Core.DSL.DoubleTriggerAfterElement.cs" />
-    <Compile Include="Core.DSL.SingleTriggerDoElement.cs" />
-    <Compile Include="Core.DSL.IfDoubleTriggerButtonElement.cs" />
-    <Compile Include="Core.DSL.IfSingleTriggerButtonElement.cs" />
-    <Compile Include="Core.DSL.IfStrokeElement.cs" />
-    <Compile Include="Core.DSL.OnElement.cs" />
-    <Compile Include="Core.DSL.Root.cs" />
-    <Compile Include="Core.DSL.WhenElement.cs" />
     <Compile Include="App.UI.LauncherForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -291,6 +268,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="creviceicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CreviceLib\CreviceLib.csproj">
+      <Project>{662d9d0f-7361-42ac-b7cf-1ee7eecad5b3}</Project>
+      <Name>CreviceLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceApp", "CreviceApp\CreviceApp.csproj", "{67EC531C-07C7-463A-87CE-F5F49496E271}"
+	ProjectSection(ProjectDependencies) = postProject
+		{662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3} = {662D9D0F-7361-42AC-B7CF-1EE7EECAD5B3}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceAppTests", "CreviceAppTests\CreviceAppTests.csproj", "{73279195-6457-477E-89F9-7E4ACB8A00D7}"
 EndProject

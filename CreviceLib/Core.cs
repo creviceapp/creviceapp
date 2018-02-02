@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Crevice.Core
 {
@@ -44,11 +42,26 @@ namespace Crevice.Core
      * 
      */
 
-    namespace Misc
+    using Crevice.Core.Context;
+    using Crevice.Core.FSM;
+
+    public class DefaultRootElement : DSL.RootElement<EvaluationContext, ExecutionContext>
     {
-        interface IIsDisposed
-        {
-            bool IsDisposed { get; }
-        }
+
+    }
+
+    public class DefaultContextManager : ContextManager<EvaluationContext, ExecutionContext>
+    {
+        public override EvaluationContext CreateEvaluateContext()
+            => new EvaluationContext();
+
+        public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
+            => new ExecutionContext();
+    }
+
+    public class DefaultGestureMachine : GestureMachine<GestureMachineConfig, DefaultContextManager, EvaluationContext, ExecutionContext>
+    {
+        public DefaultGestureMachine(DefaultRootElement rootElement)
+            : base(new GestureMachineConfig(), new DefaultContextManager(), rootElement) { }
     }
 }

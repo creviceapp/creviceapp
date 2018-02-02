@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLibTests
 {
-    using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.Keys;
     using Crevice.Core.FSM;

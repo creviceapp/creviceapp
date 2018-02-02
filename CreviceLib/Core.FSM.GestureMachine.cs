@@ -6,12 +6,11 @@ namespace Crevice.Core.FSM
 {
     using System.Drawing;
     using System.Threading.Tasks;
-    using Crevice.Core;
     using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
     using Crevice.Core.Stroke;
-    using Crevice.Core.Misc;
+    using Crevice.Core.Helpers;
 
     public class GestureMachineConfig
     {
@@ -167,7 +166,7 @@ namespace Crevice.Core.FSM
         {
             lock (lockObject)
             {
-                if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
+                if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> lastState)
                 {
                     var state = CurrentState;
                     var _state = CurrentState.Timeout();
@@ -179,31 +178,17 @@ namespace Crevice.Core.FSM
                     if (CurrentState != state)
                     {
                         CurrentState = state;
-                        OnGestureTimeout();
+                        OnGestureTimeout(new GestureTimeoutEventArgs(lastState));
                     }
                 }
             }
         }
 
-        // StateChanged
-        //      でStateが来たときに扱いやすいように
-
-        // StrokeReset
-        // StrokeUpdated
-
-        public event EventHandler GestureCancelled;
-        internal virtual void OnGestureCancelled() => GestureCancelled?.Invoke(this, EventArgs.Empty);
-
-        public event EventHandler GestureTimeout;
-        internal virtual void OnGestureTimeout() => GestureTimeout?.Invoke(this, EventArgs.Empty);
-
-        public event EventHandler MachineReset;
-        internal virtual void OnMachineReset() => MachineReset?.Invoke(this, EventArgs.Empty);
-
         public void Reset()
         {
             lock (lockObject)
             {
+                var lastState = CurrentState;
                 if (CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
                 {
                     var state = CurrentState;
@@ -215,9 +200,66 @@ namespace Crevice.Core.FSM
                     }
                     CurrentState = state;
                 }
-                OnMachineReset();
+                OnMachineReset(new MachineResetEventArgs(lastState));
             }
         }
+
+        // StateChanged
+        //      でStateが来たときに扱いやすいように
+
+        // StrokeReset
+        // StrokeUpdated
+
+        // GestureCancelled
+        public class GestureCancelledEventArgs : EventArgs
+        {
+            public readonly StateN<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
+
+            public GestureCancelledEventArgs(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+            {
+                this.LastState = stateN;
+            }
+        }
+
+        public delegate void GestureCancelledEventHandler(object sender, GestureCancelledEventArgs e);
+
+        public event GestureCancelledEventHandler GestureCancelled;
+
+        internal virtual void OnGestureCancelled(GestureCancelledEventArgs e) => GestureCancelled?.Invoke(this, e);
+
+        // GestureTimeout
+        public class GestureTimeoutEventArgs : EventArgs
+        {
+            public readonly StateN<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
+
+            public GestureTimeoutEventArgs(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+            {
+                this.LastState = stateN;
+            }
+        }
+
+        public delegate void GestureTimeoutEventHandler(object sender, GestureTimeoutEventArgs e);
+
+        public event GestureTimeoutEventHandler GestureTimeout;
+
+        internal virtual void OnGestureTimeout(GestureTimeoutEventArgs e) => GestureTimeout?.Invoke(this, e);
+
+        // MachineReset
+        public class MachineResetEventArgs : EventArgs
+        {
+            public readonly IState LastState;
+
+            public MachineResetEventArgs(IState states)
+            {
+                this.LastState = states;
+            }
+        }
+
+        public delegate void MachineResetEventHandler(object sender, MachineResetEventArgs e);
+
+        public event MachineResetEventHandler MachineReset;
+
+        internal virtual void OnMachineReset(MachineResetEventArgs e) => MachineReset?.Invoke(this, e);
 
         public bool IsDisposed { get; private set; } = false;
 
@@ -236,6 +278,11 @@ namespace Crevice.Core.FSM
         {
             Dispose();
         }
+    }
+
+    public class NullGestureMachine : DefaultGestureMachine
+    {
+        public NullGestureMachine() : base(new DefaultRootElement()) { }
     }
 
     public class InvalidReleaseEventManager

@@ -26,7 +26,7 @@ namespace CreviceApp.App
             this.CLIOption = CLIOption;
             this.UserConfig = new Core.Config.UserConfig();
             this.MainForm = new UI.MainForm(this);
-            Directory.CreateDirectory(DefaultUserDirectory);
+            Directory.CreateDirectory(UserDirectory);
         }
 
         // %USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp

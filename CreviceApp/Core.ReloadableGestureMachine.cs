@@ -8,12 +8,13 @@ using System.Windows.Forms;
 
 namespace CreviceApp.Core
 {
+    using Crevice.Core.FSM;
+
     using GetGestureMachineResult =
            Tuple<FSM.GestureMachine,
                System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
                Exception>;
 
-    // GestureMachine でいいのでは
     public class ReloadableGestureMachine : IDisposable
     {
         private FSM.GestureMachine _instance;
@@ -58,11 +59,13 @@ namespace CreviceApp.Core
             Verbose.Print("saveCache: {0}", saveCache);
             Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
 
+            var ctx = new UserScriptExecutionContext(appConfig);
+
             if (candidate.IsRestorable)
             {
                 try
                 {
-                    return new GetGestureMachineResult(candidate.Restore(appConfig), null, null);
+                    return new GetGestureMachineResult(candidate.Restore(appConfig.UserConfig, ctx), null, null);
                 }
                 catch (Exception ex)
                 {
@@ -78,7 +81,6 @@ namespace CreviceApp.Core
 
             Verbose.Print("No error found in the UserScript on compilation phase.");
             {
-                var ctx = new UserScriptExecutionContext(appConfig);
                 try
                 {
                     UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
@@ -97,10 +99,10 @@ namespace CreviceApp.Core
                 catch (Exception ex)
                 {
                     Verbose.Print("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
-                    return new GetGestureMachineResult(candidate.CreateNew(appConfig, ctx), null, ex);
+                    return new GetGestureMachineResult(candidate.CreateNew(appConfig.UserConfig, ctx), null, ex);
                 }
                 Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
-                return new GetGestureMachineResult(candidate.CreateNew(appConfig, ctx), null, null);
+                return new GetGestureMachineResult(candidate.CreateNew(appConfig.UserConfig, ctx), null, null);
             }
         }
 
