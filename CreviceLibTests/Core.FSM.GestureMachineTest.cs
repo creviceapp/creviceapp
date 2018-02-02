@@ -35,18 +35,18 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { });
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
 
-                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent, null);
+                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent, null);
                     Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
 
-                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent, new Point(0, 0));
+                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent, new Point(0, 0));
                     Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
 
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.StrokeWatcher.queue.Count, 0);
 
@@ -54,13 +54,13 @@ namespace CreviceLibTests
                     gm.StrokeWatcher = strokeWatcherMock;
                     Assert.AreEqual(strokeWatcherMock.queue.Count, 0);
 
-                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent, null);
+                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent, null);
                     Assert.AreEqual(strokeWatcherMock.queue.Count, 0);
 
-                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent, new Point(0, 0));
+                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent, new Point(0, 0));
                     Assert.AreEqual(strokeWatcherMock.queue.Count, 1);
 
-                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent, new Point(1, 1));
+                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent, new Point(1, 1));
                     Assert.AreEqual(strokeWatcherMock.queue.Count, 2);
                 }
             }
@@ -73,43 +73,43 @@ namespace CreviceLibTests
             using (var gm = new TestGestureMachine(root))
             {
                 {
-                    var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent);
                     Assert.AreEqual(result, false);
                 }
                 {
-                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(result, false);
                 }
                 {
-                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalReleaseEvent);
                     Assert.AreEqual(result, false);
                 }
 
                 gm.invalidReleaseEvents.IgnoreNext(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
 
                 {
-                    var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent);
                     Assert.AreEqual(result, false);
                 }
                 {
-                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(result, false);
                 }
                 {
-                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalReleaseEvent);
                     Assert.AreEqual(result, true);
                 }
 
                 {
-                    var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent);
                     Assert.AreEqual(result, false);
                 }
                 {
-                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(result, false);
                 }
                 {
-                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalReleaseEvent);
                     Assert.AreEqual(result, false);
                 }
             }
@@ -132,10 +132,10 @@ namespace CreviceLibTests
             var root = new TestRootElement();
             var when = root.When((ctx) => { return true; });
             when
-                .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                    .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                            .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
+                .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .On(TestEvents.LogicalDoubleThrowKeys[1])
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
+                            .On(TestEvents.LogicalDoubleThrowKeys[1])
                             .Do((ctx) => { });
             {
                 using (var gm = new TestGestureMachine(root))
@@ -152,7 +152,7 @@ namespace CreviceLibTests
                 using (var gm = new TestGestureMachine(root))
                 {
                     var s0 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     var s1 = gm.CurrentState;
                     Assert.AreEqual(gm.OnMachineResetCallCount, 0);
@@ -167,10 +167,10 @@ namespace CreviceLibTests
                 using (var gm = new TestGestureMachine(root))
                 {
                     var s0 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     var s1 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[1].PhysicalPressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     Assert.IsTrue(s1 != gm.CurrentState);
                     var s2 = gm.CurrentState;
@@ -187,14 +187,14 @@ namespace CreviceLibTests
                 using (var gm = new TestGestureMachine(root))
                 {
                     var s0 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     var s1 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[1].PhysicalPressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     Assert.IsTrue(s1 != gm.CurrentState);
                     var s2 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     Assert.IsTrue(s1 != gm.CurrentState);
                     Assert.IsTrue(s2 != gm.CurrentState);
@@ -219,13 +219,13 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { });
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureCancelledCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalReleaseEvent);
                     Assert.AreEqual(gm.OnGestureCancelledCallCount, 0);
                 }
             }
@@ -235,14 +235,14 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                            .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
+                            .On(TestEvents.LogicalDoubleThrowKeys[1])
                             .Do((ctx) => { });
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureCancelledCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalReleaseEvent);
                     Assert.AreEqual(gm.OnGestureCancelledCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnGestureCancelledCallCount, 1);
                 }
@@ -258,12 +258,12 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(100), false);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
@@ -275,13 +275,13 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                            .On(TestEvents.LogicalSingleThrowKeys[0].FireEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
+                            .On(TestEvents.LogicalSingleThrowKeys[0])
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 1);
@@ -293,13 +293,13 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                            .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
+                            .On(TestEvents.LogicalDoubleThrowKeys[1])
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 1);
@@ -311,13 +311,13 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                             .On(StrokeDirection.Up)
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(1000), true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 1);
@@ -329,14 +329,14 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Press((ctx) => { })
-                            .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
+                            .On(TestEvents.LogicalDoubleThrowKeys[1])
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(100), false);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
@@ -348,14 +348,14 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { })
-                            .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
+                            .On(TestEvents.LogicalDoubleThrowKeys[1])
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(100), false);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
@@ -367,14 +367,14 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Release((ctx) => { })
-                            .On(TestEvents.LogicalDoubleThrowKeys[1].PressEvent)
+                            .On(TestEvents.LogicalDoubleThrowKeys[1])
                             .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(100), false);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
@@ -386,13 +386,13 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                            .On(TestEvents.LogicalSingleThrowKeys[0].FireEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
+                            .On(TestEvents.LogicalSingleThrowKeys[0])
                                 .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
                     //gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
                     Assert.AreEqual((gm.CurrentState as TestStateN).CanCancel, true);
@@ -406,15 +406,15 @@ namespace CreviceLibTests
                 {
                     var when = root.When((ctx) => { return true; });
                     when
-                        .On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent)
-                            .On(TestEvents.LogicalSingleThrowKeys[0].FireEvent)
+                        .On(TestEvents.LogicalDoubleThrowKeys[0])
+                            .On(TestEvents.LogicalSingleThrowKeys[0])
                                 .Do((ctx) => { });
                     gm.Config.GestureTimeout = 5; // ms
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PhysicalPressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    gm.Input(TestEvents.PhysicalSingleThrowKeys[0].PhysicalFireEvent);
                     Assert.AreEqual((gm.CurrentState as TestStateN).CanCancel, false);
                     Assert.AreEqual(gm.OnGestureTimeoutCDE.Wait(100), false);
                     Assert.AreEqual(gm.OnGestureTimeoutCallCount, 0);

@@ -83,6 +83,17 @@ namespace Crevice.Core.Keys
         public abstract int KeyId { get; }
     }
 
+    public abstract class SingleThrowKey : KeyGroup
+    {
+        public abstract FireEvent FireEvent { get; }
+    }
+    
+    public abstract class DoubleThrowKey : KeyGroup
+    {
+        public abstract PressEvent PressEvent { get; }
+        public abstract ReleaseEvent ReleaseEvent { get; }
+    }
+
     public abstract class Keys<TKey>
         where TKey : KeyGroup
     {
@@ -115,162 +126,169 @@ namespace Crevice.Core.Keys
         }
 
         public abstract TKey Create(int index);
-
-        public sealed class EventIdGenerator
-        {
-            private static EventIdGenerator Instance = new EventIdGenerator();
-
-            private EventIdGenerator() { }
-
-            private readonly object lockObject = new object();
-
-            // EventId 0 is reverved for Core.Events.NullEvent.
-            private int eventId = 1;
-
-            private int GetAndIncrementEventId()
-            {
-                lock (lockObject)
-                {
-                    try
-                    {
-                        return eventId;
-                    }
-                    finally
-                    {
-                        eventId++;
-                    }
-                }
-            }
-
-            public static int Generate() => Instance.GetAndIncrementEventId();
-        }
     }
 
-    public class LogicalSingleThrowKeys : Keys<LogicalSingleThrowKeys.LogicalKey>
+    public sealed class EventIdGenerator
     {
-        public override LogicalKey Create(int index)
-            => new LogicalKey(index);
+        private static EventIdGenerator Instance = new EventIdGenerator();
+
+        private EventIdGenerator() { }
+
+        private readonly object lockObject = new object();
+
+        // EventId 0 is reverved for Core.Events.NullEvent.
+        private int eventId = 1;
+
+        private int GetAndIncrementEventId()
+        {
+            lock (lockObject)
+            {
+                try
+                {
+                    return eventId;
+                }
+                finally
+                {
+                    eventId++;
+                }
+            }
+        }
+
+        public static int Generate() => Instance.GetAndIncrementEventId();
+    }
+
+    public class LogicalSingleThrowKeys : Keys<LogicalSingleThrowKey>
+    {
+        public override LogicalSingleThrowKey Create(int index)
+            => new LogicalSingleThrowKey(index);
 
         public LogicalSingleThrowKeys(int maxSize)
             : base(maxSize) { }
+    }
 
-        public class LogicalKey : KeyGroup
+    public class LogicalSingleThrowKey : SingleThrowKey
+    {
+        public override int KeyId { get; }
+
+        public override FireEvent FireEvent => LogicalFireEvent;
+
+        public LogicalFireEvent LogicalFireEvent { get; }
+
+        public LogicalSingleThrowKey(int keyId)
         {
-            public override int KeyId { get; }
-
-            public readonly Fire FireEvent;
-
-            public LogicalKey(int keyId)
-            {
-                KeyId = keyId;
-                FireEvent = new Fire();
-            }
-
-            public class Fire : LogicalFireEvent
-            {
-                public Fire()
-                    : base(EventIdGenerator.Generate()) { }
-            }
+            KeyId = keyId;
+            LogicalFireEvent = new LogicalSingleThrowFireEvent();
         }
     }
 
-    public class PhysicalSingleThrowKeys : Keys<PhysicalSingleThrowKeys.PhysicalKey>
+    public class LogicalSingleThrowFireEvent : LogicalFireEvent
     {
-        public override PhysicalKey Create(int index)
-            => new PhysicalKey(logicalKeys[index], index);
+        public LogicalSingleThrowFireEvent()
+            : base(EventIdGenerator.Generate()) { }
+    }
+
+    public class PhysicalSingleThrowKeys : Keys<PhysicalSingleThrowKey>
+    {
+        public override PhysicalSingleThrowKey Create(int index)
+            => new PhysicalSingleThrowKey(logicalKeys[index], index);
 
         private LogicalSingleThrowKeys logicalKeys;
 
-        public PhysicalSingleThrowKeys(LogicalSingleThrowKeys logicalKeys)
+        public PhysicalSingleThrowKeys(LogicalSingleThrowKeys logicalKeys) 
             : base(logicalKeys.MaxSize)
         {
             this.logicalKeys = logicalKeys;
         }
+    }
 
-        public class PhysicalKey : KeyGroup
+    public class PhysicalSingleThrowKey : SingleThrowKey
+    {
+        public override int KeyId { get; }
+
+        public override FireEvent FireEvent => PhysicalFireEvent;
+
+        public PhysicalFireEvent PhysicalFireEvent { get; }
+
+        public PhysicalSingleThrowKey(LogicalSingleThrowKey logicalKey, int keyId)
         {
-            public override int KeyId { get; }
-
-            public readonly Fire FireEvent;
-
-            public PhysicalKey(LogicalSingleThrowKeys.LogicalKey logicalKey, int keyId)
-            {
-                KeyId = keyId;
-                FireEvent = new Fire(logicalKey);
-            }
-
-            public class Fire : PhysicalFireEvent
-            {
-                public LogicalSingleThrowKeys.LogicalKey LogicalKey { get; }
-
-                public override LogicalFireEvent LogicalNormalized
-                    => LogicalKey.FireEvent;
-
-                public Fire(LogicalSingleThrowKeys.LogicalKey logicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                }
-            }
+            KeyId = keyId;
+            PhysicalFireEvent = new PhysicalSingleThrowFireEvent(logicalKey);
         }
     }
 
-    public class LogicalDoubleThrowKeys : Keys<LogicalDoubleThrowKeys.LogicalKey>
+    public class PhysicalSingleThrowFireEvent : PhysicalFireEvent
     {
-        public override LogicalKey Create(int index)
-            => new LogicalKey(index);
+        public LogicalSingleThrowKey LogicalKey { get; }
+
+        public override LogicalFireEvent LogicalNormalized
+            => LogicalKey.LogicalFireEvent;
+
+        public PhysicalSingleThrowFireEvent(LogicalSingleThrowKey logicalKey)
+            : base(EventIdGenerator.Generate())
+        {
+            LogicalKey = logicalKey;
+        }
+    }
+
+    public class LogicalDoubleThrowKeys : Keys<LogicalDoubleThrowKey>
+    {
+        public override LogicalDoubleThrowKey Create(int index)
+            => new LogicalDoubleThrowKey(index);
 
         public LogicalDoubleThrowKeys(int maxSize)
             : base(maxSize) { }
+    }
 
-        public class LogicalKey : KeyGroup
+    public class LogicalDoubleThrowKey : DoubleThrowKey
+    {
+        public override int KeyId { get; }
+
+        public override PressEvent PressEvent => LogicalPressEvent;
+        public override ReleaseEvent ReleaseEvent => LogicalReleaseEvent;
+
+        public LogicalPressEvent LogicalPressEvent { get; }
+        public LogicalReleaseEvent LogicalReleaseEvent { get; }
+
+        public LogicalDoubleThrowKey(int keyId)
         {
-            public override int KeyId { get; }
-
-            public readonly Press PressEvent;
-            public readonly Release ReleaseEvent;
-
-            public LogicalKey(int keyId)
-            {
-                KeyId = keyId;
-                PressEvent = new Press(this);
-                ReleaseEvent = new Release(this);
-            }
-
-            public class Press : LogicalPressEvent
-            {
-                public LogicalKey LogicalKey { get; }
-
-                public override LogicalReleaseEvent Opposition
-                    => LogicalKey.ReleaseEvent;
-
-                public Press(LogicalKey logicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                }
-            }
-
-            public class Release : LogicalReleaseEvent
-            {
-                public LogicalKey LogicalKey { get; }
-
-                public override LogicalPressEvent Opposition
-                    => LogicalKey.PressEvent;
-
-                public Release(LogicalKey logicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                }
-            }
+            KeyId = keyId;
+            LogicalPressEvent = new LogicalDoubleThrowPressEvent(this);
+            LogicalReleaseEvent = new LogicalDoubleThrowReleaseEvent(this);
         }
     }
 
-    public class PhysicalDoubleThrowKeys : Keys<PhysicalDoubleThrowKeys.PhysicalKey>
+    public class LogicalDoubleThrowPressEvent : LogicalPressEvent
     {
-        public override PhysicalKey Create(int index)
-            => new PhysicalKey(logicalKeys[index], index);
+        public LogicalDoubleThrowKey LogicalKey { get; }
+
+        public override LogicalReleaseEvent Opposition
+            => LogicalKey.LogicalReleaseEvent;
+
+        public LogicalDoubleThrowPressEvent(LogicalDoubleThrowKey logicalKey)
+            : base(EventIdGenerator.Generate())
+        {
+            LogicalKey = logicalKey;
+        }
+    }
+
+    public class LogicalDoubleThrowReleaseEvent : LogicalReleaseEvent
+    {
+        public LogicalDoubleThrowKey LogicalKey { get; }
+
+        public override LogicalPressEvent Opposition
+            => LogicalKey.LogicalPressEvent;
+
+        public LogicalDoubleThrowReleaseEvent(LogicalDoubleThrowKey logicalKey)
+            : base(EventIdGenerator.Generate())
+        {
+            LogicalKey = logicalKey;
+        }
+    }
+
+    public class PhysicalDoubleThrowKeys : Keys<PhysicalDoubleThrowKey>
+    {
+        public override PhysicalDoubleThrowKey Create(int index)
+            => new PhysicalDoubleThrowKey(logicalKeys[index], index);
 
         private LogicalDoubleThrowKeys logicalKeys;
 
@@ -279,60 +297,63 @@ namespace Crevice.Core.Keys
         {
             this.logicalKeys = logicalKeys;
         }
+    }
 
-        public class PhysicalKey : KeyGroup
+    public class PhysicalDoubleThrowKey : DoubleThrowKey
+    {
+        public override int KeyId { get; }
+
+        public override PressEvent PressEvent => PhysicalPressEvent;
+        public override ReleaseEvent ReleaseEvent => PhysicalReleaseEvent;
+
+        public PhysicalPressEvent PhysicalPressEvent { get; }
+        public PhysicalReleaseEvent PhysicalReleaseEvent { get; }
+
+        public PhysicalDoubleThrowKey(LogicalDoubleThrowKey logicalKey, int keyId)
         {
-            public override int KeyId { get; }
+            KeyId = keyId;
+            PhysicalPressEvent = new PhysicalDoubleThrowPressEvent(logicalKey, this);
+            PhysicalReleaseEvent = new PhysicalDoubleThrowReleaseEvent(logicalKey, this);
+        }
+    }
 
-            public readonly Press PressEvent;
-            public readonly Release ReleaseEvent;
+    public class PhysicalDoubleThrowPressEvent : PhysicalPressEvent
+    {
+        public LogicalDoubleThrowKey LogicalKey { get; }
 
-            public PhysicalKey(LogicalDoubleThrowKeys.LogicalKey logicalKey, int keyId)
-            {
-                KeyId = keyId;
-                PressEvent = new Press(logicalKey, this);
-                ReleaseEvent = new Release(logicalKey, this);
-            }
+        public PhysicalDoubleThrowKey PhysicalKey { get; }
 
-            public class Press : PhysicalPressEvent
-            {
-                public LogicalDoubleThrowKeys.LogicalKey LogicalKey { get; }
+        public override LogicalPressEvent LogicalNormalized
+            => LogicalKey.LogicalPressEvent;
 
-                public PhysicalKey PhysicalKey { get; }
+        public override PhysicalReleaseEvent Opposition
+            => PhysicalKey.PhysicalReleaseEvent;
 
-                public override LogicalPressEvent LogicalNormalized
-                    => LogicalKey.PressEvent;
+        public PhysicalDoubleThrowPressEvent(LogicalDoubleThrowKey logicalKey, PhysicalDoubleThrowKey physicalKey)
+            : base(EventIdGenerator.Generate())
+        {
+            LogicalKey = logicalKey;
+            PhysicalKey = physicalKey;
+        }
+    }
 
-                public override PhysicalReleaseEvent Opposition
-                    => PhysicalKey.ReleaseEvent;
+    public class PhysicalDoubleThrowReleaseEvent : PhysicalReleaseEvent
+    {
+        public LogicalDoubleThrowKey LogicalKey { get; }
 
-                public Press(LogicalDoubleThrowKeys.LogicalKey logicalKey, PhysicalKey physicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                    PhysicalKey = physicalKey;
-                }
-            }
+        public PhysicalDoubleThrowKey PhysicalKey { get; }
 
-            public class Release : PhysicalReleaseEvent
-            {
-                public LogicalDoubleThrowKeys.LogicalKey LogicalKey { get; }
+        public override LogicalReleaseEvent LogicalNormalized
+            => LogicalKey.LogicalReleaseEvent;
 
-                public PhysicalKey PhysicalKey { get; }
+        public override PhysicalPressEvent Opposition
+            => PhysicalKey.PhysicalPressEvent;
 
-                public override LogicalReleaseEvent LogicalNormalized
-                    => LogicalKey.ReleaseEvent;
-
-                public override PhysicalPressEvent Opposition
-                    => PhysicalKey.PressEvent;
-
-                public Release(LogicalDoubleThrowKeys.LogicalKey logicalKey, PhysicalKey physicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                    PhysicalKey = physicalKey;
-                }
-            }
+        public PhysicalDoubleThrowReleaseEvent(LogicalDoubleThrowKey logicalKey, PhysicalDoubleThrowKey physicalKey)
+            : base(EventIdGenerator.Generate())
+        {
+            LogicalKey = logicalKey;
+            PhysicalKey = physicalKey;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace CreviceLibTests
             var when = root.When(ctx => { return true; });
 
             Assert.AreEqual(when.SingleThrowElements.Count, 0);
-            var fire = when.On(TestEvents.LogicalSingleThrowKeys[0].FireEvent);
+            var fire = when.On(TestEvents.LogicalSingleThrowKeys[0]);
             Assert.AreEqual(when.SingleThrowElements.Count, 1);
 
             Assert.AreEqual(fire.DoExecutors.Count, 0);
@@ -44,7 +44,7 @@ namespace CreviceLibTests
             var when = root.When(ctx => { return true; });
 
             Assert.AreEqual(when.DoubleThrowElements.Count, 0);
-            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
+            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0]);
             Assert.AreEqual(when.DoubleThrowElements.Count, 1);
         }
 
@@ -53,7 +53,7 @@ namespace CreviceLibTests
         {
             var root = new TestRootElement();
             var when = root.When(ctx => { return true; });
-            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
+            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0]);
 
             Assert.AreEqual(press.PressExecutors.Count, 0);
             press.Press(ctx => { });
@@ -73,10 +73,10 @@ namespace CreviceLibTests
         {
             var root = new TestRootElement();
             var when = root.When(ctx => { return true; });
-            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
+            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0]);
 
             Assert.AreEqual(press.SingleThrowElements.Count, 0);
-            var press_fire = press.On(TestEvents.LogicalSingleThrowKeys[0].FireEvent);
+            var press_fire = press.On(TestEvents.LogicalSingleThrowKeys[0]);
             Assert.AreEqual(press.SingleThrowElements.Count, 1);
 
             Assert.AreEqual(press_fire.DoExecutors.Count, 0);
@@ -89,8 +89,8 @@ namespace CreviceLibTests
         {
             var root = new TestRootElement();
             var when = root.When(ctx => { return true; });
-            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
-            var press_press = press.On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
+            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0]);
+            var press_press = press.On(TestEvents.LogicalDoubleThrowKeys[0]);
 
             Assert.AreEqual(press_press.PressExecutors.Count, 0);
             press_press.Press(ctx => { });
@@ -110,7 +110,7 @@ namespace CreviceLibTests
         {
             var root = new TestRootElement();
             var when = root.When(ctx => { return true; });
-            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0].PressEvent);
+            var press = when.On(TestEvents.LogicalDoubleThrowKeys[0]);
 
             Assert.AreEqual(press.StrokeElements.Count, 0);
             var press_stroke = press.On(StrokeDirection.Up);

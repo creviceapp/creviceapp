@@ -7,6 +7,7 @@ namespace Crevice.Core.DSL
     using System.Linq;
     using Crevice.Core.Events;
     using Crevice.Core.Context;
+    using Crevice.Core.Keys;
     using Crevice.Core.Stroke;
 
     public abstract class Element
@@ -63,16 +64,16 @@ namespace Crevice.Core.DSL
             WhenEvaluator = evaluator;
         }
 
-        public SingleThrowElement<TExecContext> On(FireEvent triggerEvent)
+        public SingleThrowElement<TExecContext> On(SingleThrowKey singleThrowKey)
         {
-            var elm = new SingleThrowElement<TExecContext>(triggerEvent);
+            var elm = new SingleThrowElement<TExecContext>(singleThrowKey);
             singleThrowElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<TExecContext> On(PressEvent triggerEvent)
+        public DoubleThrowElement<TExecContext> On(DoubleThrowKey doubleThrowKey)
         {
-            var elm = new DoubleThrowElement<TExecContext>(triggerEvent);
+            var elm = new DoubleThrowElement<TExecContext>(doubleThrowKey);
             doubleThrowElements.Add(elm);
             return elm;
         }
@@ -87,14 +88,16 @@ namespace Crevice.Core.DSL
     {
         public override bool IsFull => Trigger != null && DoExecutors.Any(e => e != null);
 
-        public readonly FireEvent Trigger;
+        public readonly SingleThrowKey Key;
+
+        public FireEvent Trigger => Key.FireEvent;
 
         private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
         public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
-        public SingleThrowElement(FireEvent triggerEvent)
+        public SingleThrowElement(SingleThrowKey singleThrowKey)
         {
-            Trigger = triggerEvent;
+            Key = singleThrowKey;
         }
 
         public SingleThrowElement<T> Do(ExecuteAction<T> executor)
@@ -129,7 +132,9 @@ namespace Crevice.Core.DSL
                  DoubleThrowElements.Any(e => e.IsFull) ||
                  StrokeElements.Any(e => e.IsFull));
 
-        public readonly PressEvent Trigger;
+        public readonly DoubleThrowKey Key;
+
+        public PressEvent Trigger => Key.PressEvent;
 
         private readonly List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
         public IReadOnlyList<SingleThrowElement<T>> SingleThrowElements => singleThrowElements.ToList();
@@ -149,21 +154,21 @@ namespace Crevice.Core.DSL
         private readonly List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
         public IReadOnlyList<ExecuteAction<T>> ReleaseExecutors => releaseExecutors.ToList();
 
-        public DoubleThrowElement(PressEvent triggerEvent)
+        public DoubleThrowElement(DoubleThrowKey doubleThrowKey)
         {
-            Trigger = triggerEvent;
+            Key = doubleThrowKey;
         }
 
-        public SingleThrowElement<T> On(FireEvent triggerEvent)
+        public SingleThrowElement<T> On(SingleThrowKey singleThrowKey)
         {
-            var elm = new SingleThrowElement<T>(triggerEvent);
+            var elm = new SingleThrowElement<T>(singleThrowKey);
             singleThrowElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<T> On(PressEvent triggerEvent)
+        public DoubleThrowElement<T> On(DoubleThrowKey doubleThrowKey)
         {
-            var elm = new DoubleThrowElement<T>(triggerEvent);
+            var elm = new DoubleThrowElement<T>(doubleThrowKey);
             doubleThrowElements.Add(elm);
             return elm;
         }

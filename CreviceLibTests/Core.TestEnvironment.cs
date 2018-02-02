@@ -30,31 +30,31 @@ namespace CreviceLibTests
         public System.Threading.CountdownEvent OnGestureTimeoutCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureTimeoutCallCount { get; private set; } = 0;
 
-        internal override void OnGestureTimeout()
+        internal override void OnGestureTimeout(GestureTimeoutEventArgs e)
         {
             OnGestureTimeoutCallCount += 1;
             OnGestureTimeoutCDE.Signal();
-            base.OnMachineReset();
+            base.OnGestureTimeout(e);
         }
 
         public System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureCancelledCallCount { get; private set; } = 0;
 
-        internal override void OnGestureCancelled()
+        internal override void OnGestureCancelled(GestureCancelledEventArgs e)
         {
             OnGestureCancelledCallCount += 1;
             OnGestureCancelledCDE.Signal();
-            base.OnMachineReset();
+            base.OnGestureCancelled(e);
         }
 
         public System.Threading.CountdownEvent OnMachineResetCDE = new System.Threading.CountdownEvent(1);
         public int OnMachineResetCallCount { get; private set; } = 0;
 
-        internal override void OnMachineReset()
+        internal override void OnMachineReset(MachineResetEventArgs e)
         {
             OnMachineResetCallCount += 1;
             OnMachineResetCDE.Signal();
-            base.OnMachineReset();
+            base.OnMachineReset(e);
         }
     }
 
