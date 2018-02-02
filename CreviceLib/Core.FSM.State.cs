@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Crevice.Core.FSM
 {
-    using Crevice.Core.Types;
+    using Crevice.Core.Events;
 
     public interface IState
     {

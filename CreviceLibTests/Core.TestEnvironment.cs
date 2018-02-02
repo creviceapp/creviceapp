@@ -5,9 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLibTests
 {
-    using Crevice.Core.Types;
-    using Crevice.Core.Context;
     using Crevice.Core.Events;
+    using Crevice.Core.Context;
+    using Crevice.Core.Keys;
     using Crevice.Core.FSM;
 
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;

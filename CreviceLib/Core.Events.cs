@@ -4,266 +4,115 @@ using System.Text;
 
 namespace Crevice.Core.Events
 {
-    using Crevice.Core.Types;
+    /// <summary>
+    /// A marker interface for representing that an `Event` class is the logical event.
+    /// </summary>
+    public interface ILogicalEvent { }
 
-    public sealed class EventIdGenerator
+    /// <summary>
+    /// A marker interface for representing that an `Event` class is the physical event.
+    /// </summary>
+    public interface IPhysicalEvent { }
+
+    /// <summary>
+    /// The root class of event type system.
+    /// 
+    /// All `Event` have `EventId`, greater than 0, for 0 is reserved for special NullEvent.
+    /// If an instance of `Event` have the same `EventId` to the other instance of `Event`, both 
+    /// are treated as the same.
+    /// </summary>
+    public abstract class Event : IEquatable<Event>
     {
-        private static EventIdGenerator Instance = new EventIdGenerator();
+        public int EventId { get; }
 
-        private EventIdGenerator() { }
+        public bool Equals(Event that) => this.EventId == that.EventId;
 
-        private readonly object lockObject = new object();
-
-        private int eventId = 0;
-
-        private int GetAndIncrementEventId()
+        public override bool Equals(object obj)
         {
-            lock (lockObject)
+            if (obj != null && obj is Event evnt)
             {
-                try
-                {
-                    return eventId;
-                }
-                finally
-                {
-                    eventId++;
-                }
+                return Equals(evnt);
             }
+            return false;
         }
 
-        public static int Generate() => Instance.GetAndIncrementEventId();
-    }
+        public override int GetHashCode() => EventId;
 
-    public abstract class KeyGroup
-    {
-        public abstract int KeyId { get; }
-    }
-
-    public abstract class LogicalKeyGroup : KeyGroup { }
-    public abstract class PhysicalKeyGroup : KeyGroup { }
-
-
-    public abstract class Keys<TKey>
-        where TKey : KeyGroup
-    {
-        public int MaxSize { get; }
-
-        private readonly TKey[] keys;
-
-        public Keys(int maxSize)
+        public Event(int eventId)
         {
-            MaxSize = maxSize;
-            keys = new TKey[maxSize];
-        }
-
-        public TKey this[int index]
-        {
-            get
-            {
-                var value = keys[index];
-                if (value != null)
-                {
-                    return value;
-                }
-                else
-                {
-                    value = Create(index);
-                    keys[index] = value;
-                    return value;
-                }
-            }
-        }
-
-        public abstract TKey Create(int index);
-    }
-
-    public class LogicalSingleThrowKeys : Keys<LogicalSingleThrowKeys.LogicalKey>
-    {
-        public override LogicalKey Create(int index)
-            => new LogicalKey(index);
-
-        public LogicalSingleThrowKeys(int maxSize)
-            : base(maxSize) { }
-
-        public class LogicalKey : LogicalKeyGroup
-        {
-            public override int KeyId { get; }
-
-            public readonly Fire FireEvent;
-
-            public LogicalKey(int keyId)
-            {
-                KeyId = keyId;
-                FireEvent = new Fire();
-            }
-
-            public class Fire : LogicalFireEvent<SingleThrowSwitch>
-            {
-                public Fire()
-                    : base(EventIdGenerator.Generate()) { }
-            }
+            EventId = eventId;
         }
     }
-
-    public class PhysicalSingleThrowKeys : Keys<PhysicalSingleThrowKeys.PhysicalKey>
+    
+    /// <summary>
+    /// A special class handles `NullEvent`, which does not match any other instances of 
+    /// `Event` include itself. The instances of this class have special value 0 as `EventId`.
+    /// </summary>
+    public sealed class NullEvent : Event, ILogicalEvent, IPhysicalEvent
     {
-        public override PhysicalKey Create(int index)
-            => new PhysicalKey(logicalKeys[index], index);
+        public override bool Equals(object obj) => false;
 
-        private LogicalSingleThrowKeys logicalKeys;
+        public override int GetHashCode() => 0;
 
-        public PhysicalSingleThrowKeys(LogicalSingleThrowKeys logicalKeys)
-            : base(logicalKeys.MaxSize)
-        {
-            this.logicalKeys = logicalKeys;
-        }
-
-        public class PhysicalKey : PhysicalKeyGroup
-        {
-            public override int KeyId { get; }
-
-            public readonly Fire FireEvent;
-
-            public PhysicalKey(LogicalSingleThrowKeys.LogicalKey logicalKey, int keyId)
-            {
-                KeyId = keyId;
-                FireEvent = new Fire(logicalKey);
-            }
-
-            public class Fire : PhysicalFireEvent<SingleThrowSwitch>
-            {
-                public LogicalSingleThrowKeys.LogicalKey LogicalKey { get; }
-
-                public override LogicalFireEvent<SingleThrowSwitch> LogicalEquivalentFireEvent
-                    => LogicalKey.FireEvent;
-
-                public Fire(LogicalSingleThrowKeys.LogicalKey logicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                }
-            }
-        }
+        public NullEvent() : base(0) { }
+    }
+    
+    public abstract class FireEvent : Event
+    {
+        public FireEvent(int eventId) : base(eventId) { }
     }
 
-    public class LogicalDoubleThrowKeys : Keys<LogicalDoubleThrowKeys.LogicalKey>
+    public abstract class LogicalFireEvent : FireEvent, ILogicalEvent
     {
-        public override LogicalKey Create(int index)
-            => new LogicalKey(index);
-
-        public LogicalDoubleThrowKeys(int maxSize)
-            : base(maxSize) { }
-
-        public class LogicalKey : LogicalKeyGroup
-        {
-            public override int KeyId { get; }
-
-            public readonly Press PressEvent;
-            public readonly Release ReleaseEvent;
-
-            public LogicalKey(int keyId)
-            {
-                KeyId = keyId;
-                PressEvent = new Press(this);
-                ReleaseEvent = new Release(this);
-            }
-
-            public class Press : LogicalPressEvent<DoubleThrowSwitch>
-            {
-                public LogicalKey LogicalKey { get; }
-
-                public override LogicalReleaseEvent<DoubleThrowSwitch> OppositeReleaseEvent
-                    => LogicalKey.ReleaseEvent;
-
-                public Press(LogicalKey logicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                }
-            }
-
-            public class Release : LogicalReleaseEvent<DoubleThrowSwitch>
-            {
-                public LogicalKey LogicalKey { get; }
-
-                public override LogicalPressEvent<DoubleThrowSwitch> OppositePressEvent
-                    => LogicalKey.PressEvent;
-
-                public Release(LogicalKey logicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                }
-            }
-        }
+        public LogicalFireEvent(int eventId) : base(eventId) { }
     }
 
-    public class PhysicalDoubleThrowKeys : Keys<PhysicalDoubleThrowKeys.PhysicalKey>
+    public abstract class PhysicalFireEvent : FireEvent, IPhysicalEvent
     {
-        public override PhysicalKey Create(int index)
-            => new PhysicalKey(logicalKeys[index], index);
+        public abstract LogicalFireEvent LogicalNormalized { get; }
 
-        private LogicalDoubleThrowKeys logicalKeys;
+        public PhysicalFireEvent(int eventId) : base(eventId) { }
+    }
+    
+    public abstract class PressEvent : Event
+    {
+        public PressEvent(int eventId) : base(eventId) { }
+    }
 
-        public PhysicalDoubleThrowKeys(LogicalDoubleThrowKeys logicalKeys)
-            : base(logicalKeys.MaxSize)
-        {
-            this.logicalKeys = logicalKeys;
-        }
+    public abstract class LogicalPressEvent : PressEvent, ILogicalEvent
+    {
+        public abstract LogicalReleaseEvent Opposition { get; }
+        
+        public LogicalPressEvent(int eventId) : base(eventId) { }
+    }
 
-        public class PhysicalKey : PhysicalKeyGroup
-        {
-            public override int KeyId { get; }
+    public abstract class PhysicalPressEvent : PressEvent, IPhysicalEvent
+    {
+        public abstract LogicalPressEvent LogicalNormalized { get; }
 
-            public readonly Press PressEvent;
-            public readonly Release ReleaseEvent;
+        public abstract PhysicalReleaseEvent Opposition { get; }
+        
+        public PhysicalPressEvent(int eventId) : base(eventId) { }
+    }
 
-            public PhysicalKey(LogicalDoubleThrowKeys.LogicalKey logicalKey, int keyId)
-            {
-                KeyId = keyId;
-                PressEvent = new Press(logicalKey, this);
-                ReleaseEvent = new Release(logicalKey, this);
-            }
+    public abstract class ReleaseEvent : Event
+    {
+        public ReleaseEvent(int eventId) : base(eventId) { }
+    }
 
-            public class Press : PhysicalPressEvent<DoubleThrowSwitch>
-            {
-                public LogicalDoubleThrowKeys.LogicalKey LogicalKey { get; }
+    public abstract class LogicalReleaseEvent : ReleaseEvent, ILogicalEvent
+    {
+        public abstract LogicalPressEvent Opposition { get; }
+        
+        public LogicalReleaseEvent(int eventId) : base(eventId) { }
+    }
 
-                public PhysicalKey PhysicalKey { get; }
+    public abstract class PhysicalReleaseEvent : ReleaseEvent, IPhysicalEvent
+    {
+        public abstract LogicalReleaseEvent LogicalNormalized { get; }
 
-                public override LogicalPressEvent<DoubleThrowSwitch> LogicalEquivalentPressEvent
-                    => LogicalKey.PressEvent;
-
-                public override PhysicalReleaseEvent<DoubleThrowSwitch> OppositePhysicalReleaseEvent
-                    => PhysicalKey.ReleaseEvent;
-
-                public Press(LogicalDoubleThrowKeys.LogicalKey logicalKey, PhysicalKey physicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                    PhysicalKey = physicalKey;
-                }
-            }
-
-            public class Release : PhysicalReleaseEvent<DoubleThrowSwitch>
-            {
-                public LogicalDoubleThrowKeys.LogicalKey LogicalKey { get; }
-
-                public PhysicalKey PhysicalKey { get; }
-
-                public override LogicalReleaseEvent<DoubleThrowSwitch> LogicalEquivalentReleaseEvent
-                    => LogicalKey.ReleaseEvent;
-
-                public override PhysicalPressEvent<DoubleThrowSwitch> OppositePhysicalPressEvent
-                    => PhysicalKey.PressEvent;
-
-                public Release(LogicalDoubleThrowKeys.LogicalKey logicalKey, PhysicalKey physicalKey)
-                    : base(EventIdGenerator.Generate())
-                {
-                    LogicalKey = logicalKey;
-                    PhysicalKey = physicalKey;
-                }
-            }
-        }
+        public abstract PhysicalPressEvent Opposition { get; }
+        
+        public PhysicalReleaseEvent(int eventId) : base(eventId) { }
     }
 }

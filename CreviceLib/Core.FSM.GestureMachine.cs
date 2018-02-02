@@ -7,7 +7,7 @@ namespace Crevice.Core.FSM
     using System.Drawing;
     using System.Threading.Tasks;
     using Crevice.Core;
-    using Crevice.Core.Types;
+    using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
     using Crevice.Core.Stroke;
@@ -98,8 +98,12 @@ namespace Crevice.Core.FSM
                 }
                 
                 // Todo: return false if evnt is INullEvent
+                if (evnt is NullEvent)
+                {
+                    return false;
+                }
                 
-                if (evnt is IReleaseEvent releaseEvent && invalidReleaseEvents[releaseEvent] > 0)
+                if (evnt is ReleaseEvent releaseEvent && invalidReleaseEvents[releaseEvent] > 0)
                 {
                     invalidReleaseEvents.CountDown(releaseEvent);
                     return true;
@@ -267,16 +271,16 @@ namespace Crevice.Core.FSM
             }
         }
 
-        private readonly NaturalNumberCounter<IReleaseEvent> InvalidReleaseEvents = new NaturalNumberCounter<IReleaseEvent>();
+        private readonly NaturalNumberCounter<ReleaseEvent> InvalidReleaseEvents = new NaturalNumberCounter<ReleaseEvent>();
 
-        public int this[IReleaseEvent key]
+        public int this[ReleaseEvent key]
         {
             get => InvalidReleaseEvents[key];
         }
 
-        public void IgnoreNext(IReleaseEvent releaseEvent) => InvalidReleaseEvents.CountUp(releaseEvent);
+        public void IgnoreNext(ReleaseEvent releaseEvent) => InvalidReleaseEvents.CountUp(releaseEvent);
 
-        public void IgnoreNext(IEnumerable<IReleaseEvent> releaseEvents)
+        public void IgnoreNext(IEnumerable<ReleaseEvent> releaseEvents)
         {
             foreach (var releaseEvent in releaseEvents)
             {
@@ -284,6 +288,6 @@ namespace Crevice.Core.FSM
             }
         }
 
-        public void CountDown(IReleaseEvent key) => InvalidReleaseEvents.CountDown(key);
+        public void CountDown(ReleaseEvent key) => InvalidReleaseEvents.CountDown(key);
     }
 }

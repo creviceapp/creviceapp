@@ -5,7 +5,7 @@ using System.Text;
 namespace Crevice.Core.FSM
 {
     using System.Linq;
-    using Crevice.Core.Types;
+    using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
     using Crevice.Core.Stroke;
@@ -18,14 +18,14 @@ namespace Crevice.Core.FSM
     {
         public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
         public readonly TEvalContext Ctx;
-        public readonly IReadOnlyList<(IReleaseEvent, IState)> History;
+        public readonly IReadOnlyList<(PhysicalReleaseEvent, IState)> History;
         public readonly IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements;
         public readonly bool CanCancel;
 
         public StateN(
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             TEvalContext ctx,
-            IReadOnlyList<(IReleaseEvent, IState)> history,
+            IReadOnlyList<(PhysicalReleaseEvent, IState)> history,
             IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements,
             bool canCancel = true)
         {
@@ -38,7 +38,7 @@ namespace Crevice.Core.FSM
 
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
-            if (evnt is IFireEvent fireEvent)
+            if (evnt is PhysicalFireEvent fireEvent)
             {
                 var singleThrowElements = GetSingleThrowElements(fireEvent);
                 if (singleThrowElements.Any())
@@ -53,7 +53,7 @@ namespace Crevice.Core.FSM
                     return (EventIsConsumed: true, NextState: notCancellableCopyState);
                 }
             }
-            else if (evnt is IPressEvent pressEvent)
+            else if (evnt is PhysicalPressEvent pressEvent)
             {
                 var doubleThrowElements = GetDoubleThrowElements(pressEvent);
                 if (doubleThrowElements.Any())
@@ -68,7 +68,7 @@ namespace Crevice.Core.FSM
                     return (EventIsConsumed: true, NextState: nextState);
                 }
             }
-            else if (evnt is IReleaseEvent releaseEvent)
+            else if (evnt is PhysicalReleaseEvent releaseEvent)
             {
                 if (IsNormalEndTrigger(releaseEvent))
                 {
@@ -122,7 +122,7 @@ namespace Crevice.Core.FSM
             return LastState;
         }
 
-        public IReleaseEvent NormalEndTrigger => History.Last().Item1;
+        public PhysicalReleaseEvent NormalEndTrigger => History.Last().Item1;
 
         public IState LastState => History.Last().Item2;
 
@@ -132,9 +132,9 @@ namespace Crevice.Core.FSM
 
         public bool HasReleaseExecutors => DoubleThrowElements.Any(d => d.ReleaseExecutors.Any());
 
-        public IReadOnlyList<(IReleaseEvent, IState)> CreateHistory(
-            IReadOnlyList<(IReleaseEvent, IState)> history,
-            IPressEvent pressEvent,
+        public IReadOnlyList<(PhysicalReleaseEvent, IState)> CreateHistory(
+            IReadOnlyList<(PhysicalReleaseEvent, IState)> history,
+            PhysicalPressEvent pressEvent,
             IState state)
         {
             var newHistory = history.ToList();
@@ -142,13 +142,13 @@ namespace Crevice.Core.FSM
             return newHistory;
         }
 
-        public bool IsNormalEndTrigger(IReleaseEvent releaseEvent)
+        public bool IsNormalEndTrigger(PhysicalReleaseEvent releaseEvent)
             => releaseEvent == NormalEndTrigger;
 
-        public IReadOnlyCollection<IReleaseEvent> AbnormalEndTriggers
-            => new HashSet<IReleaseEvent>(from h in History.Reverse().Skip(1) select h.Item1);
+        public IReadOnlyCollection<PhysicalReleaseEvent> AbnormalEndTriggers
+            => new HashSet<PhysicalReleaseEvent>(from h in History.Reverse().Skip(1) select h.Item1);
 
-        public (IState, IReadOnlyList<IReleaseEvent>) FindStateFromHistory(IReleaseEvent releaseEvent)
+        public (IState, IReadOnlyList<PhysicalReleaseEvent>) FindStateFromHistory(PhysicalReleaseEvent releaseEvent)
         {
             var nextHistory = History.TakeWhile(t => t.Item1 != releaseEvent);
             var foundState = History[nextHistory.Count()].Item2;
@@ -158,7 +158,7 @@ namespace Crevice.Core.FSM
 
         // このあたりを扱いやすい型に変換してユーザーサイドで取れるように
 
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(IPressEvent triggerEvent)
+        public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(PhysicalPressEvent triggerEvent)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
@@ -177,7 +177,7 @@ namespace Crevice.Core.FSM
                     select s))
                 .Aggregate(new List<StrokeElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyList<SingleThrowElement<TExecContext>> GetSingleThrowElements(IFireEvent triggerEvent)
+        public IReadOnlyList<SingleThrowElement<TExecContext>> GetSingleThrowElements(PhysicalFireEvent triggerEvent)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (

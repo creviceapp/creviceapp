@@ -5,7 +5,7 @@ using System.Text;
 namespace Crevice.Core.FSM
 {
     using System.Linq;
-    using Crevice.Core.Types;
+    using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
 
@@ -29,7 +29,7 @@ namespace Crevice.Core.FSM
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
             // Todo: benchmark switch type expression
-            if (evnt is IFireEvent fireEvent &&
+            if (evnt is PhysicalFireEvent fireEvent &&
                     (SingleThrowTriggers.Contains(fireEvent) ||
                      SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
             {
@@ -41,7 +41,7 @@ namespace Crevice.Core.FSM
                     return (EventIsConsumed: true, NextState: this);
                 }
             }
-            else if (evnt is IPressEvent pressEvent &&
+            else if (evnt is PhysicalPressEvent pressEvent &&
                         (DoubleThrowTriggers.Contains(pressEvent) ||
                          DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
             {
@@ -63,10 +63,12 @@ namespace Crevice.Core.FSM
             return base.Input(evnt);
         }
 
-        public IReadOnlyList<(IReleaseEvent, IState)> CreateHistory(IPressEvent pressEvent)
-            => new List<(IReleaseEvent, IState)>() { (pressEvent.Opposition, this) };
+        public IReadOnlyList<(PhysicalReleaseEvent, IState)> 
+            CreateHistory(PhysicalPressEvent pressEvent)
+            => new List<(PhysicalReleaseEvent, IState)>() { (pressEvent.Opposition, this) };
 
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> GetActiveDoubleThrowElements(TEvalContext ctx, IPressEvent triggerEvent)
+        public IReadOnlyList<DoubleThrowElement<TExecContext>> 
+            GetActiveDoubleThrowElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
             => (from w in RootElement.WhenElements
                 where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
                 select (from d in w.DoubleThrowElements
@@ -75,7 +77,8 @@ namespace Crevice.Core.FSM
                         select d))
             .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyList<SingleThrowElement<TExecContext>> GetActiveSingleThrowElements(TEvalContext ctx, IFireEvent triggerEvent)
+        public IReadOnlyList<SingleThrowElement<TExecContext>> 
+            GetActiveSingleThrowElements(TEvalContext ctx, PhysicalFireEvent triggerEvent)
             => (from w in RootElement.WhenElements
                 where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
                 select (from s in w.SingleThrowElements
@@ -84,22 +87,22 @@ namespace Crevice.Core.FSM
                         select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyCollection<IFireEvent> SingleThrowTriggers
+        public IReadOnlyCollection<FireEvent> SingleThrowTriggers
             => (from w in RootElement.WhenElements
                 where w.IsFull
                 select (
                     from s in w.SingleThrowElements
                     where s.IsFull
                     select s.Trigger))
-                .Aggregate(new HashSet<IFireEvent>(), (a, b) => { a.UnionWith(b); return a; });
+                .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
-        public IReadOnlyCollection<IPressEvent> DoubleThrowTriggers
+        public IReadOnlyCollection<PressEvent> DoubleThrowTriggers
             => (from w in RootElement.WhenElements
                 where w.IsFull
                 select (
                     from d in w.DoubleThrowElements
                     where d.IsFull
                     select d.Trigger))
-                .Aggregate(new HashSet<IPressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+                .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });
     }
 }

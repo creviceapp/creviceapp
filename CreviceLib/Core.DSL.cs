@@ -5,7 +5,7 @@ using System.Text;
 namespace Crevice.Core.DSL
 {
     using System.Linq;
-    using Crevice.Core.Types;
+    using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.Stroke;
 
@@ -94,14 +94,14 @@ namespace Crevice.Core.DSL
             WhenEvaluator = evaluator;
         }
 
-        public SingleThrowElement<TExecContext> On(IFireEvent triggerEvent)
+        public SingleThrowElement<TExecContext> On(FireEvent triggerEvent)
         {
             var elm = new SingleThrowElement<TExecContext>(triggerEvent);
             singleThrowElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<TExecContext> On(IPressEvent triggerEvent)
+        public DoubleThrowElement<TExecContext> On(PressEvent triggerEvent)
         {
             var elm = new DoubleThrowElement<TExecContext>(triggerEvent);
             doubleThrowElements.Add(elm);
@@ -118,12 +118,12 @@ namespace Crevice.Core.DSL
     {
         public override bool IsFull => Trigger != null && DoExecutors.Any(e => e != null);
 
-        public readonly IFireEvent Trigger;
+        public readonly FireEvent Trigger;
 
         private readonly List<ExecuteAction<T>> doExecutors = new List<ExecuteAction<T>>();
         public IReadOnlyList<ExecuteAction<T>> DoExecutors => doExecutors.ToList();
 
-        public SingleThrowElement(IFireEvent triggerEvent)
+        public SingleThrowElement(FireEvent triggerEvent)
         {
             Trigger = triggerEvent;
         }
@@ -160,7 +160,7 @@ namespace Crevice.Core.DSL
                  DoubleThrowElements.Any(e => e.IsFull) ||
                  StrokeElements.Any(e => e.IsFull));
 
-        public readonly IPressEvent Trigger;
+        public readonly PressEvent Trigger;
 
         private readonly List<SingleThrowElement<T>> singleThrowElements = new List<SingleThrowElement<T>>();
         public IReadOnlyList<SingleThrowElement<T>> SingleThrowElements => singleThrowElements.ToList();
@@ -180,19 +180,19 @@ namespace Crevice.Core.DSL
         private readonly List<ExecuteAction<T>> releaseExecutors = new List<ExecuteAction<T>>();
         public IReadOnlyList<ExecuteAction<T>> ReleaseExecutors => releaseExecutors.ToList();
 
-        public DoubleThrowElement(IPressEvent triggerEvent)
+        public DoubleThrowElement(PressEvent triggerEvent)
         {
             Trigger = triggerEvent;
         }
 
-        public SingleThrowElement<T> On(IFireEvent triggerEvent)
+        public SingleThrowElement<T> On(FireEvent triggerEvent)
         {
             var elm = new SingleThrowElement<T>(triggerEvent);
             singleThrowElements.Add(elm);
             return elm;
         }
 
-        public DoubleThrowElement<T> On(IPressEvent triggerEvent)
+        public DoubleThrowElement<T> On(PressEvent triggerEvent)
         {
             var elm = new DoubleThrowElement<T>(triggerEvent);
             doubleThrowElements.Add(elm);

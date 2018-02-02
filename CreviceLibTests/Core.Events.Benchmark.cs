@@ -5,8 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLibTests
 {
-    using Crevice.Core.Types;
     using Crevice.Core.Events;
+    using Crevice.Core.Keys;
 
     using BenchmarkDotNet.Running;
     using BenchmarkDotNet.Attributes;
@@ -16,15 +16,13 @@ namespace CreviceLibTests
     public class EventsBenchmark
     {
         public LogicalDoubleThrowKeys LogicalDoubleThrowKeys = new LogicalDoubleThrowKeys(100);
-        
+
         [Benchmark]
         public LogicalDoubleThrowKeys Create_LogicalDoubleThrowKeys() => new LogicalDoubleThrowKeys(100);
         
         [Benchmark]
-        public IPressEvent LogicalDoubleThrowKeys_PressEvent() => LogicalDoubleThrowKeys[0].PressEvent;
+        public PressEvent LogicalDoubleThrowKeys_PressEvent() => LogicalDoubleThrowKeys[0].PressEvent;
 
-        [Benchmark]
-        public IReleaseEvent LogicalDoubleThrowKeys_OppositeReleaseEvent() => LogicalDoubleThrowKeys[0].PressEvent.OppositeReleaseEvent;
     }
 
     [TestClass]
