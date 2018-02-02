@@ -25,7 +25,7 @@ namespace Crevice.Core.Events
     {
         public int EventId { get; }
 
-        public bool Equals(Event that) => this.EventId == that.EventId;
+        public virtual bool Equals(Event that) => this.EventId == that.EventId;
 
         public override bool Equals(object obj)
         {
@@ -50,8 +50,10 @@ namespace Crevice.Core.Events
     /// </summary>
     public sealed class NullEvent : Event, ILogicalEvent, IPhysicalEvent
     {
+        public override bool Equals(Event that) => false;
         public override bool Equals(object obj) => false;
 
+        // Need to avoid a IDE warning.
         public override int GetHashCode() => 0;
 
         public NullEvent() : base(0) { }

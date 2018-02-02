@@ -4,6 +4,78 @@ using System.Text;
 
 namespace Crevice.Core.Keys
 {
+    /**
+     * Lazyに初期値を割り当てて、上限なくイベント数を設定できるように
+     * 
+     * LogicalKeys[]
+     * 
+     * PhysicalKeys[]
+     * 
+     * IDは本体がシングルトンで管理しつつ、
+     * それぞれの this[] へのアクセスをトラップして未定義なら動的生成、かな
+     * 
+     * Events.Logical[]
+     * Events.Physical[][]
+     * 
+     * Events.LogicalSingle ~
+     * Events.LogicalDoubleThrow[] // これをジェスチャ定義で使うようにするとPhysicalへの変換が整合する
+     * Events.LogicalDoubleThrow[].PressEvent
+     * Events.LogicalDoubleThrow[].ReleaseEvent
+     * Events.LogicalDoubleThrow[].ToPhysical(n).PressEvent
+     * Events.LogicalDoubleThrow[].ToPhysical(n).ReleaseEvent
+     * Events.Physical ~
+     * 
+     * Events.LogicalSingleThrowKey[]
+     * Events.LogicalDoubleThrowKey[]
+     * Events.LogicalDoubleThrowSystemKey[] // Formsアセンブリが必要なので微妙。拡張の必要あり
+     *                                      // シングルトンなので拡張は容易
+     * 
+     * ライブラリユーザー側は
+     * int => IPressEventな関数を列挙したクラスで
+     * 
+     * Event.Keyboard.
+     * Event.Mouse.
+     * Event.Gamepad.
+     * 
+     * using M = Crevice.Event.MouseEvents
+     * 
+     * ゲームパッド対応を見込んで、このあたりを綺麗に整理したい
+     *      Unityを参考に？
+     *          Keysを必要なら拡張してマウスとゲームパッドに対応させるのがスマートかな
+     *              Keysから純正Keysへの変換があれば名前の汚染は気にしなくてもいいのでは
+     *              
+     *              Keys + Pads でいいかな
+     *                  →統合するのがよさげ
+     *                  
+     *                  MITライセンス
+     *                  https://github.com/Microsoft/CodeContracts/blob/master/Microsoft.Research/Contracts/System.Windows.Forms/System.Windows.Forms.Keys.cs
+     * 
+     *                      →だがEnumを使わないなら関係はなさげ
+     *                          型が揃わないのでクラスにせざるを得ない
+     *                          
+     *                          implicitなoperatorはLogicalDoubleThrowに仕込んでおいて、intに変換できればいいかな
+     *                              →ひとまず必要なし　
+     *                                  →intに変換可能かどうか、という型わけがあれば、コンパイル時エラーにできる
+     *                                          →ついでにこれはFroms.Keysにもなる
+     *                                                  →となるとFormsが必要なので、ライブラリ側では微妙
+     *                                  
+     *                  Keysの名称が微妙
+     *                      using K = Crevice.Keys;
+     *                      
+     * 
+     * VKからの変換
+     * CreviceApp.WinAPI.Constants.VirtualKeys
+     * 
+     * Keysからの変換
+     * System.Windows.Forms.Keys
+     * 
+     * マウスはキーボードフックも通る？　だとすればちょっと考慮が必要
+     *      両方通ると動作がダブってマズい
+     *      
+     * ひとまずキーボードはVKとKeysからの変換のみでいいかな
+     * 
+     *      
+     */
     using Crevice.Core.Events;
     
     public abstract class KeyGroup

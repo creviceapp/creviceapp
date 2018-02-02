@@ -165,12 +165,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core.Events.Benchmark.cs" />
+    <Compile Include="Core.EventsBenchmark.cs" />
     <Compile Include="Core.FSM.GestureMachineTest.cs" />
     <Compile Include="Core.FSM.StateNTest.cs" />
     <Compile Include="Core.FSM.State0Test.cs" />
     <Compile Include="Core.DSL.DSLSyntaxTest.cs" />
-    <Compile Include="Core.Types.TypeSystemTest.cs" />
+    <Compile Include="Core.EventsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core.TestEnvironment.cs" />
   </ItemGroup>

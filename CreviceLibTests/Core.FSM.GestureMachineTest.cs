@@ -27,7 +27,7 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
-        public void PypassGivenPointToStrokeWatcherWhenCurrentStateIsStateN()
+        public void PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN()
         {
             var root = new TestRootElement();
             using (var gm = new TestGestureMachine(root))
@@ -67,7 +67,7 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
-        public void ConsumeGivenPhysicalReleaseEventWhenItInIgnoreList()
+        public void ConsumesGivenPhysicalReleaseEventWhenItInIgnoreList()
         {
             var root = new TestRootElement();
             using (var gm = new TestGestureMachine(root))
@@ -112,6 +112,17 @@ namespace CreviceLibTests
                     var result = gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
                     Assert.AreEqual(result, false);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void ConsumesNullEventAndReturnsFalse()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var result = gm.Input(new Crevice.Core.Events.NullEvent());
+                Assert.AreEqual(result, false);
             }
         }
 
