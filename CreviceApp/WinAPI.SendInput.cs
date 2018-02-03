@@ -375,9 +375,18 @@ namespace CreviceApp.WinAPI.SendInput
             return MouseXDownEvent((int)XButtonType.XBUTTON2);
         }
 
-        private KEYBDINPUT KeyEvent(ushort keyCode)
+        private KEYBDINPUT GetCreviceKeyboardInput()
         {
             var keyboardInput = new KEYBDINPUT();
+            // Set the CreviceApp signature to the keyboard event
+            keyboardInput.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
+            keyboardInput.time = 0;
+            return keyboardInput;
+        }
+
+        private KEYBDINPUT KeyEvent(ushort keyCode)
+        {
+            var keyboardInput = GetCreviceKeyboardInput();
             keyboardInput.wVk = keyCode;
             return keyboardInput;
         }

@@ -72,7 +72,7 @@ namespace CreviceApp.App.UI
             reloadableGestureMachine.HotReload();
             try
             {
-                CaptureMouse = true;
+                EnableHook = true;
             }
             catch (Win32Exception)
             {
@@ -107,7 +107,7 @@ namespace CreviceApp.App.UI
             userScriptWatcher.Dispose();
             try
             {
-                CaptureMouse = false;
+                EnableHook = false;
             }
             catch (Win32Exception)
             {

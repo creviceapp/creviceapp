@@ -37,7 +37,7 @@ namespace Crevice.Core.FSM
         public readonly TContextManager ContextManager;
         public readonly RootElement<TEvalContext, TExecContext> RootElement;
 
-        private readonly object lockObject = new object();
+        protected readonly object lockObject = new object();
 
         private readonly System.Timers.Timer gestureTimeoutTimer = new System.Timers.Timer();
 
@@ -85,9 +85,9 @@ namespace Crevice.Core.FSM
             CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
         }
 
-        public bool Input(IPhysicalEvent evnt) => Input(evnt, null);
+        public virtual bool Input(IPhysicalEvent evnt) => Input(evnt, null);
 
-        public bool Input(IPhysicalEvent evnt, Point? point)
+        public virtual bool Input(IPhysicalEvent evnt, Point? point)
         {
             lock (lockObject)
             {
@@ -96,7 +96,6 @@ namespace Crevice.Core.FSM
                     StrokeWatcher.Queue(point.Value);
                 }
                 
-                // Todo: return false if evnt is INullEvent
                 if (evnt is NullEvent)
                 {
                     return false;

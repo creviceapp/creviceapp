@@ -19,34 +19,38 @@ namespace CreviceApp.App
 
     public class MouseGestureForm : Form
     {
-        private bool _captureMouse = false;
-        protected bool CaptureMouse
+        private bool _enableHook = false;
+        protected bool EnableHook
         {
-            get { return _captureMouse; }
+            get { return _enableHook; }
             set
             {
-                if (_captureMouse != value)
+                if (_enableHook != value)
                 {
                     if (value)
                     {
+                        keyboardHook.SetHook();
                         mouseHook.SetHook();
-                        _captureMouse = true;
+                        _enableHook = true;
                     }
                     else
                     {
+                        keyboardHook.Unhook();
                         mouseHook.Unhook();
-                        _captureMouse = false;
+                        _enableHook = false;
                     }
                 }
             }
         }
 
+        private readonly LowLevelKeyboardHook keyboardHook;
         private readonly LowLevelMouseHook mouseHook;
         protected readonly AppConfig appConfig;
         protected readonly Core.ReloadableGestureMachine reloadableGestureMachine;
 
         public MouseGestureForm(AppConfig appConfig)
         {
+            this.keyboardHook = new LowLevelKeyboardHook(KeyboardProc);
             this.mouseHook = new LowLevelMouseHook(MouseProc);
             this.appConfig = appConfig;
             this.reloadableGestureMachine = new Core.ReloadableGestureMachine(appConfig);
@@ -134,6 +138,47 @@ namespace CreviceApp.App
             base.WndProc(ref m);
         }
 
+        public WindowsHook.Result KeyboardProc(LowLevelKeyboardHook.Event evnt, LowLevelKeyboardHook.KBDLLHOOKSTRUCT data)
+        {
+            Debug.Print("KeyboardEvent: {0} - {1} | {2}",
+                    data.vkCode,
+                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
+                    BitConverter.ToString(BitConverter.GetBytes((uint)data.dwExtraInfo))
+                    );
+
+            if (data.FromCreviceApp)
+            {
+                Debug.Print("{0} was passed to the next hook because this event has the signature of CreviceApp",
+                    Enum.GetName(typeof(LowLevelKeyboardHook.Event),
+                    evnt));
+                return WindowsHook.Result.Transfer;
+            }
+
+            var keyCode = data.vkCode;
+            if (keyCode < 8 || keyCode > 255)
+            {
+                return WindowsHook.Result.Transfer;
+            }
+
+            var key = SupportedKeys.PhysicalKeys.PhysicalSystemKeySet[(int)keyCode];
+
+            switch (evnt)
+            {
+                case LowLevelKeyboardHook.Event.WM_KEYDOWN:
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(key.PressEvent));
+
+                case LowLevelKeyboardHook.Event.WM_SYSKEYDOWN:
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(key.PressEvent));
+
+                case LowLevelKeyboardHook.Event.WM_KEYUP:
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(key.ReleaseEvent));
+
+                case LowLevelKeyboardHook.Event.WM_SYSKEYUP:
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(key.ReleaseEvent));
+            }
+            return WindowsHook.Result.Transfer;
+        }
+
         public WindowsHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
             Debug.Print("MouseEvent: {0} | {1}",
@@ -141,14 +186,14 @@ namespace CreviceApp.App
                     BitConverter.ToString(BitConverter.GetBytes((uint)data.dwExtraInfo))
                     );
 
-            if (data.fromCreviceApp)
+            if (data.FromCreviceApp)
             {
                 Debug.Print("{0} was passed to the next hook because this event has the signature of CreviceApp",
                     Enum.GetName(typeof(LowLevelMouseHook.Event),
                     evnt));
                 return WindowsHook.Result.Transfer;
             }
-            else if (data.fromTablet)
+            else if (data.FromTablet)
             {
                 Debug.Print("{0} was passed to the next hook because this event has the signature of Tablet",
                     Enum.GetName(typeof(LowLevelMouseHook.Event),
@@ -161,69 +206,60 @@ namespace CreviceApp.App
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.NullEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.NullEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.PressEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.ReleaseEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.PressEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.ReleaseEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONDOWN:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.PressEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONUP:
-                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.ReleaseEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelDown.FireEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelDown.FireEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
-                    if (data.mouseData.asXButton.isXButton1)
+                    if (data.mouseData.asXButton.IsXButton1)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.PressEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.PressEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.PressEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.PressEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
-                    if (data.mouseData.asXButton.isXButton1)
+                    if (data.mouseData.asXButton.IsXButton1)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.ReleaseEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.ReleaseEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.ReleaseEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.ReleaseEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelRight.FireEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelRight.FireEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelLeft.FireEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelLeft.FireEvent, point));
                     }
             }
             return WindowsHook.Result.Transfer;
         }
 
-        protected WindowsHook.Result Convert(bool consumed)
-        {
-            if (consumed)
-            {
-                return WindowsHook.Result.Cancel;
-            }
-            else
-            {
-                return WindowsHook.Result.Transfer;
-            }
-        }
+        protected WindowsHook.Result ToHookResult(bool consumed)
+            => consumed ? WindowsHook.Result.Cancel : WindowsHook.Result.Transfer;
     }
 }

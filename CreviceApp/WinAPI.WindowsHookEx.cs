@@ -214,12 +214,12 @@ namespace CreviceApp.WinAPI.WindowsHookEx
             private short lower;
             public short type;
 
-            public bool isXButton1
+            public bool IsXButton1
             {
                 get { return type == 0x0001; }
             }
 
-            public bool isXButton2
+            public bool IsXButton2
             {
                 get { return type == 0x0002; }
             }
@@ -243,12 +243,12 @@ namespace CreviceApp.WinAPI.WindowsHookEx
             public uint time;
             public UIntPtr dwExtraInfo;
 
-            public bool fromCreviceApp
+            public bool FromCreviceApp
             {
-                get { return (uint)dwExtraInfo == MOUSEEVENTF_CREVICE_APP; }
+                get { return ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_CREVICE_APP; }
             }
 
-            public bool fromTablet
+            public bool FromTablet
             {
                 get { return ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET; }
             }
@@ -292,6 +292,11 @@ namespace CreviceApp.WinAPI.WindowsHookEx
             public FLAGS flags;
             public uint time;
             public UIntPtr dwExtraInfo;
+
+            public bool FromCreviceApp
+            {
+                get { return ((uint)dwExtraInfo & KEYBOARDEVENTF_TMASK) == KEYBOARDEVENTF_CREVICE_APP; }
+            }
         }
 
         [Flags]
@@ -302,7 +307,10 @@ namespace CreviceApp.WinAPI.WindowsHookEx
             LLKHF_ALTDOWN  = 0x20,
             LLKHF_UP       = 0x80,
         }
-        
+
+        private const uint KEYBOARDEVENTF_CREVICE_APP = 0xFFFFFF00;
+        private const uint KEYBOARDEVENTF_TMASK = 0xFFFFFF00;
+
         public LowLevelKeyboardHook(Func<Event, KBDLLHOOKSTRUCT, Result> userCallback) :
             base
             (
