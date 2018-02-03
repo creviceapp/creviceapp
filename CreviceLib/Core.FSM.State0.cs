@@ -26,6 +26,8 @@ namespace Crevice.Core.FSM
             RootElement = rootElement;
         }
 
+        // Historyのインターフェイスを共通させる？
+        
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
             // Todo: benchmark switch type expression

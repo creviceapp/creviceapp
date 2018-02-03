@@ -58,12 +58,12 @@ namespace Crevice.Core.Events
 
         public NullEvent() : base(0) { }
     }
-    
+
     public abstract class FireEvent : Event
     {
         public FireEvent(int eventId) : base(eventId) { }
     }
-
+    
     public abstract class LogicalFireEvent : FireEvent, ILogicalEvent
     {
         public LogicalFireEvent(int eventId) : base(eventId) { }

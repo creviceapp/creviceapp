@@ -15,27 +15,28 @@ namespace CreviceApp
 
     using CreviceApp.WinAPI.Window.Impl;
 
-    public class LogicalSystemKeys : Keys<LogicalSystemKeys.LogicalKey> 
+    public class LogicalSystemKeys : Keys<LogicalSystemKey> 
     {
-        public override LogicalKey Create(int index)
-            => new LogicalKey(index);
+        public override LogicalSystemKey Create(int index)
+            => new LogicalSystemKey(index);
 
         public LogicalSystemKeys(int maxSize)
             : base(maxSize) { }
 
-        public class LogicalKey : LogicalDoubleThrowKeys.LogicalKey
-        {
-            public LogicalKey(int keyId)
-                : base(keyId) { }
-
-            // todo implicit opeartor to LogicalPressEvent
-        }
     }
 
-    public class PhysicalSystemKeys : Keys<PhysicalSystemKeys.PhysicalKey>
+    public class LogicalSystemKey : LogicalDoubleThrowKey
     {
-        public override PhysicalKey Create(int index)
-            => new PhysicalKey(logicalKeys[index], index);
+        public LogicalSystemKey(int keyId)
+            : base(keyId) { }
+
+        // todo implicit opeartor to LogicalPressEvent
+    }
+
+    public class PhysicalSystemKeys : Keys<PhysicalSystemKey>
+    {
+        public override PhysicalSystemKey Create(int index)
+            => new PhysicalSystemKey(logicalKeys[index], index);
 
         private LogicalSystemKeys logicalKeys;
 
@@ -45,15 +46,16 @@ namespace CreviceApp
             this.logicalKeys = logicalKeys;
         }
 
-        public class PhysicalKey : PhysicalDoubleThrowKeys.PhysicalKey
-        {
-            public PhysicalKey(LogicalDoubleThrowKeys.LogicalKey logicalKey, int keyId)
-                : base(logicalKey, keyId) { }
+    }
 
-            // todo implicit opeartor to PhysicalPressEvent
+    public class PhysicalSystemKey : PhysicalDoubleThrowKey
+    {
+        public PhysicalSystemKey(LogicalDoubleThrowKey logicalKey, int keyId)
+            : base(logicalKey, keyId) { }
 
-            // todo implicit operater to Keys, int   
-        }
+        // todo implicit opeartor to PhysicalPressEvent
+
+        // todo implicit operater to Keys, int   
     }
 
     public class SupportedKeys
@@ -84,208 +86,208 @@ namespace CreviceApp
             private readonly LogicalSingleThrowKeys LogicalSingleThrowKeys;
             private readonly LogicalSystemKeys LogicalSystemKeys;
 
-            public LogicalSingleThrowKeys.LogicalKey WheelUp => LogicalSingleThrowKeys[1];
-            public LogicalSingleThrowKeys.LogicalKey WheelDown => LogicalSingleThrowKeys[2];
-            public LogicalSingleThrowKeys.LogicalKey WheelLeft => LogicalSingleThrowKeys[3];
-            public LogicalSingleThrowKeys.LogicalKey WheelRight => LogicalSingleThrowKeys[4];
+            public LogicalSingleThrowKey WheelUp => LogicalSingleThrowKeys[1];
+            public LogicalSingleThrowKey WheelDown => LogicalSingleThrowKeys[2];
+            public LogicalSingleThrowKey WheelLeft => LogicalSingleThrowKeys[3];
+            public LogicalSingleThrowKey WheelRight => LogicalSingleThrowKeys[4];
 
             public StrokeDirection MoveUp => StrokeDirection.Up;
             public StrokeDirection MoveDown => StrokeDirection.Down;
             public StrokeDirection MoveLeft => StrokeDirection.Left;
             public StrokeDirection MoveRight => StrokeDirection.Right;
 
-            public LogicalSystemKeys.LogicalKey LeftButton => LogicalSystemKeys[1];
-            public LogicalSystemKeys.LogicalKey RightButton => LogicalSystemKeys[2];
-            public LogicalSystemKeys.LogicalKey MiddleButton => LogicalSystemKeys[4];
-            public LogicalSystemKeys.LogicalKey X1Button => LogicalSystemKeys[5];
-            public LogicalSystemKeys.LogicalKey X2Button => LogicalSystemKeys[6];
+            public LogicalSystemKey LeftButton => LogicalSystemKeys[1];
+            public LogicalSystemKey RightButton => LogicalSystemKeys[2];
+            public LogicalSystemKey MiddleButton => LogicalSystemKeys[4];
+            public LogicalSystemKey X1Button => LogicalSystemKeys[5];
+            public LogicalSystemKey X2Button => LogicalSystemKeys[6];
 
-            public LogicalSystemKeys.LogicalKey LButton => LogicalSystemKeys[1];
-            public LogicalSystemKeys.LogicalKey RButton => LogicalSystemKeys[2];
-            public LogicalSystemKeys.LogicalKey Cancel => LogicalSystemKeys[3];
-            public LogicalSystemKeys.LogicalKey MButton => LogicalSystemKeys[4];
-            public LogicalSystemKeys.LogicalKey XButton1 => LogicalSystemKeys[5];
-            public LogicalSystemKeys.LogicalKey XButton2 => LogicalSystemKeys[6];
-            public LogicalSystemKeys.LogicalKey Back => LogicalSystemKeys[8];
-            public LogicalSystemKeys.LogicalKey Tab => LogicalSystemKeys[9];
-            public LogicalSystemKeys.LogicalKey LineFeed => LogicalSystemKeys[10];
-            public LogicalSystemKeys.LogicalKey Clear => LogicalSystemKeys[12];
-            public LogicalSystemKeys.LogicalKey Enter => LogicalSystemKeys[13];
-            public LogicalSystemKeys.LogicalKey Return => LogicalSystemKeys[13];
-            public LogicalSystemKeys.LogicalKey ShiftKey => LogicalSystemKeys[16];
-            public LogicalSystemKeys.LogicalKey ControlKey => LogicalSystemKeys[17];
-            public LogicalSystemKeys.LogicalKey Menu => LogicalSystemKeys[18];
-            public LogicalSystemKeys.LogicalKey Pause => LogicalSystemKeys[19];
-            public LogicalSystemKeys.LogicalKey CapsLock => LogicalSystemKeys[20];
-            public LogicalSystemKeys.LogicalKey Capital => LogicalSystemKeys[20];
-            public LogicalSystemKeys.LogicalKey KanaMode => LogicalSystemKeys[21];
-            public LogicalSystemKeys.LogicalKey HangulMode => LogicalSystemKeys[21];
-            public LogicalSystemKeys.LogicalKey JunjaMode => LogicalSystemKeys[23];
-            public LogicalSystemKeys.LogicalKey FinalMode => LogicalSystemKeys[24];
-            public LogicalSystemKeys.LogicalKey KanjiMode => LogicalSystemKeys[25];
-            public LogicalSystemKeys.LogicalKey HanjaMode => LogicalSystemKeys[25];
-            public LogicalSystemKeys.LogicalKey Escape => LogicalSystemKeys[27];
-            public LogicalSystemKeys.LogicalKey IMEConvert => LogicalSystemKeys[28];
-            public LogicalSystemKeys.LogicalKey IMENonconvert => LogicalSystemKeys[29];
-            public LogicalSystemKeys.LogicalKey IMEAccept => LogicalSystemKeys[30];
-            public LogicalSystemKeys.LogicalKey IMEModeChange => LogicalSystemKeys[31];
-            public LogicalSystemKeys.LogicalKey Space => LogicalSystemKeys[32];
-            public LogicalSystemKeys.LogicalKey Prior => LogicalSystemKeys[33];
-            public LogicalSystemKeys.LogicalKey PageUp => LogicalSystemKeys[33];
-            public LogicalSystemKeys.LogicalKey Next => LogicalSystemKeys[34];
-            public LogicalSystemKeys.LogicalKey PageDown => LogicalSystemKeys[34];
-            public LogicalSystemKeys.LogicalKey End => LogicalSystemKeys[35];
-            public LogicalSystemKeys.LogicalKey Home => LogicalSystemKeys[36];
-            public LogicalSystemKeys.LogicalKey Left => LogicalSystemKeys[37];
-            public LogicalSystemKeys.LogicalKey Up => LogicalSystemKeys[38];
-            public LogicalSystemKeys.LogicalKey Right => LogicalSystemKeys[39];
-            public LogicalSystemKeys.LogicalKey Down => LogicalSystemKeys[40];
-            public LogicalSystemKeys.LogicalKey Select => LogicalSystemKeys[41];
-            public LogicalSystemKeys.LogicalKey Print => LogicalSystemKeys[42];
-            public LogicalSystemKeys.LogicalKey Execute => LogicalSystemKeys[43];
-            public LogicalSystemKeys.LogicalKey PrintScreen => LogicalSystemKeys[44];
-            public LogicalSystemKeys.LogicalKey Snapshot => LogicalSystemKeys[44];
-            public LogicalSystemKeys.LogicalKey Insert => LogicalSystemKeys[45];
-            public LogicalSystemKeys.LogicalKey Delete => LogicalSystemKeys[46];
-            public LogicalSystemKeys.LogicalKey Help => LogicalSystemKeys[47];
-            public LogicalSystemKeys.LogicalKey D0 => LogicalSystemKeys[48];
-            public LogicalSystemKeys.LogicalKey D1 => LogicalSystemKeys[49];
-            public LogicalSystemKeys.LogicalKey D2 => LogicalSystemKeys[50];
-            public LogicalSystemKeys.LogicalKey D3 => LogicalSystemKeys[51];
-            public LogicalSystemKeys.LogicalKey D4 => LogicalSystemKeys[52];
-            public LogicalSystemKeys.LogicalKey D5 => LogicalSystemKeys[53];
-            public LogicalSystemKeys.LogicalKey D6 => LogicalSystemKeys[54];
-            public LogicalSystemKeys.LogicalKey D7 => LogicalSystemKeys[55];
-            public LogicalSystemKeys.LogicalKey D8 => LogicalSystemKeys[56];
-            public LogicalSystemKeys.LogicalKey D9 => LogicalSystemKeys[57];
-            public LogicalSystemKeys.LogicalKey A => LogicalSystemKeys[65];
-            public LogicalSystemKeys.LogicalKey B => LogicalSystemKeys[66];
-            public LogicalSystemKeys.LogicalKey C => LogicalSystemKeys[67];
-            public LogicalSystemKeys.LogicalKey D => LogicalSystemKeys[68];
-            public LogicalSystemKeys.LogicalKey E => LogicalSystemKeys[69];
-            public LogicalSystemKeys.LogicalKey F => LogicalSystemKeys[70];
-            public LogicalSystemKeys.LogicalKey G => LogicalSystemKeys[71];
-            public LogicalSystemKeys.LogicalKey H => LogicalSystemKeys[72];
-            public LogicalSystemKeys.LogicalKey I => LogicalSystemKeys[73];
-            public LogicalSystemKeys.LogicalKey J => LogicalSystemKeys[74];
-            public LogicalSystemKeys.LogicalKey K => LogicalSystemKeys[75];
-            public LogicalSystemKeys.LogicalKey L => LogicalSystemKeys[76];
-            public LogicalSystemKeys.LogicalKey M => LogicalSystemKeys[77];
-            public LogicalSystemKeys.LogicalKey N => LogicalSystemKeys[78];
-            public LogicalSystemKeys.LogicalKey O => LogicalSystemKeys[79];
-            public LogicalSystemKeys.LogicalKey P => LogicalSystemKeys[80];
-            public LogicalSystemKeys.LogicalKey Q => LogicalSystemKeys[81];
-            public LogicalSystemKeys.LogicalKey R => LogicalSystemKeys[82];
-            public LogicalSystemKeys.LogicalKey S => LogicalSystemKeys[83];
-            public LogicalSystemKeys.LogicalKey T => LogicalSystemKeys[84];
-            public LogicalSystemKeys.LogicalKey U => LogicalSystemKeys[85];
-            public LogicalSystemKeys.LogicalKey V => LogicalSystemKeys[86];
-            public LogicalSystemKeys.LogicalKey W => LogicalSystemKeys[87];
-            public LogicalSystemKeys.LogicalKey X => LogicalSystemKeys[88];
-            public LogicalSystemKeys.LogicalKey Y => LogicalSystemKeys[89];
-            public LogicalSystemKeys.LogicalKey Z => LogicalSystemKeys[90];
-            public LogicalSystemKeys.LogicalKey LWin => LogicalSystemKeys[91];
-            public LogicalSystemKeys.LogicalKey RWin => LogicalSystemKeys[92];
-            public LogicalSystemKeys.LogicalKey Apps => LogicalSystemKeys[93];
-            public LogicalSystemKeys.LogicalKey Sleep => LogicalSystemKeys[95];
-            public LogicalSystemKeys.LogicalKey NumPad0 => LogicalSystemKeys[96];
-            public LogicalSystemKeys.LogicalKey NumPad1 => LogicalSystemKeys[97];
-            public LogicalSystemKeys.LogicalKey NumPad2 => LogicalSystemKeys[98];
-            public LogicalSystemKeys.LogicalKey NumPad3 => LogicalSystemKeys[99];
-            public LogicalSystemKeys.LogicalKey NumPad4 => LogicalSystemKeys[100];
-            public LogicalSystemKeys.LogicalKey NumPad5 => LogicalSystemKeys[101];
-            public LogicalSystemKeys.LogicalKey NumPad6 => LogicalSystemKeys[102];
-            public LogicalSystemKeys.LogicalKey NumPad7 => LogicalSystemKeys[103];
-            public LogicalSystemKeys.LogicalKey NumPad8 => LogicalSystemKeys[104];
-            public LogicalSystemKeys.LogicalKey NumPad9 => LogicalSystemKeys[105];
-            public LogicalSystemKeys.LogicalKey Multiply => LogicalSystemKeys[106];
-            public LogicalSystemKeys.LogicalKey Add => LogicalSystemKeys[107];
-            public LogicalSystemKeys.LogicalKey Separator => LogicalSystemKeys[108];
-            public LogicalSystemKeys.LogicalKey Subtract => LogicalSystemKeys[109];
-            public LogicalSystemKeys.LogicalKey Decimal => LogicalSystemKeys[110];
-            public LogicalSystemKeys.LogicalKey Divide => LogicalSystemKeys[111];
-            public LogicalSystemKeys.LogicalKey F1 => LogicalSystemKeys[112];
-            public LogicalSystemKeys.LogicalKey F2 => LogicalSystemKeys[113];
-            public LogicalSystemKeys.LogicalKey F3 => LogicalSystemKeys[114];
-            public LogicalSystemKeys.LogicalKey F4 => LogicalSystemKeys[115];
-            public LogicalSystemKeys.LogicalKey F5 => LogicalSystemKeys[116];
-            public LogicalSystemKeys.LogicalKey F6 => LogicalSystemKeys[117];
-            public LogicalSystemKeys.LogicalKey F7 => LogicalSystemKeys[118];
-            public LogicalSystemKeys.LogicalKey F8 => LogicalSystemKeys[119];
-            public LogicalSystemKeys.LogicalKey F9 => LogicalSystemKeys[120];
-            public LogicalSystemKeys.LogicalKey F10 => LogicalSystemKeys[121];
-            public LogicalSystemKeys.LogicalKey F11 => LogicalSystemKeys[122];
-            public LogicalSystemKeys.LogicalKey F12 => LogicalSystemKeys[123];
-            public LogicalSystemKeys.LogicalKey F13 => LogicalSystemKeys[124];
-            public LogicalSystemKeys.LogicalKey F14 => LogicalSystemKeys[125];
-            public LogicalSystemKeys.LogicalKey F15 => LogicalSystemKeys[126];
-            public LogicalSystemKeys.LogicalKey F16 => LogicalSystemKeys[127];
-            public LogicalSystemKeys.LogicalKey F17 => LogicalSystemKeys[128];
-            public LogicalSystemKeys.LogicalKey F18 => LogicalSystemKeys[129];
-            public LogicalSystemKeys.LogicalKey F19 => LogicalSystemKeys[130];
-            public LogicalSystemKeys.LogicalKey F20 => LogicalSystemKeys[131];
-            public LogicalSystemKeys.LogicalKey F21 => LogicalSystemKeys[132];
-            public LogicalSystemKeys.LogicalKey F22 => LogicalSystemKeys[133];
-            public LogicalSystemKeys.LogicalKey F23 => LogicalSystemKeys[134];
-            public LogicalSystemKeys.LogicalKey F24 => LogicalSystemKeys[135];
-            public LogicalSystemKeys.LogicalKey NumLock => LogicalSystemKeys[144];
-            public LogicalSystemKeys.LogicalKey Scroll => LogicalSystemKeys[145];
-            public LogicalSystemKeys.LogicalKey LShiftKey => LogicalSystemKeys[160];
-            public LogicalSystemKeys.LogicalKey RShiftKey => LogicalSystemKeys[161];
-            public LogicalSystemKeys.LogicalKey LControlKey => LogicalSystemKeys[162];
-            public LogicalSystemKeys.LogicalKey RControlKey => LogicalSystemKeys[163];
-            public LogicalSystemKeys.LogicalKey LMenu => LogicalSystemKeys[164];
-            public LogicalSystemKeys.LogicalKey RMenu => LogicalSystemKeys[165];
-            public LogicalSystemKeys.LogicalKey BrowserBack => LogicalSystemKeys[166];
-            public LogicalSystemKeys.LogicalKey BrowserForward => LogicalSystemKeys[167];
-            public LogicalSystemKeys.LogicalKey BrowserRefresh => LogicalSystemKeys[168];
-            public LogicalSystemKeys.LogicalKey BrowserStop => LogicalSystemKeys[169];
-            public LogicalSystemKeys.LogicalKey BrowserSearch => LogicalSystemKeys[170];
-            public LogicalSystemKeys.LogicalKey BrowserFavorites => LogicalSystemKeys[171];
-            public LogicalSystemKeys.LogicalKey BrowserHome => LogicalSystemKeys[172];
-            public LogicalSystemKeys.LogicalKey VolumeMute => LogicalSystemKeys[173];
-            public LogicalSystemKeys.LogicalKey VolumeDown => LogicalSystemKeys[174];
-            public LogicalSystemKeys.LogicalKey VolumeUp => LogicalSystemKeys[175];
-            public LogicalSystemKeys.LogicalKey MediaNextTrack => LogicalSystemKeys[176];
-            public LogicalSystemKeys.LogicalKey MediaPreviousTrack => LogicalSystemKeys[177];
-            public LogicalSystemKeys.LogicalKey MediaStop => LogicalSystemKeys[178];
-            public LogicalSystemKeys.LogicalKey MediaPlayPause => LogicalSystemKeys[179];
-            public LogicalSystemKeys.LogicalKey LaunchMail => LogicalSystemKeys[180];
-            public LogicalSystemKeys.LogicalKey SelectMedia => LogicalSystemKeys[181];
-            public LogicalSystemKeys.LogicalKey LaunchApplication1 => LogicalSystemKeys[182];
-            public LogicalSystemKeys.LogicalKey LaunchApplication2 => LogicalSystemKeys[183];
-            public LogicalSystemKeys.LogicalKey Oem1 => LogicalSystemKeys[186];
-            public LogicalSystemKeys.LogicalKey OemSemicolon => LogicalSystemKeys[186];
-            public LogicalSystemKeys.LogicalKey Oemplus => LogicalSystemKeys[187];
-            public LogicalSystemKeys.LogicalKey Oemcomma => LogicalSystemKeys[188];
-            public LogicalSystemKeys.LogicalKey OemMinus => LogicalSystemKeys[189];
-            public LogicalSystemKeys.LogicalKey OemPeriod => LogicalSystemKeys[190];
-            public LogicalSystemKeys.LogicalKey OemQuestion => LogicalSystemKeys[191];
-            public LogicalSystemKeys.LogicalKey Oem2 => LogicalSystemKeys[191];
-            public LogicalSystemKeys.LogicalKey Oemtilde => LogicalSystemKeys[192];
-            public LogicalSystemKeys.LogicalKey Oem3 => LogicalSystemKeys[192];
-            public LogicalSystemKeys.LogicalKey Oem4 => LogicalSystemKeys[219];
-            public LogicalSystemKeys.LogicalKey OemOpenBrackets => LogicalSystemKeys[219];
-            public LogicalSystemKeys.LogicalKey OemPipe => LogicalSystemKeys[220];
-            public LogicalSystemKeys.LogicalKey Oem5 => LogicalSystemKeys[220];
-            public LogicalSystemKeys.LogicalKey Oem6 => LogicalSystemKeys[221];
-            public LogicalSystemKeys.LogicalKey OemCloseBrackets => LogicalSystemKeys[221];
-            public LogicalSystemKeys.LogicalKey Oem7 => LogicalSystemKeys[222];
-            public LogicalSystemKeys.LogicalKey OemQuotes => LogicalSystemKeys[222];
-            public LogicalSystemKeys.LogicalKey Oem8 => LogicalSystemKeys[223];
-            public LogicalSystemKeys.LogicalKey Oem102 => LogicalSystemKeys[226];
-            public LogicalSystemKeys.LogicalKey OemBackslash => LogicalSystemKeys[226];
-            public LogicalSystemKeys.LogicalKey ProcessKey => LogicalSystemKeys[229];
-            public LogicalSystemKeys.LogicalKey Packet => LogicalSystemKeys[231];
-            public LogicalSystemKeys.LogicalKey Attn => LogicalSystemKeys[246];
-            public LogicalSystemKeys.LogicalKey Crsel => LogicalSystemKeys[247];
-            public LogicalSystemKeys.LogicalKey Exsel => LogicalSystemKeys[248];
-            public LogicalSystemKeys.LogicalKey EraseEof => LogicalSystemKeys[249];
-            public LogicalSystemKeys.LogicalKey Play => LogicalSystemKeys[250];
-            public LogicalSystemKeys.LogicalKey Zoom => LogicalSystemKeys[251];
-            public LogicalSystemKeys.LogicalKey NoName => LogicalSystemKeys[252];
-            public LogicalSystemKeys.LogicalKey Pa1 => LogicalSystemKeys[253];
-            public LogicalSystemKeys.LogicalKey OemClear => LogicalSystemKeys[254];
+            public LogicalSystemKey LButton => LogicalSystemKeys[1];
+            public LogicalSystemKey RButton => LogicalSystemKeys[2];
+            public LogicalSystemKey Cancel => LogicalSystemKeys[3];
+            public LogicalSystemKey MButton => LogicalSystemKeys[4];
+            public LogicalSystemKey XButton1 => LogicalSystemKeys[5];
+            public LogicalSystemKey XButton2 => LogicalSystemKeys[6];
+            public LogicalSystemKey Back => LogicalSystemKeys[8];
+            public LogicalSystemKey Tab => LogicalSystemKeys[9];
+            public LogicalSystemKey LineFeed => LogicalSystemKeys[10];
+            public LogicalSystemKey Clear => LogicalSystemKeys[12];
+            public LogicalSystemKey Enter => LogicalSystemKeys[13];
+            public LogicalSystemKey Return => LogicalSystemKeys[13];
+            public LogicalSystemKey ShiftKey => LogicalSystemKeys[16];
+            public LogicalSystemKey ControlKey => LogicalSystemKeys[17];
+            public LogicalSystemKey Menu => LogicalSystemKeys[18];
+            public LogicalSystemKey Pause => LogicalSystemKeys[19];
+            public LogicalSystemKey CapsLock => LogicalSystemKeys[20];
+            public LogicalSystemKey Capital => LogicalSystemKeys[20];
+            public LogicalSystemKey KanaMode => LogicalSystemKeys[21];
+            public LogicalSystemKey HangulMode => LogicalSystemKeys[21];
+            public LogicalSystemKey JunjaMode => LogicalSystemKeys[23];
+            public LogicalSystemKey FinalMode => LogicalSystemKeys[24];
+            public LogicalSystemKey KanjiMode => LogicalSystemKeys[25];
+            public LogicalSystemKey HanjaMode => LogicalSystemKeys[25];
+            public LogicalSystemKey Escape => LogicalSystemKeys[27];
+            public LogicalSystemKey IMEConvert => LogicalSystemKeys[28];
+            public LogicalSystemKey IMENonconvert => LogicalSystemKeys[29];
+            public LogicalSystemKey IMEAccept => LogicalSystemKeys[30];
+            public LogicalSystemKey IMEModeChange => LogicalSystemKeys[31];
+            public LogicalSystemKey Space => LogicalSystemKeys[32];
+            public LogicalSystemKey Prior => LogicalSystemKeys[33];
+            public LogicalSystemKey PageUp => LogicalSystemKeys[33];
+            public LogicalSystemKey Next => LogicalSystemKeys[34];
+            public LogicalSystemKey PageDown => LogicalSystemKeys[34];
+            public LogicalSystemKey End => LogicalSystemKeys[35];
+            public LogicalSystemKey Home => LogicalSystemKeys[36];
+            public LogicalSystemKey Left => LogicalSystemKeys[37];
+            public LogicalSystemKey Up => LogicalSystemKeys[38];
+            public LogicalSystemKey Right => LogicalSystemKeys[39];
+            public LogicalSystemKey Down => LogicalSystemKeys[40];
+            public LogicalSystemKey Select => LogicalSystemKeys[41];
+            public LogicalSystemKey Print => LogicalSystemKeys[42];
+            public LogicalSystemKey Execute => LogicalSystemKeys[43];
+            public LogicalSystemKey PrintScreen => LogicalSystemKeys[44];
+            public LogicalSystemKey Snapshot => LogicalSystemKeys[44];
+            public LogicalSystemKey Insert => LogicalSystemKeys[45];
+            public LogicalSystemKey Delete => LogicalSystemKeys[46];
+            public LogicalSystemKey Help => LogicalSystemKeys[47];
+            public LogicalSystemKey D0 => LogicalSystemKeys[48];
+            public LogicalSystemKey D1 => LogicalSystemKeys[49];
+            public LogicalSystemKey D2 => LogicalSystemKeys[50];
+            public LogicalSystemKey D3 => LogicalSystemKeys[51];
+            public LogicalSystemKey D4 => LogicalSystemKeys[52];
+            public LogicalSystemKey D5 => LogicalSystemKeys[53];
+            public LogicalSystemKey D6 => LogicalSystemKeys[54];
+            public LogicalSystemKey D7 => LogicalSystemKeys[55];
+            public LogicalSystemKey D8 => LogicalSystemKeys[56];
+            public LogicalSystemKey D9 => LogicalSystemKeys[57];
+            public LogicalSystemKey A => LogicalSystemKeys[65];
+            public LogicalSystemKey B => LogicalSystemKeys[66];
+            public LogicalSystemKey C => LogicalSystemKeys[67];
+            public LogicalSystemKey D => LogicalSystemKeys[68];
+            public LogicalSystemKey E => LogicalSystemKeys[69];
+            public LogicalSystemKey F => LogicalSystemKeys[70];
+            public LogicalSystemKey G => LogicalSystemKeys[71];
+            public LogicalSystemKey H => LogicalSystemKeys[72];
+            public LogicalSystemKey I => LogicalSystemKeys[73];
+            public LogicalSystemKey J => LogicalSystemKeys[74];
+            public LogicalSystemKey K => LogicalSystemKeys[75];
+            public LogicalSystemKey L => LogicalSystemKeys[76];
+            public LogicalSystemKey M => LogicalSystemKeys[77];
+            public LogicalSystemKey N => LogicalSystemKeys[78];
+            public LogicalSystemKey O => LogicalSystemKeys[79];
+            public LogicalSystemKey P => LogicalSystemKeys[80];
+            public LogicalSystemKey Q => LogicalSystemKeys[81];
+            public LogicalSystemKey R => LogicalSystemKeys[82];
+            public LogicalSystemKey S => LogicalSystemKeys[83];
+            public LogicalSystemKey T => LogicalSystemKeys[84];
+            public LogicalSystemKey U => LogicalSystemKeys[85];
+            public LogicalSystemKey V => LogicalSystemKeys[86];
+            public LogicalSystemKey W => LogicalSystemKeys[87];
+            public LogicalSystemKey X => LogicalSystemKeys[88];
+            public LogicalSystemKey Y => LogicalSystemKeys[89];
+            public LogicalSystemKey Z => LogicalSystemKeys[90];
+            public LogicalSystemKey LWin => LogicalSystemKeys[91];
+            public LogicalSystemKey RWin => LogicalSystemKeys[92];
+            public LogicalSystemKey Apps => LogicalSystemKeys[93];
+            public LogicalSystemKey Sleep => LogicalSystemKeys[95];
+            public LogicalSystemKey NumPad0 => LogicalSystemKeys[96];
+            public LogicalSystemKey NumPad1 => LogicalSystemKeys[97];
+            public LogicalSystemKey NumPad2 => LogicalSystemKeys[98];
+            public LogicalSystemKey NumPad3 => LogicalSystemKeys[99];
+            public LogicalSystemKey NumPad4 => LogicalSystemKeys[100];
+            public LogicalSystemKey NumPad5 => LogicalSystemKeys[101];
+            public LogicalSystemKey NumPad6 => LogicalSystemKeys[102];
+            public LogicalSystemKey NumPad7 => LogicalSystemKeys[103];
+            public LogicalSystemKey NumPad8 => LogicalSystemKeys[104];
+            public LogicalSystemKey NumPad9 => LogicalSystemKeys[105];
+            public LogicalSystemKey Multiply => LogicalSystemKeys[106];
+            public LogicalSystemKey Add => LogicalSystemKeys[107];
+            public LogicalSystemKey Separator => LogicalSystemKeys[108];
+            public LogicalSystemKey Subtract => LogicalSystemKeys[109];
+            public LogicalSystemKey Decimal => LogicalSystemKeys[110];
+            public LogicalSystemKey Divide => LogicalSystemKeys[111];
+            public LogicalSystemKey F1 => LogicalSystemKeys[112];
+            public LogicalSystemKey F2 => LogicalSystemKeys[113];
+            public LogicalSystemKey F3 => LogicalSystemKeys[114];
+            public LogicalSystemKey F4 => LogicalSystemKeys[115];
+            public LogicalSystemKey F5 => LogicalSystemKeys[116];
+            public LogicalSystemKey F6 => LogicalSystemKeys[117];
+            public LogicalSystemKey F7 => LogicalSystemKeys[118];
+            public LogicalSystemKey F8 => LogicalSystemKeys[119];
+            public LogicalSystemKey F9 => LogicalSystemKeys[120];
+            public LogicalSystemKey F10 => LogicalSystemKeys[121];
+            public LogicalSystemKey F11 => LogicalSystemKeys[122];
+            public LogicalSystemKey F12 => LogicalSystemKeys[123];
+            public LogicalSystemKey F13 => LogicalSystemKeys[124];
+            public LogicalSystemKey F14 => LogicalSystemKeys[125];
+            public LogicalSystemKey F15 => LogicalSystemKeys[126];
+            public LogicalSystemKey F16 => LogicalSystemKeys[127];
+            public LogicalSystemKey F17 => LogicalSystemKeys[128];
+            public LogicalSystemKey F18 => LogicalSystemKeys[129];
+            public LogicalSystemKey F19 => LogicalSystemKeys[130];
+            public LogicalSystemKey F20 => LogicalSystemKeys[131];
+            public LogicalSystemKey F21 => LogicalSystemKeys[132];
+            public LogicalSystemKey F22 => LogicalSystemKeys[133];
+            public LogicalSystemKey F23 => LogicalSystemKeys[134];
+            public LogicalSystemKey F24 => LogicalSystemKeys[135];
+            public LogicalSystemKey NumLock => LogicalSystemKeys[144];
+            public LogicalSystemKey Scroll => LogicalSystemKeys[145];
+            public LogicalSystemKey LShiftKey => LogicalSystemKeys[160];
+            public LogicalSystemKey RShiftKey => LogicalSystemKeys[161];
+            public LogicalSystemKey LControlKey => LogicalSystemKeys[162];
+            public LogicalSystemKey RControlKey => LogicalSystemKeys[163];
+            public LogicalSystemKey LMenu => LogicalSystemKeys[164];
+            public LogicalSystemKey RMenu => LogicalSystemKeys[165];
+            public LogicalSystemKey BrowserBack => LogicalSystemKeys[166];
+            public LogicalSystemKey BrowserForward => LogicalSystemKeys[167];
+            public LogicalSystemKey BrowserRefresh => LogicalSystemKeys[168];
+            public LogicalSystemKey BrowserStop => LogicalSystemKeys[169];
+            public LogicalSystemKey BrowserSearch => LogicalSystemKeys[170];
+            public LogicalSystemKey BrowserFavorites => LogicalSystemKeys[171];
+            public LogicalSystemKey BrowserHome => LogicalSystemKeys[172];
+            public LogicalSystemKey VolumeMute => LogicalSystemKeys[173];
+            public LogicalSystemKey VolumeDown => LogicalSystemKeys[174];
+            public LogicalSystemKey VolumeUp => LogicalSystemKeys[175];
+            public LogicalSystemKey MediaNextTrack => LogicalSystemKeys[176];
+            public LogicalSystemKey MediaPreviousTrack => LogicalSystemKeys[177];
+            public LogicalSystemKey MediaStop => LogicalSystemKeys[178];
+            public LogicalSystemKey MediaPlayPause => LogicalSystemKeys[179];
+            public LogicalSystemKey LaunchMail => LogicalSystemKeys[180];
+            public LogicalSystemKey SelectMedia => LogicalSystemKeys[181];
+            public LogicalSystemKey LaunchApplication1 => LogicalSystemKeys[182];
+            public LogicalSystemKey LaunchApplication2 => LogicalSystemKeys[183];
+            public LogicalSystemKey Oem1 => LogicalSystemKeys[186];
+            public LogicalSystemKey OemSemicolon => LogicalSystemKeys[186];
+            public LogicalSystemKey Oemplus => LogicalSystemKeys[187];
+            public LogicalSystemKey Oemcomma => LogicalSystemKeys[188];
+            public LogicalSystemKey OemMinus => LogicalSystemKeys[189];
+            public LogicalSystemKey OemPeriod => LogicalSystemKeys[190];
+            public LogicalSystemKey OemQuestion => LogicalSystemKeys[191];
+            public LogicalSystemKey Oem2 => LogicalSystemKeys[191];
+            public LogicalSystemKey Oemtilde => LogicalSystemKeys[192];
+            public LogicalSystemKey Oem3 => LogicalSystemKeys[192];
+            public LogicalSystemKey Oem4 => LogicalSystemKeys[219];
+            public LogicalSystemKey OemOpenBrackets => LogicalSystemKeys[219];
+            public LogicalSystemKey OemPipe => LogicalSystemKeys[220];
+            public LogicalSystemKey Oem5 => LogicalSystemKeys[220];
+            public LogicalSystemKey Oem6 => LogicalSystemKeys[221];
+            public LogicalSystemKey OemCloseBrackets => LogicalSystemKeys[221];
+            public LogicalSystemKey Oem7 => LogicalSystemKeys[222];
+            public LogicalSystemKey OemQuotes => LogicalSystemKeys[222];
+            public LogicalSystemKey Oem8 => LogicalSystemKeys[223];
+            public LogicalSystemKey Oem102 => LogicalSystemKeys[226];
+            public LogicalSystemKey OemBackslash => LogicalSystemKeys[226];
+            public LogicalSystemKey ProcessKey => LogicalSystemKeys[229];
+            public LogicalSystemKey Packet => LogicalSystemKeys[231];
+            public LogicalSystemKey Attn => LogicalSystemKeys[246];
+            public LogicalSystemKey Crsel => LogicalSystemKeys[247];
+            public LogicalSystemKey Exsel => LogicalSystemKeys[248];
+            public LogicalSystemKey EraseEof => LogicalSystemKeys[249];
+            public LogicalSystemKey Play => LogicalSystemKeys[250];
+            public LogicalSystemKey Zoom => LogicalSystemKeys[251];
+            public LogicalSystemKey NoName => LogicalSystemKeys[252];
+            public LogicalSystemKey Pa1 => LogicalSystemKeys[253];
+            public LogicalSystemKey OemClear => LogicalSystemKeys[254];
 
             public LogicalKeyDeclaration(
                 LogicalSingleThrowKeys singleThrowKeys,
@@ -301,208 +303,210 @@ namespace CreviceApp
             private readonly PhysicalSingleThrowKeys PhysicalSingleThrowKeys;
             private readonly PhysicalSystemKeys PhysicalSystemKeys;
 
-            public PhysicalSingleThrowKeys.PhysicalKey WheelUp => PhysicalSingleThrowKeys[1];
-            public PhysicalSingleThrowKeys.PhysicalKey WheelDown => PhysicalSingleThrowKeys[2];
-            public PhysicalSingleThrowKeys.PhysicalKey WheelLeft => PhysicalSingleThrowKeys[3];
-            public PhysicalSingleThrowKeys.PhysicalKey WheelRight => PhysicalSingleThrowKeys[4];
+            public readonly Crevice.Core.Events.NullEvent NullEvent = new Crevice.Core.Events.NullEvent();
+
+            public PhysicalSingleThrowKey WheelUp => PhysicalSingleThrowKeys[1];
+            public PhysicalSingleThrowKey WheelDown => PhysicalSingleThrowKeys[2];
+            public PhysicalSingleThrowKey WheelLeft => PhysicalSingleThrowKeys[3];
+            public PhysicalSingleThrowKey WheelRight => PhysicalSingleThrowKeys[4];
 
             public StrokeDirection MoveUp => StrokeDirection.Up;
             public StrokeDirection MoveDown => StrokeDirection.Down;
             public StrokeDirection MoveLeft => StrokeDirection.Left;
             public StrokeDirection MoveRight => StrokeDirection.Right;
 
-            public PhysicalSystemKeys.PhysicalKey LeftButton => PhysicalSystemKeys[1];
-            public PhysicalSystemKeys.PhysicalKey RightButton => PhysicalSystemKeys[2];
-            public PhysicalSystemKeys.PhysicalKey MiddleButton => PhysicalSystemKeys[4];
-            public PhysicalSystemKeys.PhysicalKey X1Button => PhysicalSystemKeys[5];
-            public PhysicalSystemKeys.PhysicalKey X2Button => PhysicalSystemKeys[6];
+            public PhysicalSystemKey LeftButton => PhysicalSystemKeys[1];
+            public PhysicalSystemKey RightButton => PhysicalSystemKeys[2];
+            public PhysicalSystemKey MiddleButton => PhysicalSystemKeys[4];
+            public PhysicalSystemKey X1Button => PhysicalSystemKeys[5];
+            public PhysicalSystemKey X2Button => PhysicalSystemKeys[6];
 
-            public PhysicalSystemKeys.PhysicalKey LButton => PhysicalSystemKeys[1];
-            public PhysicalSystemKeys.PhysicalKey RButton => PhysicalSystemKeys[2];
-            public PhysicalSystemKeys.PhysicalKey Cancel => PhysicalSystemKeys[3];
-            public PhysicalSystemKeys.PhysicalKey MButton => PhysicalSystemKeys[4];
-            public PhysicalSystemKeys.PhysicalKey XButton1 => PhysicalSystemKeys[5];
-            public PhysicalSystemKeys.PhysicalKey XButton2 => PhysicalSystemKeys[6];
-            public PhysicalSystemKeys.PhysicalKey Back => PhysicalSystemKeys[8];
-            public PhysicalSystemKeys.PhysicalKey Tab => PhysicalSystemKeys[9];
-            public PhysicalSystemKeys.PhysicalKey LineFeed => PhysicalSystemKeys[10];
-            public PhysicalSystemKeys.PhysicalKey Clear => PhysicalSystemKeys[12];
-            public PhysicalSystemKeys.PhysicalKey Enter => PhysicalSystemKeys[13];
-            public PhysicalSystemKeys.PhysicalKey Return => PhysicalSystemKeys[13];
-            public PhysicalSystemKeys.PhysicalKey ShiftKey => PhysicalSystemKeys[16];
-            public PhysicalSystemKeys.PhysicalKey ControlKey => PhysicalSystemKeys[17];
-            public PhysicalSystemKeys.PhysicalKey Menu => PhysicalSystemKeys[18];
-            public PhysicalSystemKeys.PhysicalKey Pause => PhysicalSystemKeys[19];
-            public PhysicalSystemKeys.PhysicalKey CapsLock => PhysicalSystemKeys[20];
-            public PhysicalSystemKeys.PhysicalKey Capital => PhysicalSystemKeys[20];
-            public PhysicalSystemKeys.PhysicalKey KanaMode => PhysicalSystemKeys[21];
-            public PhysicalSystemKeys.PhysicalKey HangulMode => PhysicalSystemKeys[21];
-            public PhysicalSystemKeys.PhysicalKey JunjaMode => PhysicalSystemKeys[23];
-            public PhysicalSystemKeys.PhysicalKey FinalMode => PhysicalSystemKeys[24];
-            public PhysicalSystemKeys.PhysicalKey KanjiMode => PhysicalSystemKeys[25];
-            public PhysicalSystemKeys.PhysicalKey HanjaMode => PhysicalSystemKeys[25];
-            public PhysicalSystemKeys.PhysicalKey Escape => PhysicalSystemKeys[27];
-            public PhysicalSystemKeys.PhysicalKey IMEConvert => PhysicalSystemKeys[28];
-            public PhysicalSystemKeys.PhysicalKey IMENonconvert => PhysicalSystemKeys[29];
-            public PhysicalSystemKeys.PhysicalKey IMEAccept => PhysicalSystemKeys[30];
-            public PhysicalSystemKeys.PhysicalKey IMEModeChange => PhysicalSystemKeys[31];
-            public PhysicalSystemKeys.PhysicalKey Space => PhysicalSystemKeys[32];
-            public PhysicalSystemKeys.PhysicalKey Prior => PhysicalSystemKeys[33];
-            public PhysicalSystemKeys.PhysicalKey PageUp => PhysicalSystemKeys[33];
-            public PhysicalSystemKeys.PhysicalKey Next => PhysicalSystemKeys[34];
-            public PhysicalSystemKeys.PhysicalKey PageDown => PhysicalSystemKeys[34];
-            public PhysicalSystemKeys.PhysicalKey End => PhysicalSystemKeys[35];
-            public PhysicalSystemKeys.PhysicalKey Home => PhysicalSystemKeys[36];
-            public PhysicalSystemKeys.PhysicalKey Left => PhysicalSystemKeys[37];
-            public PhysicalSystemKeys.PhysicalKey Up => PhysicalSystemKeys[38];
-            public PhysicalSystemKeys.PhysicalKey Right => PhysicalSystemKeys[39];
-            public PhysicalSystemKeys.PhysicalKey Down => PhysicalSystemKeys[40];
-            public PhysicalSystemKeys.PhysicalKey Select => PhysicalSystemKeys[41];
-            public PhysicalSystemKeys.PhysicalKey Print => PhysicalSystemKeys[42];
-            public PhysicalSystemKeys.PhysicalKey Execute => PhysicalSystemKeys[43];
-            public PhysicalSystemKeys.PhysicalKey PrintScreen => PhysicalSystemKeys[44];
-            public PhysicalSystemKeys.PhysicalKey Snapshot => PhysicalSystemKeys[44];
-            public PhysicalSystemKeys.PhysicalKey Insert => PhysicalSystemKeys[45];
-            public PhysicalSystemKeys.PhysicalKey Delete => PhysicalSystemKeys[46];
-            public PhysicalSystemKeys.PhysicalKey Help => PhysicalSystemKeys[47];
-            public PhysicalSystemKeys.PhysicalKey D0 => PhysicalSystemKeys[48];
-            public PhysicalSystemKeys.PhysicalKey D1 => PhysicalSystemKeys[49];
-            public PhysicalSystemKeys.PhysicalKey D2 => PhysicalSystemKeys[50];
-            public PhysicalSystemKeys.PhysicalKey D3 => PhysicalSystemKeys[51];
-            public PhysicalSystemKeys.PhysicalKey D4 => PhysicalSystemKeys[52];
-            public PhysicalSystemKeys.PhysicalKey D5 => PhysicalSystemKeys[53];
-            public PhysicalSystemKeys.PhysicalKey D6 => PhysicalSystemKeys[54];
-            public PhysicalSystemKeys.PhysicalKey D7 => PhysicalSystemKeys[55];
-            public PhysicalSystemKeys.PhysicalKey D8 => PhysicalSystemKeys[56];
-            public PhysicalSystemKeys.PhysicalKey D9 => PhysicalSystemKeys[57];
-            public PhysicalSystemKeys.PhysicalKey A => PhysicalSystemKeys[65];
-            public PhysicalSystemKeys.PhysicalKey B => PhysicalSystemKeys[66];
-            public PhysicalSystemKeys.PhysicalKey C => PhysicalSystemKeys[67];
-            public PhysicalSystemKeys.PhysicalKey D => PhysicalSystemKeys[68];
-            public PhysicalSystemKeys.PhysicalKey E => PhysicalSystemKeys[69];
-            public PhysicalSystemKeys.PhysicalKey F => PhysicalSystemKeys[70];
-            public PhysicalSystemKeys.PhysicalKey G => PhysicalSystemKeys[71];
-            public PhysicalSystemKeys.PhysicalKey H => PhysicalSystemKeys[72];
-            public PhysicalSystemKeys.PhysicalKey I => PhysicalSystemKeys[73];
-            public PhysicalSystemKeys.PhysicalKey J => PhysicalSystemKeys[74];
-            public PhysicalSystemKeys.PhysicalKey K => PhysicalSystemKeys[75];
-            public PhysicalSystemKeys.PhysicalKey L => PhysicalSystemKeys[76];
-            public PhysicalSystemKeys.PhysicalKey M => PhysicalSystemKeys[77];
-            public PhysicalSystemKeys.PhysicalKey N => PhysicalSystemKeys[78];
-            public PhysicalSystemKeys.PhysicalKey O => PhysicalSystemKeys[79];
-            public PhysicalSystemKeys.PhysicalKey P => PhysicalSystemKeys[80];
-            public PhysicalSystemKeys.PhysicalKey Q => PhysicalSystemKeys[81];
-            public PhysicalSystemKeys.PhysicalKey R => PhysicalSystemKeys[82];
-            public PhysicalSystemKeys.PhysicalKey S => PhysicalSystemKeys[83];
-            public PhysicalSystemKeys.PhysicalKey T => PhysicalSystemKeys[84];
-            public PhysicalSystemKeys.PhysicalKey U => PhysicalSystemKeys[85];
-            public PhysicalSystemKeys.PhysicalKey V => PhysicalSystemKeys[86];
-            public PhysicalSystemKeys.PhysicalKey W => PhysicalSystemKeys[87];
-            public PhysicalSystemKeys.PhysicalKey X => PhysicalSystemKeys[88];
-            public PhysicalSystemKeys.PhysicalKey Y => PhysicalSystemKeys[89];
-            public PhysicalSystemKeys.PhysicalKey Z => PhysicalSystemKeys[90];
-            public PhysicalSystemKeys.PhysicalKey LWin => PhysicalSystemKeys[91];
-            public PhysicalSystemKeys.PhysicalKey RWin => PhysicalSystemKeys[92];
-            public PhysicalSystemKeys.PhysicalKey Apps => PhysicalSystemKeys[93];
-            public PhysicalSystemKeys.PhysicalKey Sleep => PhysicalSystemKeys[95];
-            public PhysicalSystemKeys.PhysicalKey NumPad0 => PhysicalSystemKeys[96];
-            public PhysicalSystemKeys.PhysicalKey NumPad1 => PhysicalSystemKeys[97];
-            public PhysicalSystemKeys.PhysicalKey NumPad2 => PhysicalSystemKeys[98];
-            public PhysicalSystemKeys.PhysicalKey NumPad3 => PhysicalSystemKeys[99];
-            public PhysicalSystemKeys.PhysicalKey NumPad4 => PhysicalSystemKeys[100];
-            public PhysicalSystemKeys.PhysicalKey NumPad5 => PhysicalSystemKeys[101];
-            public PhysicalSystemKeys.PhysicalKey NumPad6 => PhysicalSystemKeys[102];
-            public PhysicalSystemKeys.PhysicalKey NumPad7 => PhysicalSystemKeys[103];
-            public PhysicalSystemKeys.PhysicalKey NumPad8 => PhysicalSystemKeys[104];
-            public PhysicalSystemKeys.PhysicalKey NumPad9 => PhysicalSystemKeys[105];
-            public PhysicalSystemKeys.PhysicalKey Multiply => PhysicalSystemKeys[106];
-            public PhysicalSystemKeys.PhysicalKey Add => PhysicalSystemKeys[107];
-            public PhysicalSystemKeys.PhysicalKey Separator => PhysicalSystemKeys[108];
-            public PhysicalSystemKeys.PhysicalKey Subtract => PhysicalSystemKeys[109];
-            public PhysicalSystemKeys.PhysicalKey Decimal => PhysicalSystemKeys[110];
-            public PhysicalSystemKeys.PhysicalKey Divide => PhysicalSystemKeys[111];
-            public PhysicalSystemKeys.PhysicalKey F1 => PhysicalSystemKeys[112];
-            public PhysicalSystemKeys.PhysicalKey F2 => PhysicalSystemKeys[113];
-            public PhysicalSystemKeys.PhysicalKey F3 => PhysicalSystemKeys[114];
-            public PhysicalSystemKeys.PhysicalKey F4 => PhysicalSystemKeys[115];
-            public PhysicalSystemKeys.PhysicalKey F5 => PhysicalSystemKeys[116];
-            public PhysicalSystemKeys.PhysicalKey F6 => PhysicalSystemKeys[117];
-            public PhysicalSystemKeys.PhysicalKey F7 => PhysicalSystemKeys[118];
-            public PhysicalSystemKeys.PhysicalKey F8 => PhysicalSystemKeys[119];
-            public PhysicalSystemKeys.PhysicalKey F9 => PhysicalSystemKeys[120];
-            public PhysicalSystemKeys.PhysicalKey F10 => PhysicalSystemKeys[121];
-            public PhysicalSystemKeys.PhysicalKey F11 => PhysicalSystemKeys[122];
-            public PhysicalSystemKeys.PhysicalKey F12 => PhysicalSystemKeys[123];
-            public PhysicalSystemKeys.PhysicalKey F13 => PhysicalSystemKeys[124];
-            public PhysicalSystemKeys.PhysicalKey F14 => PhysicalSystemKeys[125];
-            public PhysicalSystemKeys.PhysicalKey F15 => PhysicalSystemKeys[126];
-            public PhysicalSystemKeys.PhysicalKey F16 => PhysicalSystemKeys[127];
-            public PhysicalSystemKeys.PhysicalKey F17 => PhysicalSystemKeys[128];
-            public PhysicalSystemKeys.PhysicalKey F18 => PhysicalSystemKeys[129];
-            public PhysicalSystemKeys.PhysicalKey F19 => PhysicalSystemKeys[130];
-            public PhysicalSystemKeys.PhysicalKey F20 => PhysicalSystemKeys[131];
-            public PhysicalSystemKeys.PhysicalKey F21 => PhysicalSystemKeys[132];
-            public PhysicalSystemKeys.PhysicalKey F22 => PhysicalSystemKeys[133];
-            public PhysicalSystemKeys.PhysicalKey F23 => PhysicalSystemKeys[134];
-            public PhysicalSystemKeys.PhysicalKey F24 => PhysicalSystemKeys[135];
-            public PhysicalSystemKeys.PhysicalKey NumLock => PhysicalSystemKeys[144];
-            public PhysicalSystemKeys.PhysicalKey Scroll => PhysicalSystemKeys[145];
-            public PhysicalSystemKeys.PhysicalKey LShiftKey => PhysicalSystemKeys[160];
-            public PhysicalSystemKeys.PhysicalKey RShiftKey => PhysicalSystemKeys[161];
-            public PhysicalSystemKeys.PhysicalKey LControlKey => PhysicalSystemKeys[162];
-            public PhysicalSystemKeys.PhysicalKey RControlKey => PhysicalSystemKeys[163];
-            public PhysicalSystemKeys.PhysicalKey LMenu => PhysicalSystemKeys[164];
-            public PhysicalSystemKeys.PhysicalKey RMenu => PhysicalSystemKeys[165];
-            public PhysicalSystemKeys.PhysicalKey BrowserBack => PhysicalSystemKeys[166];
-            public PhysicalSystemKeys.PhysicalKey BrowserForward => PhysicalSystemKeys[167];
-            public PhysicalSystemKeys.PhysicalKey BrowserRefresh => PhysicalSystemKeys[168];
-            public PhysicalSystemKeys.PhysicalKey BrowserStop => PhysicalSystemKeys[169];
-            public PhysicalSystemKeys.PhysicalKey BrowserSearch => PhysicalSystemKeys[170];
-            public PhysicalSystemKeys.PhysicalKey BrowserFavorites => PhysicalSystemKeys[171];
-            public PhysicalSystemKeys.PhysicalKey BrowserHome => PhysicalSystemKeys[172];
-            public PhysicalSystemKeys.PhysicalKey VolumeMute => PhysicalSystemKeys[173];
-            public PhysicalSystemKeys.PhysicalKey VolumeDown => PhysicalSystemKeys[174];
-            public PhysicalSystemKeys.PhysicalKey VolumeUp => PhysicalSystemKeys[175];
-            public PhysicalSystemKeys.PhysicalKey MediaNextTrack => PhysicalSystemKeys[176];
-            public PhysicalSystemKeys.PhysicalKey MediaPreviousTrack => PhysicalSystemKeys[177];
-            public PhysicalSystemKeys.PhysicalKey MediaStop => PhysicalSystemKeys[178];
-            public PhysicalSystemKeys.PhysicalKey MediaPlayPause => PhysicalSystemKeys[179];
-            public PhysicalSystemKeys.PhysicalKey LaunchMail => PhysicalSystemKeys[180];
-            public PhysicalSystemKeys.PhysicalKey SelectMedia => PhysicalSystemKeys[181];
-            public PhysicalSystemKeys.PhysicalKey LaunchApplication1 => PhysicalSystemKeys[182];
-            public PhysicalSystemKeys.PhysicalKey LaunchApplication2 => PhysicalSystemKeys[183];
-            public PhysicalSystemKeys.PhysicalKey Oem1 => PhysicalSystemKeys[186];
-            public PhysicalSystemKeys.PhysicalKey OemSemicolon => PhysicalSystemKeys[186];
-            public PhysicalSystemKeys.PhysicalKey Oemplus => PhysicalSystemKeys[187];
-            public PhysicalSystemKeys.PhysicalKey Oemcomma => PhysicalSystemKeys[188];
-            public PhysicalSystemKeys.PhysicalKey OemMinus => PhysicalSystemKeys[189];
-            public PhysicalSystemKeys.PhysicalKey OemPeriod => PhysicalSystemKeys[190];
-            public PhysicalSystemKeys.PhysicalKey OemQuestion => PhysicalSystemKeys[191];
-            public PhysicalSystemKeys.PhysicalKey Oem2 => PhysicalSystemKeys[191];
-            public PhysicalSystemKeys.PhysicalKey Oemtilde => PhysicalSystemKeys[192];
-            public PhysicalSystemKeys.PhysicalKey Oem3 => PhysicalSystemKeys[192];
-            public PhysicalSystemKeys.PhysicalKey Oem4 => PhysicalSystemKeys[219];
-            public PhysicalSystemKeys.PhysicalKey OemOpenBrackets => PhysicalSystemKeys[219];
-            public PhysicalSystemKeys.PhysicalKey OemPipe => PhysicalSystemKeys[220];
-            public PhysicalSystemKeys.PhysicalKey Oem5 => PhysicalSystemKeys[220];
-            public PhysicalSystemKeys.PhysicalKey Oem6 => PhysicalSystemKeys[221];
-            public PhysicalSystemKeys.PhysicalKey OemCloseBrackets => PhysicalSystemKeys[221];
-            public PhysicalSystemKeys.PhysicalKey Oem7 => PhysicalSystemKeys[222];
-            public PhysicalSystemKeys.PhysicalKey OemQuotes => PhysicalSystemKeys[222];
-            public PhysicalSystemKeys.PhysicalKey Oem8 => PhysicalSystemKeys[223];
-            public PhysicalSystemKeys.PhysicalKey Oem102 => PhysicalSystemKeys[226];
-            public PhysicalSystemKeys.PhysicalKey OemBackslash => PhysicalSystemKeys[226];
-            public PhysicalSystemKeys.PhysicalKey ProcessKey => PhysicalSystemKeys[229];
-            public PhysicalSystemKeys.PhysicalKey Packet => PhysicalSystemKeys[231];
-            public PhysicalSystemKeys.PhysicalKey Attn => PhysicalSystemKeys[246];
-            public PhysicalSystemKeys.PhysicalKey Crsel => PhysicalSystemKeys[247];
-            public PhysicalSystemKeys.PhysicalKey Exsel => PhysicalSystemKeys[248];
-            public PhysicalSystemKeys.PhysicalKey EraseEof => PhysicalSystemKeys[249];
-            public PhysicalSystemKeys.PhysicalKey Play => PhysicalSystemKeys[250];
-            public PhysicalSystemKeys.PhysicalKey Zoom => PhysicalSystemKeys[251];
-            public PhysicalSystemKeys.PhysicalKey NoName => PhysicalSystemKeys[252];
-            public PhysicalSystemKeys.PhysicalKey Pa1 => PhysicalSystemKeys[253];
-            public PhysicalSystemKeys.PhysicalKey OemClear => PhysicalSystemKeys[254];
+            public PhysicalSystemKey LButton => PhysicalSystemKeys[1];
+            public PhysicalSystemKey RButton => PhysicalSystemKeys[2];
+            public PhysicalSystemKey Cancel => PhysicalSystemKeys[3];
+            public PhysicalSystemKey MButton => PhysicalSystemKeys[4];
+            public PhysicalSystemKey XButton1 => PhysicalSystemKeys[5];
+            public PhysicalSystemKey XButton2 => PhysicalSystemKeys[6];
+            public PhysicalSystemKey Back => PhysicalSystemKeys[8];
+            public PhysicalSystemKey Tab => PhysicalSystemKeys[9];
+            public PhysicalSystemKey LineFeed => PhysicalSystemKeys[10];
+            public PhysicalSystemKey Clear => PhysicalSystemKeys[12];
+            public PhysicalSystemKey Enter => PhysicalSystemKeys[13];
+            public PhysicalSystemKey Return => PhysicalSystemKeys[13];
+            public PhysicalSystemKey ShiftKey => PhysicalSystemKeys[16];
+            public PhysicalSystemKey ControlKey => PhysicalSystemKeys[17];
+            public PhysicalSystemKey Menu => PhysicalSystemKeys[18];
+            public PhysicalSystemKey Pause => PhysicalSystemKeys[19];
+            public PhysicalSystemKey CapsLock => PhysicalSystemKeys[20];
+            public PhysicalSystemKey Capital => PhysicalSystemKeys[20];
+            public PhysicalSystemKey KanaMode => PhysicalSystemKeys[21];
+            public PhysicalSystemKey HangulMode => PhysicalSystemKeys[21];
+            public PhysicalSystemKey JunjaMode => PhysicalSystemKeys[23];
+            public PhysicalSystemKey FinalMode => PhysicalSystemKeys[24];
+            public PhysicalSystemKey KanjiMode => PhysicalSystemKeys[25];
+            public PhysicalSystemKey HanjaMode => PhysicalSystemKeys[25];
+            public PhysicalSystemKey Escape => PhysicalSystemKeys[27];
+            public PhysicalSystemKey IMEConvert => PhysicalSystemKeys[28];
+            public PhysicalSystemKey IMENonconvert => PhysicalSystemKeys[29];
+            public PhysicalSystemKey IMEAccept => PhysicalSystemKeys[30];
+            public PhysicalSystemKey IMEModeChange => PhysicalSystemKeys[31];
+            public PhysicalSystemKey Space => PhysicalSystemKeys[32];
+            public PhysicalSystemKey Prior => PhysicalSystemKeys[33];
+            public PhysicalSystemKey PageUp => PhysicalSystemKeys[33];
+            public PhysicalSystemKey Next => PhysicalSystemKeys[34];
+            public PhysicalSystemKey PageDown => PhysicalSystemKeys[34];
+            public PhysicalSystemKey End => PhysicalSystemKeys[35];
+            public PhysicalSystemKey Home => PhysicalSystemKeys[36];
+            public PhysicalSystemKey Left => PhysicalSystemKeys[37];
+            public PhysicalSystemKey Up => PhysicalSystemKeys[38];
+            public PhysicalSystemKey Right => PhysicalSystemKeys[39];
+            public PhysicalSystemKey Down => PhysicalSystemKeys[40];
+            public PhysicalSystemKey Select => PhysicalSystemKeys[41];
+            public PhysicalSystemKey Print => PhysicalSystemKeys[42];
+            public PhysicalSystemKey Execute => PhysicalSystemKeys[43];
+            public PhysicalSystemKey PrintScreen => PhysicalSystemKeys[44];
+            public PhysicalSystemKey Snapshot => PhysicalSystemKeys[44];
+            public PhysicalSystemKey Insert => PhysicalSystemKeys[45];
+            public PhysicalSystemKey Delete => PhysicalSystemKeys[46];
+            public PhysicalSystemKey Help => PhysicalSystemKeys[47];
+            public PhysicalSystemKey D0 => PhysicalSystemKeys[48];
+            public PhysicalSystemKey D1 => PhysicalSystemKeys[49];
+            public PhysicalSystemKey D2 => PhysicalSystemKeys[50];
+            public PhysicalSystemKey D3 => PhysicalSystemKeys[51];
+            public PhysicalSystemKey D4 => PhysicalSystemKeys[52];
+            public PhysicalSystemKey D5 => PhysicalSystemKeys[53];
+            public PhysicalSystemKey D6 => PhysicalSystemKeys[54];
+            public PhysicalSystemKey D7 => PhysicalSystemKeys[55];
+            public PhysicalSystemKey D8 => PhysicalSystemKeys[56];
+            public PhysicalSystemKey D9 => PhysicalSystemKeys[57];
+            public PhysicalSystemKey A => PhysicalSystemKeys[65];
+            public PhysicalSystemKey B => PhysicalSystemKeys[66];
+            public PhysicalSystemKey C => PhysicalSystemKeys[67];
+            public PhysicalSystemKey D => PhysicalSystemKeys[68];
+            public PhysicalSystemKey E => PhysicalSystemKeys[69];
+            public PhysicalSystemKey F => PhysicalSystemKeys[70];
+            public PhysicalSystemKey G => PhysicalSystemKeys[71];
+            public PhysicalSystemKey H => PhysicalSystemKeys[72];
+            public PhysicalSystemKey I => PhysicalSystemKeys[73];
+            public PhysicalSystemKey J => PhysicalSystemKeys[74];
+            public PhysicalSystemKey K => PhysicalSystemKeys[75];
+            public PhysicalSystemKey L => PhysicalSystemKeys[76];
+            public PhysicalSystemKey M => PhysicalSystemKeys[77];
+            public PhysicalSystemKey N => PhysicalSystemKeys[78];
+            public PhysicalSystemKey O => PhysicalSystemKeys[79];
+            public PhysicalSystemKey P => PhysicalSystemKeys[80];
+            public PhysicalSystemKey Q => PhysicalSystemKeys[81];
+            public PhysicalSystemKey R => PhysicalSystemKeys[82];
+            public PhysicalSystemKey S => PhysicalSystemKeys[83];
+            public PhysicalSystemKey T => PhysicalSystemKeys[84];
+            public PhysicalSystemKey U => PhysicalSystemKeys[85];
+            public PhysicalSystemKey V => PhysicalSystemKeys[86];
+            public PhysicalSystemKey W => PhysicalSystemKeys[87];
+            public PhysicalSystemKey X => PhysicalSystemKeys[88];
+            public PhysicalSystemKey Y => PhysicalSystemKeys[89];
+            public PhysicalSystemKey Z => PhysicalSystemKeys[90];
+            public PhysicalSystemKey LWin => PhysicalSystemKeys[91];
+            public PhysicalSystemKey RWin => PhysicalSystemKeys[92];
+            public PhysicalSystemKey Apps => PhysicalSystemKeys[93];
+            public PhysicalSystemKey Sleep => PhysicalSystemKeys[95];
+            public PhysicalSystemKey NumPad0 => PhysicalSystemKeys[96];
+            public PhysicalSystemKey NumPad1 => PhysicalSystemKeys[97];
+            public PhysicalSystemKey NumPad2 => PhysicalSystemKeys[98];
+            public PhysicalSystemKey NumPad3 => PhysicalSystemKeys[99];
+            public PhysicalSystemKey NumPad4 => PhysicalSystemKeys[100];
+            public PhysicalSystemKey NumPad5 => PhysicalSystemKeys[101];
+            public PhysicalSystemKey NumPad6 => PhysicalSystemKeys[102];
+            public PhysicalSystemKey NumPad7 => PhysicalSystemKeys[103];
+            public PhysicalSystemKey NumPad8 => PhysicalSystemKeys[104];
+            public PhysicalSystemKey NumPad9 => PhysicalSystemKeys[105];
+            public PhysicalSystemKey Multiply => PhysicalSystemKeys[106];
+            public PhysicalSystemKey Add => PhysicalSystemKeys[107];
+            public PhysicalSystemKey Separator => PhysicalSystemKeys[108];
+            public PhysicalSystemKey Subtract => PhysicalSystemKeys[109];
+            public PhysicalSystemKey Decimal => PhysicalSystemKeys[110];
+            public PhysicalSystemKey Divide => PhysicalSystemKeys[111];
+            public PhysicalSystemKey F1 => PhysicalSystemKeys[112];
+            public PhysicalSystemKey F2 => PhysicalSystemKeys[113];
+            public PhysicalSystemKey F3 => PhysicalSystemKeys[114];
+            public PhysicalSystemKey F4 => PhysicalSystemKeys[115];
+            public PhysicalSystemKey F5 => PhysicalSystemKeys[116];
+            public PhysicalSystemKey F6 => PhysicalSystemKeys[117];
+            public PhysicalSystemKey F7 => PhysicalSystemKeys[118];
+            public PhysicalSystemKey F8 => PhysicalSystemKeys[119];
+            public PhysicalSystemKey F9 => PhysicalSystemKeys[120];
+            public PhysicalSystemKey F10 => PhysicalSystemKeys[121];
+            public PhysicalSystemKey F11 => PhysicalSystemKeys[122];
+            public PhysicalSystemKey F12 => PhysicalSystemKeys[123];
+            public PhysicalSystemKey F13 => PhysicalSystemKeys[124];
+            public PhysicalSystemKey F14 => PhysicalSystemKeys[125];
+            public PhysicalSystemKey F15 => PhysicalSystemKeys[126];
+            public PhysicalSystemKey F16 => PhysicalSystemKeys[127];
+            public PhysicalSystemKey F17 => PhysicalSystemKeys[128];
+            public PhysicalSystemKey F18 => PhysicalSystemKeys[129];
+            public PhysicalSystemKey F19 => PhysicalSystemKeys[130];
+            public PhysicalSystemKey F20 => PhysicalSystemKeys[131];
+            public PhysicalSystemKey F21 => PhysicalSystemKeys[132];
+            public PhysicalSystemKey F22 => PhysicalSystemKeys[133];
+            public PhysicalSystemKey F23 => PhysicalSystemKeys[134];
+            public PhysicalSystemKey F24 => PhysicalSystemKeys[135];
+            public PhysicalSystemKey NumLock => PhysicalSystemKeys[144];
+            public PhysicalSystemKey Scroll => PhysicalSystemKeys[145];
+            public PhysicalSystemKey LShiftKey => PhysicalSystemKeys[160];
+            public PhysicalSystemKey RShiftKey => PhysicalSystemKeys[161];
+            public PhysicalSystemKey LControlKey => PhysicalSystemKeys[162];
+            public PhysicalSystemKey RControlKey => PhysicalSystemKeys[163];
+            public PhysicalSystemKey LMenu => PhysicalSystemKeys[164];
+            public PhysicalSystemKey RMenu => PhysicalSystemKeys[165];
+            public PhysicalSystemKey BrowserBack => PhysicalSystemKeys[166];
+            public PhysicalSystemKey BrowserForward => PhysicalSystemKeys[167];
+            public PhysicalSystemKey BrowserRefresh => PhysicalSystemKeys[168];
+            public PhysicalSystemKey BrowserStop => PhysicalSystemKeys[169];
+            public PhysicalSystemKey BrowserSearch => PhysicalSystemKeys[170];
+            public PhysicalSystemKey BrowserFavorites => PhysicalSystemKeys[171];
+            public PhysicalSystemKey BrowserHome => PhysicalSystemKeys[172];
+            public PhysicalSystemKey VolumeMute => PhysicalSystemKeys[173];
+            public PhysicalSystemKey VolumeDown => PhysicalSystemKeys[174];
+            public PhysicalSystemKey VolumeUp => PhysicalSystemKeys[175];
+            public PhysicalSystemKey MediaNextTrack => PhysicalSystemKeys[176];
+            public PhysicalSystemKey MediaPreviousTrack => PhysicalSystemKeys[177];
+            public PhysicalSystemKey MediaStop => PhysicalSystemKeys[178];
+            public PhysicalSystemKey MediaPlayPause => PhysicalSystemKeys[179];
+            public PhysicalSystemKey LaunchMail => PhysicalSystemKeys[180];
+            public PhysicalSystemKey SelectMedia => PhysicalSystemKeys[181];
+            public PhysicalSystemKey LaunchApplication1 => PhysicalSystemKeys[182];
+            public PhysicalSystemKey LaunchApplication2 => PhysicalSystemKeys[183];
+            public PhysicalSystemKey Oem1 => PhysicalSystemKeys[186];
+            public PhysicalSystemKey OemSemicolon => PhysicalSystemKeys[186];
+            public PhysicalSystemKey Oemplus => PhysicalSystemKeys[187];
+            public PhysicalSystemKey Oemcomma => PhysicalSystemKeys[188];
+            public PhysicalSystemKey OemMinus => PhysicalSystemKeys[189];
+            public PhysicalSystemKey OemPeriod => PhysicalSystemKeys[190];
+            public PhysicalSystemKey OemQuestion => PhysicalSystemKeys[191];
+            public PhysicalSystemKey Oem2 => PhysicalSystemKeys[191];
+            public PhysicalSystemKey Oemtilde => PhysicalSystemKeys[192];
+            public PhysicalSystemKey Oem3 => PhysicalSystemKeys[192];
+            public PhysicalSystemKey Oem4 => PhysicalSystemKeys[219];
+            public PhysicalSystemKey OemOpenBrackets => PhysicalSystemKeys[219];
+            public PhysicalSystemKey OemPipe => PhysicalSystemKeys[220];
+            public PhysicalSystemKey Oem5 => PhysicalSystemKeys[220];
+            public PhysicalSystemKey Oem6 => PhysicalSystemKeys[221];
+            public PhysicalSystemKey OemCloseBrackets => PhysicalSystemKeys[221];
+            public PhysicalSystemKey Oem7 => PhysicalSystemKeys[222];
+            public PhysicalSystemKey OemQuotes => PhysicalSystemKeys[222];
+            public PhysicalSystemKey Oem8 => PhysicalSystemKeys[223];
+            public PhysicalSystemKey Oem102 => PhysicalSystemKeys[226];
+            public PhysicalSystemKey OemBackslash => PhysicalSystemKeys[226];
+            public PhysicalSystemKey ProcessKey => PhysicalSystemKeys[229];
+            public PhysicalSystemKey Packet => PhysicalSystemKeys[231];
+            public PhysicalSystemKey Attn => PhysicalSystemKeys[246];
+            public PhysicalSystemKey Crsel => PhysicalSystemKeys[247];
+            public PhysicalSystemKey Exsel => PhysicalSystemKeys[248];
+            public PhysicalSystemKey EraseEof => PhysicalSystemKeys[249];
+            public PhysicalSystemKey Play => PhysicalSystemKeys[250];
+            public PhysicalSystemKey Zoom => PhysicalSystemKeys[251];
+            public PhysicalSystemKey NoName => PhysicalSystemKeys[252];
+            public PhysicalSystemKey Pa1 => PhysicalSystemKeys[253];
+            public PhysicalSystemKey OemClear => PhysicalSystemKeys[254];
 
             public PhysicalKeyDeclaration(PhysicalSingleThrowKeys singleThrowKeys, PhysicalSystemKeys systemKeys)
             {
@@ -542,7 +546,7 @@ namespace CreviceApp
         }
     }
 
-    class CustomContextManager : ContextManager<CustomEvaluationContext, CustomExecutionContext>
+    public class CustomContextManager : ContextManager<CustomEvaluationContext, CustomExecutionContext>
     {
         public Point CursorPosition { get; set; }
 
@@ -563,30 +567,53 @@ namespace CreviceApp
 
          */
     }
-
+    
     public class CustomRootElement : RootElement<CustomEvaluationContext, CustomExecutionContext>
     {
 
     }
 
-    class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
+    public class NullGestureMachine : CustomGestureMachine
+    {
+        public NullGestureMachine() : base(new CustomRootElement()) { }
+    }
+
+    public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
     {
         public CustomGestureMachine(CustomRootElement rootElement)
             : base(new GestureMachineConfig(), new CustomContextManager(), rootElement)
         {
             this.GestureCancelled += new GestureCancelledEventHandler((sender, e) => 
             {
-                // ExecuteInBackground(ctx, RestorePrimaryButtonClickEvent());
+                if (e.LastState.NormalEndTrigger is PhysicalDoubleThrowReleaseEvent evnt &&
+                    evnt.PhysicalKey is PhysicalSystemKey systemKey)
+                {
+                    var id = systemKey.KeyId; //これが取れるのでKeyを復元できる
+
+                    // ExecuteInBackground(ctx, RestorePrimaryButtonClickEvent());
+                    Verbose.Print("GestureCancelled");
+                }
             });
 
-            this.GestureTimeout += new GestureTimeoutEventHandler((sender, e) => 
+            this.GestureTimeout += new GestureTimeoutEventHandler((sender, e) =>
             {
-                // ExecuteInBackground(ctx, RestorePrimaryButtonDownEvent());
+                if (e.LastState.NormalEndTrigger is PhysicalDoubleThrowReleaseEvent evnt &&
+                    evnt.PhysicalKey is PhysicalSystemKey systemKey)
+                {
+                    var id = systemKey.KeyId; //これが取れるのでKeyを復元できる
+
+                    // ExecuteInBackground(ctx, RestorePrimaryButtonDownEvent());
+                    Verbose.Print("GestureTimeout");
+                }
             });
 
-
+            this.MachineReset += new MachineResetEventHandler((sender, e) => 
+            {
+                Verbose.Print("MachineReset");
+            });
         }
 
+        /*
         internal Action RestorePrimaryButtonPressEvent()
         {
             return () =>
@@ -640,5 +667,6 @@ namespace CreviceApp
                 }
             };
         }
+        */
     }
 }

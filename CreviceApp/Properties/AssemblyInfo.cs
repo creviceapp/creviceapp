@@ -7,12 +7,12 @@ using CommandLine;
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
-[assembly: AssemblyTitle("CreviceApp")]
+[assembly: AssemblyTitle("Crevice4")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Crevice")]
-[assembly: AssemblyProduct("CreviceApp")]
-[assembly: AssemblyCopyright("Copyright @ruby_U 2016 - 2017")]
+[assembly: AssemblyProduct("Crevice4")]
+[assembly: AssemblyCopyright("Copyright @ruby_U 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,7 +34,7 @@ using CommandLine;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.2.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 // 

@@ -161,54 +161,54 @@ namespace CreviceApp.App
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.Move, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.NullEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.LeftButtonDown, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.LeftButtonUp, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.RightButtonDown, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.RightButtonUp, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONDOWN:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.MiddleButtonDown, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONUP:
-                    return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.MiddleButtonUp, point));
+                    return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.WheelDown, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelDown.FireEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.WheelUp, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
                     if (data.mouseData.asXButton.isXButton1)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.X1ButtonDown, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.PressEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.X2ButtonDown, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.PressEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
                     if (data.mouseData.asXButton.isXButton1)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.X1ButtonUp, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.ReleaseEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.X2ButtonUp, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.ReleaseEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.WheelRight, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelRight.FireEvent, point));
                     }
                     else
                     {
-                        return Convert(reloadableGestureMachine.Instance.Input(Core.Def.Constant.WheelLeft, point));
+                        return Convert(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelLeft.FireEvent, point));
                     }
             }
             return WindowsHook.Result.Transfer;

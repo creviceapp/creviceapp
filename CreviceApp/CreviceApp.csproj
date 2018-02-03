@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CreviceApp</RootNamespace>
-    <AssemblyName>CreviceApp</AssemblyName>
+    <AssemblyName>Crevice4</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -161,14 +161,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.CLIOption.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Core.GestureMachineCandidate.cs" />
     <Compile Include="Core.ReloadableGestureMachine.cs" />
     <Compile Include="App.AppConfig.cs" />
     <Compile Include="Core.Config.GestureConfig.cs" />
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
-    <Compile Include="Core.Helper.cs" />
-    <Compile Include="Core.Stroke.cs" />
-    <Compile Include="Core.StrokeWatcher.cs" />
     <Compile Include="Core.UserScript.cs" />
     <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />

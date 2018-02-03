@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NeutralLanguage>en</NeutralLanguage>
+    <AssemblyName>Crevice.Core</AssemblyName>
+    <RootNamespace>Crevice.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -87,17 +87,22 @@ namespace CreviceApp.Core
             }
         }
 
-        protected FSM.GestureMachine Create(
+        protected CustomGestureMachine Create(
             Config.UserConfig userConfig,
             UserScriptExecutionContext ctx,
             UserScriptAssembly.Cache userScriptAssembly)
         {
             UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
-            var gestureDef = ctx.GetGestureDefinition();
-            return new FSM.GestureMachine(userConfig, gestureDef);
+            var gestureMachine = new CustomGestureMachine(ctx.Root);
+            gestureMachine.Config.GestureTimeout = userConfig.Gesture.Timeout;
+            gestureMachine.Config.StrokeDirectionChangeThreshold = userConfig.Gesture.StrokeDirectionChangeThreshold;
+            gestureMachine.Config.StrokeExtensionThreshold = userConfig.Gesture.StrokeExtensionThreshold;
+            gestureMachine.Config.StrokeStartThreshold = userConfig.Gesture.InitialStrokeThreshold;
+            gestureMachine.Config.StrokeWatchInterval = userConfig.Gesture.WatchInterval;
+            return gestureMachine;
         }
 
-        public FSM.GestureMachine CreateNew(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
+        public CustomGestureMachine CreateNew(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
         {
             return Create(userConfig, ctx, UserScriptAssemblyCache);
         }
@@ -123,7 +128,7 @@ namespace CreviceApp.Core
             get { return RestorationCache != null; }
         }
 
-        public FSM.GestureMachine Restore(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
+        public CustomGestureMachine Restore(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
         {
             return Create(userConfig, ctx, RestorationCache);
         }

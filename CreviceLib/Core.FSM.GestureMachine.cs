@@ -280,11 +280,6 @@ namespace Crevice.Core.FSM
         }
     }
 
-    public class NullGestureMachine : DefaultGestureMachine
-    {
-        public NullGestureMachine() : base(new DefaultRootElement()) { }
-    }
-
     public class InvalidReleaseEventManager
     {
         public class NaturalNumberCounter<T>

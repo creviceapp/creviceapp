@@ -11,14 +11,14 @@ namespace CreviceApp.Core
     using Crevice.Core.FSM;
 
     using GetGestureMachineResult =
-           Tuple<FSM.GestureMachine,
+           Tuple<CustomGestureMachine,
                System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
                Exception>;
 
     public class ReloadableGestureMachine : IDisposable
     {
-        private FSM.GestureMachine _instance;
-        public FSM.GestureMachine Instance
+        private CustomGestureMachine _instance;
+        public CustomGestureMachine Instance
         {
             get { return _instance; }
             private set
@@ -33,7 +33,7 @@ namespace CreviceApp.Core
         }
         public bool IsActivated()
         {
-            return Instance.GetType() != typeof(FSM.NullGestureMachine);
+            return Instance.GetType() != typeof(NullGestureMachine);
         }
 
         private readonly App.AppConfig appConfig;
@@ -41,7 +41,7 @@ namespace CreviceApp.Core
         public ReloadableGestureMachine(App.AppConfig appConfig)
         {
             this.appConfig = appConfig;
-            this.Instance = new FSM.NullGestureMachine();
+            this.Instance = new NullGestureMachine();
         }
 
         private GetGestureMachineResult GetGestureMachine()
@@ -154,8 +154,8 @@ namespace CreviceApp.Core
                                 }
                                 else
                                 {
-                                    var gestures = gestureMachine.GestureDefinition.Count();
-                                    var activatedMessage = string.Format("{0} Gestures Activated", gestures);
+                                    //var gestures = gestureMachine.GestureDefinition.Count();
+                                    var activatedMessage = string.Format("{0} Gestures Activated", "gestures");
 
                                     Instance = gestureMachine;
                                     if (runtimeError == null)
@@ -171,7 +171,7 @@ namespace CreviceApp.Core
                                         balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
                                         lastErrorMessage = runtimeError.ToString();
                                     }
-                                    appConfig.MainForm.UpdateTasktrayMessage("Gestures: {0}", gestures);
+                                    appConfig.MainForm.UpdateTasktrayMessage("Gestures: {0}", "gestures");
                                 }
                                 appConfig.MainForm.LastErrorMessage = lastErrorMessage;
                                 appConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);

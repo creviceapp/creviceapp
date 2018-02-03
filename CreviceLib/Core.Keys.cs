@@ -78,6 +78,7 @@ namespace Crevice.Core.Keys
      */
     using Crevice.Core.Events;
     
+    // keyType
     public abstract class KeyGroup
     {
         public abstract int KeyId { get; }
@@ -309,6 +310,8 @@ namespace Crevice.Core.Keys
             ReleaseEvent = new PhysicalDoubleThrowReleaseEvent(logicalKey, this);
         }
     }
+    
+    // todo このへんを直にPhysicalPressEventとしたほうがよさげ？
 
     public class PhysicalDoubleThrowPressEvent : PhysicalPressEvent
     {

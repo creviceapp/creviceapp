@@ -25,19 +25,20 @@ namespace CreviceApp.App
         {
             this.CLIOption = CLIOption;
             this.UserConfig = new Core.Config.UserConfig();
-            this.MainForm = new UI.MainForm(this);
+
             Directory.CreateDirectory(UserDirectory);
+
+            this.MainForm = new UI.MainForm(this);
         }
 
-        // %USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp
+        // %USERPROFILE%\\AppData\\Roaming\\Crevice4
         public string DefaultUserDirectory
         {
             get
             {
                 return Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "Crevice",
-                    "CreviceApp");
+                    "Crevice4");
             }
         }
 
