@@ -144,7 +144,7 @@ namespace Crevice.Core.DSL
                  DoubleThrowElements.Any(e => e.IsFull) ||
                  StrokeElements.Any(e => e.IsFull));
 
-        public readonly KeyGroup Key;
+        public readonly KeyType Key;
 
         public readonly PressEvent Trigger;
 

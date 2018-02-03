@@ -60,9 +60,9 @@ namespace CreviceLibTests
 
     public class TestEvents
     {
-        public static LogicalSingleThrowKeys LogicalSingleThrowKeys = new LogicalSingleThrowKeys(2);
-        public static LogicalDoubleThrowKeys LogicalDoubleThrowKeys = new LogicalDoubleThrowKeys(2);
-        public static PhysicalSingleThrowKeys PhysicalSingleThrowKeys = new PhysicalSingleThrowKeys(LogicalSingleThrowKeys);
-        public static PhysicalDoubleThrowKeys PhysicalDoubleThrowKeys = new PhysicalDoubleThrowKeys(LogicalDoubleThrowKeys);
+        public static LogicalSingleThrowKeySet LogicalSingleThrowKeys = new LogicalSingleThrowKeySet(2);
+        public static LogicalDoubleThrowKeySet LogicalDoubleThrowKeys = new LogicalDoubleThrowKeySet(2);
+        public static PhysicalSingleThrowKeySet PhysicalSingleThrowKeys = new PhysicalSingleThrowKeySet(LogicalSingleThrowKeys);
+        public static PhysicalDoubleThrowKeySet PhysicalDoubleThrowKeys = new PhysicalDoubleThrowKeySet(LogicalDoubleThrowKeys);
     }
 }

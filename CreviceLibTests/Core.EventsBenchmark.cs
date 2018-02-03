@@ -15,10 +15,10 @@ namespace CreviceLibTests
     [OrderProvider(SummaryOrderPolicy.FastestToSlowest)]
     public class EventsBenchmark
     {
-        public LogicalDoubleThrowKeys LogicalDoubleThrowKeys = new LogicalDoubleThrowKeys(100);
+        public LogicalDoubleThrowKeySet LogicalDoubleThrowKeys = new LogicalDoubleThrowKeySet(100);
 
         [Benchmark]
-        public LogicalDoubleThrowKeys Create_LogicalDoubleThrowKeys() => new LogicalDoubleThrowKeys(100);
+        public LogicalDoubleThrowKeySet Create_LogicalDoubleThrowKeys() => new LogicalDoubleThrowKeySet(100);
         
         [Benchmark]
         public PressEvent LogicalDoubleThrowKeys_PressEvent() => LogicalDoubleThrowKeys[0].PressEvent;

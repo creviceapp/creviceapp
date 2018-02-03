@@ -15,12 +15,12 @@ namespace CreviceApp
 
     using CreviceApp.WinAPI.Window.Impl;
 
-    public class LogicalSystemKeys : Keys<LogicalSystemKey> 
+    public class LogicalSystemKeySet : KeySet<LogicalSystemKey> 
     {
         public override LogicalSystemKey Create(int index)
             => new LogicalSystemKey(index);
 
-        public LogicalSystemKeys(int maxSize)
+        public LogicalSystemKeySet(int maxSize)
             : base(maxSize) { }
 
     }
@@ -29,18 +29,16 @@ namespace CreviceApp
     {
         public LogicalSystemKey(int keyId)
             : base(keyId) { }
-
-        // todo implicit opeartor to LogicalPressEvent
     }
 
-    public class PhysicalSystemKeys : Keys<PhysicalSystemKey>
+    public class PhysicalSystemKeySet : KeySet<PhysicalSystemKey>
     {
         public override PhysicalSystemKey Create(int index)
             => new PhysicalSystemKey(logicalKeys[index], index);
 
-        private LogicalSystemKeys logicalKeys;
+        private LogicalSystemKeySet logicalKeys;
 
-        public PhysicalSystemKeys(LogicalSystemKeys logicalKeys)
+        public PhysicalSystemKeySet(LogicalSystemKeySet logicalKeys)
             : base(logicalKeys.MaxSize)
         {
             this.logicalKeys = logicalKeys;
@@ -52,8 +50,6 @@ namespace CreviceApp
     {
         public PhysicalSystemKey(LogicalDoubleThrowKey logicalKey, int keyId)
             : base(logicalKey, keyId) { }
-
-        // todo implicit opeartor to PhysicalPressEvent
 
         // todo implicit operater to Keys, int   
     }
@@ -67,11 +63,11 @@ namespace CreviceApp
 
         private SupportedKeys()
         {
-            var logicalSingleThrowKeys = new LogicalSingleThrowKeys(10);
-            var physicalSingleThrowKeys = new PhysicalSingleThrowKeys(logicalSingleThrowKeys);
+            var logicalSingleThrowKeys = new LogicalSingleThrowKeySet(10);
+            var physicalSingleThrowKeys = new PhysicalSingleThrowKeySet(logicalSingleThrowKeys);
 
-            var logicalSystemKeys = new LogicalSystemKeys(255);
-            var physicalSystemKeys = new PhysicalSystemKeys(logicalSystemKeys);
+            var logicalSystemKeys = new LogicalSystemKeySet(255);
+            var physicalSystemKeys = new PhysicalSystemKeySet(logicalSystemKeys);
 
             logicalKeys = new LogicalKeyDeclaration(logicalSingleThrowKeys, logicalSystemKeys);
             physicalKeys = new PhysicalKeyDeclaration(physicalSingleThrowKeys, physicalSystemKeys);
@@ -83,8 +79,8 @@ namespace CreviceApp
 
         public class LogicalKeyDeclaration
         {
-            private readonly LogicalSingleThrowKeys LogicalSingleThrowKeys;
-            private readonly LogicalSystemKeys LogicalSystemKeys;
+            private readonly LogicalSingleThrowKeySet LogicalSingleThrowKeys;
+            private readonly LogicalSystemKeySet LogicalSystemKeys;
 
             public LogicalSingleThrowKey WheelUp => LogicalSingleThrowKeys[1];
             public LogicalSingleThrowKey WheelDown => LogicalSingleThrowKeys[2];
@@ -290,8 +286,8 @@ namespace CreviceApp
             public LogicalSystemKey OemClear => LogicalSystemKeys[254];
 
             public LogicalKeyDeclaration(
-                LogicalSingleThrowKeys singleThrowKeys,
-                LogicalSystemKeys logicalSystemKeys)
+                LogicalSingleThrowKeySet singleThrowKeys,
+                LogicalSystemKeySet logicalSystemKeys)
             {
                 LogicalSingleThrowKeys = singleThrowKeys;
                 LogicalSystemKeys = logicalSystemKeys;
@@ -300,8 +296,8 @@ namespace CreviceApp
 
         public class PhysicalKeyDeclaration
         {
-            private readonly PhysicalSingleThrowKeys PhysicalSingleThrowKeys;
-            private readonly PhysicalSystemKeys PhysicalSystemKeys;
+            private readonly PhysicalSingleThrowKeySet PhysicalSingleThrowKeys;
+            private readonly PhysicalSystemKeySet PhysicalSystemKeys;
 
             public readonly Crevice.Core.Events.NullEvent NullEvent = new Crevice.Core.Events.NullEvent();
 
@@ -508,7 +504,7 @@ namespace CreviceApp
             public PhysicalSystemKey Pa1 => PhysicalSystemKeys[253];
             public PhysicalSystemKey OemClear => PhysicalSystemKeys[254];
 
-            public PhysicalKeyDeclaration(PhysicalSingleThrowKeys singleThrowKeys, PhysicalSystemKeys systemKeys)
+            public PhysicalKeyDeclaration(PhysicalSingleThrowKeySet singleThrowKeys, PhysicalSystemKeySet systemKeys)
             {
                 PhysicalSingleThrowKeys = singleThrowKeys;
                 PhysicalSystemKeys = systemKeys;
@@ -580,31 +576,25 @@ namespace CreviceApp
 
     public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
     {
+        private readonly WinAPI.SendInput.SingleInputSender SingleInputSender = new WinAPI.SendInput.SingleInputSender();
+
+        private readonly TaskFactory UserActionTaskFactory = Task.Factory;
+
         public CustomGestureMachine(CustomRootElement rootElement)
             : base(new GestureMachineConfig(), new CustomContextManager(), rootElement)
         {
             this.GestureCancelled += new GestureCancelledEventHandler((sender, e) => 
             {
-                if (e.LastState.NormalEndTrigger is PhysicalDoubleThrowReleaseEvent evnt &&
-                    evnt.PhysicalKey is PhysicalSystemKey systemKey)
-                {
-                    var id = systemKey.KeyId; //これが取れるのでKeyを復元できる
-
-                    // ExecuteInBackground(ctx, RestorePrimaryButtonClickEvent());
-                    Verbose.Print("GestureCancelled");
-                }
+                var systemKey = e.LastState.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
+                ExecuteInBackground(RestorePrimaryButtonClickEvent(systemKey));
+                Verbose.Print("GestureCancelled");
             });
 
             this.GestureTimeout += new GestureTimeoutEventHandler((sender, e) =>
             {
-                if (e.LastState.NormalEndTrigger is PhysicalDoubleThrowReleaseEvent evnt &&
-                    evnt.PhysicalKey is PhysicalSystemKey systemKey)
-                {
-                    var id = systemKey.KeyId; //これが取れるのでKeyを復元できる
-
-                    // ExecuteInBackground(ctx, RestorePrimaryButtonDownEvent());
-                    Verbose.Print("GestureTimeout");
-                }
+                var systemKey = e.LastState.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
+                ExecuteInBackground(RestorePrimaryButtonPressEvent(systemKey));
+                Verbose.Print("GestureTimeout");
             });
 
             this.MachineReset += new MachineResetEventHandler((sender, e) => 
@@ -613,60 +603,61 @@ namespace CreviceApp
             });
         }
 
-        /*
-        internal Action RestorePrimaryButtonPressEvent()
+        protected internal void ExecuteInBackground(Action action)
+            => UserActionTaskFactory.StartNew(action);
+
+        internal Action RestorePrimaryButtonPressEvent(PhysicalSystemKey systemKey)
         {
             return () =>
             {
-                if (primaryEvent == Def.Constant.LeftButtonDown)
+                if (systemKey == SupportedKeys.PhysicalKeys.LeftButton)
                 {
-                    InputSender.LeftDown();
+                    SingleInputSender.LeftDown();
                 }
-                else if (primaryEvent == Def.Constant.MiddleButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.RightButton)
                 {
-                    InputSender.MiddleDown();
+                    SingleInputSender.RightDown();
                 }
-                else if (primaryEvent == Def.Constant.RightButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.MiddleButton)
                 {
-                    InputSender.RightDown();
+                    SingleInputSender.MiddleDown();
                 }
-                else if (primaryEvent == Def.Constant.X1ButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.X1Button)
                 {
-                    InputSender.X1Down();
+                    SingleInputSender.X1Down();
                 }
-                else if (primaryEvent == Def.Constant.X2ButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.X2Button)
                 {
-                    InputSender.X2Down();
+                    SingleInputSender.X2Down();
                 }
             };
         }
 
-        internal Action RestorePrimaryButtonClickEvent()
+        internal Action RestorePrimaryButtonClickEvent(PhysicalSystemKey systemKey)
         {
             return () =>
             {
-                if (primaryEvent == Def.Constant.LeftButtonDown)
+                if (systemKey == SupportedKeys.PhysicalKeys.LeftButton)
                 {
-                    InputSender.LeftClick();
+                    SingleInputSender.LeftClick();
                 }
-                else if (primaryEvent == Def.Constant.MiddleButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.RightButton)
                 {
-                    InputSender.MiddleClick();
+                    SingleInputSender.RightClick();
                 }
-                else if (primaryEvent == Def.Constant.RightButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.MiddleButton)
                 {
-                    InputSender.RightClick();
+                    SingleInputSender.MiddleClick();
                 }
-                else if (primaryEvent == Def.Constant.X1ButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.X1Button)
                 {
-                    InputSender.X1Click();
+                    SingleInputSender.X1Click();
                 }
-                else if (primaryEvent == Def.Constant.X2ButtonDown)
+                else if (systemKey == SupportedKeys.PhysicalKeys.X2Button)
                 {
-                    InputSender.X2Click();
+                    SingleInputSender.X2Click();
                 }
             };
         }
-        */
     }
 }
