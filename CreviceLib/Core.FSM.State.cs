@@ -4,7 +4,11 @@ using System.Text;
 
 namespace Crevice.Core.FSM
 {
+    using System.Linq;
     using Crevice.Core.Events;
+    using Crevice.Core.Context;
+    using Crevice.Core.DSL;
+    using Crevice.Core.Stroke;
 
     public interface IState
     {
@@ -29,5 +33,29 @@ namespace Crevice.Core.FSM
         {
             return this;
         }
+
+        public static bool CanTransition<TExecContext>(
+            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            where TExecContext : ExecutionContext
+            => doubleThrowElements.Any(d =>
+                    d.DoExecutors.Any() ||
+                    d.StrokeElements.Any(ds => ds.IsFull) ||
+                    d.SingleThrowElements.Any(ds => ds.IsFull) ||
+                    d.DoubleThrowElements.Any(dd => dd.IsFull));
+
+        public static bool HasPressExecutors<TExecContext>(
+            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            where TExecContext : ExecutionContext
+            => doubleThrowElements.Any(d => d.PressExecutors.Any());
+
+        public static bool HasDoExecutors<TExecContext>(
+            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            where TExecContext : ExecutionContext
+            => doubleThrowElements.Any(d => d.DoExecutors.Any());
+
+        public static bool HasReleaseExecutors<TExecContext>(
+            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            where TExecContext : ExecutionContext
+            => doubleThrowElements.Any(d => d.ReleaseExecutors.Any());
     }
 }

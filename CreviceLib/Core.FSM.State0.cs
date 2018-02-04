@@ -30,7 +30,6 @@ namespace Crevice.Core.FSM
         
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
-            // Todo: benchmark switch type expression
             if (evnt is PhysicalFireEvent fireEvent &&
                     (SingleThrowTriggers.Contains(fireEvent) ||
                      SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
@@ -52,14 +51,30 @@ namespace Crevice.Core.FSM
                 if (doubleThrowElements.Any())
                 {
                     Machine.ContextManager.ExecutePressExecutors(evalContext, doubleThrowElements);
-                    var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                        Machine,
-                        evalContext,
-                        CreateHistory(pressEvent),
-                        doubleThrowElements,
-                        canCancel: true
-                        );
-                    return (EventIsConsumed: true, NextState: nextState);
+                    if (CanTransition(doubleThrowElements))
+                    {
+                        var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                            Machine,
+                            evalContext,
+                            CreateHistory(pressEvent),
+                            doubleThrowElements,
+                            canCancel: true);
+                        return (EventIsConsumed: true, NextState: nextState);
+                    }
+                    return (EventIsConsumed: true, NextState: this);
+                }
+            }
+            else if (evnt is PhysicalReleaseEvent releaseEvent &&
+                        (DoubleThrowTriggers.Contains(releaseEvent.Opposition) ||
+                         DoubleThrowTriggers.Contains(releaseEvent.Opposition.LogicalNormalized)))
+            {
+                var evalContext = Machine.ContextManager.CreateEvaluateContext();
+                var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, releaseEvent.Opposition);
+                if (HasPressExecutors(doubleThrowElements) || 
+                    HasReleaseExecutors(doubleThrowElements))
+                {
+                    Machine.ContextManager.ExecuteReleaseExecutors(evalContext, doubleThrowElements);
+                    return (EventIsConsumed: true, NextState: this);
                 }
             }
             return base.Input(evnt);
@@ -89,6 +104,7 @@ namespace Crevice.Core.FSM
                         select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
+        // Todo: add Get as the prefix and cache it
         public IReadOnlyCollection<FireEvent> SingleThrowTriggers
             => (from w in RootElement.WhenElements
                 where w.IsFull

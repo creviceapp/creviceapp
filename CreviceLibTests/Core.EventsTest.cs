@@ -15,8 +15,8 @@ namespace CreviceLibTests
         {
             var nullEvent0 = new NullEvent();
             var nullEvent1 = new NullEvent();
-            Assert.IsTrue(nullEvent0.GetHashCode() == 0);
-            Assert.IsTrue(nullEvent1.GetHashCode() == 0);
+            Assert.IsTrue(nullEvent0.GetHashCode() == -1);
+            Assert.IsTrue(nullEvent1.GetHashCode() == -1);
             Assert.IsTrue((nullEvent0 == nullEvent1) == false);
             Assert.IsTrue(nullEvent0.Equals(nullEvent1) == false);
             Assert.IsTrue(nullEvent1.Equals(nullEvent0) == false);

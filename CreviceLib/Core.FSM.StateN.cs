@@ -38,7 +38,9 @@ namespace Crevice.Core.FSM
 
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
-            if (evnt is PhysicalFireEvent fireEvent)
+            if (evnt is PhysicalFireEvent fireEvent &&
+                    (SingleThrowTriggers.Contains(fireEvent) ||
+                     SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
             {
                 var singleThrowElements = GetSingleThrowElements(fireEvent);
                 if (singleThrowElements.Any())
@@ -53,24 +55,30 @@ namespace Crevice.Core.FSM
                     return (EventIsConsumed: true, NextState: notCancellableCopyState);
                 }
             }
-            else if (evnt is PhysicalPressEvent pressEvent)
+            else if (evnt is PhysicalPressEvent pressEvent &&
+                        (DoubleThrowTriggers.Contains(pressEvent) ||
+                         DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
             {
                 var doubleThrowElements = GetDoubleThrowElements(pressEvent);
                 if (doubleThrowElements.Any())
                 {
                     Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
-                    var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                        Machine,
-                        Ctx,
-                        CreateHistory(History, pressEvent, this),
-                        doubleThrowElements,
-                        canCancel: CanCancel);
-                    return (EventIsConsumed: true, NextState: nextState);
+                    if (CanTransition(doubleThrowElements))
+                    {
+                        var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                            Machine,
+                            Ctx,
+                            CreateHistory(History, pressEvent, this),
+                            doubleThrowElements,
+                            canCancel: CanCancel);
+                        return (EventIsConsumed: true, NextState: nextState);
+                    }
+                    return (EventIsConsumed: true, NextState: this);
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
             {
-                if (IsNormalEndTrigger(releaseEvent))
+                if (releaseEvent == NormalEndTrigger)
                 {
                     var strokes = Machine.StrokeWatcher.GetStorkes();
                     if (strokes.Any())
@@ -81,7 +89,6 @@ namespace Crevice.Core.FSM
                     }
                     else if (HasPressExecutors || HasDoExecutors || HasReleaseExecutors)
                     {
-                        //normal end
                         Machine.ContextManager.ExecuteDoExecutors(Ctx, DoubleThrowElements);
                         Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
                     }
@@ -94,9 +101,20 @@ namespace Crevice.Core.FSM
                 }
                 else if (AbnormalEndTriggers.Contains(releaseEvent))
                 {
-                    var (oldState, skippedReleaseEvents) = FindStateFromHistory(releaseEvent);
+                    var (pastState, skippedReleaseEvents) = FindStateFromHistory(releaseEvent);
                     Machine.invalidReleaseEvents.IgnoreNext(skippedReleaseEvents);
-                    return (EventIsConsumed: true, NextState: oldState);
+                    return (EventIsConsumed: true, NextState: pastState);
+                }
+                else if (DoubleThrowTriggers.Contains(releaseEvent.Opposition) ||
+                         DoubleThrowTriggers.Contains(releaseEvent.Opposition.LogicalNormalized))
+                {
+                    var doubleThrowElements = GetDoubleThrowElements(releaseEvent.Opposition);
+                    if (HasPressExecutors(doubleThrowElements) ||
+                        HasReleaseExecutors(doubleThrowElements))
+                    {
+                        Machine.ContextManager.ExecuteReleaseExecutors(Ctx, doubleThrowElements);
+                        return (EventIsConsumed: true, NextState: this);
+                    }
                 }
             }
             return base.Input(evnt);
@@ -122,11 +140,11 @@ namespace Crevice.Core.FSM
 
         public IState LastState => History.Last().Item2;
 
-        public bool HasPressExecutors => DoubleThrowElements.Any(d => d.PressExecutors.Any());
+        public bool HasPressExecutors => HasPressExecutors(DoubleThrowElements);
 
-        public bool HasDoExecutors => DoubleThrowElements.Any(d => d.DoExecutors.Any());
+        public bool HasDoExecutors => HasDoExecutors(DoubleThrowElements);
 
-        public bool HasReleaseExecutors => DoubleThrowElements.Any(d => d.ReleaseExecutors.Any());
+        public bool HasReleaseExecutors => HasReleaseExecutors(DoubleThrowElements);
 
         public IReadOnlyList<(PhysicalReleaseEvent, IState)> CreateHistory(
             IReadOnlyList<(PhysicalReleaseEvent, IState)> history,
@@ -138,9 +156,6 @@ namespace Crevice.Core.FSM
             return newHistory;
         }
 
-        public bool IsNormalEndTrigger(PhysicalReleaseEvent releaseEvent)
-            => releaseEvent == NormalEndTrigger;
-
         public IReadOnlyCollection<PhysicalReleaseEvent> AbnormalEndTriggers
             => new HashSet<PhysicalReleaseEvent>(from h in History.Reverse().Skip(1) select h.Item1);
 
@@ -151,8 +166,6 @@ namespace Crevice.Core.FSM
             var skippedReleaseEvents = History.Skip(nextHistory.Count()).Select(t => t.Item1).ToList();
             return (foundState, skippedReleaseEvents);
         }
-
-        // このあたりを扱いやすい型に変換してユーザーサイドで取れるように
 
         public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(PhysicalPressEvent triggerEvent)
             => (from d in DoubleThrowElements
@@ -168,19 +181,38 @@ namespace Crevice.Core.FSM
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
-                    from s in d.StrokeElements
-                    where s.IsFull && s.Strokes.SequenceEqual(strokes)
-                    select s))
+                    from ds in d.StrokeElements
+                    where ds.IsFull && ds.Strokes.SequenceEqual(strokes)
+                    select ds))
                 .Aggregate(new List<StrokeElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
         public IReadOnlyList<SingleThrowElement<TExecContext>> GetSingleThrowElements(PhysicalFireEvent triggerEvent)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
-                    from s in d.SingleThrowElements
-                    where s.IsFull && (s.Trigger.Equals(triggerEvent) ||
-                                       s.Trigger.Equals(triggerEvent.LogicalNormalized))
-                    select s))
+                    from ds in d.SingleThrowElements
+                    where ds.IsFull && (ds.Trigger.Equals(triggerEvent) ||
+                                       ds.Trigger.Equals(triggerEvent.LogicalNormalized))
+                    select ds))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+
+        // Todo: add Get as the prefix and cache it
+        public IReadOnlyCollection<FireEvent> SingleThrowTriggers
+            => (from d in DoubleThrowElements
+                where d.IsFull
+                select (
+                    from ds in d.SingleThrowElements
+                    where ds.IsFull
+                    select ds.Trigger))
+                .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
+
+        public IReadOnlyCollection<PressEvent> DoubleThrowTriggers
+            => (from ds in DoubleThrowElements
+                where ds.IsFull
+                select (
+                    from dd in ds.DoubleThrowElements
+                    where dd.IsFull
+                    select dd.Trigger))
+                .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });
     }
 }
