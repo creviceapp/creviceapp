@@ -19,6 +19,13 @@ namespace Crevice.Core.FSM
 
     public abstract class State : IState
     {
+        public int Depth { get; }
+
+        public State(int depth)
+        {
+            Depth = depth;
+        }
+
         public virtual (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
             return (EventIsConsumed: false, NextState: this);

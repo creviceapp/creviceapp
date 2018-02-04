@@ -18,21 +18,32 @@ namespace Crevice.Core.FSM
         public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
         public readonly RootElement<TEvalContext, TExecContext> RootElement;
 
+        public readonly IReadOnlyCollection<FireEvent> SingleThrowTriggers;
+        public bool IsSingleThrowTrigger(PhysicalFireEvent fireEvent)
+            => SingleThrowTriggers.Contains(fireEvent) ||
+               SingleThrowTriggers.Contains(fireEvent.LogicalNormalized);
+
+        public readonly IReadOnlyCollection<PressEvent> DoubleThrowTriggers;
+        public bool IsDoubleThrowTrigger(PhysicalPressEvent pressEvent)
+            => DoubleThrowTriggers.Contains(pressEvent) ||
+               DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized);
+
         public State0(
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             RootElement<TEvalContext, TExecContext> rootElement)
+            : base(depth: 0)
         {
             Machine = machine;
             RootElement = rootElement;
+
+            // Caches.
+            SingleThrowTriggers = GetSingleThrowTriggers(RootElement);
+            DoubleThrowTriggers = GetDoubleThrowTriggers(RootElement);
         }
 
-        // Historyのインターフェイスを共通させる？
-        
         public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
         {
-            if (evnt is PhysicalFireEvent fireEvent &&
-                    (SingleThrowTriggers.Contains(fireEvent) ||
-                     SingleThrowTriggers.Contains(fireEvent.LogicalNormalized)))
+            if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
                 var evalContext = Machine.ContextManager.CreateEvaluateContext();
                 var singleThrowElements = GetActiveSingleThrowElements(evalContext, fireEvent);
@@ -42,9 +53,7 @@ namespace Crevice.Core.FSM
                     return (EventIsConsumed: true, NextState: this);
                 }
             }
-            else if (evnt is PhysicalPressEvent pressEvent &&
-                        (DoubleThrowTriggers.Contains(pressEvent) ||
-                         DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized)))
+            else if (evnt is PhysicalPressEvent pressEvent && IsDoubleThrowTrigger(pressEvent))
             {
                 var evalContext = Machine.ContextManager.CreateEvaluateContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
@@ -58,20 +67,19 @@ namespace Crevice.Core.FSM
                             evalContext,
                             CreateHistory(pressEvent),
                             doubleThrowElements,
+                            depth: Depth + 1,
                             canCancel: true);
                         return (EventIsConsumed: true, NextState: nextState);
                     }
                     return (EventIsConsumed: true, NextState: this);
                 }
             }
-            else if (evnt is PhysicalReleaseEvent releaseEvent &&
-                        (DoubleThrowTriggers.Contains(releaseEvent.Opposition) ||
-                         DoubleThrowTriggers.Contains(releaseEvent.Opposition.LogicalNormalized)))
+            else if (evnt is PhysicalReleaseEvent releaseEvent && IsDoubleThrowTrigger(releaseEvent.Opposition))
             {
                 var evalContext = Machine.ContextManager.CreateEvaluateContext();
                 var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, releaseEvent.Opposition);
-                if (HasPressExecutors(doubleThrowElements) || 
-                    HasReleaseExecutors(doubleThrowElements))
+                
+                if (HasPressExecutors(doubleThrowElements) || HasReleaseExecutors(doubleThrowElements))
                 {
                     Machine.ContextManager.ExecuteReleaseExecutors(evalContext, doubleThrowElements);
                     return (EventIsConsumed: true, NextState: this);
@@ -104,9 +112,8 @@ namespace Crevice.Core.FSM
                         select s))
                 .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        // Todo: add Get as the prefix and cache it
-        public IReadOnlyCollection<FireEvent> SingleThrowTriggers
-            => (from w in RootElement.WhenElements
+        private static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(RootElement<TEvalContext, TExecContext> rootElement)
+            => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
                     from s in w.SingleThrowElements
@@ -114,8 +121,8 @@ namespace Crevice.Core.FSM
                     select s.Trigger))
                 .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
-        public IReadOnlyCollection<PressEvent> DoubleThrowTriggers
-            => (from w in RootElement.WhenElements
+        private static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(RootElement<TEvalContext, TExecContext> rootElement)
+            => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
                     from d in w.DoubleThrowElements
