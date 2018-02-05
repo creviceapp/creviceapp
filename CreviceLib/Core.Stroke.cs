@@ -8,6 +8,8 @@ namespace Crevice.Core.Stroke
 {
     using System.Collections.Concurrent;
     using System.Drawing;
+    using System.Threading.Tasks;
+    using Crevice.Core.FSM;
 
     public enum StrokeDirection
     {
@@ -176,6 +178,7 @@ namespace Crevice.Core.Stroke
 
     public class StrokeWatcher : QueuedPointProcessor, IDisposable
     {
+        internal readonly IStrokeCallbackManager Callbacks;
         internal readonly TaskFactory taskFactory;
         internal readonly int initialStrokeThreshold;
         internal readonly int strokeDirectionChangeThreshold;
@@ -186,12 +189,14 @@ namespace Crevice.Core.Stroke
         internal readonly Task task;
 
         public StrokeWatcher(
+            IStrokeCallbackManager callbacks,
             TaskFactory taskFactory,
             int initialStrokeThreshold,
             int strokeDirectionChangeThreshold,
             int strokeExtensionThreshold,
             int watchInterval) : base(watchInterval)
         {
+            this.Callbacks = callbacks;
             this.taskFactory = taskFactory;
             this.initialStrokeThreshold = initialStrokeThreshold;
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
@@ -224,9 +229,7 @@ namespace Crevice.Core.Stroke
                         {
                             if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
                             {
-                                // OnStroke~
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
-                                // Verbose.Print("Stroke[0]: {0}", Enum.GetName(typeof(StrokeDirection), stroke.Direction));
                                 strokes.Add(stroke);
                             }
                         }
@@ -236,12 +239,11 @@ namespace Crevice.Core.Stroke
                             var res = stroke.Input(buffer);
                             if (stroke != res)
                             {
-                                // OnStroke~
-                                // Verbose.Print("Stroke[{0}]: {1}", strokes.Count, Enum.GetName(typeof(StrokeDirection), res.Direction));
                                 strokes.Add(res);
                             }
-                            buffer.Clear();
                         }
+                        buffer.Clear();
+                        Callbacks.OnStrokeUpdated(strokes);
                     }
                 }
                 catch (OperationCanceledException) { }
@@ -258,7 +260,6 @@ namespace Crevice.Core.Stroke
             GC.SuppressFinalize(this);
             IsDisposed = true;
             queue.CompleteAdding();
-            // Verbose.Print("StrokeWatcher(HashCode: 0x{0:X}) was released.", GetHashCode());
         }
 
         ~StrokeWatcher() => Dispose();

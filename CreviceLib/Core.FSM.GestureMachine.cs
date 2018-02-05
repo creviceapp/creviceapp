@@ -12,20 +12,6 @@ namespace Crevice.Core.FSM
     using Crevice.Core.Stroke;
     using Crevice.Core.Helpers;
 
-    public class GestureMachineConfig
-    {
-        // ms
-        public int GestureTimeout { get; set; } = 1000;
-        // px
-        public int StrokeStartThreshold { get; set; } = 10;
-        // px
-        public int StrokeDirectionChangeThreshold { get; set; } = 20;
-        // px
-        public int StrokeExtensionThreshold { get; set; } = 10;
-        // ms
-        public int StrokeWatchInterval { get; set; } = 10;
-    }
-
     public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
         : IIsDisposed, IDisposable
         where TConfig : GestureMachineConfig
@@ -34,14 +20,14 @@ namespace Crevice.Core.FSM
         where TExecContext : ExecutionContext
     {
         public readonly TConfig Config;
+        public readonly CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> CallbackManager;
         public readonly TContextManager ContextManager;
-        public readonly RootElement<TEvalContext, TExecContext> RootElement;
 
         protected readonly object lockObject = new object();
 
         private readonly System.Timers.Timer gestureTimeoutTimer = new System.Timers.Timer();
 
-        internal readonly InvalidReleaseEventManager invalidReleaseEvents = new InvalidReleaseEventManager();
+        internal readonly EventCounter<PhysicalReleaseEvent> invalidEvents = new EventCounter<PhysicalReleaseEvent>();
 
         public StrokeWatcher StrokeWatcher { get; internal set; }
 
@@ -55,6 +41,7 @@ namespace Crevice.Core.FSM
                 if (currentState != value)
                 {
                     ResetStrokeWatcher();
+                    CallbackManager.OnStrokeReset();
                     if (value is State0<TConfig, TContextManager, TEvalContext, TExecContext>)
                     {
                         StopGestureTimeoutTimer();
@@ -65,8 +52,7 @@ namespace Crevice.Core.FSM
                     }
                     var lastState = currentState;
                     currentState = value;
-
-                    OnStateChanged(new StateChangedEventArgs(lastState, currentState));
+                    CallbackManager.OnStateChanged(lastState, currentState);
                 }
             }
         }
@@ -76,15 +62,15 @@ namespace Crevice.Core.FSM
 
         public GestureMachine(
             TConfig config,
+            CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callback,
             TContextManager contextManager,
             RootElement<TEvalContext, TExecContext> rootElement)
         {
             Config = config;
+            CallbackManager = callback;
             ContextManager = contextManager;
-            RootElement = rootElement;
 
             SetupGestureTimeoutTimer();
-
             CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
         }
 
@@ -103,9 +89,9 @@ namespace Crevice.Core.FSM
                 {
                     return false;
                 }
-                else if (evnt is ReleaseEvent releaseEvent && invalidReleaseEvents[releaseEvent] > 0)
+                else if (evnt is PhysicalReleaseEvent releaseEvent && invalidEvents[releaseEvent] > 0)
                 {
-                    invalidReleaseEvents.CountDown(releaseEvent);
+                    invalidEvents.CountDown(releaseEvent);
                     return true;
                 }
 
@@ -138,6 +124,7 @@ namespace Crevice.Core.FSM
 
         private StrokeWatcher CreateStrokeWatcher()
             => new StrokeWatcher(
+                this.CallbackManager,
                 StrokeWatcherTaskFactory,
                 Config.StrokeStartThreshold,
                 Config.StrokeDirectionChangeThreshold,
@@ -179,7 +166,7 @@ namespace Crevice.Core.FSM
                     if (CurrentState != state)
                     {
                         CurrentState = state;
-                        OnGestureTimeout(new GestureTimeoutEventArgs(lastState));
+                        CallbackManager.OnGestureTimeout(lastState);
                     }
                 }
             }
@@ -201,82 +188,9 @@ namespace Crevice.Core.FSM
                     }
                     CurrentState = state;
                 }
-                OnMachineReset(new MachineResetEventArgs(lastState));
+                CallbackManager.OnMachineReset(lastState);
             }
         }
-
-        // StateChanged
-        public class StateChangedEventArgs : EventArgs
-        {
-            public readonly IState LastState;
-            public readonly IState CurrentState;
-
-            public StateChangedEventArgs(IState lastState, IState currentState)
-            {
-                this.LastState = lastState;
-                this.CurrentState = currentState;
-            }
-        }
-
-        public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
-
-        public event StateChangedEventHandler StateChanged;
-
-        internal virtual void OnStateChanged(StateChangedEventArgs e) => StateChanged?.Invoke(this, e);
-
-        // StrokeReset
-        // StrokeUpdated
-
-        // GestureCancelled
-        public class GestureCancelledEventArgs : EventArgs
-        {
-            public readonly StateN<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
-
-            public GestureCancelledEventArgs(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
-            {
-                this.LastState = stateN;
-            }
-        }
-
-        public delegate void GestureCancelledEventHandler(object sender, GestureCancelledEventArgs e);
-
-        public event GestureCancelledEventHandler GestureCancelled;
-
-        internal virtual void OnGestureCancelled(GestureCancelledEventArgs e) => GestureCancelled?.Invoke(this, e);
-
-        // GestureTimeout
-        public class GestureTimeoutEventArgs : EventArgs
-        {
-            public readonly StateN<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
-
-            public GestureTimeoutEventArgs(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
-            {
-                this.LastState = stateN;
-            }
-        }
-
-        public delegate void GestureTimeoutEventHandler(object sender, GestureTimeoutEventArgs e);
-
-        public event GestureTimeoutEventHandler GestureTimeout;
-
-        internal virtual void OnGestureTimeout(GestureTimeoutEventArgs e) => GestureTimeout?.Invoke(this, e);
-
-        // MachineReset
-        public class MachineResetEventArgs : EventArgs
-        {
-            public readonly IState LastState;
-
-            public MachineResetEventArgs(IState states)
-            {
-                this.LastState = states;
-            }
-        }
-
-        public delegate void MachineResetEventHandler(object sender, MachineResetEventArgs e);
-
-        public event MachineResetEventHandler MachineReset;
-
-        internal virtual void OnMachineReset(MachineResetEventArgs e) => MachineReset?.Invoke(this, e);
 
         public bool IsDisposed { get; private set; } = false;
 
@@ -295,58 +209,5 @@ namespace Crevice.Core.FSM
         {
             Dispose();
         }
-    }
-
-    public class InvalidReleaseEventManager
-    {
-        public class NaturalNumberCounter<T>
-        {
-            private readonly Dictionary<T, int> Dictionary = new Dictionary<T, int>();
-
-            public int this[T key]
-            {
-                get
-                {
-                    return Dictionary.TryGetValue(key, out int count) ? count : 0;
-                }
-                set
-                {
-                    if (value < 0)
-                    {
-                        throw new InvalidOperationException("n >= 0");
-                    }
-                    Dictionary[key] = value;
-                }
-            }
-
-            public void CountDown(T key)
-            {
-                Dictionary[key] = this[key] - 1;
-            }
-
-            public void CountUp(T key)
-            {
-                Dictionary[key] = this[key] + 1;
-            }
-        }
-
-        private readonly NaturalNumberCounter<ReleaseEvent> InvalidReleaseEvents = new NaturalNumberCounter<ReleaseEvent>();
-
-        public int this[ReleaseEvent key]
-        {
-            get => InvalidReleaseEvents[key];
-        }
-
-        public void IgnoreNext(ReleaseEvent releaseEvent) => InvalidReleaseEvents.CountUp(releaseEvent);
-
-        public void IgnoreNext(IEnumerable<ReleaseEvent> releaseEvents)
-        {
-            foreach (var releaseEvent in releaseEvents)
-            {
-                IgnoreNext(releaseEvent);
-            }
-        }
-
-        public void CountDown(ReleaseEvent key) => InvalidReleaseEvents.CountDown(key);
     }
 }

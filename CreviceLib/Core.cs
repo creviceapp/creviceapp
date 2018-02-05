@@ -45,6 +45,11 @@ namespace Crevice.Core
     using Crevice.Core.Context;
     using Crevice.Core.FSM;
 
+    public class DefaultGestureMachineConfig : GestureMachineConfig
+    {
+
+    }
+
     public class DefaultRootElement : DSL.RootElement<EvaluationContext, ExecutionContext>
     {
 
@@ -59,9 +64,14 @@ namespace Crevice.Core
             => new ExecutionContext();
     }
 
+    class DefaultCallbackManager : CallbackManager<GestureMachineConfig, DefaultContextManager, EvaluationContext, ExecutionContext>
+    {
+
+    }
+
     public class DefaultGestureMachine : GestureMachine<GestureMachineConfig, DefaultContextManager, EvaluationContext, ExecutionContext>
     {
         public DefaultGestureMachine(DefaultRootElement rootElement)
-            : base(new GestureMachineConfig(), new DefaultContextManager(), rootElement) { }
+            : base(new DefaultGestureMachineConfig(), new DefaultCallbackManager(), new DefaultContextManager(), rootElement) { }
     }
 }

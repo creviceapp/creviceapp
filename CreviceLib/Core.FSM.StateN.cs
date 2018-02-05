@@ -120,14 +120,14 @@ namespace Crevice.Core.FSM
                     }
                     else if (CanCancel)
                     {
-                        Machine.OnGestureCancelled(new GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>.GestureCancelledEventArgs(this));
+                        Machine.CallbackManager.OnGestureCancelled(this);
                     }
                     return (EventIsConsumed: true, NextState: LastState);
                 }
                 else if (IsAbnormalEndTrigger(releaseEvent))
                 {
                     var (pastState, skippedReleaseEvents) = FindStateFromHistory(releaseEvent);
-                    Machine.invalidReleaseEvents.IgnoreNext(skippedReleaseEvents);
+                    Machine.invalidEvents.IgnoreNext(skippedReleaseEvents);
                     return (EventIsConsumed: true, NextState: pastState);
                 }
                 else if (IsDoubleThrowTrigger(releaseEvent.Opposition))
@@ -162,7 +162,7 @@ namespace Crevice.Core.FSM
 
         public override IState Reset()
         {
-            Machine.invalidReleaseEvents.IgnoreNext(NormalEndTrigger);
+            Machine.invalidEvents.IgnoreNext(NormalEndTrigger);
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }

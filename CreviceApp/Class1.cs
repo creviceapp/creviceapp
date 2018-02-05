@@ -595,50 +595,35 @@ namespace CreviceApp
 
     }
 
-    public class NullGestureMachine : CustomGestureMachine
+    public class CustomCallbackManager : CallbackManager<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
     {
-        public NullGestureMachine() : base(new CustomRootElement()) { }
-    }
-
-    public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
-    {
-        private readonly WinAPI.SendInput.SingleInputSender SingleInputSender = new WinAPI.SendInput.SingleInputSender();
-
         private readonly TaskFactory SystemKeyRestorationTaskFactory = Task.Factory;
 
-        public CustomGestureMachine(CustomRootElement rootElement)
-            : base(new GestureMachineConfig(), new CustomContextManager(), rootElement)
+        private readonly WinAPI.SendInput.SingleInputSender SingleInputSender = new WinAPI.SendInput.SingleInputSender();
+
+        public override void OnGestureCancelled(
+            StateN<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext> stateN)
         {
-            this.GestureCancelled += new GestureCancelledEventHandler((sender, e) => 
-            {
-                var systemKey = e.LastState.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
-                ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvent(systemKey));
-                Verbose.Print("GestureCancelled");
-            });
-
-            this.GestureTimeout += new GestureTimeoutEventHandler((sender, e) =>
-            {
-                var systemKey = e.LastState.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
-                ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvent(systemKey));
-                Verbose.Print("GestureTimeout");
-            });
-
-            this.MachineReset += new MachineResetEventHandler((sender, e) => 
-            {
-                Verbose.Print("MachineReset");
-            });
+            Verbose.Print("GestureCancelled");
+            var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
+            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvent(systemKey));
+            base.OnGestureCancelled(stateN);
         }
 
-        public override bool Input(IPhysicalEvent evnt, Point? point)
+        public override void OnGestureTimeout(
+            StateN<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext> stateN)
         {
-            lock (lockObject)
-            {
-                if (point.HasValue)
-                {
-                    ContextManager.CursorPosition = point.Value;
-                }
-                return base.Input(evnt, point);
-            }
+            Verbose.Print("GestureTimeout");
+            var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
+            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvent(systemKey));
+            base.OnGestureTimeout(stateN);
+        }
+
+        public override void OnMachineReset(
+            IState state)
+        {
+            Verbose.Print("MachineReset");
+            base.OnMachineReset(state);
         }
 
         protected internal void ExecuteInBackground(TaskFactory taskFactory, Action action)
@@ -650,7 +635,7 @@ namespace CreviceApp
             {
                 if (systemKey == SupportedKeys.PhysicalKeys.None)
                 {
-                    
+
                 }
                 else if (systemKey == SupportedKeys.PhysicalKeys.LeftButton)
                 {
@@ -715,6 +700,32 @@ namespace CreviceApp
                         .Send();
                 }
             };
+        }
+    }
+
+    public class NullGestureMachine : CustomGestureMachine
+    {
+        public NullGestureMachine() : base(new CustomRootElement()) { }
+    }
+
+    public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
+    {
+        public CustomGestureMachine(CustomRootElement rootElement)
+            : base(new GestureMachineConfig(), new CustomCallbackManager(), new CustomContextManager(), rootElement)
+        {
+
+        }
+
+        public override bool Input(IPhysicalEvent evnt, Point? point)
+        {
+            lock (lockObject)
+            {
+                if (point.HasValue)
+                {
+                    ContextManager.CursorPosition = point.Value;
+                }
+                return base.Input(evnt, point);
+            }
         }
     }
 }

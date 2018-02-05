@@ -8,10 +8,14 @@ namespace CreviceLibTests
     using Crevice.Core.Context;
     using Crevice.Core.Keys;
     using Crevice.Core.FSM;
+    using Crevice.Core.Stroke;
 
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
 
-    class TestGestureMachineConfig : GestureMachineConfig { }
+    class TestGestureMachineConfig : GestureMachineConfig
+    {
+
+    }
 
     class TestContextManager : ContextManager<EvaluationContext, ExecutionContext>
     {
@@ -22,49 +26,129 @@ namespace CreviceLibTests
             => new ExecutionContext();
     }
 
-    class TestGestureMachine : GestureMachine<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>
+    class TestCallbackManager : CallbackManager<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>
     {
-        public TestGestureMachine(TestRootElement rootElement) 
-            : base(new TestGestureMachineConfig(), new TestContextManager(),  rootElement) { }
+        public readonly bool EnableStrokeResetCallback;
+        public readonly bool EnableStrokeUpdatedCallback;
+        public readonly bool EnableStateChangedCallback;
+        public readonly bool EnableGestureTimeoutCallback;
+        public readonly bool EnableGestureCancelledCallback;
+        public readonly bool EnableMachineResetCallback;
 
-        public System.Threading.CountdownEvent OnStateChangedCDE = new System.Threading.CountdownEvent(1);
+        public TestCallbackManager(
+            bool enableStrokeResetCallback = false,
+            bool enableStrokeUpdatedCallback = false,
+            bool enableStateChangedCallback = false,
+            bool enableGestureTimeoutCallback = false,
+            bool enableGestureCancelledCallback = false,
+            bool enableMachineResetCallback = false)
+        {
+            EnableStrokeResetCallback = enableStrokeResetCallback;
+            EnableStrokeUpdatedCallback = enableStrokeUpdatedCallback;
+            EnableStateChangedCallback = enableStateChangedCallback;
+            EnableGestureTimeoutCallback = enableGestureTimeoutCallback;
+            EnableGestureCancelledCallback = enableGestureCancelledCallback;
+            EnableMachineResetCallback = enableMachineResetCallback;
+        }
+
+        public readonly System.Threading.CountdownEvent OnStrokeResetCDE = new System.Threading.CountdownEvent(1);
+        public int OnStrokeResetCallCount { get; private set; } = 0;
+
+        public override void OnStrokeReset()
+        {
+            if (EnableStrokeResetCallback)
+            {
+                OnStrokeResetCallCount += 1;
+                OnStrokeResetCDE.Signal();
+                base.OnStrokeReset();
+            }
+        }
+
+        public readonly System.Threading.CountdownEvent OnStrokeUpdatedCDE = new System.Threading.CountdownEvent(1);
+        public int OnStrokeUpdatedCallCount { get; private set; } = 0;
+
+        public override void OnStrokeUpdated(IReadOnlyList<Stroke> strokes)
+        {
+            if (EnableStrokeUpdatedCallback)
+            {
+                OnStateChangedCallCount += 1;
+                OnStateChangedCDE.Signal();
+                base.OnStrokeUpdated(strokes);
+            }
+        }
+
+        public readonly System.Threading.CountdownEvent OnStateChangedCDE = new System.Threading.CountdownEvent(1);
         public int OnStateChangedCallCount { get; private set; } = 0;
 
-        internal override void OnStateChanged(StateChangedEventArgs e)
+        public override void OnStateChanged(
+            IState lastState, IState currentState)
         {
-            OnStateChangedCallCount += 1;
-            OnStateChangedCDE.Signal();
-            base.OnStateChanged(e);
+            if (EnableStateChangedCallback)
+            {
+                OnStateChangedCallCount += 1;
+                OnStateChangedCDE.Signal();
+                base.OnStateChanged(lastState, currentState);
+            }
         }
 
-        public System.Threading.CountdownEvent OnGestureTimeoutCDE = new System.Threading.CountdownEvent(1);
+        public readonly System.Threading.CountdownEvent OnGestureTimeoutCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureTimeoutCallCount { get; private set; } = 0;
 
-        internal override void OnGestureTimeout(GestureTimeoutEventArgs e)
+        public override void OnGestureTimeout(
+            StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> stateN)
         {
-            OnGestureTimeoutCallCount += 1;
-            OnGestureTimeoutCDE.Signal();
-            base.OnGestureTimeout(e);
+            if (EnableGestureTimeoutCallback)
+            {
+                OnGestureTimeoutCallCount += 1;
+                OnGestureTimeoutCDE.Signal();
+                base.OnGestureTimeout(stateN);
+            }
         }
 
-        public System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
+        public readonly System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureCancelledCallCount { get; private set; } = 0;
 
-        internal override void OnGestureCancelled(GestureCancelledEventArgs e)
+        public override void OnGestureCancelled(
+            StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> stateN)
         {
-            OnGestureCancelledCallCount += 1;
-            OnGestureCancelledCDE.Signal();
-            base.OnGestureCancelled(e);
+            if (EnableGestureCancelledCallback)
+            {
+                OnGestureCancelledCallCount += 1;
+                OnGestureCancelledCDE.Signal();
+                base.OnGestureCancelled(stateN);
+            }
         }
 
-        public System.Threading.CountdownEvent OnMachineResetCDE = new System.Threading.CountdownEvent(1);
+        public readonly System.Threading.CountdownEvent OnMachineResetCDE = new System.Threading.CountdownEvent(1);
         public int OnMachineResetCallCount { get; private set; } = 0;
 
-        internal override void OnMachineReset(MachineResetEventArgs e)
+        public override void OnMachineReset(
+            IState state)
         {
-            OnMachineResetCallCount += 1;
-            OnMachineResetCDE.Signal();
-            base.OnMachineReset(e);
+            if (EnableMachineResetCallback)
+            {
+                OnMachineResetCallCount += 1;
+                OnMachineResetCDE.Signal();
+                base.OnMachineReset(state);
+            }
+        }
+    }
+
+    class TestGestureMachine : GestureMachine<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>
+    {
+        public TestGestureMachine(
+            TestRootElement rootElement)
+            : this(rootElement, new TestCallbackManager())
+        {
+
+        }
+
+        public TestGestureMachine(
+            TestRootElement rootElement,
+            TestCallbackManager callbackManger)
+            : base(new TestGestureMachineConfig(), callbackManger, new TestContextManager(),  rootElement)
+        {
+
         }
     }
 

@@ -165,6 +165,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.StrokeTest.cs" />
     <Compile Include="Core.EventsBenchmark.cs" />
     <Compile Include="Core.FSM.GestureMachineTest.cs" />
     <Compile Include="Core.FSM.StateNTest.cs" />
