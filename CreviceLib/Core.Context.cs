@@ -6,15 +6,14 @@ namespace Crevice.Core.Context
 {
     using System.Linq;
     using Crevice.Core.DSL;
-
-    public class Context { }
-    public class EvaluationContext : Context { }
-    public class ExecutionContext : Context { }
+    
+    public class EvaluationContext { }
+    public class ExecutionContext  { }
 
     public delegate bool EvaluateAction<in T>(T ctx);
     public delegate void ExecuteAction<in T>(T ctx);
 
-    public class ContextManager<TEvalContext, TExecContext>
+    public abstract class ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
@@ -24,10 +23,10 @@ namespace Crevice.Core.Context
         public virtual TExecContext CreateExecutionContext(TEvalContext evaluationContext)
             => throw new NotImplementedException();
 
-        public virtual bool EvaluateWhenEvaluator(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
+        public virtual bool Evaluate(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
             => whenElement.WhenEvaluator(evalContext);
 
-        public virtual void ExecuteExcutor(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
+        public virtual void Execute(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
             => executeAction(execContext);
 
         public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
@@ -39,7 +38,7 @@ namespace Crevice.Core.Context
                 {
                     foreach (var executor in element.PressExecutors)
                     {
-                        ExecuteExcutor(execContext, executor);
+                        Execute(execContext, executor);
                     }
                 }
             }
@@ -54,7 +53,7 @@ namespace Crevice.Core.Context
                 {
                     foreach (var executor in element.DoExecutors)
                     {
-                        ExecuteExcutor(execContext, executor);
+                        Execute(execContext, executor);
                     }
                 }
             }
@@ -69,7 +68,7 @@ namespace Crevice.Core.Context
                 {
                     foreach (var executor in element.DoExecutors)
                     {
-                        ExecuteExcutor(execContext, executor);
+                        Execute(execContext, executor);
                     }
                 }
             }
@@ -84,7 +83,7 @@ namespace Crevice.Core.Context
                 {
                     foreach (var executor in element.DoExecutors)
                     {
-                        ExecuteExcutor(execContext, executor);
+                        Execute(execContext, executor);
                     }
                 }
             }
@@ -99,7 +98,7 @@ namespace Crevice.Core.Context
                 {
                     foreach (var executor in element.ReleaseExecutors)
                     {
-                        ExecuteExcutor(execContext, executor);
+                        Execute(execContext, executor);
                     }
                 }
             }

@@ -7,8 +7,4 @@
     <RootNamespace>Crevice.Core</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NLog" Version="4.4.12" />
-  </ItemGroup>
-
 </Project>

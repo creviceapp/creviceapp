@@ -25,7 +25,7 @@ namespace Crevice.Core.FSM
         // ms
         public int StrokeWatchInterval { get; set; } = 10;
     }
-
+    
     public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
         : IIsDisposed, IDisposable
         where TConfig : GestureMachineConfig
@@ -68,8 +68,8 @@ namespace Crevice.Core.FSM
             }
         }
 
-        public virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
-        public virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
+        internal virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
+        internal virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
 
         public GestureMachine(
             TConfig config,

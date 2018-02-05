@@ -95,7 +95,7 @@ namespace Crevice.Core.FSM
         public IReadOnlyList<DoubleThrowElement<TExecContext>> 
             GetActiveDoubleThrowElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
             => (from w in RootElement.WhenElements
-                where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
+                where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
                 select (from d in w.DoubleThrowElements
                         where d.IsFull && (d.Trigger.Equals(triggerEvent)  ||
                                            d.Trigger.Equals(triggerEvent.LogicalNormalized))
@@ -105,7 +105,7 @@ namespace Crevice.Core.FSM
         public IReadOnlyList<SingleThrowElement<TExecContext>> 
             GetActiveSingleThrowElements(TEvalContext ctx, PhysicalFireEvent triggerEvent)
             => (from w in RootElement.WhenElements
-                where w.IsFull && Machine.ContextManager.EvaluateWhenEvaluator(ctx, w)
+                where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
                 select (from s in w.SingleThrowElements
                         where s.IsFull && (s.Trigger.Equals(triggerEvent) ||
                                            s.Trigger.Equals(triggerEvent.LogicalNormalized))

@@ -322,6 +322,7 @@ namespace CreviceApp
             public PhysicalSystemKey X1Button => PhysicalSystemKeySet[5];
             public PhysicalSystemKey X2Button => PhysicalSystemKeySet[6];
 
+            // todo this[] に
             public PhysicalSystemKey VirtualKey(int virtualKey) => PhysicalSystemKeySet[virtualKey];
 
             public PhysicalSystemKey None => PhysicalSystemKeySet[0];
@@ -560,16 +561,33 @@ namespace CreviceApp
         public override CustomExecutionContext CreateExecutionContext(CustomEvaluationContext evaluationContext)
             => new CustomExecutionContext(evaluationContext, CursorPosition);
 
-        /*
-         override
+        public override bool Evaluate(
+            CustomEvaluationContext evalContext,
+            WhenElement<CustomEvaluationContext, CustomExecutionContext> whenElement)
+        {
+            var task = Task.Factory.StartNew(() => 
+            {
+                return whenElement.WhenEvaluator(evalContext);
+            });
+            try
+            {
+                return task.Wait(20);
+            }
+            catch(Exception)
+            {
+                return false;
+            }
+        }
 
-        public virtual bool EvaluateWhenEvaluator(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
-            => whenElement.WhenEvaluator(evalContext);
-
-        public virtual void ExecuteExcutor(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
-            => executeAction(execContext);
-
-         */
+        public override void Execute(
+            CustomExecutionContext execContext, 
+            ExecuteAction<CustomExecutionContext> executeAction)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                executeAction(execContext);
+            });
+        }
     }
     
     public class CustomRootElement : RootElement<CustomEvaluationContext, CustomExecutionContext>
