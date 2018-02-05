@@ -43,6 +43,8 @@ namespace CreviceApp.App
             }
         }
 
+        private readonly Crevice.Core.Events.NullEvent nullEvent = new Crevice.Core.Events.NullEvent();
+
         private readonly LowLevelKeyboardHook keyboardHook;
         private readonly LowLevelMouseHook mouseHook;
         protected readonly AppConfig appConfig;
@@ -160,7 +162,7 @@ namespace CreviceApp.App
                 return WindowsHook.Result.Transfer;
             }
 
-            var key = SupportedKeys.PhysicalKeys.PhysicalSystemKeySet[(int)keyCode];
+            var key = SupportedKeys.PhysicalKeys[(int)keyCode];
 
             switch (evnt)
             {
@@ -206,7 +208,7 @@ namespace CreviceApp.App
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.NullEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(nullEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
                     return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:
