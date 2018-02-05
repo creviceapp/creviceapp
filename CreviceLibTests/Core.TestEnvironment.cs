@@ -27,6 +27,16 @@ namespace CreviceLibTests
         public TestGestureMachine(TestRootElement rootElement) 
             : base(new TestGestureMachineConfig(), new TestContextManager(),  rootElement) { }
 
+        public System.Threading.CountdownEvent OnStateChangedCDE = new System.Threading.CountdownEvent(1);
+        public int OnStateChangedCallCount { get; private set; } = 0;
+
+        internal override void OnStateChanged(StateChangedEventArgs e)
+        {
+            OnStateChangedCallCount += 1;
+            OnStateChangedCDE.Signal();
+            base.OnStateChanged(e);
+        }
+
         public System.Threading.CountdownEvent OnGestureTimeoutCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureTimeoutCallCount { get; private set; } = 0;
 

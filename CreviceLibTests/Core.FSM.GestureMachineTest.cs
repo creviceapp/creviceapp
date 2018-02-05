@@ -210,6 +210,74 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
+        public void OnStateChangedTest()
+        {
+            {
+                var root = new TestRootElement();
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .Do((ctx) => { });
+                using (var gm = new TestGestureMachine(root))
+                {
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestState0, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 1);
+
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestStateN, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 2);
+
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestState0, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 3);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                        .On(TestEvents.LogicalDoubleThrowKeys[1])
+                        .Do((ctx) => { });
+                using (var gm = new TestGestureMachine(root))
+                {
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestState0, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 1);
+
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestStateN, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 2);
+
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestStateN, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 3);
+
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestStateN, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 4);
+                    
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    Assert.AreEqual(gm.OnStateChangedCDE.Wait(1000), true);
+                    gm.OnStateChangedCDE.Reset();
+                    Assert.AreEqual(gm.CurrentState is TestState0, true);
+                    Assert.AreEqual(gm.OnStateChangedCallCount, 5);
+                }
+            }
+        }
+
+        [TestMethod]
         public void OnGestureCancelledTest()
         {
             {

@@ -25,7 +25,7 @@ namespace Crevice.Core.FSM
         // ms
         public int StrokeWatchInterval { get; set; } = 10;
     }
-    
+
     public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
         : IIsDisposed, IDisposable
         where TConfig : GestureMachineConfig
@@ -45,14 +45,14 @@ namespace Crevice.Core.FSM
 
         public StrokeWatcher StrokeWatcher { get; internal set; }
 
-        private IState _currentState = null;
+        private IState currentState = null;
         public IState CurrentState
         {
-            get => _currentState;
+            get => currentState;
 
             internal set
             {
-                if (_currentState != value)
+                if (currentState != value)
                 {
                     ResetStrokeWatcher();
                     if (value is State0<TConfig, TContextManager, TEvalContext, TExecContext>)
@@ -63,7 +63,10 @@ namespace Crevice.Core.FSM
                     {
                         ResetGestureTimeoutTimer();
                     }
-                    _currentState = value;
+                    var lastState = currentState;
+                    currentState = value;
+
+                    OnStateChanged(new StateChangedEventArgs(lastState, currentState));
                 }
             }
         }
@@ -100,8 +103,7 @@ namespace Crevice.Core.FSM
                 {
                     return false;
                 }
-                
-                if (evnt is ReleaseEvent releaseEvent && invalidReleaseEvents[releaseEvent] > 0)
+                else if (evnt is ReleaseEvent releaseEvent && invalidReleaseEvents[releaseEvent] > 0)
                 {
                     invalidReleaseEvents.CountDown(releaseEvent);
                     return true;
@@ -204,7 +206,23 @@ namespace Crevice.Core.FSM
         }
 
         // StateChanged
-        //      でStateが来たときに扱いやすいように
+        public class StateChangedEventArgs : EventArgs
+        {
+            public readonly IState LastState;
+            public readonly IState CurrentState;
+
+            public StateChangedEventArgs(IState lastState, IState currentState)
+            {
+                this.LastState = lastState;
+                this.CurrentState = currentState;
+            }
+        }
+
+        public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
+
+        public event StateChangedEventHandler StateChanged;
+
+        internal virtual void OnStateChanged(StateChangedEventArgs e) => StateChanged?.Invoke(this, e);
 
         // StrokeReset
         // StrokeUpdated
