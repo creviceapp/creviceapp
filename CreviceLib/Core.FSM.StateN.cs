@@ -88,13 +88,7 @@ namespace Crevice.Core.FSM
                 {
                     Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
 
-                    if (CanTransition(doubleThrowElements) ||
-
-                        // When the oppsition of given `PhysicalPressEvent` is already shown as the end trigger 
-                        // in current context, `StateN` should transit to the next `StateN` so that the opposition
-                        // to be treated correctly, otherwise, the opposition would be taken wrongly as an end trigger of 
-                        // this or any ohther previous `State0` or `StateN`.
-                        IsEndTrigger(pressEvent.Opposition))
+                    if (CanTransition(doubleThrowElements))
                     {
                         var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                             Machine,
