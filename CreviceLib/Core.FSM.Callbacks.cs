@@ -158,9 +158,9 @@ namespace Crevice.Core.FSM
         {
             public readonly IState LastState;
 
-            public MachineResetEventArgs(IState states)
+            public MachineResetEventArgs(IState lastState)
             {
-                LastState = states;
+                LastState = lastState;
             }
         }
 

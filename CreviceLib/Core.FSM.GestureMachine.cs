@@ -104,7 +104,6 @@ namespace Crevice.Core.FSM
         private void SetupGestureTimeoutTimer()
         {
             gestureTimeoutTimer.Elapsed += new System.Timers.ElapsedEventHandler(TryTimeout);
-            gestureTimeoutTimer.Interval = Config.GestureTimeout;
             gestureTimeoutTimer.AutoReset = false;
         }
 
@@ -116,8 +115,11 @@ namespace Crevice.Core.FSM
         private void ResetGestureTimeoutTimer()
         {
             gestureTimeoutTimer.Stop();
-            gestureTimeoutTimer.Interval = Config.GestureTimeout;
-            gestureTimeoutTimer.Start();
+            if (Config.GestureTimeout > 0)
+            {
+                gestureTimeoutTimer.Interval = Config.GestureTimeout;
+                gestureTimeoutTimer.Start();
+            }
         }
 
         private void ReleaseGestureTimeoutTimer() => LazyRelease(gestureTimeoutTimer);

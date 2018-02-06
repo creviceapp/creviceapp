@@ -34,9 +34,9 @@ namespace Crevice.Core.Stroke
             int strokeExtensionThreshold,
             StrokeDirection direction)
         {
-            this.Direction = direction;
-            this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
-            this.StrokeExtensionThreshold = strokeExtensionThreshold;
+            Direction = direction;
+            StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            StrokeExtensionThreshold = strokeExtensionThreshold;
         }
 
         public Stroke(
@@ -44,9 +44,9 @@ namespace Crevice.Core.Stroke
             int strokeExtensionThreshold,
             IReadOnlyList<Point> input)
         {
-            this.Direction = NextDirection(GetAngle(input.First(), input.Last()));
-            this.StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
-            this.StrokeExtensionThreshold = strokeExtensionThreshold;
+            Direction = NextDirection(GetAngle(input.First(), input.Last()));
+            StrokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
+            StrokeExtensionThreshold = strokeExtensionThreshold;
             Absorb(input);
         }
 
@@ -140,7 +140,7 @@ namespace Crevice.Core.Stroke
 
         private bool MustBeProcessed(int currentTickCount)
         {
-            if (WatchInterval == 0)
+            if (WatchInterval <= 0)
             {
                 return true;
             }
@@ -231,6 +231,8 @@ namespace Crevice.Core.Stroke
                             {
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
                                 strokes.Add(stroke);
+                                buffer.Clear();
+                                Callbacks.OnStrokeUpdated(strokes);
                             }
                         }
                         else
@@ -241,9 +243,9 @@ namespace Crevice.Core.Stroke
                             {
                                 strokes.Add(res);
                             }
+                            buffer.Clear();
+                            Callbacks.OnStrokeUpdated(strokes);
                         }
-                        buffer.Clear();
-                        Callbacks.OnStrokeUpdated(strokes);
                     }
                 }
                 catch (OperationCanceledException) { }

@@ -9,13 +9,11 @@ namespace CreviceLibTests
     using Crevice.Core.Keys;
     using Crevice.Core.FSM;
     using Crevice.Core.Stroke;
-
+    
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
 
     class TestGestureMachineConfig : GestureMachineConfig
-    {
-
-    }
+    { }
 
     class TestContextManager : ContextManager<EvaluationContext, ExecutionContext>
     {
@@ -71,8 +69,8 @@ namespace CreviceLibTests
         {
             if (EnableStrokeUpdatedCallback)
             {
-                OnStateChangedCallCount += 1;
-                OnStateChangedCDE.Signal();
+                OnStrokeUpdatedCallCount += 1;
+                OnStrokeUpdatedCDE.Signal();
                 base.OnStrokeUpdated(strokes);
             }
         }
@@ -139,17 +137,13 @@ namespace CreviceLibTests
         public TestGestureMachine(
             TestRootElement rootElement)
             : this(rootElement, new TestCallbackManager())
-        {
-
-        }
+        { }
 
         public TestGestureMachine(
             TestRootElement rootElement,
             TestCallbackManager callbackManger)
             : base(new TestGestureMachineConfig(), callbackManger, new TestContextManager(),  rootElement)
-        {
-
-        }
+        { }
     }
 
     public class TestEvents
