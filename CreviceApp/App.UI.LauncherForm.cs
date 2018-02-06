@@ -18,6 +18,7 @@ namespace CreviceApp.App.UI
         public LauncherForm(AppConfig AppConfig)
         {
             this.AppConfig = AppConfig;
+            this.Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
         }
 

@@ -69,7 +69,7 @@ namespace CreviceApp.Tests
             var sender = new SingleInputSender();
             var list = new List<LowLevelMouseHook.Event>();
             var hook = new LowLevelMouseHook((evnt, data) => {
-                if (data.fromCreviceApp)
+                if (data.FromCreviceApp)
                 {
                     list.Add(evnt);
                     return LowLevelMouseHook.Result.Cancel;

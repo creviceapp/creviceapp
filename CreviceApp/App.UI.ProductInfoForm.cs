@@ -20,6 +20,7 @@ namespace CreviceApp.App.UI
         public ProductInfoForm(CLIOption.Result cliOption)
         {
             this.cliOption = cliOption;
+            this.Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
         }
 

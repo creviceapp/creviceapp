@@ -8,6 +8,7 @@ namespace CreviceLibTests
     using Crevice.Core.Events;
     using Crevice.Core.Keys;
 
+    /*
     using BenchmarkDotNet.Running;
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Order;
@@ -34,4 +35,5 @@ namespace CreviceLibTests
             BenchmarkRunner.Run<EventsBenchmark>();
         }
     }
+    */
 }

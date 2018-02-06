@@ -15,6 +15,8 @@ namespace Crevice.Core.DSL
         public abstract bool IsFull { get; }
     }
 
+    // Todo: Clone interface
+
     /* RootElement
      * 
      * .When() -> new WhenElement

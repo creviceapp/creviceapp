@@ -25,7 +25,7 @@ namespace CreviceApp
 
         private static string GetBaseTemporaryDirectory()
         {
-            return Path.Combine(Path.GetTempPath(), "Crevice3Test");
+            return Path.Combine(Path.GetTempPath(), "Crevice4Test");
         }
 
         private static string CreateTemporaryTestDirectory([CallerMemberName] string memberName = "")
@@ -46,14 +46,14 @@ namespace CreviceApp
         public void DefaultUserDirectoryTest()
         {
             var appConfig = new AppConfig();
-            Assert.IsTrue(appConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
+            Assert.IsTrue(appConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
         }
 
         [TestMethod()]
         public void UserScriptFile0Test()
         {
             var appConfig = new AppConfig();
-            Assert.IsTrue(appConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\default.csx"));
+            Assert.IsTrue(appConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx"));
         }
 
         [TestMethod()]
@@ -63,7 +63,7 @@ namespace CreviceApp
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var appConfig = new AppConfig(cliOption);
-            Assert.IsTrue(appConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\hoge.csx"));
+            Assert.IsTrue(appConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\hoge.csx"));
         }
         
         [TestMethod()]
@@ -80,7 +80,7 @@ namespace CreviceApp
         public void UserDirectory0Test()
         {
             var appConfig = new AppConfig();
-            Assert.IsTrue(appConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
+            Assert.IsTrue(appConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
         }
 
         [TestMethod()]
@@ -90,7 +90,7 @@ namespace CreviceApp
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var appConfig = new AppConfig(cliOption);
-            Assert.IsTrue(appConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp"));
+            Assert.IsTrue(appConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
         }
 
         [TestMethod()]
@@ -120,7 +120,7 @@ namespace CreviceApp
             string[] args = { "--script", Path.Combine(directory, "test.csx") };
             var cliOption = CLIOption.Parse(args);
             var appConfig = new AppConfig(cliOption);
-            Assert.IsTrue(appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript)).Length > 0);
+            Assert.IsTrue(appConfig.GetOrSetDefaultUserScriptFile("hoge").Length > 0);
         }
 
 
@@ -128,7 +128,7 @@ namespace CreviceApp
         public void GetUserScriptCacheFileTest()
         {
             var appConfig = new AppConfig();
-            Assert.IsTrue(appConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice\\CreviceApp\\default.csx.cache"));
+            Assert.IsTrue(appConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx.cache"));
         }
 
         [TestMethod()]
@@ -143,7 +143,7 @@ namespace CreviceApp
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("mscorlib.dll")));
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("System.dll")));
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("System.Core.dll")));
-            Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("CreviceApp.exe")));
+            Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("Crevice4.exe")));
         }
 
         [TestMethod()]
@@ -176,7 +176,7 @@ namespace CreviceApp
         {
             // When the user script which defines a mouse gesture is given.
             var appConfig = new AppConfig();
-            var userScriptString = "var Whenever = @when((ctx) => {return true;});";
+            var userScriptString = "var Whenever = When((ctx) => {return true;});";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
@@ -236,7 +236,7 @@ namespace CreviceApp
         {
             // When the user script which defines a mouse gesture is given.
             var appConfig = new AppConfig();
-            var userScriptString = "var Whenever = @when((ctx) => {return true;});";
+            var userScriptString = "var Whenever = When((ctx) => {return true;});";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
             var ctx = new Core.UserScriptExecutionContext(appConfig);
@@ -314,19 +314,6 @@ namespace CreviceApp
             countdownEvent.Wait(TimeSpan.FromSeconds(4));
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();
-        }
-
-        [TestMethod()]
-        public void GetGestureDefTest()
-        {
-            var tempDir = CreateTemporaryTestDirectory();
-            var appConfig = new AppConfig();
-            var parsedScript = UserScript.ParseScript(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), tempDir, tempDir);
-            var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
-            UserScript.EvaluateUserScript(ctx, parsedScript);
-            var gestureDef = ctx.GetGestureDefinition();
-            Assert.IsTrue(gestureDef.Count() > 0);
         }
 
         [TestMethod()]

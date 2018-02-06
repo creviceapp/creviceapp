@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46</TargetFrameworks>
-    <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyName>Crevice.Core</AssemblyName>
-    <RootNamespace>Crevice.Core</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
 </Project>

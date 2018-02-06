@@ -24,7 +24,7 @@ namespace CreviceApp.Tests
 
         static List<Tuple<LowLevelMouseHook.Event, LowLevelMouseHook.MSLLHOOKSTRUCT>> mouseEvents = new List<Tuple<LowLevelMouseHook.Event, LowLevelMouseHook.MSLLHOOKSTRUCT>>();
         static LowLevelMouseHook mouseHook = new LowLevelMouseHook((evnt, data) => {
-            if (data.fromCreviceApp)
+            if (data.FromCreviceApp)
             {
                 mouseEvents.Add(Tuple.Create(evnt, data));
             }
@@ -291,7 +291,7 @@ namespace CreviceApp.Tests
         {
             sender.X1Down();
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
+            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton1);
             sender.X1Up();
         }
 
@@ -301,7 +301,7 @@ namespace CreviceApp.Tests
             sender.X1Down();
             sender.X1Up();
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
-            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton1);
+            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.IsXButton1);
         }
 
         [TestMethod()]
@@ -309,9 +309,9 @@ namespace CreviceApp.Tests
         {
             sender.X1Click();
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton1);
+            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton1);
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
-            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton1);
+            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.IsXButton1);
         }
 
         [TestMethod()]
@@ -320,7 +320,7 @@ namespace CreviceApp.Tests
             sender.X2Down();
             sender.X2Up();
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
+            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton2);
         }
 
         [TestMethod()]
@@ -329,7 +329,7 @@ namespace CreviceApp.Tests
             sender.X2Down();
             sender.X2Up();
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
-            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton2);
+            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.IsXButton2);
         }
 
         [TestMethod()]
@@ -337,9 +337,9 @@ namespace CreviceApp.Tests
         {
             sender.X2Click();
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
-            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.isXButton2);
+            Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton2);
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
-            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.isXButton2);
+            Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.IsXButton2);
         }
 
         [TestMethod()]
