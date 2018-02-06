@@ -41,7 +41,7 @@ namespace Crevice.Core.FSM
             DoubleThrowTriggers = GetDoubleThrowTriggers(RootElement);
         }
 
-        public override (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
+        public override Result Input(IPhysicalEvent evnt)
         {
             if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
@@ -50,7 +50,7 @@ namespace Crevice.Core.FSM
                 if (singleThrowElements.Any())
                 {
                     Machine.ContextManager.ExecuteDoExecutors(evalContext, singleThrowElements);
-                    return (EventIsConsumed: true, NextState: this);
+                    return new Result(eventIsConsumed: true, nextState: this);
                 }
             }
             else if (evnt is PhysicalPressEvent pressEvent && IsDoubleThrowTrigger(pressEvent))
@@ -65,13 +65,13 @@ namespace Crevice.Core.FSM
                         var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                             Machine,
                             evalContext,
-                            CreateHistory(pressEvent),
+                            new History(pressEvent.Opposition, this),
                             doubleThrowElements,
                             depth: Depth + 1,
                             canCancel: true);
-                        return (EventIsConsumed: true, NextState: nextState);
+                        return new Result(eventIsConsumed: true, nextState: nextState);
                     }
-                    return (EventIsConsumed: true, NextState: this);
+                    return new Result(eventIsConsumed: true, nextState: this);
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent && IsDoubleThrowTrigger(releaseEvent.Opposition))
@@ -82,15 +82,11 @@ namespace Crevice.Core.FSM
                 if (HasPressExecutors(doubleThrowElements) || HasReleaseExecutors(doubleThrowElements))
                 {
                     Machine.ContextManager.ExecuteReleaseExecutors(evalContext, doubleThrowElements);
-                    return (EventIsConsumed: true, NextState: this);
+                    return new Result(eventIsConsumed: true, nextState: this);
                 }
             }
             return base.Input(evnt);
         }
-
-        public IReadOnlyList<(PhysicalReleaseEvent, IState)> 
-            CreateHistory(PhysicalPressEvent pressEvent)
-            => new List<(PhysicalReleaseEvent, IState)>() { (pressEvent.Opposition, this) };
 
         public IReadOnlyList<DoubleThrowElement<TExecContext>> 
             GetActiveDoubleThrowElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Crevice.Core.Stroke
 {
+    using System.Linq;
     using System.Collections.Concurrent;
     using System.Drawing;
     using System.Threading.Tasks;
-    using Crevice.Core.FSM;
+
+    using Crevice.Core.Callback;
 
     public enum StrokeDirection
     {

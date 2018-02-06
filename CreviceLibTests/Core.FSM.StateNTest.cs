@@ -9,6 +9,7 @@ namespace CreviceLibTests
     using Crevice.Core.Keys;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
+    using Crevice.Core.FSM;
     using Crevice.Core.Stroke;
 
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
@@ -27,7 +28,7 @@ namespace CreviceLibTests
             {
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var s0 = new TestState0(gm, root);
-                var history = s0.CreateHistory(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var history = new History(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 {
                     var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
@@ -1057,33 +1058,33 @@ namespace CreviceLibTests
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
-                Assert.AreEqual(s1.History.Count, 1);
-                Assert.AreEqual(s1.History[0].Item1, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                Assert.AreEqual(s1.History[0].Item2, s0);
+                Assert.AreEqual(s1.History.Records.Count, 1);
+                Assert.AreEqual(s1.History.Records[0].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(s1.History.Records[0].State, s0);
 
                 var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
                 var s2 = res1.NextState as TestStateN;
-                Assert.AreEqual(s2.History.Count, 2);
-                Assert.AreEqual(s2.History[1].Item1, TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
-                Assert.AreEqual(s2.History[1].Item2, s1);
+                Assert.AreEqual(s2.History.Records.Count, 2);
+                Assert.AreEqual(s2.History.Records[1].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                Assert.AreEqual(s2.History.Records[1].State, s1);
 
                 var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
                 Assert.AreEqual(res2.EventIsConsumed, true);
                 Assert.AreEqual(res2.NextState is TestStateN, true);
                 var s3 = res2.NextState as TestStateN;
-                Assert.AreEqual(s3.History.Count, 3);
-                Assert.AreEqual(s3.History[2].Item1, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                Assert.AreEqual(s3.History[2].Item2, s2);
+                Assert.AreEqual(s3.History.Records.Count, 3);
+                Assert.AreEqual(s3.History.Records[2].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(s3.History.Records[2].State, s2);
 
                 var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
                 Assert.AreEqual(res3.EventIsConsumed, true);
                 Assert.AreEqual(res3.NextState is TestStateN, true);
                 var s4 = res3.NextState as TestStateN;
-                Assert.AreEqual(s4.History.Count, 4);
-                Assert.AreEqual(s4.History[3].Item1, TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
-                Assert.AreEqual(s4.History[3].Item2, s3);
+                Assert.AreEqual(s4.History.Records.Count, 4);
+                Assert.AreEqual(s4.History.Records[3].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                Assert.AreEqual(s4.History.Records[3].State, s3);
             }
         }
 
@@ -1161,25 +1162,25 @@ namespace CreviceLibTests
                 var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
-                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.History.Records.Count, 1);
 
                 var s2 = res1.NextState as TestStateN;
                 var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
                 Assert.AreEqual(res2.EventIsConsumed, true);
                 Assert.AreEqual(res2.NextState is TestStateN, true);
-                Assert.AreEqual(s2.History.Count, 2);
+                Assert.AreEqual(s2.History.Records.Count, 2);
 
                 var s3 = res2.NextState as TestStateN;
                 var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
                 Assert.AreEqual(res3.EventIsConsumed, true);
                 Assert.AreEqual(res3.NextState is TestStateN, true);
-                Assert.AreEqual(s3.History.Count, 3);
+                Assert.AreEqual(s3.History.Records.Count, 3);
 
-                var (foundState, skippedReleaseEvents) = s3.FindStateFromHistory(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
-                Assert.AreEqual(foundState, s1);
-                Assert.AreEqual(skippedReleaseEvents.Count, 2);
-                Assert.AreEqual(skippedReleaseEvents[0], TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
-                Assert.AreEqual(skippedReleaseEvents[1], TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                var queryResult = s3.History.Query(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                Assert.AreEqual(queryResult.FoundState, s1);
+                Assert.AreEqual(queryResult.SkippedReleaseEvents.Count, 2);
+                Assert.AreEqual(queryResult.SkippedReleaseEvents[0], TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                Assert.AreEqual(queryResult.SkippedReleaseEvents[1], TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
             }
         }
 
@@ -1203,7 +1204,7 @@ namespace CreviceLibTests
                 var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
-                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.History.Records.Count, 1);
                 Assert.AreEqual(s1.NormalEndTrigger, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
             }
         }
@@ -1224,7 +1225,7 @@ namespace CreviceLibTests
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
-                Assert.AreEqual(s1.History.Count, 1);
+                Assert.AreEqual(s1.History.Records.Count, 1);
                 Assert.AreEqual(s1.LastState, s0);
             }
         }

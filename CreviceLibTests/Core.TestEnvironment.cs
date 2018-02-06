@@ -8,6 +8,7 @@ namespace CreviceLibTests
     using Crevice.Core.Context;
     using Crevice.Core.Keys;
     using Crevice.Core.FSM;
+    using Crevice.Core.Callback;
     using Crevice.Core.Stroke;
     
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;

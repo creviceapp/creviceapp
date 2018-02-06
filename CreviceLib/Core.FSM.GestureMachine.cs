@@ -9,6 +9,7 @@ namespace Crevice.Core.FSM
     using Crevice.Core.Events;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
+    using Crevice.Core.Callback;
     using Crevice.Core.Stroke;
     using Crevice.Core.Helpers;
 
@@ -95,9 +96,9 @@ namespace Crevice.Core.FSM
                     return true;
                 }
 
-                var (eventIsConsumed, nextState) = CurrentState.Input(evnt);
-                CurrentState = nextState;
-                return eventIsConsumed;
+                var result = CurrentState.Input(evnt);
+                CurrentState = result.NextState;
+                return result.EventIsConsumed;
             }
         }
 

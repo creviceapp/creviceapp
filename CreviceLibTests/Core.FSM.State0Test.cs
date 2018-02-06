@@ -43,9 +43,9 @@ namespace CreviceLibTests
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
-                Assert.AreEqual(s1.History.Count, 1);
-                Assert.AreEqual(s1.History[0].Item1, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                Assert.AreEqual(s1.History[0].Item2, s0);
+                Assert.AreEqual(s1.History.Records.Count, 1);
+                Assert.AreEqual(s1.History.Records[0].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(s1.History.Records[0].State, s0);
             }
         }
 
@@ -687,21 +687,6 @@ namespace CreviceLibTests
                 }
             }
         }
-
-        [TestMethod]
-        public void CreateHistory()
-        {
-            var root = new TestRootElement();
-            using (var gm = new TestGestureMachine(root))
-            {
-                var s0 = new TestState0(gm, root);
-                var result = s0.CreateHistory(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
-                Assert.AreEqual(result.Count, 1);
-                Assert.AreEqual(result[0].Item1, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                Assert.AreEqual(result[0].Item2, s0);
-            }
-        }
-
 
         [TestMethod]
         public void GetActiveDoubleThrowElementsTest()

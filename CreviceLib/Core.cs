@@ -43,6 +43,7 @@ namespace Crevice.Core
      */
 
     using Crevice.Core.Context;
+    using Crevice.Core.Callback;
     using Crevice.Core.FSM;
 
     public class DefaultGestureMachineConfig : GestureMachineConfig

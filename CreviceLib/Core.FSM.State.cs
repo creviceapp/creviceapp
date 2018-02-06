@@ -12,7 +12,7 @@ namespace Crevice.Core.FSM
 
     public interface IState
     {
-        (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt);
+        Result Input(IPhysicalEvent evnt);
         IState Timeout();
         IState Reset();
     }
@@ -26,9 +26,9 @@ namespace Crevice.Core.FSM
             Depth = depth;
         }
 
-        public virtual (bool EventIsConsumed, IState NextState) Input(IPhysicalEvent evnt)
+        public virtual Result Input(IPhysicalEvent evnt)
         {
-            return (EventIsConsumed: false, NextState: this);
+            return new Result(eventIsConsumed: false, nextState: this);
         }
 
         public virtual IState Timeout()

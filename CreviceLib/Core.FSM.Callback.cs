@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Crevice.Core.FSM
+namespace Crevice.Core.Callback
 {
     using Crevice.Core.Context;
+    using Crevice.Core.FSM;
     using Crevice.Core.Stroke;
 
     public interface IStrokeCallbackManager

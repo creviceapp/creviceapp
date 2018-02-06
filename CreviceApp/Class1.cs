@@ -11,6 +11,7 @@ namespace CreviceApp
     using Crevice.Core.DSL;
     using Crevice.Core.Keys;
     using Crevice.Core.FSM;
+    using Crevice.Core.Callback;
     using Crevice.Core.Stroke;
 
     using CreviceApp.WinAPI.Window.Impl;
@@ -512,7 +513,7 @@ namespace CreviceApp
     {
         public NullGestureMachine() : base(new CustomRootElement()) { }
     }
-
+    
     public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
     {
         public CustomGestureMachine(CustomRootElement rootElement)
