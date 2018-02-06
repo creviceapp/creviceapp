@@ -104,11 +104,11 @@
     <Content Include="index.html" />
     <Content Include="win32\CommandLine.dll" />
     <Content Include="win32\CommandLine.xml" />
+    <Content Include="win32\Crevice.Core.dll" />
+    <Content Include="win32\Crevice.Core.pdb" />
     <Content Include="win32\Crevice4.exe" />
     <Content Include="win32\Crevice4.exe.config" />
     <Content Include="win32\Crevice4.pdb" />
-    <Content Include="win32\CreviceLib.dll" />
-    <Content Include="win32\CreviceLib.pdb" />
     <Content Include="win32\Microsoft.CodeAnalysis.CSharp.dll" />
     <Content Include="win32\Microsoft.CodeAnalysis.CSharp.Scripting.dll" />
     <Content Include="win32\Microsoft.CodeAnalysis.CSharp.Scripting.xml" />

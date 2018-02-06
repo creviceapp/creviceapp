@@ -259,7 +259,7 @@ namespace CreviceApp.App.UI
             }
             else
             {
-                var tempPath = Path.Combine(Path.GetTempPath(), "CreviceApp.ErrorInformation.txt");
+                var tempPath = Path.Combine(Path.GetTempPath(), "Crevice4.ErrorInformation.txt");
                 OpenWithNotepad(tempPath, LastErrorMessage);
             }
         }
