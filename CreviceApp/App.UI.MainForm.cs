@@ -253,7 +253,7 @@ namespace CreviceApp.App.UI
 
         private void notifyIcon1_BalloonTipClicked(object sender, EventArgs e)
         {
-            if (LastErrorMessage == null)
+            if (String.IsNullOrEmpty(LastErrorMessage))
             {
                 OpenLauncherForm();
             }
