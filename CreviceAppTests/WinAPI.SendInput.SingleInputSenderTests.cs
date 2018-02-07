@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,11 +10,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.Tests
+namespace CreviceTests
 {
-    using WinAPI.WindowsHookEx;
-    using WinAPI.SendInput;
-    using WinAPI.Constants;
+    using Crevice.WinAPI.WindowsHookEx;
+    using Crevice.WinAPI.SendInput;
+    using Crevice.WinAPI.Device;
+    using Crevice.WinAPI.Window;
+    using Crevice.WinAPI.Constants;
 
     [TestClass()]
     public class SingleInputSenderTests
@@ -132,7 +133,7 @@ namespace CreviceApp.Tests
             var rand = new Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var start = WinAPI.Window.Window.GetCursorPos();
+            var start = Window.GetCursorPos();
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();
@@ -142,8 +143,8 @@ namespace CreviceApp.Tests
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
                 Assert.AreEqual(evnt, LowLevelMouseHook.Event.WM_MOUSEMOVE);
-                Assert.IsTrue(pos.x - (start.X + dx) * WinAPI.Device.GetScreenScalingFactor() <= 1);
-                Assert.IsTrue(pos.y - (start.Y + dy) * WinAPI.Device.GetScreenScalingFactor() <= 1);
+                Assert.IsTrue(pos.x - (start.X + dx) * Device.GetScreenScalingFactor() <= 1);
+                Assert.IsTrue(pos.y - (start.Y + dy) * Device.GetScreenScalingFactor() <= 1);
             }
         } 
 
@@ -173,8 +174,8 @@ namespace CreviceApp.Tests
             var rand = new Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var start = WinAPI.Window.Window.GetPhysicalCursorPos();
-            var scalingFactor = WinAPI.Device.GetScreenScalingFactor();
+            var start = Window.GetPhysicalCursorPos();
+            var scalingFactor = Device.GetScreenScalingFactor();
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();
@@ -195,7 +196,7 @@ namespace CreviceApp.Tests
             var rand = new Random();
             var max_cursor_range = 0xFFF;
             var min_cursor_range = -0xFFF;
-            var scalingFactor = WinAPI.Device.GetScreenScalingFactor();
+            var scalingFactor = Device.GetScreenScalingFactor();
             foreach (int i in Enumerable.Range(0, 100))
             {
                 mouseEvents.Clear();

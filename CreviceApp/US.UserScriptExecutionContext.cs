@@ -6,22 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp.Core
+namespace Crevice.UserScript
 {
+    using Crevice.Config;
+    using Crevice.Element;
+    using Crevice.GestureMachine;
+    using Crevice.UserScript.Keys;
+
     public class GestureMachineExecutionProfile
     {
         public readonly CustomCallbackManager CallbackManager = new CustomCallbackManager();
 
-        public readonly CustomRootElement RootElement = new CustomRootElement();
+        public readonly RootElement RootElement = new RootElement();
 
-        public readonly Config.UserConfig UserConfig;
+        public readonly UserConfig UserConfig;
 
         public readonly string ProfileName;
         
         public GestureMachineExecutionProfile(string profileName)
         {
             ProfileName = profileName;
-            UserConfig = new Config.UserConfig(CallbackManager.Receiver);
+            UserConfig = new UserConfig(CallbackManager.Receiver);
         }
     }
     
@@ -63,18 +68,18 @@ namespace CreviceApp.Core
 
         public readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
 
-        private readonly App.AppConfig AppConfig;
+        private readonly AppConfig AppConfig;
         
-        public UserScriptExecutionContext(App.AppConfig appConfig)
+        public UserScriptExecutionContext(AppConfig appConfig)
         {
             AppConfig = appConfig;
         }
 
-        public Config.UserConfig Config
+        public UserConfig Config
             => CurrentProfile.UserConfig;
 
-        public Crevice.Core.DSL.WhenElement<CustomEvaluationContext, CustomExecutionContext> 
-            When(Crevice.Core.Context.EvaluateAction<CustomEvaluationContext> func)
+        public Core.DSL.WhenElement<EvaluationContext, ExecutionContext> 
+            When(Core.Context.EvaluateAction<EvaluationContext> func)
             => CurrentProfile.RootElement.When(func);
 
         public void Tooltip(string text)

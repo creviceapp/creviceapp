@@ -7,9 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI.WindowsHookEx
+namespace Crevice.WinAPI.WindowsHookEx
 {
-	public class WindowsHook : IDisposable
+    using Crevice.WinAPI.Helper;
+
+    public class WindowsHook : IDisposable
     {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr SetWindowsHookEx(int idHook, SystemCallback callback, IntPtr hInstance, int threadId);
@@ -81,7 +83,7 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 {
                     throw new InvalidOperationException();
                 }
-                var log = new CallLogger("SetWindowsHookEx");
+                var log = new WinAPILogger("SetWindowsHookEx");
                 log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), hookType));
                 var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
 
@@ -107,7 +109,7 @@ namespace CreviceApp.WinAPI.WindowsHookEx
                 {
                     throw new InvalidOperationException();
                 }
-                var log = new CallLogger("UnhookWindowsHookEx");
+                var log = new WinAPILogger("UnhookWindowsHookEx");
                 log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), hookType));
                 log.Add("hHook: 0x{0:X}", hHook);
                 if (UnhookWindowsHookEx(hHook))

@@ -4,20 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp
+namespace Crevice.UserScript.Keys
 {
-    using System.Drawing;
-    using Crevice.Core.Context;
-    using Crevice.Core.DSL;
     using Crevice.Core.Keys;
-    using Crevice.Core.FSM;
-    using Crevice.Core.Callback;
     using Crevice.Core.Stroke;
-
-    using CreviceApp.WinAPI.Window.Impl;
-    using Crevice.Core.Events;
-
-    public class LogicalSystemKeySet : KeySet<LogicalSystemKey> 
+    
+    public class LogicalSystemKeySet : KeySet<LogicalSystemKey>
     {
         public override LogicalSystemKey Create(int index)
             => new LogicalSystemKey(index);
@@ -87,7 +79,7 @@ namespace CreviceApp
 
             public readonly KeySet<TKeyA> SingleThrowKeySet;
             public readonly KeySet<TKeyB> SystemKeySet;
-            
+
             public KeyDeclaration(
                 KeySet<TKeyA> singleThrowKeys,
                 KeySet<TKeyB> systemKeys)
@@ -105,7 +97,7 @@ namespace CreviceApp
             public StrokeDirection MoveDown => StrokeDirection.Down;
             public StrokeDirection MoveLeft => StrokeDirection.Left;
             public StrokeDirection MoveRight => StrokeDirection.Right;
-            
+
             public TKeyB None => SystemKeySet[0];
             public TKeyB LButton => SystemKeySet[1];
             public TKeyB RButton => SystemKeySet[2];
@@ -309,231 +301,11 @@ namespace CreviceApp
         public class PhysicalKeyDeclaration : KeyDeclaration<PhysicalSingleThrowKey, PhysicalSystemKey>
         {
             public PhysicalKeyDeclaration(
-                PhysicalSingleThrowKeySet singleThrowKeys, 
+                PhysicalSingleThrowKeySet singleThrowKeys,
                 PhysicalSystemKeySet systemKeys)
                 : base(singleThrowKeys, systemKeys)
             {
 
-            }
-        }
-    }
-
-    public class CustomEvaluationContext : EvaluationContext
-    {
-        public readonly Point GestureStartPosition;
-        public readonly ForegroundWindowInfo ForegroundWindow;
-        public readonly PointedWindowInfo PointedWindow;
-
-        public CustomEvaluationContext(Point gestureStartPosition)
-        {
-            this.GestureStartPosition = gestureStartPosition;
-            this.ForegroundWindow = new ForegroundWindowInfo();
-            this.PointedWindow = new PointedWindowInfo(gestureStartPosition);
-        }
-    }
-
-    public class CustomExecutionContext : ExecutionContext
-    {
-        public readonly Point GestureStartPosition;
-        public readonly Point GestureEndPosition;
-        public readonly ForegroundWindowInfo ForegroundWindow;
-        public readonly PointedWindowInfo PointedWindow;
-
-        public CustomExecutionContext(CustomEvaluationContext evaluationContext, Point gestureEndPosition)
-        {
-            this.GestureStartPosition = evaluationContext.GestureStartPosition;
-            this.GestureEndPosition = gestureEndPosition;
-            this.ForegroundWindow = evaluationContext.ForegroundWindow;
-            this.PointedWindow = evaluationContext.PointedWindow;
-        }
-    }
-
-    public class CustomContextManager : ContextManager<CustomEvaluationContext, CustomExecutionContext>
-    {
-        public Point CursorPosition { get; set; }
-
-        public override CustomEvaluationContext CreateEvaluateContext()
-            => new CustomEvaluationContext(CursorPosition);
-
-        public override CustomExecutionContext CreateExecutionContext(CustomEvaluationContext evaluationContext)
-            => new CustomExecutionContext(evaluationContext, CursorPosition);
-
-        public override bool Evaluate(
-            CustomEvaluationContext evalContext,
-            WhenElement<CustomEvaluationContext, CustomExecutionContext> whenElement)
-        {
-            var task = Task.Factory.StartNew(() => 
-            {
-                return whenElement.WhenEvaluator(evalContext);
-            });
-            try
-            {
-                return task.Wait(20);
-            }
-            catch(Exception)
-            {
-                return false;
-            }
-        }
-
-        public override void Execute(
-            CustomExecutionContext execContext, 
-            ExecuteAction<CustomExecutionContext> executeAction)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                executeAction(execContext);
-            });
-        }
-    }
-    
-    public class CustomRootElement : RootElement<CustomEvaluationContext, CustomExecutionContext>
-    {
-
-    }
-
-    public class CustomCallbackManager : CallbackManager<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
-    {
-        private readonly TaskFactory SystemKeyRestorationTaskFactory = Task.Factory;
-
-        private readonly WinAPI.SendInput.SingleInputSender SingleInputSender = new WinAPI.SendInput.SingleInputSender();
-
-        public override void OnGestureCancelled(
-            StateN<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext> stateN)
-        {
-            Verbose.Print("GestureCancelled");
-            var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
-            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvent(systemKey));
-            base.OnGestureCancelled(stateN);
-        }
-
-        public override void OnGestureTimeout(
-            StateN<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext> stateN)
-        {
-            Verbose.Print("GestureTimeout");
-            var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
-            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvent(systemKey));
-            base.OnGestureTimeout(stateN);
-        }
-
-        public override void OnMachineReset(
-            IState state)
-        {
-            Verbose.Print("MachineReset");
-            base.OnMachineReset(state);
-        }
-
-        protected internal void ExecuteInBackground(TaskFactory taskFactory, Action action)
-            => taskFactory.StartNew(action);
-
-        internal Action RestoreKeyPressEvent(PhysicalSystemKey systemKey)
-        {
-            return () =>
-            {
-                if (systemKey == SupportedKeys.PhysicalKeys.None)
-                {
-
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
-                {
-                    SingleInputSender.LeftDown();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
-                {
-                    SingleInputSender.RightDown();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
-                {
-                    SingleInputSender.MiddleDown();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
-                {
-                    SingleInputSender.X1Down();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
-                {
-                    SingleInputSender.X2Down();
-                }
-                else
-                {
-                    SingleInputSender.ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId);
-                }
-            };
-        }
-
-        internal Action RestoreKeyPressAndReleaseEvent(PhysicalSystemKey systemKey)
-        {
-            return () =>
-            {
-                if (systemKey == SupportedKeys.PhysicalKeys.None)
-                {
-
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
-                {
-                    SingleInputSender.LeftClick();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
-                {
-                    SingleInputSender.RightClick();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
-                {
-                    SingleInputSender.MiddleClick();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
-                {
-                    SingleInputSender.X1Click();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
-                {
-                    SingleInputSender.X2Click();
-                }
-                else
-                {
-                    SingleInputSender.Multiple()
-                        .ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId)
-                        .ExtendedKeyUpWithScanCode((ushort)systemKey.KeyId)
-                        .Send();
-                }
-            };
-        }
-    }
-
-    public class NullGestureMachine : CustomGestureMachine
-    {
-        public NullGestureMachine() : base(new CustomRootElement()) { }
-    }
-    
-    public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
-    {
-        public CustomGestureMachine(
-            CustomRootElement rootElement)
-            : base(new GestureMachineConfig(), new CustomCallbackManager(), new CustomContextManager(), rootElement)
-        { }
-
-        public CustomGestureMachine(
-            GestureMachineConfig gestureMachineConfig, 
-            CustomRootElement rootElement)
-            : base(gestureMachineConfig, new CustomCallbackManager(), new CustomContextManager(), rootElement)
-        { }
-    
-        public CustomGestureMachine(
-            GestureMachineConfig gestureMachineConfig, 
-            CustomCallbackManager callbackManager,
-            CustomRootElement rootElement)
-            : base(gestureMachineConfig, callbackManager, new CustomContextManager(), rootElement)
-        { }
-
-        public override bool Input(IPhysicalEvent evnt, Point? point)
-        {
-            lock (lockObject)
-            {
-                if (point.HasValue)
-                {
-                    ContextManager.CursorPosition = point.Value;
-                }
-                return base.Input(evnt, point);
             }
         }
     }

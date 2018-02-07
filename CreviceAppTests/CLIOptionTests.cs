@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.App
+namespace CreviceTests
 {
+    using Crevice.Config;
+
     [TestClass()]
     public class CLIOptionTests
     {

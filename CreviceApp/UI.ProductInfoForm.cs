@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 
-namespace CreviceApp.App.UI
+namespace Crevice.UI
 {
+    using Crevice.Config;
+
     public partial class ProductInfoForm : Form
     {
         private CLIOption.Result cliOption;

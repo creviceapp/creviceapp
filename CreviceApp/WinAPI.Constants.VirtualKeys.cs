@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.WinAPI.Constants
+namespace Crevice.WinAPI.Constants
 {
     // https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx
     public static class VirtualKeys

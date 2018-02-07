@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI.CoreAudio
+namespace Crevice.WinAPI.CoreAudio
 {
     public class VolumeControl : IDisposable
     {

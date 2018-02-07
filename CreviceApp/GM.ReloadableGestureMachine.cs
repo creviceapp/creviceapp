@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.Core
+namespace Crevice.GestureMachine
 {
+    using Crevice.Logging;
+    using Crevice.Config;
+    using Crevice.UserScript;
+
     using GetGestureMachineResult =
         Tuple<GestureMachineCluster,
               System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
@@ -30,9 +34,9 @@ namespace CreviceApp.Core
         public bool IsActivated()
             => Instance.GetType() != typeof(NullGestureMachineCluster);
 
-        private readonly App.AppConfig AppConfig;
+        private readonly AppConfig AppConfig;
 
-        public ReloadableGestureMachine(App.AppConfig appConfig)
+        public ReloadableGestureMachine(AppConfig appConfig)
         {
             AppConfig = appConfig;
             Instance = new NullGestureMachineCluster();

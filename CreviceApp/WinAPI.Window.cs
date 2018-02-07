@@ -9,8 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.WinAPI.Window
+namespace Crevice.WinAPI.Window
 {
+    using Crevice.WinAPI.Helper;
+    using Crevice.WinAPI.Device;
+
     namespace Impl
     {
         public class WindowInfo

@@ -1,4 +1,4 @@
-﻿namespace CreviceApp.App.UI
+﻿namespace Crevice.UI
 {
     partial class LauncherForm
     {

@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{82B56652-6380-44ED-A193-742F7EEF290F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>CreviceApp</RootNamespace>
+    <RootNamespace>Crevice</RootNamespace>
     <AssemblyName>Crevice4</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -131,36 +131,43 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.AppConfig.cs" />
-    <Compile Include="App.CLIOption.cs" />
-    <Compile Include="App.Main.cs" />
-    <Compile Include="App.UI.LauncherForm.cs">
+    <Compile Include="Config.AppConfig.cs" />
+    <Compile Include="Config.CLIOption.cs" />
+    <Compile Include="GestureMachine.ContextManager.cs" />
+    <Compile Include="GestureMachine.ExecutionContext.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="UI.LauncherForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App.UI.LauncherForm.Designer.cs" />
-    <Compile Include="App.UI.MainForm.cs">
+    <Compile Include="UI.LauncherForm.Designer.cs" />
+    <Compile Include="UI.MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App.UI.MainForm.Designer.cs" />
-    <Compile Include="App.UI.MouseGestureForm.cs">
+    <Compile Include="UI.MainForm.Designer.cs" />
+    <Compile Include="UI.MouseGestureForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App.UI.ProductInfoForm.cs">
+    <Compile Include="UI.ProductInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App.UI.ProductInfoForm.Designer.cs" />
-    <Compile Include="App.UI.TooltipNotifier.cs" />
-    <Compile Include="Class1.cs" />
-    <Compile Include="Core.Config.GestureConfig.cs" />
-    <Compile Include="Core.Config.UserConfig.cs" />
-    <Compile Include="Core.Config.UserInterfaceConfig.cs" />
-    <Compile Include="Core.GestureMachineCandidate.cs" />
-    <Compile Include="Core.ReloadableGestureMachine.cs" />
-    <Compile Include="Core.UserScript.cs" />
-    <Compile Include="Core.UserScriptAssembly.cs" />
-    <Compile Include="Core.UserScriptExecutionContext.cs" />
-    <Compile Include="Core.Verbose.cs" />
+    <Compile Include="UI.ProductInfoForm.Designer.cs" />
+    <Compile Include="UI.TooltipNotifier.cs" />
+    <Compile Include="GestureMachine.GestureMachine.cs" />
+    <Compile Include="GestureMachine.CallbackManager.cs" />
+    <Compile Include="UserScript.RootElement.cs" />
+    <Compile Include="GestureMachine.EvaluationContext.cs" />
+    <Compile Include="Config.UserConfig.cs" />
+    <Compile Include="Config.UserInterfaceConfig.cs" />
+    <Compile Include="GestureMachine.NullGestureMachineCluster.cs" />
+    <Compile Include="GestureMachine.GestureMachineCluster.cs" />
+    <Compile Include="GestureMachine.GestureMachineCandidate.cs" />
+    <Compile Include="GestureMachine.ReloadableGestureMachine.cs" />
+    <Compile Include="UserScript.UserScript.cs" />
+    <Compile Include="UserScript.UserScriptAssembly.cs" />
+    <Compile Include="UserScript.UserScriptExecutionContext.cs" />
+    <Compile Include="Logging.Verbose.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserScript.Keys.cs" />
     <Compile Include="WinAPI.Console.cs" />
     <Compile Include="WinAPI.Constants.VirtualKeys.cs" />
     <Compile Include="WinAPI.Constants.WindowsMessages.cs" />
@@ -170,10 +177,10 @@
     <Compile Include="WinAPI.SendInput.cs" />
     <Compile Include="WinAPI.Window.cs" />
     <Compile Include="WinAPI.WindowsHookEx.cs" />
-    <EmbeddedResource Include="App.UI.LauncherForm.resx" />
-    <EmbeddedResource Include="App.UI.MainForm.resx" />
-    <EmbeddedResource Include="App.UI.MouseGestureForm.resx" />
-    <EmbeddedResource Include="App.UI.ProductInfoForm.resx" />
+    <EmbeddedResource Include="UI.LauncherForm.resx" />
+    <EmbeddedResource Include="UI.MainForm.resx" />
+    <EmbeddedResource Include="UI.MouseGestureForm.resx" />
+    <EmbeddedResource Include="UI.ProductInfoForm.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

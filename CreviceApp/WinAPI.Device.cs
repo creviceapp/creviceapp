@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.WinAPI
+namespace Crevice.WinAPI.Device
 {
     public static class Device
     {

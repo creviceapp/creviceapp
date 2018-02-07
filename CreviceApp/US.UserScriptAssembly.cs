@@ -8,9 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp
+namespace Crevice.UserScript
 {
-
     public sealed class UserScriptAssembly
     {
         [Serializable]

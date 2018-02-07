@@ -12,14 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-// Todo: Crevice をLibに分離かな　→そのままNuget公開だとそのまま扱えていいのでは
-//     →依存を切れるのが大きい
-//     →RoslynもApp側かな
-//     →んで、依存プラットフォームを下げれる？
-//     →Androidなども含んだプラットフォームにも対応できるのでは
-// Todo: Crevice.Facet.UI 
-namespace CreviceApp.App.UI
+namespace Crevice.UI
 {
+    using Crevice.Logging;
+    using Crevice.Config;
+    using Crevice.UserScript;
+
     public partial class MainForm : MouseGestureForm
     {
         // Forcely make this application invisible from task switcher applications.

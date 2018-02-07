@@ -13,8 +13,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.App
+namespace Crevice.UI
 {
+    using Crevice.Logging;
+    using Crevice.Config;
+    using Crevice.UserScript.Keys;
+    using Crevice.GestureMachine;
     using WinAPI.WindowsHookEx;
 
     public class MouseGestureForm : Form
@@ -48,14 +52,14 @@ namespace CreviceApp.App
         private readonly LowLevelKeyboardHook keyboardHook;
         private readonly LowLevelMouseHook mouseHook;
         protected readonly AppConfig appConfig;
-        protected readonly Core.ReloadableGestureMachine reloadableGestureMachine;
+        protected readonly ReloadableGestureMachine reloadableGestureMachine;
 
         public MouseGestureForm(AppConfig appConfig)
         {
             this.keyboardHook = new LowLevelKeyboardHook(KeyboardProc);
             this.mouseHook = new LowLevelMouseHook(MouseProc);
             this.appConfig = appConfig;
-            this.reloadableGestureMachine = new Core.ReloadableGestureMachine(appConfig);
+            this.reloadableGestureMachine = new ReloadableGestureMachine(appConfig);
         }
         
         protected override void OnClosed(EventArgs e)

@@ -132,7 +132,6 @@
     <Compile Include="Core.UserScriptTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinAPI.SendInput.SingleInputSenderTests.cs" />
-    <Compile Include="WinAPI.Window.WindowsApplicationTests.cs" />
     <Compile Include="WinAPI.WindowsHookEx.LowLevelKeyboardHookTests.cs" />
     <Compile Include="WinAPI.WindowsHookEx.LowLevelMouseHookTests.cs" />
   </ItemGroup>

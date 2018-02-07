@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp
+namespace Crevice.Logging
 {
     public class Verbose
     {

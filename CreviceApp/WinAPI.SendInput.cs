@@ -8,8 +8,11 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI.SendInput
+namespace Crevice.WinAPI.SendInput
 {
+    using Crevice.WinAPI.Helper;
+    using Crevice.WinAPI.Device;
+
     public class InputSender
     {
         [DllImport("user32.dll", SetLastError = true)]
@@ -137,7 +140,7 @@ namespace CreviceApp.WinAPI.SendInput
 
         protected void Send(INPUT[] input)
         {
-            var log = new CallLogger("SendInput");
+            var log = new WinAPILogger("SendInput");
             foreach (var item in input.Select((v, i) => new { v, i}))
             {
                 var inputType = (InputType)item.v.type;            

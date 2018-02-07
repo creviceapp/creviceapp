@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Microsoft.Win32.SafeHandles;
 
 
-namespace CreviceApp.WinAPI.Console
+namespace Crevice.WinAPI.Console
 {
     public static class Console
     {

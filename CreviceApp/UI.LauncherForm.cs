@@ -9,8 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp.App.UI
+namespace Crevice.UI
 {
+    using Crevice.Logging;
+    using Crevice.Config;
+
     public partial class LauncherForm : Form
     {
         protected readonly AppConfig AppConfig;

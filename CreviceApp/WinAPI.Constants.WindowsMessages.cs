@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp.WinAPI.Constants
+namespace Crevice.WinAPI.Constants
 {
     // http://www.pinvoke.net/default.aspx/Enums/WindowsMessages.html
     public static class WindowsMessages

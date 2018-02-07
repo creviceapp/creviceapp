@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp.Core.Config
+namespace Crevice.Config
 {
+    using Crevice.GestureMachine;
+
     public class UserConfig
     {
         public readonly Crevice.Core.FSM.GestureMachineConfig Core = new Crevice.Core.FSM.GestureMachineConfig();

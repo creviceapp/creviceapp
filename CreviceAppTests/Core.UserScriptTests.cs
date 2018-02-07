@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
 
-namespace CreviceApp
+namespace CreviceTests
 {
-    using App;
+    using Crevice.Config;
+    using Crevice.UserScript;
 
     [TestClass()]
     public class UserScriptTests
@@ -154,7 +155,7 @@ namespace CreviceApp
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -167,7 +168,7 @@ namespace CreviceApp
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -180,7 +181,7 @@ namespace CreviceApp
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -193,7 +194,7 @@ namespace CreviceApp
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -215,7 +216,7 @@ namespace CreviceApp
             var userScriptString = "var hoge = 1;";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -227,7 +228,7 @@ namespace CreviceApp
             var userScriptString = "dynamic hoge = 1;";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -239,7 +240,7 @@ namespace CreviceApp
             var userScriptString = "var Whenever = When((ctx) => {return true;});";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -251,7 +252,7 @@ namespace CreviceApp
             var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -264,7 +265,7 @@ namespace CreviceApp
             var userScriptString = "undefined_variable";
             var parsedScript = UserScript.ParseScript(userScriptString, appConfig.UserDirectory, appConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new Core.UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(appConfig);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 

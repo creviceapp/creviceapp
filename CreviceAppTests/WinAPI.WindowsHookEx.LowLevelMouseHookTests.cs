@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CreviceApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +6,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CreviceApp.Tests
+namespace CreviceTests
 {
-    using WinAPI.WindowsHookEx;
-    using WinAPI.SendInput;
+    using Crevice.WinAPI.WindowsHookEx;
+    using Crevice.WinAPI.SendInput;
 
     [TestClass()]
     public class LowLevelMouseHookTests

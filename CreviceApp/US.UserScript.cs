@@ -15,8 +15,10 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 
-namespace CreviceApp
+namespace Crevice.UserScript
 {
+    using Crevice.Logging;
+
     public static class UserScript
     {
         public class EvaluationAbortedException : Exception
@@ -148,7 +150,7 @@ namespace CreviceApp
                             // Note: For the reference to CreviceApp.exe, `Assembly.GetEntryAssembly()` does not work
                             // properly in the test environment. So instead of it, we should use `typeof(Program).Assembly)` here.
                             typeof(Program).Assembly),    
-                    globalsType: typeof(Core.UserScriptExecutionContext));
+                    globalsType: typeof(UserScriptExecutionContext));
                 return script;
             }
         }
@@ -182,7 +184,7 @@ namespace CreviceApp
             }
         }
 
-        public static void EvaluateUserScript(Core.UserScriptExecutionContext ctx, Script parsedScript)
+        public static void EvaluateUserScript(UserScriptExecutionContext ctx, Script parsedScript)
         {
             using (Verbose.PrintElapsed("Evaluate UserScript"))
             {
@@ -205,7 +207,7 @@ namespace CreviceApp
             }
         }
 
-        public static void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, Assembly userScriptAssembly)
+        public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
         {
             using (Verbose.PrintElapsed("Evaluate UserScriptAssembly"))
             {
@@ -224,7 +226,7 @@ namespace CreviceApp
             }
         }
 
-        public static void EvaluateUserScriptAssembly(Core.UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
+        public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, UserScriptAssembly.Cache userScriptAssemblyCache)
         {
             var userScriptAssembly = LoadUserScriptAssembly(userScriptAssemblyCache);
             EvaluateUserScriptAssembly(ctx, userScriptAssembly);

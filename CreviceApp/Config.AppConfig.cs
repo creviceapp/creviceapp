@@ -8,20 +8,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp.App
+namespace Crevice.Config
 {
+
+
     public class AppConfig
     {
         public readonly CLIOption.Result CLIOption;
 
         public readonly UI.MainForm MainForm;
 
-        public AppConfig() : this(App.CLIOption.ParseEnvironmentCommandLine())
+        public AppConfig() : this(Config.CLIOption.ParseEnvironmentCommandLine())
         { }
 
-        public AppConfig(CLIOption.Result CLIOption)
+        public AppConfig(CLIOption.Result cliOption)
         {
-            this.CLIOption = CLIOption;
+            this.CLIOption = cliOption;
 
             Directory.CreateDirectory(UserDirectory);
             

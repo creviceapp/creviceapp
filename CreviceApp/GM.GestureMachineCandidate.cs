@@ -6,63 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
 
 
-namespace CreviceApp.Core
+namespace Crevice.GestureMachine
 {
-    public class GestureMachineCluster : IDisposable
-    {
-        public IReadOnlyList<CustomGestureMachine> GestureMachines;
+    using Crevice.UserScript;
 
-        public GestureMachineCluster(IReadOnlyList<CustomGestureMachine> gestureMachines)
-        {
-            GestureMachines = gestureMachines;
-        }
-        public bool Input(Crevice.Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
-        {
-            foreach (var gm in GestureMachines)
-            {
-                var eventIsConsumed = gm.Input(physicalEvent, point);
-                if (eventIsConsumed == true)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public bool Input(Crevice.Core.Events.IPhysicalEvent physicalEvent)
-            => Input(physicalEvent, null);
-
-        public void Reset()
-        {
-            foreach(var gm in GestureMachines)
-            {
-                gm.Reset();
-            }
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            foreach (var gm in GestureMachines)
-            {
-                gm.Dispose();
-            }
-        }
-
-        ~GestureMachineCluster()
-        {
-            Dispose();
-        }
-    }
-
-    public class NullGestureMachineCluster : GestureMachineCluster
-    {
-        public NullGestureMachineCluster()
-            : base(new List<CustomGestureMachine>())
-        { }
-    }
-
-    // GestureMachineFactory
     public class GestureMachineCandidate
     {
         public readonly string UserScriptString;
@@ -148,7 +95,7 @@ namespace CreviceApp.Core
             UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
             var gestureMachines = 
                 from profile in ctx.Profiles
-                select new CustomGestureMachine(profile.UserConfig.Core, profile.CallbackManager, profile.RootElement);
+                select new GestureMachine(profile.UserConfig.Core, profile.CallbackManager, profile.RootElement);
             return new GestureMachineCluster(gestureMachines.ToList());
         }
 
