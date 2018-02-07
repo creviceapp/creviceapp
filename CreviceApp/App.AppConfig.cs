@@ -10,46 +10,33 @@ using System.Windows.Forms;
 
 namespace CreviceApp.App
 {
-    public class AppConfig // Todo: extract interface and make application to use CreviceAppConfig class.
+    public class AppConfig
     {
-        public readonly CLIOption.Result CLIOption; // Todo: extract this option into this class.
-        public readonly Core.Config.UserConfig UserConfig;
-        public readonly UI.MainForm MainForm; // Todo: Should not have this instance as a member.
+        public readonly CLIOption.Result CLIOption;
+
+        public readonly UI.MainForm MainForm;
 
         public AppConfig() : this(App.CLIOption.ParseEnvironmentCommandLine())
-        {
-                        
-        }
+        { }
 
         public AppConfig(CLIOption.Result CLIOption)
         {
             this.CLIOption = CLIOption;
-            this.UserConfig = new Core.Config.UserConfig();
 
             Directory.CreateDirectory(UserDirectory);
-
+            
             this.MainForm = new UI.MainForm(this);
         }
 
         // %USERPROFILE%\\AppData\\Roaming\\Crevice4
         public string DefaultUserDirectory
-        {
-            get
-            {
-                return Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "Crevice4");
-            }
-        }
+            => Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Crevice4");
 
         // Parent directory of UserScriptFile.
         public string UserDirectory
-        {
-            get
-            {
-                return Directory.GetParent(UserScriptFile).FullName;
-            }
-        }
+            => Directory.GetParent(UserScriptFile).FullName;
 
         public string UserScriptFile
         {
@@ -66,12 +53,7 @@ namespace CreviceApp.App
         }
 
         public string UserScriptCacheFile
-        {
-            get
-            {
-                return UserScriptFile + ".cache";
-            }
-        }
+            => UserScriptFile + ".cache";
 
         public string ReadUserScriptFile()
         {
@@ -94,25 +76,6 @@ namespace CreviceApp.App
         }
 
         public void WriteUserScriptFile(string scriptFileString)
-        {
-            File.WriteAllText(UserScriptFile, scriptFileString, Encoding.UTF8);
-        }
-
-
-        /*
-                 public string GetUserScriptString()
-        {
-            if (!Directory.Exists(UserDirectory))
-            {
-                Directory.CreateDirectory(UserDirectory);
-            }
- 
-            if (!File.Exists(UserScriptFile))
-            {
-                File.WriteAllText(UserScriptFile, Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript), Encoding.UTF8);
-            }
-            return File.ReadAllText(UserScriptFile, Encoding.UTF8);
-        }
-         */
+            => File.WriteAllText(UserScriptFile, scriptFileString, Encoding.UTF8);
     }
 }

@@ -153,8 +153,6 @@
     <Compile Include="Core.Config.UserInterfaceConfig.cs" />
     <Compile Include="Core.GestureMachineCandidate.cs" />
     <Compile Include="Core.ReloadableGestureMachine.cs" />
-    <Compile Include="Core.Threading.SingleThreadScheduler.cs" />
-    <Compile Include="Core.UserActionExecutionContext.cs" />
     <Compile Include="Core.UserScript.cs" />
     <Compile Include="Core.UserScriptAssembly.cs" />
     <Compile Include="Core.UserScriptExecutionContext.cs" />

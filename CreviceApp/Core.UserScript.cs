@@ -201,7 +201,7 @@ namespace CreviceApp
         {
             using (Verbose.PrintElapsed("Load UserScriptAssembly"))
             {
-                return Assembly.Load(userScriptAssemblyCache.pe, userScriptAssemblyCache.pdb);
+                return Assembly.Load(userScriptAssemblyCache.PE, userScriptAssemblyCache.PDB);
             }
         }
 

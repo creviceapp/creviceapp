@@ -8,64 +8,58 @@ using System.Windows.Forms;
 
 namespace CreviceApp.Core
 {
-    using Crevice.Core.FSM;
-
     using GetGestureMachineResult =
-           Tuple<CustomGestureMachine,
-               System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
-               Exception>;
+        Tuple<GestureMachineCluster,
+              System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
+              Exception>;
 
     public class ReloadableGestureMachine : IDisposable
     {
-        private CustomGestureMachine _instance;
-        public CustomGestureMachine Instance
+        private GestureMachineCluster _instance;
+        public GestureMachineCluster Instance
         {
             get { return _instance; }
             private set
             {
                 var old = Instance;
                 _instance = value;
-                if (old != null)
-                {
-                    old.Dispose();
-                }
+                old?.Dispose();
             }
         }
-        public bool IsActivated()
-        {
-            return Instance.GetType() != typeof(NullGestureMachine);
-        }
 
-        private readonly App.AppConfig appConfig;
+        public bool IsActivated()
+            => Instance.GetType() != typeof(NullGestureMachineCluster);
+
+        private readonly App.AppConfig AppConfig;
 
         public ReloadableGestureMachine(App.AppConfig appConfig)
         {
-            this.appConfig = appConfig;
-            this.Instance = new NullGestureMachine();
+            AppConfig = appConfig;
+            Instance = new NullGestureMachineCluster();
         }
 
         private GetGestureMachineResult GetGestureMachine()
         {
-            var restoreFromCache = !IsActivated() || !appConfig.CLIOption.NoCache; // should not use CLIOption here
-            var saveCache = !appConfig.CLIOption.NoCache;
-            var userScriptString = appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            var restoreFromCache = !IsActivated() || !AppConfig.CLIOption.NoCache; // should not use CLIOption here
+            var saveCache = !AppConfig.CLIOption.NoCache;
+            var userScriptString = AppConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
             var candidate = new GestureMachineCandidate(
                 userScriptString, 
-                appConfig.UserScriptCacheFile,
+                AppConfig.UserScriptCacheFile,
                 true,
-                appConfig.UserDirectory, appConfig.UserDirectory);
+                AppConfig.UserDirectory, AppConfig.UserDirectory);
 
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
             Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
 
-            var ctx = new UserScriptExecutionContext(appConfig);
+            var ctx = new UserScriptExecutionContext(AppConfig);
 
             if (candidate.IsRestorable)
             {
                 try
                 {
-                    return new GetGestureMachineResult(candidate.Restore(appConfig.UserConfig, ctx), null, null);
+                    return new GetGestureMachineResult(candidate.Restore(ctx), null, null);
                 }
                 catch (Exception ex)
                 {
@@ -88,7 +82,7 @@ namespace CreviceApp.Core
                     {
                         try
                         {
-                            UserScript.SaveUserScriptAssemblyCache(appConfig.UserScriptCacheFile, candidate.UserScriptAssemblyCache);
+                            UserScript.SaveUserScriptAssemblyCache(AppConfig.UserScriptCacheFile, candidate.UserScriptAssemblyCache);
                         }
                         catch (Exception ex)
                         {
@@ -99,10 +93,10 @@ namespace CreviceApp.Core
                 catch (Exception ex)
                 {
                     Verbose.Print("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
-                    return new GetGestureMachineResult(candidate.CreateNew(appConfig.UserConfig, ctx), null, ex);
+                    return new GetGestureMachineResult(candidate.CreateNew(ctx), null, ex);
                 }
                 Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
-                return new GetGestureMachineResult(candidate.CreateNew(appConfig.UserConfig, ctx), null, null);
+                return new GetGestureMachineResult(candidate.CreateNew(ctx), null, null);
             }
         }
 
@@ -171,10 +165,10 @@ namespace CreviceApp.Core
                                         balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
                                         lastErrorMessage = runtimeError.ToString();
                                     }
-                                    appConfig.MainForm.UpdateTasktrayMessage("Gestures: {0}", "gestures");
+                                    AppConfig.MainForm.UpdateTasktrayMessage("Gestures: {0}", "gestures");
                                 }
-                                appConfig.MainForm.LastErrorMessage = lastErrorMessage;
-                                appConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
+                                AppConfig.MainForm.LastErrorMessage = lastErrorMessage;
+                                AppConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
 
                                 if (!reloadRequest)
                                 {

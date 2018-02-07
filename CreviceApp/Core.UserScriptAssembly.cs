@@ -17,9 +17,9 @@ namespace CreviceApp
         public class Cache
         {
             public string AppVersion { get; set; }
-            public byte[] pe { get; set; }
-            public byte[] pdb { get; set; }
-            public string scriptFileHash { get; set; }
+            public byte[] PE { get; set; }
+            public byte[] PDB { get; set; }
+            public string ScriptFileHash { get; set; }
         }
 
         public class UserScriptAssemblyImpl
@@ -48,7 +48,7 @@ namespace CreviceApp
             public bool IsCompatible(Cache cache, string userScriptCode)
             {
                 return cache.AppVersion == CurrentAppVersion() &&
-                       cache.scriptFileHash == Hash(userScriptCode);
+                       cache.ScriptFileHash == Hash(userScriptCode);
             }
 
             public Cache CreateCache(string script, byte[] pe, byte[] pdb)
@@ -56,9 +56,9 @@ namespace CreviceApp
                 var cache = new Cache()
                 {
                     AppVersion = CurrentAppVersion(),
-                    pe = pe,
-                    pdb = pdb,
-                    scriptFileHash = Hash(script)
+                    PE = pe,
+                    PDB = pdb,
+                    ScriptFileHash = Hash(script)
                 };
                 return cache;
             }

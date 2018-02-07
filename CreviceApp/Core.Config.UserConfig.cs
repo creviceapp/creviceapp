@@ -10,7 +10,7 @@ namespace CreviceApp.Core.Config
 {
     public class UserConfig
     {
-        public readonly GestureConfig Gesture = new GestureConfig();
+        public readonly Crevice.Core.FSM.GestureMachineConfig Gesture = new Crevice.Core.FSM.GestureMachineConfig();
         public readonly UserInterfaceConfig UI = new UserInterfaceConfig();
     }
 }

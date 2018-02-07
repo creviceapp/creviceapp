@@ -8,6 +8,60 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace CreviceApp.Core
 {
+    public class GestureMachineCluster : IDisposable
+    {
+        public IReadOnlyList<CustomGestureMachine> GestureMachines;
+
+        public GestureMachineCluster(IReadOnlyList<CustomGestureMachine> gestureMachines)
+        {
+            GestureMachines = gestureMachines;
+        }
+        public bool Input(Crevice.Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
+        {
+            foreach (var gm in GestureMachines)
+            {
+                var eventIsConsumed = gm.Input(physicalEvent, point);
+                if (eventIsConsumed == true)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool Input(Crevice.Core.Events.IPhysicalEvent physicalEvent)
+            => Input(physicalEvent, null);
+
+        public void Reset()
+        {
+            foreach(var gm in GestureMachines)
+            {
+                gm.Reset();
+            }
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            foreach (var gm in GestureMachines)
+            {
+                gm.Dispose();
+            }
+        }
+
+        ~GestureMachineCluster()
+        {
+            Dispose();
+        }
+    }
+
+    public class NullGestureMachineCluster : GestureMachineCluster
+    {
+        public NullGestureMachineCluster()
+            : base(new List<CustomGestureMachine>())
+        { }
+    }
+
     // GestureMachineFactory
     public class GestureMachineCandidate
     {
@@ -87,24 +141,19 @@ namespace CreviceApp.Core
             }
         }
 
-        protected CustomGestureMachine Create(
-            Config.UserConfig userConfig,
+        protected GestureMachineCluster Create(
             UserScriptExecutionContext ctx,
             UserScriptAssembly.Cache userScriptAssembly)
         {
             UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
-            var gestureMachine = new CustomGestureMachine(ctx.Root);
-            gestureMachine.Config.GestureTimeout = userConfig.Gesture.Timeout;
-            gestureMachine.Config.StrokeDirectionChangeThreshold = userConfig.Gesture.StrokeDirectionChangeThreshold;
-            gestureMachine.Config.StrokeExtensionThreshold = userConfig.Gesture.StrokeExtensionThreshold;
-            gestureMachine.Config.StrokeStartThreshold = userConfig.Gesture.InitialStrokeThreshold;
-            gestureMachine.Config.StrokeWatchInterval = userConfig.Gesture.WatchInterval;
-            return gestureMachine;
+            var gestureMachines = from profile in ctx.Profiles
+                                  select new CustomGestureMachine(profile.UserConfig.Gesture, profile.RootElement);
+            return new GestureMachineCluster(gestureMachines.ToList());
         }
 
-        public CustomGestureMachine CreateNew(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
+        public GestureMachineCluster CreateNew(UserScriptExecutionContext ctx)
         {
-            return Create(userConfig, ctx, UserScriptAssemblyCache);
+            return Create(ctx, UserScriptAssemblyCache);
         }
 
         private UserScriptAssembly.Cache _restorationCache = null;
@@ -128,9 +177,9 @@ namespace CreviceApp.Core
             get { return RestorationCache != null; }
         }
 
-        public CustomGestureMachine Restore(Config.UserConfig userConfig, UserScriptExecutionContext ctx)
+        public GestureMachineCluster Restore(UserScriptExecutionContext ctx)
         {
-            return Create(userConfig, ctx, RestorationCache);
+            return Create(ctx, RestorationCache);
         }
     }
 }

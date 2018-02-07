@@ -20,39 +20,40 @@ namespace CreviceApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var AppConfig = new App.AppConfig();
-            if (!AppConfig.CLIOption.ParseSuccess)
+            var CLIOption = App.CLIOption.ParseEnvironmentCommandLine();
+            if (!CLIOption.ParseSuccess)
             {
                 WinAPI.Console.Console.AttachConsole();
-                Console.WriteLine(AppConfig.CLIOption.HelpMessage);
+                Console.WriteLine(CLIOption.HelpMessage);
                 WinAPI.Console.Console.FreeConsole();
                 return;
             } 
 
-            if (AppConfig.CLIOption.Version)
+            if (CLIOption.Version)
             {
                 WinAPI.Console.Console.AttachConsole();
-                Console.WriteLine(AppConfig.CLIOption.VersionMessage);
+                Console.WriteLine(CLIOption.VersionMessage);
                 WinAPI.Console.Console.FreeConsole();
                 return;
             }
 
-            if (AppConfig.CLIOption.Verbose)
+            if (CLIOption.Verbose)
             {
                 WinAPI.Console.Console.AttachConsole();
                 Verbose.Output.Enable();
             }
 
-            Verbose.Print("CLIOption.NoGUI: {0}", AppConfig.CLIOption.NoGUI);
-            Verbose.Print("CLIOption.NoCache: {0}", AppConfig.CLIOption.NoCache);
-            Verbose.Print("CLIOption.Verbose: {0}", AppConfig.CLIOption.Verbose);
-            Verbose.Print("CLIOption.Version: {0}", AppConfig.CLIOption.Version);
-            Verbose.Print("CLIOption.ProcessPriority: {0}", AppConfig.CLIOption.ProcessPriority);
-            Verbose.Print("CLIOption.ScriptFile: {0}", AppConfig.CLIOption.ScriptFile);
+            Verbose.Print("CLIOption.NoGUI: {0}", CLIOption.NoGUI);
+            Verbose.Print("CLIOption.NoCache: {0}", CLIOption.NoCache);
+            Verbose.Print("CLIOption.Verbose: {0}", CLIOption.Verbose);
+            Verbose.Print("CLIOption.Version: {0}", CLIOption.Version);
+            Verbose.Print("CLIOption.ProcessPriority: {0}", CLIOption.ProcessPriority);
+            Verbose.Print("CLIOption.ScriptFile: {0}", CLIOption.ScriptFile);
 
-            Verbose.Print("Setting ProcessPriority to {0}", AppConfig.CLIOption.ProcessPriority);
-            SetProcessPriority(AppConfig.CLIOption.ProcessPriority);
-            
+            Verbose.Print("Setting ProcessPriority to {0}", CLIOption.ProcessPriority);
+            SetProcessPriority(CLIOption.ProcessPriority);
+
+            var AppConfig = new App.AppConfig(CLIOption);
             Application.Run(AppConfig.MainForm);
         }
 
