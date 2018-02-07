@@ -22,8 +22,9 @@ namespace Crevice.UserScript.Keys
     {
         public LogicalSystemKey(int keyId)
             : base(keyId) { }
-
-        // todo implicit operater to Keys, int   
+        
+        public static implicit operator int(LogicalSystemKey key)
+            => key.KeyId;
     }
 
     public class PhysicalSystemKeySet : KeySet<PhysicalSystemKey>
@@ -44,8 +45,9 @@ namespace Crevice.UserScript.Keys
     {
         public PhysicalSystemKey(LogicalDoubleThrowKey logicalKey, int keyId)
             : base(logicalKey, keyId) { }
-
-        // todo implicit operater to Keys, int   
+        
+        public static implicit operator int(PhysicalSystemKey key)
+            => key.KeyId;
     }
 
     public class SupportedKeys
