@@ -31,7 +31,6 @@ namespace Crevice.GestureMachine
             this.RestoreAllowed = allowRestore;
             this.ScriptSourceResolverBaseDirectory = scriptSourceResolverBaseDirectory;
             this.ScriptMetadataResolverBaseDirectory = scriptMetadataResolverBaseDirectory;
-            // appConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript))
         }
 
         private Script _parsedUserScript = null;

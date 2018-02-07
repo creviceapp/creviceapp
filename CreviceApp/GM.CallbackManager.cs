@@ -12,7 +12,7 @@ namespace Crevice.GestureMachine
     using Crevice.UserScript.Keys;
     using Crevice.WinAPI.SendInput;
 
-    public class CustomCallbackManager : CallbackManager<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
+    public class CallbackManager : CallbackManager<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
         private readonly TaskFactory SystemKeyRestorationTaskFactory = Task.Factory;
 

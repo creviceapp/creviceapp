@@ -16,12 +16,12 @@ namespace Crevice.UI
 
     public partial class LauncherForm : Form
     {
-        protected readonly AppConfig AppConfig;
+        protected readonly GlobalConfig GlobalConfig;
 
-        public LauncherForm(AppConfig AppConfig)
+        public LauncherForm(GlobalConfig globalConfig)
         {
-            this.AppConfig = AppConfig;
-            this.Icon = Properties.Resources.CreviceIcon;
+            GlobalConfig = globalConfig;
+            Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
         }
 
@@ -108,12 +108,12 @@ namespace Crevice.UI
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
-            AppConfig.MainForm.Close();
+            GlobalConfig.MainForm.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            AppConfig.MainForm.StartExternalProcess("explorer.exe", "/select, " + AppConfig.UserScriptFile);
+            GlobalConfig.MainForm.StartExternalProcess("explorer.exe", "/select, " + GlobalConfig.UserScriptFile);
         }
 
         private void button3_Click(object sender, EventArgs e)

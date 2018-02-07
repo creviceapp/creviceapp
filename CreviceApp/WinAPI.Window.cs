@@ -48,10 +48,10 @@ namespace Crevice.WinAPI.Window
                 public static extern bool BringWindowToTop(IntPtr hWnd);
 
                 [DllImport("user32.dll")]
-                public static extern long SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+                public static extern long SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
                 [DllImport("user32.dll", SetLastError = true)]
-                public extern static bool PostMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+                public extern static bool PostMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
                 [DllImport("user32.dll", SetLastError = true)]
                 public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
@@ -64,14 +64,14 @@ namespace Crevice.WinAPI.Window
                 public extern static bool AttachThreadInput(int idAttach, int idAttachTo, bool fAttach);
 
                 [DllImport("user32.dll", ExactSpelling = true)]
-                public extern static IntPtr GetAncestor(IntPtr hwnd, uint flags);
+                public extern static IntPtr GetAncestor(IntPtr hwnd, int flags);
             }
 
             public const int MaxPathSize = 1024;
 
             // http://www.pinvoke.net/default.aspx/kernel32/OpenProcess.html
             [Flags]
-            public enum ProcessAccessFlags : uint
+            public enum ProcessAccessFlags : int
             {
                 All = 0x001F0FFF,
                 Terminate = 0x00000001,
@@ -264,12 +264,12 @@ namespace Crevice.WinAPI.Window
                 return NativeMethods.BringWindowToTop(WindowHandle);
             }
 
-            public long SendMessage(uint Msg, uint wParam, uint lParam)
+            public long SendMessage(int Msg, int wParam, int lParam)
             {
                 return NativeMethods.SendMessage(WindowHandle, Msg, wParam, lParam);
             }
 
-            public bool PostMessage(uint Msg, uint wParam, uint lParam)
+            public bool PostMessage(int Msg, int wParam, int lParam)
             {
                 return NativeMethods.PostMessage(WindowHandle, Msg, wParam, lParam);
             }
@@ -433,12 +433,12 @@ namespace Crevice.WinAPI.Window
                 private static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
-                    public static extern bool EnumThreadWindows(uint dwThreadId, EnumWindowsProcDelegate lpfn, IntPtr lParam);
+                    public static extern bool EnumThreadWindows(int dwThreadId, EnumWindowsProcDelegate lpfn, IntPtr lParam);
                 }
 
-                public readonly uint ThreadId;
+                public readonly int ThreadId;
 
-                public ThreadWindows(uint threadId)
+                public ThreadWindows(int threadId)
                     : base()
                 {
                     this.ThreadId = threadId;
@@ -467,7 +467,7 @@ namespace Crevice.WinAPI.Window
         /// For use with ChildWindowFromPointEx 
         /// </summary>
         [Flags]
-        public enum WindowFromPointFlags : uint
+        public enum WindowFromPointFlags : int
         {
             /// <summary>
             /// Does not skip any child windows
@@ -552,7 +552,7 @@ namespace Crevice.WinAPI.Window
             return new Impl.Enumerables.TopLevelWindows();
         }
 
-        public static IEnumerable<Impl.WindowInfo> GetThreadWindows(uint threadId)
+        public static IEnumerable<Impl.WindowInfo> GetThreadWindows(int threadId)
         {
             return new Impl.Enumerables.ThreadWindows(threadId);
         }

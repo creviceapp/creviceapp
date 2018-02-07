@@ -12,22 +12,22 @@ namespace Crevice.Config
 {
 
 
-    public class AppConfig
+    public class GlobalConfig
     {
         public readonly CLIOption.Result CLIOption;
 
         public readonly UI.MainForm MainForm;
 
-        public AppConfig() : this(Config.CLIOption.ParseEnvironmentCommandLine())
+        public GlobalConfig() : this(Config.CLIOption.ParseEnvironmentCommandLine())
         { }
 
-        public AppConfig(CLIOption.Result cliOption)
+        public GlobalConfig(CLIOption.Result cliOption)
         {
-            this.CLIOption = cliOption;
+            CLIOption = cliOption;
 
             Directory.CreateDirectory(UserDirectory);
             
-            this.MainForm = new UI.MainForm(this);
+            MainForm = new UI.MainForm(this);
         }
 
         // %USERPROFILE%\\AppData\\Roaming\\Crevice4

@@ -64,68 +64,6 @@ namespace Crevice.UserScript
             }
         }
 
-        /*
-        protected readonly App.AppConfig AppConfig;
-
-        public UserScript(App.AppConfig AppConfig)
-        {
-            this.AppConfig = AppConfig;
-            Directory.CreateDirectory(UserDirectory);
-        }
-        
-        // %USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp
-        public string DefaultUserDirectory
-        {
-            get
-            {
-                return Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "Crevice",
-                    "CreviceApp");
-            }
-        }
-
-        // Parent directory of UserScriptFile.
-        public string UserDirectory
-        {
-            get
-            {
-                return Directory.GetParent(UserScriptFile).FullName;
-            }
-        }
-
-        public string UserScriptFile
-        {
-            get
-            {
-                var scriptPath = AppConfig.CLIOption.ScriptFile;
-                if (Path.IsPathRooted(scriptPath))
-                {
-                    return scriptPath;
-                }
-                var uri = new Uri(new Uri(DefaultUserDirectory + "\\"), scriptPath);
-                return uri.LocalPath;
-            }
-        }
-
-        public string UserScriptCacheFile
-        {
-            get
-            {
-                return UserScriptFile + ".cache";
-            }
-        }
-        public static string GetUserScriptString(string userScriptFile)
-        {
-            if (!File.Exists(userScriptFile))
-            {
-                return null;
-            }
-            return File.ReadAllText(userScriptFile, Encoding.UTF8);
-        }
-        */
-
-
         public static Script ParseScript(
             string userScriptString,
             string scriptSourceResolverBaseDirectory,

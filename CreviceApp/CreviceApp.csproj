@@ -131,10 +131,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.AppConfig.cs" />
+    <Compile Include="Config.GlobalConfig.cs" />
     <Compile Include="Config.CLIOption.cs" />
-    <Compile Include="GestureMachine.ContextManager.cs" />
-    <Compile Include="GestureMachine.ExecutionContext.cs" />
+    <Compile Include="GM.ContextManager.cs" />
+    <Compile Include="GM.ExecutionContext.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="UI.LauncherForm.cs">
       <SubType>Form</SubType>
@@ -152,22 +152,22 @@
     </Compile>
     <Compile Include="UI.ProductInfoForm.Designer.cs" />
     <Compile Include="UI.TooltipNotifier.cs" />
-    <Compile Include="GestureMachine.GestureMachine.cs" />
-    <Compile Include="GestureMachine.CallbackManager.cs" />
-    <Compile Include="UserScript.RootElement.cs" />
-    <Compile Include="GestureMachine.EvaluationContext.cs" />
+    <Compile Include="GM.GestureMachine.cs" />
+    <Compile Include="GM.CallbackManager.cs" />
+    <Compile Include="US.RootElement.cs" />
+    <Compile Include="GM.EvaluationContext.cs" />
     <Compile Include="Config.UserConfig.cs" />
     <Compile Include="Config.UserInterfaceConfig.cs" />
-    <Compile Include="GestureMachine.NullGestureMachineCluster.cs" />
-    <Compile Include="GestureMachine.GestureMachineCluster.cs" />
-    <Compile Include="GestureMachine.GestureMachineCandidate.cs" />
-    <Compile Include="GestureMachine.ReloadableGestureMachine.cs" />
-    <Compile Include="UserScript.UserScript.cs" />
-    <Compile Include="UserScript.UserScriptAssembly.cs" />
-    <Compile Include="UserScript.UserScriptExecutionContext.cs" />
+    <Compile Include="GM.NullGestureMachineCluster.cs" />
+    <Compile Include="GM.GestureMachineCluster.cs" />
+    <Compile Include="GM.GestureMachineCandidate.cs" />
+    <Compile Include="GM.ReloadableGestureMachine.cs" />
+    <Compile Include="US.UserScript.cs" />
+    <Compile Include="US.UserScriptAssembly.cs" />
+    <Compile Include="US.UserScriptExecutionContext.cs" />
     <Compile Include="Logging.Verbose.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserScript.Keys.cs" />
+    <Compile Include="US.Keys.cs" />
     <Compile Include="WinAPI.Console.cs" />
     <Compile Include="WinAPI.Constants.VirtualKeys.cs" />
     <Compile Include="WinAPI.Constants.WindowsMessages.cs" />

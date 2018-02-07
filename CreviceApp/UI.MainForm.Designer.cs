@@ -30,15 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.NotifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
             // 
             // notifyIcon1
             // 
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "Crevice is loading";
-            this.notifyIcon1.BalloonTipClicked += new System.EventHandler(this.notifyIcon1_BalloonTipClicked);
-            this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
+            this.NotifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.NotifyIcon1.Text = "Crevice is loading";
+            this.NotifyIcon1.BalloonTipClicked += new System.EventHandler(this.NotifyIcon1_BalloonTipClicked);
+            this.NotifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
             // 
             // MainForm
             // 
@@ -57,6 +57,6 @@
 
         #endregion
 
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.NotifyIcon NotifyIcon1;
     }
 }

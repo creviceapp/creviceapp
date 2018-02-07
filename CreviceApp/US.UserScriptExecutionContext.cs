@@ -15,7 +15,7 @@ namespace Crevice.UserScript
 
     public class GestureMachineExecutionProfile
     {
-        public readonly CustomCallbackManager CallbackManager = new CustomCallbackManager();
+        public readonly CallbackManager CallbackManager = new CallbackManager();
 
         public readonly RootElement RootElement = new RootElement();
 
@@ -68,11 +68,11 @@ namespace Crevice.UserScript
 
         public readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
 
-        private readonly AppConfig AppConfig;
+        private readonly GlobalConfig GlobalConfig;
         
-        public UserScriptExecutionContext(AppConfig appConfig)
+        public UserScriptExecutionContext(GlobalConfig globalConfig)
         {
-            AppConfig = appConfig;
+            GlobalConfig = globalConfig;
         }
 
         public UserConfig Config
@@ -89,24 +89,24 @@ namespace Crevice.UserScript
             => Tooltip(text, point, Config.UI.TooltipTimeout);
 
         public void Tooltip(string text, Point point, int duration)
-            => AppConfig.MainForm.ShowTooltip(text, point, duration);
+            => GlobalConfig.MainForm.ShowTooltip(text, point, duration);
 
         public void Balloon(string text)
             => Balloon(text, Config.UI.BalloonTimeout);
         
         public void Balloon(string text, int timeout)
-            => AppConfig.MainForm.ShowBalloon(text, "", ToolTipIcon.None, timeout);
+            => GlobalConfig.MainForm.ShowBalloon(text, "", ToolTipIcon.None, timeout);
 
         public void Balloon(string text, string title)
             => Balloon(text, title, ToolTipIcon.None, Config.UI.BalloonTimeout);
 
         public void Balloon(string text, string title, int timeout)
-            => AppConfig.MainForm.ShowBalloon(text, title, ToolTipIcon.None, timeout);
+            => GlobalConfig.MainForm.ShowBalloon(text, title, ToolTipIcon.None, timeout);
 
         public void Balloon(string text, string title, ToolTipIcon icon)
             => Balloon(text, title, icon, Config.UI.BalloonTimeout);
 
         public void Balloon(string text, string title, ToolTipIcon icon, int timeout)
-            => AppConfig.MainForm.ShowBalloon(text, title, icon, timeout);
+            => GlobalConfig.MainForm.ShowBalloon(text, title, icon, timeout);
     }
 }
