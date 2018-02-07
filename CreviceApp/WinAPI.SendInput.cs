@@ -315,14 +315,10 @@ namespace Crevice.WinAPI.SendInput
         }
 
         protected MOUSEINPUT MouseWheelDownEvent()
-        {
-            return MouseVerticalWheelEvent(-120);
-        }
+            => MouseVerticalWheelEvent(-120);
 
         protected MOUSEINPUT MouseWheelUpEvent()
-        {
-            return MouseVerticalWheelEvent(120);
-        }
+            => MouseVerticalWheelEvent(120);
         
         protected MOUSEINPUT MouseHorizontalWheelEvent(int delta)
         {
@@ -333,15 +329,11 @@ namespace Crevice.WinAPI.SendInput
         }
 
         protected MOUSEINPUT MouseWheelRightEvent()
-        {
-            return MouseHorizontalWheelEvent(120);
-        }
+            => MouseHorizontalWheelEvent(120);
 
         protected MOUSEINPUT MouseWheelLeftEvent()
-        {
-            return MouseHorizontalWheelEvent(-120);
-        }
-
+            => MouseHorizontalWheelEvent(-120);
+        
         private MOUSEINPUT MouseXUpEvent(int type)
         {
             var mouseInput = GetCreviceMouseInput();
@@ -351,14 +343,10 @@ namespace Crevice.WinAPI.SendInput
         }
 
         protected MOUSEINPUT MouseX1UpEvent()
-        {
-            return MouseXUpEvent((int)XButtonType.XBUTTON1);
-        }
+            => MouseXUpEvent((int)XButtonType.XBUTTON1);
 
         protected MOUSEINPUT MouseX2UpEvent()
-        {
-            return MouseXUpEvent((int)XButtonType.XBUTTON2);
-        }
+            => MouseXUpEvent((int)XButtonType.XBUTTON2);
 
         private MOUSEINPUT MouseXDownEvent(int type)
         {
@@ -369,14 +357,10 @@ namespace Crevice.WinAPI.SendInput
         }
 
         protected MOUSEINPUT MouseX1DownEvent()
-        {
-            return MouseXDownEvent((int)XButtonType.XBUTTON1);
-        }
+            => MouseXDownEvent((int)XButtonType.XBUTTON1);
 
         protected MOUSEINPUT MouseX2DownEvent()
-        {
-            return MouseXDownEvent((int)XButtonType.XBUTTON2);
-        }
+            => MouseXDownEvent((int)XButtonType.XBUTTON2);
 
         private KEYBDINPUT GetCreviceKeyboardInput()
         {
@@ -463,29 +447,19 @@ namespace Crevice.WinAPI.SendInput
         }
 
         protected KEYBDINPUT KeyDownEvent(ushort keyCode)
-        {
-            return KeyEvent(keyCode);
-        }
+            => KeyEvent(keyCode);
 
         protected KEYBDINPUT ExtendedKeyDownEvent(ushort keyCode)
-        {
-            return ExtendedKeyEvent(keyCode);
-        }
+            => ExtendedKeyEvent(keyCode);
 
         protected KEYBDINPUT KeyDownWithScanCodeEvent(ushort keyCode)
-        {
-            return KeyWithScanCodeEvent(keyCode);
-        }
+            => KeyWithScanCodeEvent(keyCode);
 
         protected KEYBDINPUT ExtendedKeyDownWithScanCodeEvent(ushort keyCode)
-        {
-            return ExtendedKeyWithScanCodeEvent(keyCode);
-        }
+            => ExtendedKeyWithScanCodeEvent(keyCode);
 
         protected KEYBDINPUT UnicodeKeyDownEvent(char c)
-        {
-            return UnicodeKeyEvent(c);
-        }
+            => UnicodeKeyEvent(c);
     }
 
     public class SingleInputSender : InputSender
@@ -511,34 +485,22 @@ namespace Crevice.WinAPI.SendInput
         }
 
         public void LeftDown()
-        {
-            Send(MouseLeftDownEvent());
-        }
-
+            => Send(MouseLeftDownEvent());
+        
         public void LeftUp()
-        {
-            Send(MouseLeftUpEvent());
-        }
+            => Send(MouseLeftUpEvent());
 
         public void LeftClick()
-        {
-            Send(MouseLeftDownEvent(), MouseLeftUpEvent());
-        }
+            => Send(MouseLeftDownEvent(), MouseLeftUpEvent());
 
         public void RightDown()
-        {
-            Send(MouseRightDownEvent());
-        }
+            => Send(MouseRightDownEvent());
 
         public void RightUp()
-        {
-            Send(MouseRightUpEvent());
-        }
+            => Send(MouseRightUpEvent());
 
         public void RightClick()
-        {
-            Send(MouseRightDownEvent(), MouseRightUpEvent());
-        }
+            => Send(MouseRightDownEvent(), MouseRightUpEvent());
 
         public void Move(int dx, int dy, bool logical = false)
         {
@@ -565,139 +527,85 @@ namespace Crevice.WinAPI.SendInput
         }
 
         public void LogicalMove(int dx, int dy)
-        {
-            Send(MouseLogicalMoveEvent(dx, dy));
-        }
-
+            => Send(MouseLogicalMoveEvent(dx, dy));
+    
         public void LogicalMoveMoveTo(int x, int y)
-        {
-            Send(MouseMoveToEvent(x, y));
-        }
+            => Send(MouseMoveToEvent(x, y));
 
         public void MiddleDown()
-        {
-            Send(MouseMiddleDownEvent());
-        }
+            => Send(MouseMiddleDownEvent());
 
         public void MiddleUp()
-        {
-            Send(MouseMiddleUpEvent());
-        }
+            => Send(MouseMiddleUpEvent());
 
         public void MiddleClick()
-        {
-            Send(MouseMiddleDownEvent(), MouseMiddleUpEvent());
-        }
+            => Send(MouseMiddleDownEvent(), MouseMiddleUpEvent());
 
-        public void VerticalWheel(short delta)
-        {
-            Send(MouseVerticalWheelEvent(delta));
-        }
-
+        public void VerticalWheel(int delta)
+            => Send(MouseVerticalWheelEvent(delta));
+        
         public void WheelDown()
-        {
-            Send(MouseWheelDownEvent());
-        }
+            => Send(MouseWheelDownEvent());
 
         public void WheelUp()
-        {
-            Send(MouseWheelUpEvent());
-        }
+            => Send(MouseWheelUpEvent());
         
-        public void HorizontalWheel(short delta)
-        {
-            Send(MouseHorizontalWheelEvent(delta));
-        }
+        public void HorizontalWheel(int delta)
+            => Send(MouseHorizontalWheelEvent(delta));
 
         public void WheelLeft()
-        {
-            Send(MouseWheelLeftEvent());
-        }
+            => Send(MouseWheelLeftEvent());
 
         public void WheelRight()
-        {
-            Send(MouseWheelRightEvent());
-        }
+            => Send(MouseWheelRightEvent());
 
         public void X1Down()
-        {
-            Send(MouseX1DownEvent());
-        }
+            => Send(MouseX1DownEvent());
 
         public void X1Up()
-        {
-            Send(MouseX1UpEvent());
-        }
+            => Send(MouseX1UpEvent());
         
         public void X1Click()
-        {
-            Send(MouseX1DownEvent(), MouseX1UpEvent());
-        }
+            => Send(MouseX1DownEvent(), MouseX1UpEvent());
 
         public void X2Down()
-        {
-            Send(MouseX2DownEvent());
-        }
+            => Send(MouseX2DownEvent());
 
         public void X2Up()
-        {
-            Send(MouseX2UpEvent());
-        }
+            => Send(MouseX2UpEvent());
         
         public void X2Click()
-        {
-            Send(MouseX2DownEvent(), MouseX2UpEvent());
-        }
+            => Send(MouseX2DownEvent(), MouseX2UpEvent());
 
-        public void KeyDown(ushort keyCode)
-        {
-            Send(KeyDownEvent(keyCode));
-        }
+        public void KeyDown(int keyCode)
+            => Send(KeyDownEvent((ushort)keyCode));
 
-        public void KeyUp(ushort keyCode)
-        {
-            Send(KeyUpEvent(keyCode));
-        }
+        public void KeyUp(int keyCode)
+            => Send(KeyUpEvent((ushort)keyCode));
 
-        public void ExtendedKeyDown(ushort keyCode)
-        {
-            Send(ExtendedKeyDownEvent(keyCode));
-        }
+        public void ExtendedKeyDown(int keyCode)
+            => Send(ExtendedKeyDownEvent((ushort)keyCode));
 
-        public void ExtendedKeyUp(ushort keyCode)
-        {
-            Send(ExtendedKeyUpEvent(keyCode));
-        }
+        public void ExtendedKeyUp(int keyCode)
+            => Send(ExtendedKeyUpEvent((ushort)keyCode));
 
-        public void KeyDownWithScanCode(ushort keyCode)
-        {
-            Send(KeyDownWithScanCodeEvent(keyCode));
-        }
+        public void KeyDownWithScanCode(int keyCode)
+            => Send(KeyDownWithScanCodeEvent((ushort)keyCode));
 
-        public void KeyUpWithScanCode(ushort keyCode)
-        {
-            Send(KeyUpWithScanCodeEvent(keyCode));
-        }
+        public void KeyUpWithScanCode(int keyCode)
+            => Send(KeyUpWithScanCodeEvent((ushort)keyCode));
 
-        public void ExtendedKeyDownWithScanCode(ushort keyCode)
-        {
-            Send(ExtendedKeyDownWithScanCodeEvent(keyCode));
-        }
-
-        public void ExtendedKeyUpWithScanCode(ushort keyCode)
-        {
-            Send(ExtendedKeyUpWithScanCodeEvent(keyCode));
-        }
+        public void ExtendedKeyDownWithScanCode(int keyCode)
+            => Send(ExtendedKeyDownWithScanCodeEvent((ushort)keyCode));
+        
+        public void ExtendedKeyUpWithScanCode(int keyCode)
+            => Send(ExtendedKeyUpWithScanCodeEvent((ushort)keyCode));
 
         public void UnicodeKeyDown(char c)
-        {
-            Send(UnicodeKeyDownEvent(c));
-        }
-
+            => Send(UnicodeKeyDownEvent(c));
+        
         public void UnicodeKeyUp(char c)
-        {
-            Send(UnicodeKeyUpEvent(c));
-        }
+            => Send(UnicodeKeyUpEvent(c));
         
         public void UnicodeKeyStroke(string str)
         {
@@ -708,9 +616,7 @@ namespace Crevice.WinAPI.SendInput
         }
 
         public InputSequenceBuilder Multiple()
-        {
-            return new InputSequenceBuilder();
-        }
+            => new InputSequenceBuilder();
     }
 
     public class InputSequenceBuilder : InputSender
@@ -718,61 +624,43 @@ namespace Crevice.WinAPI.SendInput
         private readonly IEnumerable<INPUT> buffer;
 
         public InputSequenceBuilder() : this(new List<INPUT>())
-        {
+        { }
 
-        }
-
-        private InputSequenceBuilder(IEnumerable<INPUT> xs)
+        private InputSequenceBuilder(IReadOnlyList<INPUT> xs)
         {
-            this.buffer = xs;
+            buffer = xs;
         }
         
-        private InputSequenceBuilder NewInstance(IEnumerable<INPUT> ys)
+        private InputSequenceBuilder NewInstance(IReadOnlyList<INPUT> ys)
         {
-            var xs = this.buffer.ToList();
+            var xs = buffer.ToList();
             xs.AddRange(ys);
             return new InputSequenceBuilder(xs);
         }
 
         private InputSequenceBuilder NewInstance(params MOUSEINPUT[] mouseEvent)
-        {
-            return NewInstance(mouseEvent.Select(x => ToInput(x)));
-        }
+            => NewInstance(mouseEvent.Select(x => ToInput(x)).ToList());
 
         private InputSequenceBuilder NewInstance(params KEYBDINPUT[] keyboardEvent)
-        {
-            return NewInstance(keyboardEvent.Select(x => ToInput(x)));
-        }
+            => NewInstance(keyboardEvent.Select(x => ToInput(x)).ToList());
 
         public InputSequenceBuilder LeftDown()
-        {
-            return NewInstance(MouseLeftDownEvent());
-        }
+            => NewInstance(MouseLeftDownEvent());
 
         public InputSequenceBuilder LeftUp()
-        {
-            return NewInstance(MouseLeftUpEvent());
-        }
+            => NewInstance(MouseLeftUpEvent());
 
         public InputSequenceBuilder LeftClick()
-        {
-            return NewInstance(MouseLeftDownEvent(), MouseLeftUpEvent());
-        }
+            => NewInstance(MouseLeftDownEvent(), MouseLeftUpEvent());
     
         public InputSequenceBuilder RightDown()
-        {
-            return NewInstance(MouseRightDownEvent());
-        }
+            => NewInstance(MouseRightDownEvent());
 
         public InputSequenceBuilder RightUp()
-        {
-            return NewInstance(MouseRightUpEvent());
-        }
-
+            => NewInstance(MouseRightUpEvent());
+    
         public InputSequenceBuilder RightClick()
-        {
-            return NewInstance(MouseRightDownEvent(), MouseRightUpEvent());
-        }
+            => NewInstance(MouseRightDownEvent(), MouseRightUpEvent());
 
         public InputSequenceBuilder Move(int dx, int dy, bool logical = false)
         {
@@ -799,129 +687,79 @@ namespace Crevice.WinAPI.SendInput
         }
 
         public InputSequenceBuilder MiddleDown()
-        {
-            return NewInstance(MouseMiddleDownEvent());
-        }
+            => NewInstance(MouseMiddleDownEvent());
 
         public InputSequenceBuilder MiddleUp()
-        {
-            return NewInstance(MouseMiddleUpEvent());
-        }
+            => NewInstance(MouseMiddleUpEvent());
 
         public InputSequenceBuilder MiddleClick()
-        {
-            return NewInstance(MouseMiddleDownEvent(), MouseMiddleUpEvent());
-        }
+            => NewInstance(MouseMiddleDownEvent(), MouseMiddleUpEvent());
 
-        public InputSequenceBuilder VerticalWheel(short delta)
-        {
-            return NewInstance(MouseVerticalWheelEvent(delta));
-        }
+        public InputSequenceBuilder VerticalWheel(int delta)
+            => NewInstance(MouseVerticalWheelEvent(delta));
 
         public InputSequenceBuilder WheelDown()
-        {
-            return NewInstance(MouseWheelDownEvent());
-        }
+            => NewInstance(MouseWheelDownEvent());
 
         public InputSequenceBuilder WheelUp()
-        {
-            return NewInstance(MouseWheelUpEvent());
-        }
+            => NewInstance(MouseWheelUpEvent());
 
-        public InputSequenceBuilder HorizontalWheel(short delta)
-        {
-            return NewInstance(MouseHorizontalWheelEvent(delta));
-        }
+        public InputSequenceBuilder HorizontalWheel(int delta)
+            => NewInstance(MouseHorizontalWheelEvent(delta));
 
         public InputSequenceBuilder WheelLeft()
-        {
-            return NewInstance(MouseWheelLeftEvent());
-        }
+            => NewInstance(MouseWheelLeftEvent());
 
         public InputSequenceBuilder WheelRight()
-        {
-            return NewInstance(MouseWheelRightEvent());
-        }
-
+            => NewInstance(MouseWheelRightEvent());
+    
         public InputSequenceBuilder X1Down()
-        {
-            return NewInstance(MouseX1DownEvent());
-        }
+            => NewInstance(MouseX1DownEvent());
 
         public InputSequenceBuilder X1Up()
-        {
-            return NewInstance(MouseX1UpEvent());
-        }
+            => NewInstance(MouseX1UpEvent());
 
         public InputSequenceBuilder X1Click()
-        {
-            return NewInstance(MouseX1DownEvent(), MouseX1UpEvent());
-        }
+            => NewInstance(MouseX1DownEvent(), MouseX1UpEvent());
 
         public InputSequenceBuilder X2Down()
-        {
-            return NewInstance(MouseX2UpEvent());
-        }
+            => NewInstance(MouseX2UpEvent());
 
         public InputSequenceBuilder X2Up()
-        {
-            return NewInstance(MouseX2UpEvent());
-        }
+            => NewInstance(MouseX2UpEvent());
 
         public InputSequenceBuilder X2Click()
-        {
-            return NewInstance(MouseX2DownEvent(), MouseX2UpEvent());
-        }
+            => NewInstance(MouseX2DownEvent(), MouseX2UpEvent());
 
-        public InputSequenceBuilder KeyDown(ushort keyCode)
-        {
-            return NewInstance(KeyDownEvent(keyCode));
-        }
+        public InputSequenceBuilder KeyDown(int keyCode)
+            => NewInstance(KeyDownEvent((ushort)keyCode));
 
-        public InputSequenceBuilder KeyUp(ushort keyCode)
-        {
-            return NewInstance(KeyUpEvent(keyCode));
-        }
+        public InputSequenceBuilder KeyUp(int keyCode)
+            => NewInstance(KeyUpEvent((ushort)keyCode));
 
-        public InputSequenceBuilder ExtendedKeyDown(ushort keyCode)
-        {
-            return NewInstance(ExtendedKeyDownEvent(keyCode));
-        }
+        public InputSequenceBuilder ExtendedKeyDown(int keyCode)
+            => NewInstance(ExtendedKeyDownEvent((ushort)keyCode));
 
-        public InputSequenceBuilder ExtendedKeyUp(ushort keyCode)
-        {
-            return NewInstance(ExtendedKeyUpEvent(keyCode));
-        }
+        public InputSequenceBuilder ExtendedKeyUp(int keyCode)
+            => NewInstance(ExtendedKeyUpEvent((ushort)keyCode));
 
-        public InputSequenceBuilder KeyDownWithScanCode(ushort keyCode)
-        {
-            return NewInstance(KeyDownWithScanCodeEvent(keyCode));
-        }
+        public InputSequenceBuilder KeyDownWithScanCode(int keyCode)
+            => NewInstance(KeyDownWithScanCodeEvent((ushort)keyCode));
 
-        public InputSequenceBuilder KeyUpWithScanCode(ushort keyCode)
-        {
-            return NewInstance(KeyUpWithScanCodeEvent(keyCode));
-        }
+        public InputSequenceBuilder KeyUpWithScanCode(int keyCode)
+            => NewInstance(KeyUpWithScanCodeEvent((ushort)keyCode));
 
-        public InputSequenceBuilder ExtendedKeyDownWithScanCode(ushort keyCode)
-        {
-            return NewInstance(ExtendedKeyDownWithScanCodeEvent(keyCode));
-        }
+        public InputSequenceBuilder ExtendedKeyDownWithScanCode(int keyCode)
+            => NewInstance(ExtendedKeyDownWithScanCodeEvent((ushort)keyCode));
 
-        public InputSequenceBuilder ExtendedKeyUpWithScanCode(ushort keyCode)
-        {
-            return NewInstance(ExtendedKeyUpWithScanCodeEvent(keyCode));
-        }
+        public InputSequenceBuilder ExtendedKeyUpWithScanCode(int keyCode)
+            => NewInstance(ExtendedKeyUpWithScanCodeEvent((ushort)keyCode));
 
         public InputSequenceBuilder UnicodeKeyDown(char c)
-        {
-            return NewInstance(UnicodeKeyDownEvent(c));
-        }
+            => NewInstance(UnicodeKeyDownEvent(c));
 
         public InputSequenceBuilder UnicodeKeyUp(char c)
-        {
-            return NewInstance(UnicodeKeyUpEvent(c));
-        }
+            => NewInstance(UnicodeKeyUpEvent(c));
 
         public InputSequenceBuilder UnicodeKeyStroke(string str)
         {
@@ -932,8 +770,6 @@ namespace Crevice.WinAPI.SendInput
         }
 
         public void Send()
-        {
-            Send(buffer.ToArray());
-        }
+            => Send(buffer.ToArray());
     }
 }
