@@ -47,7 +47,7 @@ namespace Crevice.UI
             }
         }
 
-        private readonly Core.Events.NullEvent nullEvent = new Core.Events.NullEvent();
+        private readonly Core.Events.NullEvent NullEvent = new Core.Events.NullEvent();
 
         private readonly LowLevelKeyboardHook KeyboardHook;
         private readonly LowLevelMouseHook MouseHook;
@@ -212,7 +212,7 @@ namespace Crevice.UI
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(nullEvent, point));
+                    return ToHookResult(ReloadableGestureMachine.Instance.Input(NullEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
                     return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:

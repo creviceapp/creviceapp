@@ -191,8 +191,7 @@ namespace Crevice.WinAPI.Window
 
             private static Tuple<int, int> GetThreadProcessId(IntPtr hWnd)
             {
-                int pid = 0;
-                int tid = NativeMethods.GetWindowThreadProcessId(hWnd, out pid);
+                int tid = NativeMethods.GetWindowThreadProcessId(hWnd, out int pid);
                 return Tuple.Create(tid, pid);
             }
 
@@ -241,21 +240,29 @@ namespace Crevice.WinAPI.Window
                 var hwndTarget = NativeMethods.GetAncestor(WindowHandle, 2);
                 var hwndActive = ForegroundWindowInfo.NativeMethods.GetForegroundWindow();
                 if (hwndTarget == hwndActive)
+                {
                     return true;
-
-                var outTmp = 0;
-                var tidTarget = NativeMethods.GetWindowThreadProcessId(WindowHandle, out outTmp);
+                }
+                
+                var tidTarget = NativeMethods.GetWindowThreadProcessId(WindowHandle, out int outTmp);
                 var tidActive = NativeMethods.GetWindowThreadProcessId(hwndActive, out outTmp);
 
                 if (NativeMethods.SetForegroundWindow(WindowHandle))
-                    return true;
-                if (tidTarget == tidActive)
-                    return BringWindowToTop();
-                else
                 {
-                    NativeMethods.AttachThreadInput(tidTarget, tidActive, true);
-                    try { return BringWindowToTop(); }
-                    finally { NativeMethods.AttachThreadInput(tidTarget, tidActive, false); }
+                    return true;
+                }
+                if (tidTarget == tidActive)
+                {
+                    return BringWindowToTop();
+                }
+                NativeMethods.AttachThreadInput(tidTarget, tidActive, true);
+                try
+                {
+                    return BringWindowToTop();
+                }
+                finally
+                {
+                    NativeMethods.AttachThreadInput(tidTarget, tidActive, false);
                 }
             }
 
