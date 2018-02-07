@@ -210,17 +210,17 @@ namespace CreviceApp.App
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
                     return ToHookResult(reloadableGestureMachine.Instance.Input(nullEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.PressEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LeftButton.ReleaseEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.PressEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RightButton.ReleaseEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONDOWN:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.PressEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONUP:
-                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MiddleButton.ReleaseEvent, point));
+                    return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
@@ -233,20 +233,20 @@ namespace CreviceApp.App
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
                     if (data.mouseData.asXButton.IsXButton1)
                     {
-                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.PressEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton1.PressEvent, point));
                     }
                     else
                     {
-                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.PressEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton2.PressEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
                     if (data.mouseData.asXButton.IsXButton1)
                     {
-                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X1Button.ReleaseEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton1.ReleaseEvent, point));
                     }
                     else
                     {
-                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.X2Button.ReleaseEvent, point));
+                        return ToHookResult(reloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton2.ReleaseEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)

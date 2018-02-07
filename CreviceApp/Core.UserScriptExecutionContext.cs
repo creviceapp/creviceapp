@@ -12,22 +12,6 @@ namespace CreviceApp.Core
     {
         public readonly SupportedKeys.LogicalKeyDeclaration Keys = SupportedKeys.Keys;
 
-        public Crevice.Core.Keys.LogicalSingleThrowKey WheelDown => Keys.WheelDown;
-        public Crevice.Core.Keys.LogicalSingleThrowKey WheelUp => Keys.WheelUp;
-        public Crevice.Core.Keys.LogicalSingleThrowKey WheelLeft => Keys.WheelLeft;
-        public Crevice.Core.Keys.LogicalSingleThrowKey WheelRight => Keys.WheelRight;
-
-        public LogicalSystemKey LeftButton => Keys.LeftButton;
-        public LogicalSystemKey MiddleButton => Keys.MiddleButton;
-        public LogicalSystemKey RightButton => Keys.RightButton;
-        public LogicalSystemKey X1Button => Keys.X1Button;
-        public LogicalSystemKey X2Button => Keys.X2Button;
-
-        public Crevice.Core.Stroke.StrokeDirection MoveUp => Keys.MoveUp;
-        public Crevice.Core.Stroke.StrokeDirection MoveDown => Keys.MoveDown;
-        public Crevice.Core.Stroke.StrokeDirection MoveLeft => Keys.MoveLeft;
-        public Crevice.Core.Stroke.StrokeDirection MoveRight => Keys.MoveRight;
-
         public readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
         
         public Config.UserConfig Config

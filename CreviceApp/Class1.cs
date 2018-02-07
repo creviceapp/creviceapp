@@ -105,13 +105,7 @@ namespace CreviceApp
             public StrokeDirection MoveDown => StrokeDirection.Down;
             public StrokeDirection MoveLeft => StrokeDirection.Left;
             public StrokeDirection MoveRight => StrokeDirection.Right;
-
-            public TKeyB LeftButton => SystemKeySet[1];
-            public TKeyB RightButton => SystemKeySet[2];
-            public TKeyB MiddleButton => SystemKeySet[4];
-            public TKeyB X1Button => SystemKeySet[5];
-            public TKeyB X2Button => SystemKeySet[6];
-
+            
             public TKeyB None => SystemKeySet[0];
             public TKeyB LButton => SystemKeySet[1];
             public TKeyB RButton => SystemKeySet[2];
@@ -119,9 +113,6 @@ namespace CreviceApp
             public TKeyB MButton => SystemKeySet[4];
             public TKeyB XButton1 => SystemKeySet[5];
             public TKeyB XButton2 => SystemKeySet[6];
-
-            public TKeyB VirtualKey(int virtualKey) => SystemKeySet[virtualKey];
-
             public TKeyB Back => SystemKeySet[8];
             public TKeyB Tab => SystemKeySet[9];
             public TKeyB LineFeed => SystemKeySet[10];
@@ -443,23 +434,23 @@ namespace CreviceApp
                 {
 
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.LeftButton)
+                else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
                 {
                     SingleInputSender.LeftDown();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.RightButton)
+                else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
                 {
                     SingleInputSender.RightDown();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.MiddleButton)
+                else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
                 {
                     SingleInputSender.MiddleDown();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.X1Button)
+                else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
                 {
                     SingleInputSender.X1Down();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.X2Button)
+                else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
                 {
                     SingleInputSender.X2Down();
                 }
@@ -478,23 +469,23 @@ namespace CreviceApp
                 {
 
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.LeftButton)
+                else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
                 {
                     SingleInputSender.LeftClick();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.RightButton)
+                else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
                 {
                     SingleInputSender.RightClick();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.MiddleButton)
+                else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
                 {
                     SingleInputSender.MiddleClick();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.X1Button)
+                else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
                 {
                     SingleInputSender.X1Click();
                 }
-                else if (systemKey == SupportedKeys.PhysicalKeys.X2Button)
+                else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
                 {
                     SingleInputSender.X2Click();
                 }

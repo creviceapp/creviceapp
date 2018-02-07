@@ -102,122 +102,354 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <Content Include="index.html" />
-    <Content Include="win32\CommandLine.dll" />
-    <Content Include="win32\CommandLine.xml" />
-    <Content Include="win32\Crevice.Core.dll" />
-    <Content Include="win32\Crevice.Core.pdb" />
-    <Content Include="win32\Crevice4.exe" />
-    <Content Include="win32\Crevice4.exe.config" />
-    <Content Include="win32\Crevice4.pdb" />
-    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.dll" />
-    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.Scripting.dll" />
-    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.Scripting.xml" />
-    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.xml" />
-    <Content Include="win32\Microsoft.CodeAnalysis.dll" />
-    <Content Include="win32\Microsoft.CodeAnalysis.Scripting.dll" />
-    <Content Include="win32\Microsoft.CodeAnalysis.Scripting.xml" />
-    <Content Include="win32\Microsoft.CodeAnalysis.xml" />
-    <Content Include="win32\Microsoft.Win32.Primitives.dll" />
-    <Content Include="win32\netstandard.dll" />
-    <Content Include="win32\System.AppContext.dll" />
-    <Content Include="win32\System.Collections.Concurrent.dll" />
-    <Content Include="win32\System.Collections.dll" />
-    <Content Include="win32\System.Collections.Immutable.dll" />
-    <Content Include="win32\System.Collections.Immutable.xml" />
-    <Content Include="win32\System.Collections.NonGeneric.dll" />
-    <Content Include="win32\System.Collections.Specialized.dll" />
-    <Content Include="win32\System.ComponentModel.dll" />
-    <Content Include="win32\System.ComponentModel.EventBasedAsync.dll" />
-    <Content Include="win32\System.ComponentModel.Primitives.dll" />
-    <Content Include="win32\System.ComponentModel.TypeConverter.dll" />
-    <Content Include="win32\System.Console.dll" />
-    <Content Include="win32\System.Data.Common.dll" />
-    <Content Include="win32\System.Diagnostics.Contracts.dll" />
-    <Content Include="win32\System.Diagnostics.Debug.dll" />
-    <Content Include="win32\System.Diagnostics.FileVersionInfo.dll" />
-    <Content Include="win32\System.Diagnostics.Process.dll" />
-    <Content Include="win32\System.Diagnostics.StackTrace.dll" />
-    <Content Include="win32\System.Diagnostics.TextWriterTraceListener.dll" />
-    <Content Include="win32\System.Diagnostics.Tools.dll" />
-    <Content Include="win32\System.Diagnostics.TraceSource.dll" />
-    <Content Include="win32\System.Diagnostics.Tracing.dll" />
-    <Content Include="win32\System.Drawing.Primitives.dll" />
-    <Content Include="win32\System.Dynamic.Runtime.dll" />
-    <Content Include="win32\System.Globalization.Calendars.dll" />
-    <Content Include="win32\System.Globalization.dll" />
-    <Content Include="win32\System.Globalization.Extensions.dll" />
-    <Content Include="win32\System.IO.Compression.dll" />
-    <Content Include="win32\System.IO.Compression.ZipFile.dll" />
-    <Content Include="win32\System.IO.dll" />
-    <Content Include="win32\System.IO.FileSystem.dll" />
-    <Content Include="win32\System.IO.FileSystem.DriveInfo.dll" />
-    <Content Include="win32\System.IO.FileSystem.Primitives.dll" />
-    <Content Include="win32\System.IO.FileSystem.Watcher.dll" />
-    <Content Include="win32\System.IO.IsolatedStorage.dll" />
-    <Content Include="win32\System.IO.MemoryMappedFiles.dll" />
-    <Content Include="win32\System.IO.Pipes.dll" />
-    <Content Include="win32\System.IO.UnmanagedMemoryStream.dll" />
-    <Content Include="win32\System.Linq.dll" />
-    <Content Include="win32\System.Linq.Expressions.dll" />
-    <Content Include="win32\System.Linq.Parallel.dll" />
-    <Content Include="win32\System.Linq.Queryable.dll" />
-    <Content Include="win32\System.Net.Http.dll" />
-    <Content Include="win32\System.Net.NameResolution.dll" />
-    <Content Include="win32\System.Net.NetworkInformation.dll" />
-    <Content Include="win32\System.Net.Ping.dll" />
-    <Content Include="win32\System.Net.Primitives.dll" />
-    <Content Include="win32\System.Net.Requests.dll" />
-    <Content Include="win32\System.Net.Security.dll" />
-    <Content Include="win32\System.Net.Sockets.dll" />
-    <Content Include="win32\System.Net.WebHeaderCollection.dll" />
-    <Content Include="win32\System.Net.WebSockets.Client.dll" />
-    <Content Include="win32\System.Net.WebSockets.dll" />
-    <Content Include="win32\System.ObjectModel.dll" />
-    <Content Include="win32\System.Reflection.dll" />
-    <Content Include="win32\System.Reflection.Extensions.dll" />
-    <Content Include="win32\System.Reflection.Metadata.dll" />
-    <Content Include="win32\System.Reflection.Metadata.xml" />
-    <Content Include="win32\System.Reflection.Primitives.dll" />
-    <Content Include="win32\System.Resources.Reader.dll" />
-    <Content Include="win32\System.Resources.ResourceManager.dll" />
-    <Content Include="win32\System.Resources.Writer.dll" />
-    <Content Include="win32\System.Runtime.CompilerServices.VisualC.dll" />
-    <Content Include="win32\System.Runtime.dll" />
-    <Content Include="win32\System.Runtime.Extensions.dll" />
-    <Content Include="win32\System.Runtime.Handles.dll" />
-    <Content Include="win32\System.Runtime.InteropServices.dll" />
-    <Content Include="win32\System.Runtime.InteropServices.RuntimeInformation.dll" />
-    <Content Include="win32\System.Runtime.Numerics.dll" />
-    <Content Include="win32\System.Runtime.Serialization.Formatters.dll" />
-    <Content Include="win32\System.Runtime.Serialization.Json.dll" />
-    <Content Include="win32\System.Runtime.Serialization.Primitives.dll" />
-    <Content Include="win32\System.Runtime.Serialization.Xml.dll" />
-    <Content Include="win32\System.Security.Claims.dll" />
-    <Content Include="win32\System.Security.Cryptography.Algorithms.dll" />
-    <Content Include="win32\System.Security.Cryptography.Csp.dll" />
-    <Content Include="win32\System.Security.Cryptography.Encoding.dll" />
-    <Content Include="win32\System.Security.Cryptography.Primitives.dll" />
-    <Content Include="win32\System.Security.Cryptography.X509Certificates.dll" />
-    <Content Include="win32\System.Security.Principal.dll" />
-    <Content Include="win32\System.Security.SecureString.dll" />
-    <Content Include="win32\System.Text.Encoding.CodePages.dll" />
-    <Content Include="win32\System.Text.Encoding.dll" />
-    <Content Include="win32\System.Text.Encoding.Extensions.dll" />
-    <Content Include="win32\System.Text.RegularExpressions.dll" />
-    <Content Include="win32\System.Threading.dll" />
-    <Content Include="win32\System.Threading.Overlapped.dll" />
-    <Content Include="win32\System.Threading.Tasks.dll" />
-    <Content Include="win32\System.Threading.Tasks.Parallel.dll" />
-    <Content Include="win32\System.Threading.Thread.dll" />
-    <Content Include="win32\System.Threading.ThreadPool.dll" />
-    <Content Include="win32\System.Threading.Timer.dll" />
-    <Content Include="win32\System.ValueTuple.dll" />
-    <Content Include="win32\System.Xml.ReaderWriter.dll" />
-    <Content Include="win32\System.Xml.XDocument.dll" />
-    <Content Include="win32\System.Xml.XmlDocument.dll" />
-    <Content Include="win32\System.Xml.XmlSerializer.dll" />
-    <Content Include="win32\System.Xml.XPath.dll" />
-    <Content Include="win32\System.Xml.XPath.XDocument.dll" />
+    <Content Include="win32\CommandLine.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\CommandLine.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Crevice.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Crevice.Core.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Crevice4.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Crevice4.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Crevice4.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.Scripting.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.Scripting.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.CSharp.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.Scripting.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.Scripting.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.CodeAnalysis.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Microsoft.Win32.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\netstandard.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.AppContext.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Collections.Concurrent.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Collections.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Collections.Immutable.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Collections.Immutable.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Collections.NonGeneric.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Collections.Specialized.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.ComponentModel.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.ComponentModel.EventBasedAsync.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.ComponentModel.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.ComponentModel.TypeConverter.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Console.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Data.Common.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.Contracts.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.Debug.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.FileVersionInfo.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.Process.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.StackTrace.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.TextWriterTraceListener.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.Tools.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.TraceSource.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Diagnostics.Tracing.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Drawing.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Dynamic.Runtime.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Globalization.Calendars.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Globalization.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Globalization.Extensions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.Compression.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.Compression.ZipFile.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.FileSystem.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.FileSystem.DriveInfo.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.FileSystem.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.FileSystem.Watcher.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.IsolatedStorage.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.MemoryMappedFiles.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.Pipes.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.IO.UnmanagedMemoryStream.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Linq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Linq.Expressions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Linq.Parallel.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Linq.Queryable.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.Http.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.NameResolution.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.NetworkInformation.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.Ping.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.Requests.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.Security.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.Sockets.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.WebHeaderCollection.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.WebSockets.Client.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Net.WebSockets.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.ObjectModel.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Reflection.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Reflection.Extensions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Reflection.Metadata.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Reflection.Metadata.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Reflection.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Resources.Reader.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Resources.ResourceManager.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Resources.Writer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.CompilerServices.VisualC.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Extensions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Handles.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.InteropServices.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.InteropServices.RuntimeInformation.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Numerics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Serialization.Formatters.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Serialization.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Serialization.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.Serialization.Xml.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Claims.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Cryptography.Algorithms.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Cryptography.Csp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Cryptography.Encoding.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Cryptography.Primitives.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Cryptography.X509Certificates.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.Principal.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Security.SecureString.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Text.Encoding.CodePages.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Text.Encoding.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Text.Encoding.Extensions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Text.RegularExpressions.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.Overlapped.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.Tasks.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.Tasks.Parallel.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.Thread.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.ThreadPool.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Threading.Timer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.ValueTuple.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Xml.ReaderWriter.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Xml.XDocument.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Xml.XmlDocument.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Xml.XmlSerializer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Xml.XPath.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Xml.XPath.XDocument.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Package.StoreAssociation.xml" />
     <None Include="CreviceAppUniversal_TemporaryKey.pfx" />
   </ItemGroup>
