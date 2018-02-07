@@ -179,13 +179,20 @@ namespace Crevice.UserScript
                     Verbose.Print("UserScriptCacheFile: '{0}' did not exist.", cachePath);
                     return null;
                 }
-                var loadedCache = UserScriptAssembly.Load(cachePath);
-                if (!UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
+                try
                 {
-                    Verbose.Print("UserScriptCacheFile was discarded because the signature was not match with this application.");
-                    return null;
+                    var loadedCache = UserScriptAssembly.Load(cachePath);
+                    if (!UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
+                    {
+                        Verbose.Print("UserScriptCacheFile was discarded because the signature was not match with this application.");
+                        return null;
+                    }
+                    return loadedCache;
                 }
-                return loadedCache;
+                catch (System.Runtime.Serialization.SerializationException)
+                {
+                }
+                return null;
             }
         }
 

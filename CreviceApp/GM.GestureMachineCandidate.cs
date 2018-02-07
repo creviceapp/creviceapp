@@ -26,11 +26,11 @@ namespace Crevice.GestureMachine
             string scriptMetadataResolverBaseDirectory
             )
         {
-            this.UserScriptString = userScriptString;
-            this.UserScriptCacheFile = userScriptCacheFile;
-            this.RestoreAllowed = allowRestore;
-            this.ScriptSourceResolverBaseDirectory = scriptSourceResolverBaseDirectory;
-            this.ScriptMetadataResolverBaseDirectory = scriptMetadataResolverBaseDirectory;
+            UserScriptString = userScriptString;
+            UserScriptCacheFile = userScriptCacheFile;
+            RestoreAllowed = allowRestore;
+            ScriptSourceResolverBaseDirectory = scriptSourceResolverBaseDirectory;
+            ScriptMetadataResolverBaseDirectory = scriptMetadataResolverBaseDirectory;
         }
 
         private Script _parsedUserScript = null;
@@ -103,14 +103,19 @@ namespace Crevice.GestureMachine
             return Create(ctx, UserScriptAssemblyCache);
         }
 
+        private bool _restorationFailed = false;
         private UserScriptAssembly.Cache _restorationCache = null;
         public UserScriptAssembly.Cache RestorationCache
         {
             get
             {
-                if (_restorationCache == null)
+                if (!_restorationFailed && _restorationCache == null)
                 {
                     _restorationCache = UserScript.LoadUserScriptAssemblyCache(UserScriptCacheFile, UserScriptString);
+                    if (_restorationCache == null)
+                    {
+                        _restorationFailed = true;
+                    }
                 }
                 return _restorationCache;
             }
