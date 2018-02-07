@@ -54,6 +54,10 @@ namespace Crevice.UI
         protected readonly GlobalConfig GlobalConfig;
         protected readonly ReloadableGestureMachine ReloadableGestureMachine;
 
+        public MouseGestureForm()
+            : this(new GlobalConfig())
+        { }
+
         public MouseGestureForm(GlobalConfig globalConfig)
         {
             KeyboardHook = new LowLevelKeyboardHook(KeyboardProc);

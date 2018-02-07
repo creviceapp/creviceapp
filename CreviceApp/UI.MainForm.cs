@@ -223,10 +223,8 @@ namespace Crevice.UI
             }
         }
 
-        private void notifyIcon1_Click(object sender, EventArgs e)
-        {
-            OpenLauncherForm();
-        }
+        private void NotifyIcon1_Click(object sender, EventArgs e)
+            => OpenLauncherForm();
 
         private string _lastErrorMessage = "";
         public string LastErrorMessage

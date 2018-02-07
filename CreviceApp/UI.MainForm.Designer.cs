@@ -35,10 +35,10 @@
             // 
             // notifyIcon1
             // 
-            this.NotifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.NotifyIcon1.Icon = Properties.Resources.CreviceIcon;
             this.NotifyIcon1.Text = "Crevice is loading";
             this.NotifyIcon1.BalloonTipClicked += new System.EventHandler(this.NotifyIcon1_BalloonTipClicked);
-            this.NotifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
+            this.NotifyIcon1.Click += new System.EventHandler(this.NotifyIcon1_Click);
             // 
             // MainForm
             // 
