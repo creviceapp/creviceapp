@@ -507,12 +507,22 @@ namespace CreviceApp
     
     public class CustomGestureMachine : GestureMachine<GestureMachineConfig, CustomContextManager, CustomEvaluationContext, CustomExecutionContext>
     {
-        public CustomGestureMachine(CustomRootElement rootElement)
+        public CustomGestureMachine(
+            CustomRootElement rootElement)
             : base(new GestureMachineConfig(), new CustomCallbackManager(), new CustomContextManager(), rootElement)
         { }
 
-        public CustomGestureMachine(GestureMachineConfig gestureMachineConfig, CustomRootElement rootElement)
+        public CustomGestureMachine(
+            GestureMachineConfig gestureMachineConfig, 
+            CustomRootElement rootElement)
             : base(gestureMachineConfig, new CustomCallbackManager(), new CustomContextManager(), rootElement)
+        { }
+    
+        public CustomGestureMachine(
+            GestureMachineConfig gestureMachineConfig, 
+            CustomCallbackManager callbackManager,
+            CustomRootElement rootElement)
+            : base(gestureMachineConfig, callbackManager, new CustomContextManager(), rootElement)
         { }
 
         public override bool Input(IPhysicalEvent evnt, Point? point)

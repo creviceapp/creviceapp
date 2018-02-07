@@ -10,27 +10,29 @@ namespace CreviceApp.Core
 {
     public class GestureMachineExecutionProfile
     {
-        public readonly Config.UserConfig UserConfig = new Config.UserConfig();
+        public readonly CustomCallbackManager CallbackManager = new CustomCallbackManager();
 
         public readonly CustomRootElement RootElement = new CustomRootElement();
-        
+
+        public readonly Config.UserConfig UserConfig;
+
         public readonly string ProfileName;
         
         public GestureMachineExecutionProfile(string profileName)
         {
             ProfileName = profileName;
+            UserConfig = new Config.UserConfig(CallbackManager.Receiver);
         }
     }
-
+    
     public class GestureMachineExecutionProfileManager
-    {
+{
         private readonly List<GestureMachineExecutionProfile> profiles = new List<GestureMachineExecutionProfile>();
+        
         public IReadOnlyList<GestureMachineExecutionProfile> Profiles => profiles;
 
         public void DeclareProfile(string profileName)
-        {
-            profiles.Add(new GestureMachineExecutionProfile(profileName));
-        }
+            => profiles.Add(new GestureMachineExecutionProfile(profileName));
     }
 
     public class UserScriptExecutionContext

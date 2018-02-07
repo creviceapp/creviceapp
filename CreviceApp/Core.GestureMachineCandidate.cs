@@ -146,8 +146,9 @@ namespace CreviceApp.Core
             UserScriptAssembly.Cache userScriptAssembly)
         {
             UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
-            var gestureMachines = from profile in ctx.Profiles
-                                  select new CustomGestureMachine(profile.UserConfig.Gesture, profile.RootElement);
+            var gestureMachines = 
+                from profile in ctx.Profiles
+                select new CustomGestureMachine(profile.UserConfig.Core, profile.CallbackManager, profile.RootElement);
             return new GestureMachineCluster(gestureMachines.ToList());
         }
 
