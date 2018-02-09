@@ -9,7 +9,7 @@ namespace Crevice.GestureMachine
     public class NullGestureMachineCluster : GestureMachineCluster
     {
         public NullGestureMachineCluster()
-            : base(new List<GestureMachine>())
+            : base(new List<GestureMachineProfile>())
         { }
     }
 }

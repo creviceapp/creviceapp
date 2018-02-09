@@ -10,17 +10,26 @@ namespace Crevice.GestureMachine
 {
     public class GestureMachineCluster : IDisposable
     {
-        public IReadOnlyList<GestureMachine> GestureMachines;
+        public IReadOnlyList<GestureMachineProfile> Profiles;
 
-        public GestureMachineCluster(IReadOnlyList<GestureMachine> gestureMachines)
+        public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> gestureMachineProfiles)
         {
-            GestureMachines = gestureMachines;
+            Profiles = gestureMachineProfiles;
         }
-        public bool Input(Crevice.Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
+
+        public void Run()
         {
-            foreach (var gm in GestureMachines)
+            foreach (var profile in Profiles)
             {
-                var eventIsConsumed = gm.Input(physicalEvent, point);
+                profile.GestureMachine.Run(profile.RootElement);
+            }
+        }
+
+        public bool Input(Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
+        {
+            foreach (var profile in Profiles)
+            {
+                var eventIsConsumed = profile.GestureMachine.Input(physicalEvent, point);
                 if (eventIsConsumed == true)
                 {
                     return true;
@@ -29,23 +38,23 @@ namespace Crevice.GestureMachine
             return false;
         }
 
-        public bool Input(Crevice.Core.Events.IPhysicalEvent physicalEvent)
+        public bool Input(Core.Events.IPhysicalEvent physicalEvent)
             => Input(physicalEvent, null);
 
         public void Reset()
         {
-            foreach(var gm in GestureMachines)
+            foreach(var profile in Profiles)
             {
-                gm.Reset();
+                profile.GestureMachine.Reset();
             }
         }
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            foreach (var gm in GestureMachines)
+            foreach (var profile in Profiles)
             {
-                gm.Dispose();
+                profile.GestureMachine.Dispose();
             }
         }
 

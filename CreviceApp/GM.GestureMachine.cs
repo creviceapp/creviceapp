@@ -18,6 +18,22 @@ namespace Crevice.GestureMachine
     
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
+
+        public GestureMachine()
+            : base(new GestureMachineConfig(), new CallbackManager(), new ContextManager())
+        { }
+
+        public GestureMachine(
+            GestureMachineConfig gestureMachineConfig)
+            : base(gestureMachineConfig, new CallbackManager(), new ContextManager())
+        { }
+
+        public GestureMachine(
+            GestureMachineConfig gestureMachineConfig,
+            CallbackManager callbackManager)
+            : base(gestureMachineConfig, callbackManager, new ContextManager())
+        { }
+
         public GestureMachine(
             RootElement rootElement)
             : base(new GestureMachineConfig(), new CallbackManager(), new ContextManager(), rootElement)

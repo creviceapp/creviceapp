@@ -131,6 +131,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GM.GestureMachineProfile.cs" />
     <Compile Include="Config.GlobalConfig.cs" />
     <Compile Include="Config.CLIOption.cs" />
     <Compile Include="GM.ContextManager.cs" />

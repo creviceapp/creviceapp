@@ -13,11 +13,13 @@ namespace Crevice.Core.DSL
     public interface IReadOnlyElement
     {
         bool IsFull { get; }
+        int GestureCount { get; }
     }
 
     public abstract class Element : IReadOnlyElement
     {
         public abstract bool IsFull { get; }
+        public abstract int GestureCount { get; }
     }
     
     public interface IReadOnlyRootElement<TEvalContext, TExecContext> : IReadOnlyElement
@@ -32,6 +34,8 @@ namespace Crevice.Core.DSL
         where TExecContext : ExecutionContext
     {
         public override bool IsFull => WhenElements.Any(e => e.IsFull);
+
+        public override int GestureCount => WhenElements.Sum(e => e.GestureCount);
 
         private readonly List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
         public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> WhenElements => whenElements;
@@ -61,6 +65,10 @@ namespace Crevice.Core.DSL
             => WhenEvaluator != null &&
                 (SingleThrowElements.Any(e => e.IsFull) ||
                  DoubleThrowElements.Any(e => e.IsFull));
+
+        public override int GestureCount
+            => SingleThrowElements.Sum(e => e.GestureCount) +
+               DoubleThrowElements.Sum(e => e.GestureCount);
 
         public EvaluateAction<TEvalContext> WhenEvaluator { get; }
 
@@ -115,7 +123,9 @@ namespace Crevice.Core.DSL
         where TExecContext : ExecutionContext
     {
         public override bool IsFull => Trigger != null && DoExecutors.Any(e => e != null);
-        
+
+        public override int GestureCount => DoExecutors.Count;
+
         public FireEvent Trigger { get; }
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
@@ -156,6 +166,14 @@ namespace Crevice.Core.DSL
                  SingleThrowElements.Any(e => e.IsFull) ||
                  DoubleThrowElements.Any(e => e.IsFull) ||
                  StrokeElements.Any(e => e.IsFull));
+        
+        public override int GestureCount
+            => SingleThrowElements.Sum(e => e.GestureCount) +
+               DoubleThrowElements.Sum(e => e.GestureCount) +
+               StrokeElements.Sum(e => e.GestureCount) +
+               PressExecutors.Count +
+               DoExecutors.Count +
+               ReleaseExecutors.Count;
 
         public PressEvent Trigger { get; }
 
@@ -247,6 +265,8 @@ namespace Crevice.Core.DSL
         where TExecContext : ExecutionContext
     {
         public override bool IsFull => Strokes.Any() && DoExecutors.Any(e => e != null);
+
+        public override int GestureCount => DoExecutors.Count;
 
         public IReadOnlyList<StrokeDirection> Strokes { get; }
 

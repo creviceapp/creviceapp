@@ -30,6 +30,8 @@ namespace Crevice.Core.FSM
 
         internal readonly EventCounter<PhysicalReleaseEvent> invalidEvents = new EventCounter<PhysicalReleaseEvent>();
 
+        public IReadOnlyRootElement<TEvalContext, TExecContext> RootElement { get; internal set; }
+
         public StrokeWatcher StrokeWatcher { get; internal set; }
 
         private IState _currentState = null;
@@ -65,7 +67,7 @@ namespace Crevice.Core.FSM
             TConfig config,
             CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callbackManager,
             TContextManager contextManager,
-            RootElement<TEvalContext, TExecContext> rootElement)
+            IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             : this(config, callbackManager, contextManager)
         {
             Run(rootElement);
@@ -85,14 +87,18 @@ namespace Crevice.Core.FSM
 
         public bool IsRunning { get; internal set; } = false;
 
-        public virtual void Run(RootElement<TEvalContext, TExecContext> rootElement)
+        public virtual void Run(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
         {
-            if (IsRunning)
+            lock (lockObject)
             {
-                throw new InvalidOperationException();
+                if (IsRunning)
+                {
+                    throw new InvalidOperationException();
+                }
+                CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
+                RootElement = rootElement;
+                IsRunning = true;
             }
-            CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
-            IsRunning = true;
         }
 
         public virtual bool Input(IPhysicalEvent evnt) => Input(evnt, null);

@@ -16,7 +16,7 @@ namespace Crevice.Core.FSM
         where TExecContext : ExecutionContext
     {
         public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
-        public readonly RootElement<TEvalContext, TExecContext> RootElement;
+        public readonly IReadOnlyRootElement<TEvalContext, TExecContext> RootElement;
 
         public readonly IReadOnlyCollection<FireEvent> SingleThrowTriggers;
         public bool IsSingleThrowTrigger(PhysicalFireEvent fireEvent)
@@ -30,7 +30,7 @@ namespace Crevice.Core.FSM
 
         public State0(
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
-            RootElement<TEvalContext, TExecContext> rootElement)
+            IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             : base(depth: 0)
         {
             Machine = machine;
@@ -108,7 +108,7 @@ namespace Crevice.Core.FSM
                         select s))
                 .Aggregate(new List<IReadOnlySingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        private static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(RootElement<TEvalContext, TExecContext> rootElement)
+        private static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
@@ -117,7 +117,7 @@ namespace Crevice.Core.FSM
                     select s.Trigger))
                 .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
-        private static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(RootElement<TEvalContext, TExecContext> rootElement)
+        private static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (

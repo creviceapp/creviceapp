@@ -92,10 +92,7 @@ namespace Crevice.GestureMachine
             UserScriptAssembly.Cache userScriptAssembly)
         {
             UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
-            var gestureMachines = 
-                from profile in ctx.Profiles
-                select new GestureMachine(profile.UserConfig.Core, profile.CallbackManager, profile.RootElement);
-            return new GestureMachineCluster(gestureMachines.ToList());
+            return new GestureMachineCluster(ctx.Profiles);
         }
 
         public GestureMachineCluster CreateNew(UserScriptExecutionContext ctx)

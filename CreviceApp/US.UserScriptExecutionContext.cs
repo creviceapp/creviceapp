@@ -9,42 +9,14 @@ using System.Windows.Forms;
 namespace Crevice.UserScript
 {
     using Crevice.Config;
-    using Crevice.DSL;
     using Crevice.GestureMachine;
     using Crevice.UserScript.Keys;
 
-    public class GestureMachineExecutionProfile
-    {
-        public readonly CallbackManager CallbackManager = new CallbackManager();
-
-        public readonly RootElement RootElement = new RootElement();
-
-        public readonly UserConfig UserConfig;
-
-        public readonly string ProfileName;
-        
-        public GestureMachineExecutionProfile(string profileName)
-        {
-            ProfileName = profileName;
-            UserConfig = new UserConfig(CallbackManager.Receiver);
-        }
-    }
-    
-    public class GestureMachineExecutionProfileManager
-{
-        private readonly List<GestureMachineExecutionProfile> profiles = new List<GestureMachineExecutionProfile>();
-        
-        public IReadOnlyList<GestureMachineExecutionProfile> Profiles => profiles;
-
-        public void DeclareProfile(string profileName)
-            => profiles.Add(new GestureMachineExecutionProfile(profileName));
-    }
-
     public class UserScriptExecutionContext
     {
-        private readonly GestureMachineExecutionProfileManager ProfileManager = new GestureMachineExecutionProfileManager();
+        private readonly GestureMachineProfileManager ProfileManager = new GestureMachineProfileManager();
 
-        public GestureMachineExecutionProfile CurrentProfile
+        public GestureMachineProfile CurrentProfile
         {
             get
             {
@@ -59,12 +31,13 @@ namespace Crevice.UserScript
         public void DeclareProfile(string profileName)
             => ProfileManager.DeclareProfile(profileName);
 
-        public IReadOnlyList<GestureMachineExecutionProfile> Profiles
+        public IReadOnlyList<GestureMachineProfile> Profiles
             => ProfileManager.Profiles;
 
         public readonly SupportedKeys.LogicalKeyDeclaration Keys = SupportedKeys.Keys;
 
-        public readonly SupportedKeys.PhysicalKeyDeclaration PhysicalKeys = SupportedKeys.PhysicalKeys;
+        public readonly IReadOnlyList<SupportedKeys.PhysicalKeyDeclaration> PhysicalKeys =
+            new List<SupportedKeys.PhysicalKeyDeclaration>() { SupportedKeys.PhysicalKeys };
 
         public readonly WinAPI.SendInput.SingleInputSender SendInput = new WinAPI.SendInput.SingleInputSender();
 

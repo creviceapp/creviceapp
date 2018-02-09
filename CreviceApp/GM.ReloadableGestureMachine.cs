@@ -44,7 +44,7 @@ namespace Crevice.GestureMachine
 
         private GetGestureMachineResult GetGestureMachine()
         {
-            var restoreFromCache = !IsActivated() || !GlobalConfig.CLIOption.NoCache; // should not use CLIOption here
+            var restoreFromCache = !IsActivated() || !GlobalConfig.CLIOption.NoCache;
             var saveCache = !GlobalConfig.CLIOption.NoCache;
             var userScriptString = GlobalConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
             var candidate = new GestureMachineCandidate(
@@ -108,7 +108,6 @@ namespace Crevice.GestureMachine
         private bool reloadRequest = false;
         private bool reloading = false;
 
-        // Reloadでいいのでは
         public void HotReload()
         {
             using (Verbose.PrintElapsed("Request hot-reload GestureMachine"))
@@ -133,16 +132,12 @@ namespace Crevice.GestureMachine
                             reloadRequest = false;
                             try
                             {
-                                var result = GetGestureMachine();
-                                var gestureMachine = result.Item1;
-                                var compilationErrors = result.Item2;
-                                var runtimeError = result.Item3;
-
+                                var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
                                 var balloonIconTitle = "";
                                 var balloonIconMessage = "";
                                 var balloonIcon = ToolTipIcon.None;
                                 var lastErrorMessage = "";
-                                if (gestureMachine == null)
+                                if (gmCluster == null)
                                 {
                                     balloonIconTitle = "UserScript Compilation Error";
                                     balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.",
@@ -152,10 +147,12 @@ namespace Crevice.GestureMachine
                                 }
                                 else
                                 {
-                                    //var gestures = gestureMachine.GestureDefinition.Count();
-                                    var activatedMessage = string.Format("{0} Gestures Activated", "gestures");
+                                    gmCluster.Run();
 
-                                    Instance = gestureMachine;
+                                    var gestures = gmCluster.Profiles.Select(p => p.RootElement.GestureCount).Sum();
+                                    var activatedMessage = string.Format("{0} Gestures Activated", gestures);
+
+                                    Instance = gmCluster;
                                     if (runtimeError == null)
                                     {
                                         balloonIcon = ToolTipIcon.Info;
@@ -169,7 +166,9 @@ namespace Crevice.GestureMachine
                                         balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
                                         lastErrorMessage = runtimeError.ToString();
                                     }
-                                    GlobalConfig.MainForm.UpdateTasktrayMessage("Gestures: {0}", "gestures");
+                                    var perProfileGestures = gmCluster.Profiles
+                                        .Select(p => $"{p.ProfileName}: {p.RootElement.GestureCount}");
+                                    GlobalConfig.MainForm.UpdateTasktrayMessage(string.Join("\r\n", perProfileGestures));
                                 }
                                 GlobalConfig.MainForm.LastErrorMessage = lastErrorMessage;
                                 GlobalConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
