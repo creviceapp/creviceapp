@@ -28,9 +28,7 @@ init:
 
 before_build:
   - cmd: |
-      cd "CreviceApp"
       nuget restore
-      cd ..
 
 build:
   project: CreviceApp\CreviceApp.sln
@@ -39,10 +37,12 @@ build:
 
 after_test:
   - ps: |
-      cd "CreviceApp"
+      Get-ChildItem CreviceLib\bin\Release\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+      
+      cd CreviceApp
       $tag     = $env:appveyor_repo_tag
       $tagname = $env:appveyor_repo_tag_name
-      $artifact = "crevice"
+      $artifact = "Crevice4"
       Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
       cd "dist"
       Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }

@@ -4,6 +4,7 @@
     <TargetFrameworks>net4.6;netstandard2.0</TargetFrameworks>
     <RootNamespace>Crevice.Core</RootNamespace>
     <AssemblyName>Crevice.Core</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
