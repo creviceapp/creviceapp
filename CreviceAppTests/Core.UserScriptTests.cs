@@ -140,7 +140,7 @@ namespace CreviceTests
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             Assert.AreEqual(parsedScript.Code, userScriptString);
             Assert.AreEqual(parsedScript.GlobalsType.Name, "UserScriptExecutionContext");
-            Assert.AreEqual(parsedScript.GlobalsType.FullName, "CreviceApp.Core.UserScriptExecutionContext");
+            Assert.AreEqual(parsedScript.GlobalsType.FullName, "Crevice.UserScript.UserScriptExecutionContext");
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("mscorlib.dll")));
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("System.dll")));
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("System.Core.dll")));
@@ -190,7 +190,7 @@ namespace CreviceTests
         {
             // When the user script which using CreviceApp API is given.
             var globalConfig = new GlobalConfig();
-            var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
+            var userScriptString = "using static Crevice.WinAPI.Constants.WindowsMessages;";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
@@ -249,7 +249,7 @@ namespace CreviceTests
         {
             // When the user script which using CreviceApp API is given.
             var globalConfig = new GlobalConfig();
-            var userScriptString = "using static CreviceApp.WinAPI.Constants.WindowsMessages;";
+            var userScriptString = "using static Crevice.WinAPI.Constants.WindowsMessages;";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
             var ctx = new UserScriptExecutionContext(globalConfig);
