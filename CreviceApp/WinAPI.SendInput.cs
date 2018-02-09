@@ -137,6 +137,7 @@ namespace Crevice.WinAPI.SendInput
         private const int WHEEL_DELTA = 120;
 
         private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
+        private readonly UIntPtr KEYBOARDEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
 
         protected void Send(INPUT[] input)
         {
@@ -366,7 +367,7 @@ namespace Crevice.WinAPI.SendInput
         {
             var keyboardInput = new KEYBDINPUT();
             // Set the CreviceApp signature to the keyboard event
-            keyboardInput.dwExtraInfo = MOUSEEVENTF_CREVICE_APP;
+            keyboardInput.dwExtraInfo = KEYBOARDEVENTF_CREVICE_APP;
             keyboardInput.time = 0;
             return keyboardInput;
         }
