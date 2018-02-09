@@ -42,7 +42,7 @@ namespace Crevice.Core.FSM
         }
 
         public static bool CanTransition<TExecContext>(
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             where TExecContext : ExecutionContext
             => doubleThrowElements.Any(d =>
                     d.DoExecutors.Any() ||
@@ -51,17 +51,17 @@ namespace Crevice.Core.FSM
                     d.DoubleThrowElements.Any(dd => dd.IsFull));
 
         public static bool HasPressExecutors<TExecContext>(
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             where TExecContext : ExecutionContext
             => doubleThrowElements.Any(d => d.PressExecutors.Any());
 
         public static bool HasDoExecutors<TExecContext>(
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             where TExecContext : ExecutionContext
             => doubleThrowElements.Any(d => d.DoExecutors.Any());
 
         public static bool HasReleaseExecutors<TExecContext>(
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             where TExecContext : ExecutionContext
             => doubleThrowElements.Any(d => d.ReleaseExecutors.Any());
     }

@@ -23,13 +23,13 @@ namespace Crevice.Core.Context
         public virtual TExecContext CreateExecutionContext(TEvalContext evaluationContext)
             => throw new NotImplementedException();
 
-        public virtual bool Evaluate(TEvalContext evalContext, WhenElement<TEvalContext, TExecContext> whenElement)
+        public virtual bool Evaluate(TEvalContext evalContext, IReadOnlyWhenElement<TEvalContext, TExecContext> whenElement)
             => whenElement.WhenEvaluator(evalContext);
 
         public virtual void Execute(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
             => executeAction(execContext);
 
-        public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {
@@ -44,7 +44,7 @@ namespace Crevice.Core.Context
             }
         }
 
-        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {
@@ -59,7 +59,7 @@ namespace Crevice.Core.Context
             }
         }
 
-        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<SingleThrowElement<TExecContext>> singleThrowElements)
+        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlySingleThrowElement<TExecContext>> singleThrowElements)
         {
             if (singleThrowElements.Any())
             {
@@ -74,7 +74,7 @@ namespace Crevice.Core.Context
             }
         }
 
-        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<StrokeElement<TExecContext>> strokeElements)
+        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyStrokeElement<TExecContext>> strokeElements)
         {
             if (strokeElements.Any())
             {
@@ -89,7 +89,7 @@ namespace Crevice.Core.Context
             }
         }
 
-        public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<DoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {

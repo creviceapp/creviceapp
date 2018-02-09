@@ -22,7 +22,7 @@ namespace Crevice.GestureMachine
 
         public override bool Evaluate(
             EvaluationContext evalContext,
-            WhenElement<EvaluationContext, ExecutionContext> whenElement)
+            IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
         {
             var task = Task.Factory.StartNew(() =>
             {

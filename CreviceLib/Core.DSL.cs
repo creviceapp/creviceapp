@@ -10,19 +10,31 @@ namespace Crevice.Core.DSL
     using Crevice.Core.Keys;
     using Crevice.Core.Stroke;
 
-    public abstract class Element
+    public interface IReadOnlyElement
+    {
+        bool IsFull { get; }
+    }
+
+    public abstract class Element : IReadOnlyElement
     {
         public abstract bool IsFull { get; }
     }
-
-    public class RootElement<TEvalContext, TExecContext> : Element
+    
+    public interface IReadOnlyRootElement<TEvalContext, TExecContext> : IReadOnlyElement
+        where TEvalContext : EvaluationContext
+        where TExecContext : ExecutionContext
+    {
+        IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> WhenElements { get; }
+    }
+    
+    public class RootElement<TEvalContext, TExecContext> : Element, IReadOnlyRootElement<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
         public override bool IsFull => WhenElements.Any(e => e.IsFull);
 
         private readonly List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
-        public IReadOnlyList<WhenElement<TEvalContext, TExecContext>> WhenElements => whenElements;
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> WhenElements => whenElements;
 
         public WhenElement<TEvalContext, TExecContext> When(EvaluateAction<TEvalContext> evaluator)
         {
@@ -32,7 +44,16 @@ namespace Crevice.Core.DSL
         }
     }
 
-    public class WhenElement<TEvalContext, TExecContext> : Element
+    public interface IReadOnlyWhenElement<TEvalContext, TExecContext> : IReadOnlyElement
+        where TEvalContext : EvaluationContext
+        where TExecContext : ExecutionContext
+    {
+        EvaluateAction<TEvalContext> WhenEvaluator { get; }
+        IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> SingleThrowElements { get; }
+        IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements { get; }
+    }
+
+    public class WhenElement<TEvalContext, TExecContext> : Element, IReadOnlyWhenElement<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
@@ -41,13 +62,13 @@ namespace Crevice.Core.DSL
                 (SingleThrowElements.Any(e => e.IsFull) ||
                  DoubleThrowElements.Any(e => e.IsFull));
 
-        public readonly EvaluateAction<TEvalContext> WhenEvaluator;
+        public EvaluateAction<TEvalContext> WhenEvaluator { get; }
 
         private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
-        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
+        public IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
 
         private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements;
+        public IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements;
 
         public WhenElement(EvaluateAction<TEvalContext> evaluator)
         {
@@ -83,12 +104,19 @@ namespace Crevice.Core.DSL
         }
     }
 
-    public class SingleThrowElement<TExecContext> : Element
+    public interface IReadOnlySingleThrowElement<TExecContext> : IReadOnlyElement
+        where TExecContext : ExecutionContext
+    {
+        FireEvent Trigger { get; }
+        IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
+    }
+
+    public class SingleThrowElement<TExecContext> : Element, IReadOnlySingleThrowElement<TExecContext>
         where TExecContext : ExecutionContext
     {
         public override bool IsFull => Trigger != null && DoExecutors.Any(e => e != null);
         
-        public readonly FireEvent Trigger;
+        public FireEvent Trigger { get; }
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
         public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
@@ -105,7 +133,19 @@ namespace Crevice.Core.DSL
         }
     }
 
-    public class DoubleThrowElement<TExecContext> : Element
+    public interface IReadOnlyDoubleThrowElement<TExecContext> : IReadOnlyElement
+        where TExecContext : ExecutionContext
+    {
+        PressEvent Trigger { get; }
+        IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> SingleThrowElements { get; }
+        IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements { get; }
+        IReadOnlyList<IReadOnlyStrokeElement<TExecContext>> StrokeElements { get; }
+        IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors { get; }
+        IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
+        IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors { get; }
+    }
+
+    public class DoubleThrowElement<TExecContext> : Element, IReadOnlyDoubleThrowElement<TExecContext>
         where TExecContext : ExecutionContext
     {
         public override bool IsFull
@@ -117,18 +157,16 @@ namespace Crevice.Core.DSL
                  DoubleThrowElements.Any(e => e.IsFull) ||
                  StrokeElements.Any(e => e.IsFull));
 
-        public readonly KeyType Key;
-
-        public readonly PressEvent Trigger;
+        public PressEvent Trigger { get; }
 
         private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
-        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
+        public IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
 
         private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements;
+        public IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements;
 
         private readonly List<StrokeElement<TExecContext>> strokeElements = new List<StrokeElement<TExecContext>>();
-        public IReadOnlyList<StrokeElement<TExecContext>> StrokeElements => strokeElements;
+        public IReadOnlyList<IReadOnlyStrokeElement<TExecContext>> StrokeElements => strokeElements;
 
         private readonly List<ExecuteAction<TExecContext>> pressExecutors = new List<ExecuteAction<TExecContext>>();
         public IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors => pressExecutors;
@@ -198,12 +236,19 @@ namespace Crevice.Core.DSL
         }
     }
 
-    public class StrokeElement<TExecContext> : Element
+    public interface IReadOnlyStrokeElement<TExecContext> : IReadOnlyElement
+        where TExecContext : ExecutionContext
+    {
+        IReadOnlyList<StrokeDirection> Strokes { get; }
+        IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
+    }
+
+    public class StrokeElement<TExecContext> : Element, IReadOnlyStrokeElement<TExecContext>
         where TExecContext : ExecutionContext
     {
         public override bool IsFull => Strokes.Any() && DoExecutors.Any(e => e != null);
 
-        public readonly IReadOnlyList<StrokeDirection> Strokes;
+        public IReadOnlyList<StrokeDirection> Strokes { get; }
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
         public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;

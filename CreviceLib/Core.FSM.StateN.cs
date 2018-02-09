@@ -20,7 +20,7 @@ namespace Crevice.Core.FSM
 
         public readonly TEvalContext Ctx;
         public readonly History History;
-        public readonly IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements;
+        public readonly IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements;
         public readonly bool CanCancel;
         
         public readonly IReadOnlyCollection<FireEvent> SingleThrowTriggers;
@@ -45,7 +45,7 @@ namespace Crevice.Core.FSM
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             TEvalContext ctx,
             History history,
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements,
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements,
             int depth,
             bool canCancel = true)
             : base(depth)
@@ -196,7 +196,7 @@ namespace Crevice.Core.FSM
         public IReadOnlyCollection<PhysicalReleaseEvent> GetAbnormalEndTriggers(IReadOnlyList<HistoryRecord> history)
             => new HashSet<PhysicalReleaseEvent>(from h in history.Reverse().Skip(1) select h.ReleaseEvent);
 
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> GetDoubleThrowElements(PhysicalPressEvent triggerEvent)
+        public IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> GetDoubleThrowElements(PhysicalPressEvent triggerEvent)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
@@ -204,18 +204,18 @@ namespace Crevice.Core.FSM
                     where dd.IsFull && (dd.Trigger.Equals(triggerEvent) ||
                                         dd.Trigger.Equals(triggerEvent.LogicalNormalized))
                     select dd))
-                .Aggregate(new List<DoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+                .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyList<StrokeElement<TExecContext>> GetStrokeElements(IReadOnlyList<StrokeDirection> strokes)
+        public IReadOnlyList<IReadOnlyStrokeElement<TExecContext>> GetStrokeElements(IReadOnlyList<StrokeDirection> strokes)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
                     from ds in d.StrokeElements
                     where ds.IsFull && ds.Strokes.SequenceEqual(strokes)
                     select ds))
-                .Aggregate(new List<StrokeElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+                .Aggregate(new List<IReadOnlyStrokeElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyList<SingleThrowElement<TExecContext>> GetSingleThrowElements(PhysicalFireEvent triggerEvent)
+        public IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> GetSingleThrowElements(PhysicalFireEvent triggerEvent)
             => (from d in DoubleThrowElements
                 where d.IsFull
                 select (
@@ -223,10 +223,10 @@ namespace Crevice.Core.FSM
                     where ds.IsFull && (ds.Trigger.Equals(triggerEvent) ||
                                        ds.Trigger.Equals(triggerEvent.LogicalNormalized))
                     select ds))
-                .Aggregate(new List<SingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+                .Aggregate(new List<IReadOnlySingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
         
         public static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => (from d in doubleThrowElements
                 where d.IsFull
                 select (
@@ -236,7 +236,7 @@ namespace Crevice.Core.FSM
                 .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
         public static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(
-            IReadOnlyList<DoubleThrowElement<TExecContext>> doubleThrowElements)
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => (from ds in doubleThrowElements
                 where ds.IsFull
                 select (
