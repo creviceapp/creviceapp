@@ -27,6 +27,63 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
+        public void ConstructorTest()
+        {
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine())
+                {
+                    Assert.AreEqual(gm.IsRunning, false);
+                    gm.Run(root);
+                    Assert.AreEqual(gm.IsRunning, true);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .Do((ctx) => { });
+                using (var gm = new TestGestureMachine(root))
+                {
+                    Assert.AreEqual(gm.IsRunning, true);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void RunTest()
+        {
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine())
+                {
+                    Assert.AreEqual(gm.IsRunning, false);
+                    gm.Run(root);
+                    Assert.AreEqual(gm.IsRunning, true);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    Assert.AreEqual(gm.IsRunning, true);
+                }
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void RunThrowsInvalidOperationExceptionWhenCalledTwiceTest()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine())
+            {
+                gm.Run(root);
+                gm.Run(root);
+            }
+        }
+
+        [TestMethod]
         public void PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN()
         {
             var root = new TestRootElement();

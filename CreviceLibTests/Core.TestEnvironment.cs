@@ -135,11 +135,22 @@ namespace CreviceLibTests
 
     class TestGestureMachine : GestureMachine<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>
     {
+        // New and Run(rootElement) pattern.
+        public TestGestureMachine()
+            : this(new TestCallbackManager())
+        { }
+
+        public TestGestureMachine(
+            TestCallbackManager callbackManger)
+            : base(new TestGestureMachineConfig(), callbackManger, new TestContextManager())
+        { }
+
+        // New(rootElement) pattern.
         public TestGestureMachine(
             TestRootElement rootElement)
             : this(rootElement, new TestCallbackManager())
         { }
-
+        
         public TestGestureMachine(
             TestRootElement rootElement,
             TestCallbackManager callbackManger)

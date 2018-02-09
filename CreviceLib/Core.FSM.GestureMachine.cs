@@ -32,14 +32,14 @@ namespace Crevice.Core.FSM
 
         public StrokeWatcher StrokeWatcher { get; internal set; }
 
-        private IState currentState = null;
+        private IState _currentState = null;
         public IState CurrentState
         {
-            get => currentState;
+            get => _currentState;
 
             internal set
             {
-                if (currentState != value)
+                if (_currentState != value)
                 {
                     ResetStrokeWatcher();
                     CallbackManager.OnStrokeReset();
@@ -51,9 +51,9 @@ namespace Crevice.Core.FSM
                     {
                         ResetGestureTimeoutTimer();
                     }
-                    var lastState = currentState;
-                    currentState = value;
-                    CallbackManager.OnStateChanged(lastState, currentState);
+                    var lastState = _currentState;
+                    _currentState = value;
+                    CallbackManager.OnStateChanged(lastState, _currentState);
                 }
             }
         }
@@ -63,16 +63,36 @@ namespace Crevice.Core.FSM
 
         public GestureMachine(
             TConfig config,
-            CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callback,
+            CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callbackManager,
             TContextManager contextManager,
             RootElement<TEvalContext, TExecContext> rootElement)
+            : this(config, callbackManager, contextManager)
+        {
+            Run(rootElement);
+        }
+
+        public GestureMachine(
+            TConfig config,
+            CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callbackManager,
+            TContextManager contextManager)
         {
             Config = config;
-            CallbackManager = callback;
+            CallbackManager = callbackManager;
             ContextManager = contextManager;
 
             SetupGestureTimeoutTimer();
+        }
+
+        public bool IsRunning { get; internal set; } = false;
+
+        public virtual void Run(RootElement<TEvalContext, TExecContext> rootElement)
+        {
+            if (IsRunning)
+            {
+                throw new InvalidOperationException();
+            }
             CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
+            IsRunning = true;
         }
 
         public virtual bool Input(IPhysicalEvent evnt) => Input(evnt, null);
