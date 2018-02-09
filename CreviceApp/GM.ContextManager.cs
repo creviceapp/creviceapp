@@ -31,7 +31,7 @@ namespace Crevice.GestureMachine
             try
             {
                 // todo: config
-                return task.Wait(20);
+                return task.Wait(100);
             }
             catch (Exception)
             {

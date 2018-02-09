@@ -12,9 +12,9 @@ namespace Crevice.GestureMachine
     {
         public IReadOnlyList<GestureMachineProfile> Profiles;
 
-        public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> gestureMachineProfiles)
+        public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> profiles)
         {
-            Profiles = gestureMachineProfiles;
+            Profiles = profiles;
         }
 
         public void Run()

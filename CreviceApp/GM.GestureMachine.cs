@@ -18,16 +18,6 @@ namespace Crevice.GestureMachine
     
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
-
-        public GestureMachine()
-            : base(new GestureMachineConfig(), new CallbackManager(), new ContextManager())
-        { }
-
-        public GestureMachine(
-            GestureMachineConfig gestureMachineConfig)
-            : base(gestureMachineConfig, new CallbackManager(), new ContextManager())
-        { }
-
         public GestureMachine(
             GestureMachineConfig gestureMachineConfig,
             CallbackManager callbackManager)
@@ -37,19 +27,6 @@ namespace Crevice.GestureMachine
         public GestureMachine(
             RootElement rootElement)
             : base(new GestureMachineConfig(), new CallbackManager(), new ContextManager(), rootElement)
-        { }
-
-        public GestureMachine(
-            GestureMachineConfig gestureMachineConfig, 
-            RootElement rootElement)
-            : base(gestureMachineConfig, new CallbackManager(), new ContextManager(), rootElement)
-        { }
-    
-        public GestureMachine(
-            GestureMachineConfig gestureMachineConfig, 
-            CallbackManager callbackManager,
-            RootElement rootElement)
-            : base(gestureMachineConfig, callbackManager, new ContextManager(), rootElement)
         { }
 
         public override bool Input(IPhysicalEvent evnt, Point? point)

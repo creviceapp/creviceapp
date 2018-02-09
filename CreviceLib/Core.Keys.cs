@@ -81,7 +81,6 @@ namespace Crevice.Core.Keys
         }
     }
     
-
     public class PhysicalSingleThrowKeySet : KeySet<PhysicalSingleThrowKey>
     {
         public override PhysicalSingleThrowKey Create(int index)
@@ -133,7 +132,6 @@ namespace Crevice.Core.Keys
         }
     }
     
-
     public class PhysicalDoubleThrowKeySet : KeySet<PhysicalDoubleThrowKey>
     {
         public override PhysicalDoubleThrowKey Create(int index)
