@@ -9,7 +9,7 @@ namespace Crevice.GestureMachine
     using System.Drawing;
     using Crevice.Core.FSM;
     using Crevice.Core.Events;
-    using Crevice.Element;
+    using Crevice.DSL;
 
     public class NullGestureMachine : GestureMachine
     {

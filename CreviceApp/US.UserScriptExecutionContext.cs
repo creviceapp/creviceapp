@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace Crevice.UserScript
 {
     using Crevice.Config;
-    using Crevice.Element;
+    using Crevice.DSL;
     using Crevice.GestureMachine;
     using Crevice.UserScript.Keys;
 

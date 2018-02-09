@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crevice.Element
+namespace Crevice.DSL
 {
     using Crevice.Core.DSL;
     using Crevice.GestureMachine;
