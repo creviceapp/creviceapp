@@ -15,12 +15,6 @@ namespace Crevice.Core.DSL
         public abstract bool IsFull { get; }
     }
 
-    // Todo: Clone interface
-
-    /* RootElement
-     * 
-     * .When() -> new WhenElement
-     */
     public class RootElement<TEvalContext, TExecContext> : Element
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
@@ -28,7 +22,7 @@ namespace Crevice.Core.DSL
         public override bool IsFull => WhenElements.Any(e => e.IsFull);
 
         private readonly List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
-        public IReadOnlyList<WhenElement<TEvalContext, TExecContext>> WhenElements => whenElements.ToList();
+        public IReadOnlyList<WhenElement<TEvalContext, TExecContext>> WhenElements => whenElements;
 
         public WhenElement<TEvalContext, TExecContext> When(EvaluateAction<TEvalContext> evaluator)
         {
@@ -38,12 +32,6 @@ namespace Crevice.Core.DSL
         }
     }
 
-    /* WhenElement
-     * 
-     * .On(FireEvent) -> new SingleThrowElement
-     * 
-     * .On(PressEvent) -> new DoubleThrowElement
-     */
     public class WhenElement<TEvalContext, TExecContext> : Element
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
@@ -56,10 +44,10 @@ namespace Crevice.Core.DSL
         public readonly EvaluateAction<TEvalContext> WhenEvaluator;
 
         private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
-        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements.ToList();
+        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
 
         private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements.ToList();
+        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements;
 
         public WhenElement(EvaluateAction<TEvalContext> evaluator)
         {
@@ -95,10 +83,6 @@ namespace Crevice.Core.DSL
         }
     }
 
-    /* SingleThrowElement
-     * 
-     * .Do() -> this
-     */
     public class SingleThrowElement<TExecContext> : Element
         where TExecContext : ExecutionContext
     {
@@ -107,7 +91,7 @@ namespace Crevice.Core.DSL
         public readonly FireEvent Trigger;
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
 
         public SingleThrowElement(FireEvent fireEvent)
         {
@@ -121,19 +105,6 @@ namespace Crevice.Core.DSL
         }
     }
 
-    /* 
-     * .Press() -> this 
-     * 
-     * .Do() -> this 
-     * 
-     * .Release() -> this 
-     * 
-     * .On(FireEvent) -> new SingleThrowElement
-     * 
-     * .On(PressEvent) -> new DoubleThrowElement
-     * 
-     * .On(StrokeEvent) -> new StrokeEelement
-     */
     public class DoubleThrowElement<TExecContext> : Element
         where TExecContext : ExecutionContext
     {
@@ -151,22 +122,22 @@ namespace Crevice.Core.DSL
         public readonly PressEvent Trigger;
 
         private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
-        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements.ToList();
+        public IReadOnlyList<SingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
 
         private readonly List<DoubleThrowElement<TExecContext>> doubleThrowElements = new List<DoubleThrowElement<TExecContext>>();
-        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements.ToList();
+        public IReadOnlyList<DoubleThrowElement<TExecContext>> DoubleThrowElements => doubleThrowElements;
 
         private readonly List<StrokeElement<TExecContext>> strokeElements = new List<StrokeElement<TExecContext>>();
-        public IReadOnlyList<StrokeElement<TExecContext>> StrokeElements => strokeElements.ToList();
+        public IReadOnlyList<StrokeElement<TExecContext>> StrokeElements => strokeElements;
 
         private readonly List<ExecuteAction<TExecContext>> pressExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors => pressExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors => pressExecutors;
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
 
         private readonly List<ExecuteAction<TExecContext>> releaseExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors => releaseExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors => releaseExecutors;
 
         public DoubleThrowElement(PressEvent pressEvent)
         {
@@ -227,9 +198,6 @@ namespace Crevice.Core.DSL
         }
     }
 
-    /* 
-     * .Do() -> this 
-     */
     public class StrokeElement<TExecContext> : Element
         where TExecContext : ExecutionContext
     {
@@ -238,7 +206,7 @@ namespace Crevice.Core.DSL
         public readonly IReadOnlyList<StrokeDirection> Strokes;
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors.ToList();
+        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
 
         public StrokeElement(params StrokeDirection[] strokes)
         {

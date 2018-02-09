@@ -154,7 +154,7 @@
     <Compile Include="UI.TooltipNotifier.cs" />
     <Compile Include="GM.GestureMachine.cs" />
     <Compile Include="GM.CallbackManager.cs" />
-    <Compile Include="US.RootElement.cs" />
+    <Compile Include="DSL.RootElement.cs" />
     <Compile Include="GM.EvaluationContext.cs" />
     <Compile Include="Config.UserConfig.cs" />
     <Compile Include="Config.UserInterfaceConfig.cs" />
