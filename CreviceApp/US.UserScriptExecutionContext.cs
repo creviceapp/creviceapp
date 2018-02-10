@@ -66,6 +66,9 @@ namespace Crevice.UserScript
             GlobalConfig = globalConfig;
         }
 
+        public GestureMachineCluster RootGestureMachine 
+            => GlobalConfig.MainForm.ReloadableGestureMachine.Instance;
+
         public UserConfig Config
             => CurrentProfile.UserConfig;
 

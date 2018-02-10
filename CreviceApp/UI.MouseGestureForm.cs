@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace Crevice.UI
 {
     using Crevice.Logging;
@@ -52,7 +51,7 @@ namespace Crevice.UI
         private readonly LowLevelKeyboardHook KeyboardHook;
         private readonly LowLevelMouseHook MouseHook;
         protected readonly GlobalConfig GlobalConfig;
-        protected readonly ReloadableGestureMachine ReloadableGestureMachine;
+        public readonly ReloadableGestureMachine ReloadableGestureMachine;
 
         public MouseGestureForm()
             : this(new GlobalConfig())
