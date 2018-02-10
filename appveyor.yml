@@ -60,7 +60,7 @@ deploy:
     api_key:
       secure: k0CqiR5hc0+1yWi6u40XhiHYr1Bd1pHPGc5yQj1NuPkDD8vIohYsIZUjLVSa87Ll
     skip_symbols: false
-    artifact: nupkg.Tag
+    artifact: /.*\.nupkg/
     on:
       appveyor_repo_tag: true
 
