@@ -42,7 +42,7 @@ after_test:
       
       $tag     = $env:appveyor_repo_tag
       $tagname = $env:appveyor_repo_tag_name
-      $artifact = Crevice.$env:appveyor_build_version.zip
+      $artifact = "Crevice.$env:appveyor_build_version.zip"
       
       7z a "$artifact" "CreviceApp\bin\Release\*"
       Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "Latest"
