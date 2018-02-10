@@ -38,26 +38,46 @@ build:
 after_test:
   - ps: |
       nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Prop Platform=AnyCPU -Prop Configuration=Release
-      Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+      Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nupkg.Latest" }
+      if ($tag -eq "true")
+      {
+        Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nupkg.Tag" }
+      }
       
-      $tag     = $env:appveyor_repo_tag
-      $tagname = $env:appveyor_repo_tag_name
+      nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Symbols
+      Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "symbols.nupkg.Latest" }
+      if ($tag -eq "true")
+      {
+        Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "symbols.nupkg.Tag" }
+      }
+      
+      $tag      = $env:appveyor_repo_tag
+      $tagname  = $env:appveyor_repo_tag_name
       $artifact = "Crevice.$env:appveyor_build_version.zip"
       
       7z a "$artifact" ".\CreviceApp\bin\Release\*"
-      Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "Latest"
+      Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "zip.Latest"
       if ($tag -eq "true")
       {
-        Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "Tag"
+        Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "zip.Tag"
       }
+
+deploy:
+    provider: NuGet
+    api_key:
+      secure: k0CqiR5hc0+1yWi6u40XhiHYr1Bd1pHPGc5yQj1NuPkDD8vIohYsIZUjLVSa87Ll
+    skip_symbols: false
+    artifact: /.*\.nupkg/
+    on:
+      appveyor_repo_tag: true
 
 deploy:
   - provider: GitHub
     tag: $(appveyor_repo_tag_name)
     release: $(appveyor_repo_tag_name).$(appveyor_build_number)
-    description: CreviceApp $(appveyor_repo_tag_name).$(appveyor_build_number)
+    description: Crevice $(appveyor_repo_tag_name).$(appveyor_build_number)
     auth_token:
       secure: rlXYSnSw5pklrVIjalmSFXQO/8RfjbDIpbTlSN2o068LNxFE4WqODJ6uBYjkpFZF
-    artifact: Tag
+    artifact: zip.Tag
     on:
       appveyor_repo_tag: true
