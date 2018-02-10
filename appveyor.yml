@@ -37,18 +37,11 @@ build:
 
 after_test:
   - ps: |
-      nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Prop Platform=AnyCPU -Prop Configuration=Release
+      nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Symbols
       Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nupkg.Latest" }
       if ($tag -eq "true")
       {
         Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nupkg.Tag" }
-      }
-      
-      nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Symbols
-      Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "symbols.nupkg.Latest" }
-      if ($tag -eq "true")
-      {
-        Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "symbols.nupkg.Tag" }
       }
       
       $tag      = $env:appveyor_repo_tag
@@ -67,7 +60,7 @@ deploy:
     api_key:
       secure: k0CqiR5hc0+1yWi6u40XhiHYr1Bd1pHPGc5yQj1NuPkDD8vIohYsIZUjLVSa87Ll
     skip_symbols: false
-    artifact: /.*\.nupkg/
+    artifact: nupkg.Tag
     on:
       appveyor_repo_tag: true
 
