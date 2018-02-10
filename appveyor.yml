@@ -40,22 +40,16 @@ after_test:
       nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Prop Platform=AnyCPU -Prop Configuration=Release
       Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
       
-      cd CreviceApp
       $tag     = $env:appveyor_repo_tag
       $tagname = $env:appveyor_repo_tag_name
-      $artifact = "Crevice4"
-      Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
-      cd "dist"
-      Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
-      Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-      Copy-Item -Path "bin\Release" -Destination "$artifact" -Recurse
-      7z a "$artifact.zip" "$artifact"
-      Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest"
+      $artifact = Crevice.$env:appveyor_build_version.zip
+      
+      7z a "$artifact" "CreviceApp\bin\Release\*"
+      Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "Latest"
       if ($tag -eq "true")
       {
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag"
+        Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "Tag"
       }
-      cd ..
 
 deploy:
   - provider: GitHub
