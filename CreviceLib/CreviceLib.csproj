@@ -5,6 +5,16 @@
     <RootNamespace>Crevice.Core</RootNamespace>
     <AssemblyName>Crevice.Core</AssemblyName>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Description>An implementation of FSM which provides functions like mouse gesture and keyboard hook to your application.</Description>
+    <Product>CreviceLib</Product>
+    <Authors>rubyu</Authors>
+    <Company>rubyu</Company>
+    <Copyright>Copyright @2018 rubyu</Copyright>
+    <PackageLicenseUrl>https://github.com/rubyu/CreviceApp/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/rubyu/CreviceApp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rubyu/CreviceApp</RepositoryUrl>
+    <PackageTags>mouse gesture keyboard hook</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/rubyu/CreviceApp/future/CreviceApp/Resources/CreviceIcon.png</PackageIconUrl>
   </PropertyGroup>
 
 </Project>

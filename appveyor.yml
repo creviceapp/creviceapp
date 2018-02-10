@@ -37,6 +37,7 @@ build:
 
 after_test:
   - ps: |
+      nuget pack -Version %APPVEYOR_BUILD_VERSION% CreviceLib\CreviceLib.csproj
       Get-ChildItem CreviceLib\bin\Release\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
       
       cd CreviceApp
