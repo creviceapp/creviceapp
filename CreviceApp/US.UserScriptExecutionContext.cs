@@ -36,6 +36,24 @@ namespace Crevice.UserScript
 
         public readonly SupportedKeys.LogicalKeyDeclaration Keys = SupportedKeys.Keys;
 
+        #region Crevice3 compatible variables.
+        public Core.Keys.LogicalSingleThrowKey WheelDown => Keys.WheelDown;
+        public Core.Keys.LogicalSingleThrowKey WheelUp => Keys.WheelUp;
+        public Core.Keys.LogicalSingleThrowKey WheelLeft => Keys.WheelLeft;
+        public Core.Keys.LogicalSingleThrowKey WheelRight => Keys.WheelRight;
+
+        public LogicalSystemKey LeftButton => Keys.LButton;
+        public LogicalSystemKey MiddleButton => Keys.MButton;
+        public LogicalSystemKey RightButton => Keys.RButton;
+        public LogicalSystemKey X1Button => Keys.XButton1;
+        public LogicalSystemKey X2Button => Keys.XButton2;
+
+        public Core.Stroke.StrokeDirection MoveUp => Keys.MoveUp;
+        public Core.Stroke.StrokeDirection MoveDown => Keys.MoveDown;
+        public Core.Stroke.StrokeDirection MoveLeft => Keys.MoveLeft;
+        public Core.Stroke.StrokeDirection MoveRight => Keys.MoveRight;
+        #endregion
+
         public readonly IReadOnlyList<SupportedKeys.PhysicalKeyDeclaration> PhysicalKeys =
             new List<SupportedKeys.PhysicalKeyDeclaration>() { SupportedKeys.PhysicalKeys };
 
