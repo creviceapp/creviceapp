@@ -37,8 +37,8 @@ build:
 
 after_test:
   - ps: |
-      nuget pack -Version $env:appveyor_build_version CreviceLib\CreviceLib.csproj
-      Get-ChildItem CreviceLib\bin\Release\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+      nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Prop Platform=AnyCPU -Prop Configuration=Release
+      Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
       
       cd CreviceApp
       $tag     = $env:appveyor_repo_tag
