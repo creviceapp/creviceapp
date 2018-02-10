@@ -63,7 +63,7 @@ after_test:
       }
 
 deploy:
-    provider: NuGet
+  - provider: NuGet
     api_key:
       secure: k0CqiR5hc0+1yWi6u40XhiHYr1Bd1pHPGc5yQj1NuPkDD8vIohYsIZUjLVSa87Ll
     skip_symbols: false
@@ -71,7 +71,6 @@ deploy:
     on:
       appveyor_repo_tag: true
 
-deploy:
   - provider: GitHub
     tag: $(appveyor_repo_tag_name)
     release: $(appveyor_repo_tag_name).$(appveyor_build_number)
