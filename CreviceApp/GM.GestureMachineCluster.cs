@@ -10,6 +10,8 @@ namespace Crevice.GestureMachine
 {
     public class GestureMachineCluster : IDisposable
     {
+        private object _lockObject = new object();
+
         public IReadOnlyList<GestureMachineProfile> Profiles;
 
         public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> profiles)
@@ -19,23 +21,29 @@ namespace Crevice.GestureMachine
 
         public void Run()
         {
-            foreach (var profile in Profiles)
+            lock (_lockObject)
             {
-                profile.GestureMachine.Run(profile.RootElement);
+                foreach (var profile in Profiles)
+                {
+                    profile.GestureMachine.Run(profile.RootElement);
+                }
             }
         }
 
         public bool Input(Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
         {
-            foreach (var profile in Profiles)
+            lock (_lockObject)
             {
-                var eventIsConsumed = profile.GestureMachine.Input(physicalEvent, point);
-                if (eventIsConsumed == true)
+                foreach (var profile in Profiles)
                 {
-                    return true;
+                    var eventIsConsumed = profile.GestureMachine.Input(physicalEvent, point);
+                    if (eventIsConsumed == true)
+                    {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }
 
         public bool Input(Core.Events.IPhysicalEvent physicalEvent)
@@ -43,18 +51,24 @@ namespace Crevice.GestureMachine
 
         public void Reset()
         {
-            foreach(var profile in Profiles)
+            lock (_lockObject)
             {
-                profile.GestureMachine.Reset();
+                foreach (var profile in Profiles)
+                {
+                    profile.GestureMachine.Reset();
+                }
             }
         }
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
-            foreach (var profile in Profiles)
+            lock (_lockObject)
             {
-                profile.GestureMachine.Dispose();
+                GC.SuppressFinalize(this);
+                foreach (var profile in Profiles)
+                {
+                    profile.GestureMachine.Dispose();
+                }
             }
         }
 

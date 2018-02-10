@@ -207,9 +207,9 @@ namespace Crevice.GestureMachine
         private bool disposed = false;
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
             lock (lockObject)
             {
+                GC.SuppressFinalize(this);
                 reloadRequest = false;
                 disposed = true;
                 Instance = null;
