@@ -241,8 +241,8 @@ namespace Crevice.WinAPI.WindowsHookEx
         {
             public POINT pt;
             public MOUSEDATA mouseData;
-            public uint flags;
-            public uint time;
+            public int flags;
+            public int time;
             public UIntPtr dwExtraInfo;
 
             public bool FromCreviceApp
@@ -289,10 +289,10 @@ namespace Crevice.WinAPI.WindowsHookEx
         [StructLayout(LayoutKind.Sequential)]
         public class KBDLLHOOKSTRUCT
         {
-            public uint vkCode;
-            public uint scanCode;
+            public int vkCode;
+            public int scanCode;
             public FLAGS flags;
-            public uint time;
+            public int time;
             public UIntPtr dwExtraInfo;
 
             public bool FromCreviceApp
@@ -302,7 +302,7 @@ namespace Crevice.WinAPI.WindowsHookEx
         }
 
         [Flags]
-        public enum FLAGS : uint
+        public enum FLAGS : int
         {
             LLKHF_EXTENDED = 0x01,
             LLKHF_INJECTED = 0x10,

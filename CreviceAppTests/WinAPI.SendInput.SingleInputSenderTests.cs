@@ -581,7 +581,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
-            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x00U);
+            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x00);
             Assert.IsFalse(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -600,7 +600,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
-            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x00U);
+            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x00);
             Assert.IsFalse(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -619,7 +619,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
-            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x00U);
+            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x00);
             Assert.IsTrue(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -638,7 +638,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
-            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x00U);
+            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x00);
             Assert.IsTrue(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -657,7 +657,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
-            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x1EU);
+            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 0x1E);
             Assert.IsFalse(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -676,7 +676,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
-            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x1EU);
+            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 0x1E);
             Assert.IsFalse(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -695,7 +695,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_LWIN);
-            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, (uint)VirtualKeys.VK_LWIN);
+            Assert.AreEqual(keyboardEvents[0].Item2.scanCode, VirtualKeys.VK_LWIN);
             Assert.IsTrue(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -714,7 +714,7 @@ namespace CreviceTests
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_LWIN);
-            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, (uint)VirtualKeys.VK_LWIN);
+            Assert.AreEqual(keyboardEvents[1].Item2.scanCode, VirtualKeys.VK_LWIN);
             Assert.IsTrue(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
 
@@ -732,7 +732,7 @@ namespace CreviceTests
                 cde.Wait(1000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
-            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, 0xE7U);
+            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, 0xE7);
             Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 'A');
             Assert.IsFalse(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -751,7 +751,7 @@ namespace CreviceTests
                 cde.Wait(1000);
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
-            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, 0xE7U);
+            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, 0xE7);
             Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 'A');
             Assert.IsFalse(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
@@ -769,12 +769,12 @@ namespace CreviceTests
                 cde.Wait(1000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
-            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, 0xE7U);
+            Assert.AreEqual(keyboardEvents[0].Item2.vkCode, 0xE7);
             Assert.AreEqual(keyboardEvents[0].Item2.scanCode, 'A');
             Assert.IsFalse(keyboardEvents[0].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
 
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
-            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, 0xE7U);
+            Assert.AreEqual(keyboardEvents[1].Item2.vkCode, 0xE7);
             Assert.AreEqual(keyboardEvents[1].Item2.scanCode, 'A');
             Assert.IsFalse(keyboardEvents[1].Item2.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
         }
