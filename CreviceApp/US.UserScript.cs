@@ -189,8 +189,9 @@ namespace Crevice.UserScript
                     }
                     return loadedCache;
                 }
-                catch (System.Runtime.Serialization.SerializationException)
+                catch (System.Runtime.Serialization.SerializationException ex)
                 {
+                    Verbose.Error("An exception was thrown: {0}", ex.ToString());
                 }
                 return null;
             }

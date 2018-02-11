@@ -32,16 +32,16 @@ namespace Crevice.UI
             }
         }
 
-        private readonly TooltipNotifier Tooltip;
+        private readonly TooltipNotifier _tooltip;
 
-        private FileSystemWatcher UserScriptWatcher;
+        private FileSystemWatcher _userScriptWatcher;
 
-        private LauncherForm launcherForm = null;
+        private LauncherForm _launcherForm = null;
 
         public MainForm(GlobalConfig globalConfig) : base(globalConfig)
         {
-            Tooltip = new TooltipNotifier(this);
-            UserScriptWatcher = new UserScript.DirectoryWatcher(this, globalConfig.UserDirectory, "*.csx");
+            _tooltip = new TooltipNotifier(this);
+            _userScriptWatcher = new UserScript.DirectoryWatcher(this, globalConfig.UserDirectory, "*.csx");
             InitializeComponent();
         }
 
@@ -55,10 +55,10 @@ namespace Crevice.UI
 
         private void SetupUserScriptWatcher()
         {
-            UserScriptWatcher.Changed += new FileSystemEventHandler(ReloadGestureMachine);
-            UserScriptWatcher.Created += new FileSystemEventHandler(ReloadGestureMachine);
-            UserScriptWatcher.Renamed += new RenamedEventHandler(ReloadGestureMachine);
-            UserScriptWatcher.EnableRaisingEvents = true;
+            _userScriptWatcher.Changed += new FileSystemEventHandler(ReloadGestureMachine);
+            _userScriptWatcher.Created += new FileSystemEventHandler(ReloadGestureMachine);
+            _userScriptWatcher.Renamed += new RenamedEventHandler(ReloadGestureMachine);
+            _userScriptWatcher.EnableRaisingEvents = true;
         }
 
         protected override void OnShown(EventArgs e)
@@ -101,8 +101,8 @@ namespace Crevice.UI
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            UserScriptWatcher.EnableRaisingEvents = false;
-            UserScriptWatcher.Dispose();
+            _userScriptWatcher.EnableRaisingEvents = false;
+            _userScriptWatcher.Dispose();
             try
             {
                 EnableHook = false;
@@ -112,7 +112,7 @@ namespace Crevice.UI
                 ShowFatalErrorDialog("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.");
             }
             NotifyIcon1.Visible = false;
-            Tooltip.Dispose();
+            _tooltip.Dispose();
             Verbose.Print("CreviceApp was ended.");
             WinAPI.Console.Console.FreeConsole();
         }
@@ -142,33 +142,26 @@ namespace Crevice.UI
         }
 
         public void UpdateTasktrayMessage(string formattedtext, params object[] args)
-        {
-            UpdateTasktrayMessage(string.Format(formattedtext, args));
-        }
-        
+            => UpdateTasktrayMessage(string.Format(formattedtext, args));
+
         public void ShowFatalErrorDialog(string text)
         {
             InvokeProperly(delegate ()
             {
-                Verbose.Print("ShowFatalErrorDialog: {0}", text);
-                MessageBox.Show(text,
-                "Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                Verbose.Error(text);
+                MessageBox.Show(text, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             });
         }
 
         public void ShowFatalErrorDialog(string formattedtext, params object[] objects)
-        {
-            ShowFatalErrorDialog(string.Format(formattedtext, objects));
-        }
+            => ShowFatalErrorDialog(string.Format(formattedtext, objects));
 
         public void ShowTooltip(string text, Point point, int duration)
         {
             InvokeProperly(delegate ()
             {
                 Verbose.Print("ShowTooltip: {0}", text);
-                Tooltip.Show(text, point, duration);
+                _tooltip.Show(text, point, duration);
             });
         }
 
@@ -204,22 +197,35 @@ namespace Crevice.UI
             {
                 if (!GlobalConfig.CLIOption.NoGUI)
                 {
-                    Process.Start(fileName, arguments);
+                    try
+                    {
+                        using (Verbose.PrintElapsed(
+                            "StartExternalProcess(filename={0}, arguments={1})", 
+                            fileName,
+                            arguments))
+                        {
+                            Process.Start(fileName, arguments);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Verbose.Error("An exception was thrown while executing an external process: {0}", ex.ToString());
+                    }
                 }
             });
         }
 
         private void OpenLauncherForm()
         {
-            if (launcherForm == null || launcherForm.IsDisposed)
+            if (_launcherForm == null || _launcherForm.IsDisposed)
             {
-                launcherForm = new LauncherForm(GlobalConfig);
-                launcherForm.Opacity = 0;
-                launcherForm.Show();
+                _launcherForm = new LauncherForm(GlobalConfig);
+                _launcherForm.Opacity = 0;
+                _launcherForm.Show();
             }
             else
             {
-                launcherForm.Activate();
+                _launcherForm.Activate();
             }
         }
 
@@ -244,7 +250,10 @@ namespace Crevice.UI
                 File.WriteAllText(path, text);
                 StartExternalProcess("notepad.exe", path);
             } 
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Verbose.Error("An exception was thrown while writing a file: {0}", ex.ToString());
+            }
         }
 
         private void NotifyIcon1_BalloonTipClicked(object sender, EventArgs e)

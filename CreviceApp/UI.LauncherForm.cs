@@ -62,7 +62,10 @@ namespace Crevice.UI
                         registry.DeleteValue(Application.ProductName);
                         Verbose.Print("Autorun was set to false");
                     }
-                    catch (ArgumentException) { }
+                    catch (ArgumentException ex)
+                    {
+                        Verbose.Error("An exception was thrown while writing registory value: {0}", ex.ToString());
+                    }
                     registry.Close();
                 }
             }

@@ -67,7 +67,7 @@ namespace Crevice.GestureMachine
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Print("GestureMachine restoration was failed; fallback to normal compilation. {0}", ex.ToString());
+                    Verbose.Error("GestureMachine restoration was failed; fallback to normal compilation. {0}", ex.ToString());
                 }
             }
 
@@ -90,13 +90,13 @@ namespace Crevice.GestureMachine
                         }
                         catch (Exception ex)
                         {
-                            Verbose.Print("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
+                            Verbose.Error("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Print("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
+                    Verbose.Error("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
                     return new GetGestureMachineResult(candidate.CreateNew(ctx), null, ex);
                 }
                 Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
