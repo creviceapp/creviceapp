@@ -166,9 +166,7 @@ namespace Crevice.GestureMachine
                                         balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
                                         lastErrorMessage = runtimeError.ToString();
                                     }
-                                    var perProfileGestures = gmCluster.Profiles
-                                        .Select(p => $"{p.ProfileName}: {p.RootElement.GestureCount}");
-                                    GlobalConfig.MainForm.UpdateTasktrayMessage(string.Join("\r\n", perProfileGestures));
+                                    GlobalConfig.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
                                 }
                                 GlobalConfig.MainForm.LastErrorMessage = lastErrorMessage;
                                 GlobalConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
