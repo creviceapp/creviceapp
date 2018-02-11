@@ -96,9 +96,7 @@ namespace Crevice.GestureMachine
         }
 
         public GestureMachineCluster CreateNew(UserScriptExecutionContext ctx)
-        {
-            return Create(ctx, UserScriptAssemblyCache);
-        }
+            => Create(ctx, UserScriptAssemblyCache);
 
         private bool _restorationFailed = false;
         private UserScriptAssembly.Cache _restorationCache = null;
@@ -122,13 +120,9 @@ namespace Crevice.GestureMachine
             }
         }
         public bool IsRestorable
-        {
-            get { return RestorationCache != null; }
-        }
+            => RestorationCache != null;
 
         public GestureMachineCluster Restore(UserScriptExecutionContext ctx)
-        {
-            return Create(ctx, RestorationCache);
-        }
+            => Create(ctx, RestorationCache);
     }
 }

@@ -8,7 +8,7 @@ namespace Crevice.Core
     {
         using Crevice.Core.Events;
 
-        interface IIsDisposed
+        public interface IIsDisposed
         {
             bool IsDisposed { get; }
         }
