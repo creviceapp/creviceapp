@@ -8,9 +8,11 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace Crevice.GestureMachine
 {
+    using System.Threading;
+
     public class GestureMachineCluster : IDisposable
     {
-        private object _lockObject = new object();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public IReadOnlyList<GestureMachineProfile> Profiles;
 
@@ -21,29 +23,32 @@ namespace Crevice.GestureMachine
 
         public void Run()
         {
-            lock (_lockObject)
+            _semaphore.Wait();
+            try
             {
                 foreach (var profile in Profiles)
                 {
                     profile.GestureMachine.Run(profile.RootElement);
                 }
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public bool Input(Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
         {
-            lock (_lockObject)
+
+            foreach (var profile in Profiles)
             {
-                foreach (var profile in Profiles)
+                var eventIsConsumed = profile.GestureMachine.Input(physicalEvent, point);
+                if (eventIsConsumed == true)
                 {
-                    var eventIsConsumed = profile.GestureMachine.Input(physicalEvent, point);
-                    if (eventIsConsumed == true)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         public bool Input(Core.Events.IPhysicalEvent physicalEvent)
@@ -51,24 +56,34 @@ namespace Crevice.GestureMachine
 
         public void Reset()
         {
-            lock (_lockObject)
+            _semaphore.Wait();
+            try
             {
                 foreach (var profile in Profiles)
                 {
                     profile.GestureMachine.Reset();
                 }
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public void Dispose()
         {
-            lock (_lockObject)
+            _semaphore.Wait();
+            try
             {
                 GC.SuppressFinalize(this);
                 foreach (var profile in Profiles)
                 {
                     profile.GestureMachine.Dispose();
                 }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 

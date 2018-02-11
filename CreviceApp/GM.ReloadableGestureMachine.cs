@@ -110,6 +110,10 @@ namespace Crevice.GestureMachine
 
         public void HotReload()
         {
+            if (_disposed)
+            {
+                new InvalidOperationException();
+            }
             if (_loading && !_disposed)
             {
                 Verbose.Print("Hot-reload request was queued.");
@@ -123,9 +127,9 @@ namespace Crevice.GestureMachine
                 {
                     return;
                 }
-                _loading = true;
                 while (true)
                 {
+                    _loading = true;
                     _reloadRequest = false;
                     using (Verbose.PrintElapsed("Hot-reload GestureMachine"))
                     {
@@ -168,6 +172,7 @@ namespace Crevice.GestureMachine
                         GlobalConfig.MainForm.LastErrorMessage = lastErrorMessage;
                         GlobalConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
                     }
+                    _loading = false;
                     if (!_reloadRequest)
                     {
                         break;
@@ -177,9 +182,8 @@ namespace Crevice.GestureMachine
             }
             finally
             {
-                _semaphore.Release();
-                _loading = false;
                 ReleaseUnusedMemory();
+                _semaphore.Release();
             }
         }
 

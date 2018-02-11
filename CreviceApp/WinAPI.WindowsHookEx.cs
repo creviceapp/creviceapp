@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Crevice.WinAPI.WindowsHookEx
 {
+    using System.Threading;
     using Crevice.WinAPI.Helper;
 
     public class WindowsHook : IDisposable
@@ -54,41 +55,42 @@ namespace Crevice.WinAPI.WindowsHookEx
         };
         
         private static readonly IntPtr LRESULTCancel = new IntPtr(1);
-        
-        private readonly Object lockObject = new Object();
-        private readonly UserCallback userCallback;
-        // There is need to bind a callback function to a local variable to protect it from GC.
-        private readonly SystemCallback systemCallback;
-        private readonly HookType hookType;
+
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        // These callback functions should be hold as a local variable to prevent it from GC.
+        private readonly UserCallback _userCallback;
+        private readonly SystemCallback _systemCallback;
+
+        private readonly HookType _hookType;
 
         private IntPtr hHook = IntPtr.Zero;
         
         protected WindowsHook(HookType hookType, UserCallback userCallback)
         {
-            this.hookType = hookType;
-            this.userCallback = userCallback;
-            this.systemCallback = Callback;
+            _hookType = hookType;
+            _userCallback = userCallback;
+            _systemCallback = Callback;
         }
 
         public bool IsActivated
-        {
-            get { return hHook != IntPtr.Zero; }
-        }
+            => hHook != IntPtr.Zero;
 
         public void SetHook()
         {
-            lock (lockObject)
+            _semaphore.Wait();
+            try
             {
                 if (IsActivated)
                 {
                     throw new InvalidOperationException();
                 }
                 var log = new WinAPILogger("SetWindowsHookEx");
-                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), hookType));
+                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
                 var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
 
                 log.Add("hInstance: 0x{0:X}", hInstance.ToInt64());
-                hHook = SetWindowsHookEx((int)hookType, systemCallback, hInstance, 0);
+                hHook = SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
                 if (IsActivated)
                 {
                     log.Add("hHook: 0x{0:X}", hHook.ToInt64());
@@ -99,18 +101,23 @@ namespace Crevice.WinAPI.WindowsHookEx
                     log.FailWithErrorCode();
                 }
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public void Unhook()
         {
-            lock (lockObject)
+            _semaphore.Wait();
+            try
             {
                 if (!IsActivated)
                 {
                     throw new InvalidOperationException();
                 }
                 var log = new WinAPILogger("UnhookWindowsHookEx");
-                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), hookType));
+                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
                 log.Add("hHook: 0x{0:X}", hHook);
                 if (UnhookWindowsHookEx(hHook))
                 {
@@ -122,37 +129,43 @@ namespace Crevice.WinAPI.WindowsHookEx
                 }
                 hHook = IntPtr.Zero;
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public IntPtr Callback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            lock (lockObject)
+            if (nCode >= 0)
             {
-                if (nCode >= 0)
+                switch (_userCallback(wParam, lParam))
                 {
-                    switch (userCallback(wParam, lParam))
-                    {
-                        case Result.Transfer:
-                            return CallNextHookEx(hHook, nCode, wParam, lParam);
-                        case Result.Cancel:
-                            return LRESULTCancel;
-                        case Result.Determine:
-                            return IntPtr.Zero;
-                    }
+                    case Result.Transfer:
+                        return CallNextHookEx(hHook, nCode, wParam, lParam);
+                    case Result.Cancel:
+                        return LRESULTCancel;
+                    case Result.Determine:
+                        return IntPtr.Zero;
                 }
-                return CallNextHookEx(hHook, nCode, wParam, lParam);
             }
+            return CallNextHookEx(hHook, nCode, wParam, lParam);
         }
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
-            lock (lockObject)
+            _semaphore.Wait();
+            try
             {
+                GC.SuppressFinalize(this);
                 if (IsActivated)
                 {
                     Unhook();
                 }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -216,15 +229,8 @@ namespace Crevice.WinAPI.WindowsHookEx
             private short lower;
             public short type;
 
-            public bool IsXButton1
-            {
-                get { return type == 0x0001; }
-            }
-
-            public bool IsXButton2
-            {
-                get { return type == 0x0002; }
-            }
+            public bool IsXButton1 => type == 0x0001;
+            public bool IsXButton2 => type == 0x0002;
         }
         
         [StructLayout(LayoutKind.Explicit)]
@@ -246,14 +252,10 @@ namespace Crevice.WinAPI.WindowsHookEx
             public UIntPtr dwExtraInfo;
 
             public bool FromCreviceApp
-            {
-                get { return ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_CREVICE_APP; }
-            }
+                => ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_CREVICE_APP;
 
             public bool FromTablet
-            {
-                get { return ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET; }
-            }
+                => ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET;
         }
         
         private const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFF00;
@@ -296,9 +298,7 @@ namespace Crevice.WinAPI.WindowsHookEx
             public UIntPtr dwExtraInfo;
 
             public bool FromCreviceApp
-            {
-                get { return ((uint)dwExtraInfo & KEYBOARDEVENTF_TMASK) == KEYBOARDEVENTF_CREVICE_APP; }
-            }
+                => ((uint)dwExtraInfo & KEYBOARDEVENTF_TMASK) == KEYBOARDEVENTF_CREVICE_APP;
         }
 
         [Flags]
