@@ -132,8 +132,8 @@ namespace Crevice.UI
 
         public void UpdateTasktrayMessage(string message)
         {
-            var header = string.Format("Crevice {0}\r\n", Application.ProductVersion);
-            var text = header + message;
+            var header = string.Format("Crevice {0}", Application.ProductVersion);
+            var text = header + "\r\n" + message;
             InvokeProperly(delegate ()
             {
                 if (!GlobalConfig.CLIOption.NoGUI)
@@ -145,25 +145,27 @@ namespace Crevice.UI
 
         public void UpdateTasktrayMessage(IReadOnlyList<GestureMachineProfile> profiles)
         {
-            var header = string.Format("Crevice {0}\r\n", Application.ProductVersion);
+            var header = string.Format("Crevice {0}", Application.ProductVersion);
+            var gesturesMessage = string.Format("Gestures: {0}", profiles.Sum(p => p.RootElement.GestureCount));
             var totalMessage = string.Format("Total: {0}", profiles.Sum(p => p.RootElement.GestureCount));
             if (profiles.Count > 1)
             {
                 var perProfileMessages = Enumerable.
                     Range(0, profiles.Count).
-                    Select(n => profiles.Take(n).
+                    Select(n => profiles.Take(n + 1).
                         Select(p => string.Format("({0}): {1}", p.ProfileName, p.RootElement.GestureCount)).
                         Aggregate("", (a, b) => a + "\r\n" + b)).
+                        Select(s => s.Trim()).
                     Reverse().ToList();
 
-                if ((header + perProfileMessages[0]).Length < 63)
+                if ((header + "\r\n" + perProfileMessages.First()).Length < 63)
                 {
-                    UpdateTasktrayMessage(perProfileMessages[0]);
+                    UpdateTasktrayMessage(perProfileMessages.First());
                     return;
                 }
 
                 perProfileMessages = perProfileMessages.Skip(1).
-                    Where(s => (header + s + "\r\n...\r\n" + totalMessage).Length < 63).ToList();
+                    Where(s => (header + "\r\n" + s + "\r\n...\r\n" + totalMessage).Length < 63).ToList();
 
                 if (perProfileMessages.Any())
                 {
@@ -171,7 +173,7 @@ namespace Crevice.UI
                     return;
                 }
             }
-            UpdateTasktrayMessage(totalMessage);
+            UpdateTasktrayMessage(gesturesMessage);
         }
 
         public void UpdateTasktrayMessage(string formattedtext, params object[] args)
