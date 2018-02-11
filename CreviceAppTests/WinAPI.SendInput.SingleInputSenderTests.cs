@@ -56,7 +56,7 @@ namespace CreviceTests
         });
 
         [ClassInitialize()]
-        public static void ClassInit(TestContext context)
+        public static void ClassInitialize(TestContext context)
         {
             mouseHook.SetHook();
             keyboardHook.SetHook();

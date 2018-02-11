@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Crevice.Logging
 {
-    public class Verbose
+    public static class Verbose
     {
         public class ElapsedTimePrinter : IDisposable
         {
             public string Message { get; private set; }
-            private Stopwatch stopwatch;
+
+            private readonly Stopwatch _stopwatch = new Stopwatch();
 
             public ElapsedTimePrinter(string message)
             {
-                this.Message = string.Format("[{0}]", message);
-                this.stopwatch = new Stopwatch();
+                Message = string.Format("[{0}]", message);
                 PrintStartMessage();
-                stopwatch.Start();
+                _stopwatch.Start();
             }
 
             private void PrintStartMessage()
@@ -29,63 +29,52 @@ namespace Crevice.Logging
 
             private void PrintFinishMessage()
             {
-                Print("{0} was finished. ({1})", Message, stopwatch.Elapsed);
+                Print("{0} was finished. ({1})", Message, _stopwatch.Elapsed);
             }
 
             public void Dispose()
             {
-                stopwatch.Stop();
+                _stopwatch.Stop();
                 PrintFinishMessage();
             }
         }
 
-        private static Verbose instance;
-        private Verbose() { }
+        public static bool Enabled { get; private set; }
 
-        
-        public static Verbose Output
+        public static void Enable()
         {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new Verbose();
-                }
-                return instance;
-            }
+            Enabled = true;
         }
-
-        private bool enable = false;
-
-        public void Enable()
-        {
-            enable = true;
-        }
-
-        // Todo: Verbose.Error()
         
         public static void Print(string message)
         {
             Debug.Print(message);
-            if (Output.enable)
+            if (Enabled)
             {
                 Console.WriteLine(message);
             }
         }
 
         public static void Print(string template, params object[] objects)
-        {
-            Print(string.Format(template, objects));
-        }
+            => Print(string.Format(template, objects));
 
         public static ElapsedTimePrinter PrintElapsed(string message)
-        {
-            return new ElapsedTimePrinter(message);
-        }
+            => new ElapsedTimePrinter(message);
 
         public static ElapsedTimePrinter PrintElapsed(string template, params object[] objects)
+            => new ElapsedTimePrinter(string.Format(template, objects));
+
+        public static void Error(string message)
         {
-            return new ElapsedTimePrinter(string.Format(template, objects));
+            var errorMessage = string.Format("[Error]{0}", message);
+            Debug.Print(errorMessage);
+            if (Enabled)
+            {
+                Console.Error.WriteLine(errorMessage);
+            }
         }
+
+        public static void Error(string template, params object[] objects)
+            => Error(string.Format(template, objects));
     }
 }

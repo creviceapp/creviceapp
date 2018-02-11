@@ -128,6 +128,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestEnvironment.cs" />
+    <Compile Include="Logging.VerboseTest.cs" />
     <Compile Include="CLIOptionTests.cs" />
     <Compile Include="Core.UserScriptTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

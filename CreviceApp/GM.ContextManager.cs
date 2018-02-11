@@ -28,15 +28,7 @@ namespace Crevice.GestureMachine
             {
                 return whenElement.WhenEvaluator(evalContext);
             });
-            try
-            {
-                // todo: config
-                return task.Wait(100);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return task.Wait(100) && task.Result;
         }
 
         public override void Execute(

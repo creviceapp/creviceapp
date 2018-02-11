@@ -43,7 +43,7 @@ namespace Crevice
             if (cliOption.Verbose)
             {
                 WinAPI.Console.Console.AttachConsole();
-                Verbose.Output.Enable();
+                Verbose.Enable();
             }
 
             Verbose.Print("CLIOption.NoGUI: {0}", cliOption.NoGUI);
