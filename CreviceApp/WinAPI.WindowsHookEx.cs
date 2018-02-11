@@ -56,15 +56,13 @@ namespace Crevice.WinAPI.WindowsHookEx
         
         private static readonly IntPtr LRESULTCancel = new IntPtr(1);
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
         // These callback functions should be hold as a local variable to prevent it from GC.
         private readonly UserCallback _userCallback;
         private readonly SystemCallback _systemCallback;
 
         private readonly HookType _hookType;
 
-        private IntPtr hHook = IntPtr.Zero;
+        private IntPtr _hHook = IntPtr.Zero;
         
         protected WindowsHook(HookType hookType, UserCallback userCallback)
         {
@@ -74,65 +72,49 @@ namespace Crevice.WinAPI.WindowsHookEx
         }
 
         public bool IsActivated
-            => hHook != IntPtr.Zero;
+            => _hHook != IntPtr.Zero;
 
         public void SetHook()
         {
-            _semaphore.Wait();
-            try
+            if (IsActivated)
             {
-                if (IsActivated)
-                {
-                    throw new InvalidOperationException();
-                }
-                var log = new WinAPILogger("SetWindowsHookEx");
-                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
-                var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
-
-                log.Add("hInstance: 0x{0:X}", hInstance.ToInt64());
-                hHook = SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
-                if (IsActivated)
-                {
-                    log.Add("hHook: 0x{0:X}", hHook.ToInt64());
-                    log.Success();
-                }
-                else
-                {
-                    log.FailWithErrorCode();
-                }
+                throw new InvalidOperationException();
             }
-            finally
+            var log = new WinAPILogger("SetWindowsHookEx");
+            log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
+            var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
+
+            log.Add("hInstance: 0x{0:X}", hInstance.ToInt64());
+            _hHook = SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
+            if (IsActivated)
             {
-                _semaphore.Release();
+                log.Add("_hHook: 0x{0:X}", _hHook.ToInt64());
+                log.Success();
+            }
+            else
+            {
+                log.FailWithErrorCode();
             }
         }
 
         public void Unhook()
         {
-            _semaphore.Wait();
-            try
+            if (!IsActivated)
             {
-                if (!IsActivated)
-                {
-                    throw new InvalidOperationException();
-                }
-                var log = new WinAPILogger("UnhookWindowsHookEx");
-                log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
-                log.Add("hHook: 0x{0:X}", hHook);
-                if (UnhookWindowsHookEx(hHook))
-                {
-                    log.Success();
-                }
-                else
-                {
-                    log.FailWithErrorCode();
-                }
-                hHook = IntPtr.Zero;
+                throw new InvalidOperationException();
             }
-            finally
+            var log = new WinAPILogger("UnhookWindowsHookEx");
+            log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
+            log.Add("_hHook: 0x{0:X}", _hHook);
+            if (UnhookWindowsHookEx(_hHook))
             {
-                _semaphore.Release();
+                log.Success();
             }
+            else
+            {
+                log.FailWithErrorCode();
+            }
+            _hHook = IntPtr.Zero;
         }
 
         public IntPtr Callback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -142,30 +124,22 @@ namespace Crevice.WinAPI.WindowsHookEx
                 switch (_userCallback(wParam, lParam))
                 {
                     case Result.Transfer:
-                        return CallNextHookEx(hHook, nCode, wParam, lParam);
+                        return CallNextHookEx(_hHook, nCode, wParam, lParam);
                     case Result.Cancel:
                         return LRESULTCancel;
                     case Result.Determine:
                         return IntPtr.Zero;
                 }
             }
-            return CallNextHookEx(hHook, nCode, wParam, lParam);
+            return CallNextHookEx(_hHook, nCode, wParam, lParam);
         }
 
         public void Dispose()
         {
-            _semaphore.Wait();
-            try
+            GC.SuppressFinalize(this);
+            if (IsActivated)
             {
-                GC.SuppressFinalize(this);
-                if (IsActivated)
-                {
-                    Unhook();
-                }
-            }
-            finally
-            {
-                _semaphore.Release();
+                Unhook();
             }
         }
 

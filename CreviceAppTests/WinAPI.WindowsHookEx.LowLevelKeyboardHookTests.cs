@@ -25,40 +25,20 @@ namespace CreviceTests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void SetHookThrowsInvalidOperationExceptionTest()
         {
             var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
             hook.SetHook();
-            try
-            {
-                hook.SetHook();
-            }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
-            finally
-            {
-                hook.Unhook();
-            }
-            Assert.Fail();
+            hook.SetHook();
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void UnhookThrowsInvalidOperationExceptionTestTest()
         {
             var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
-            hook.SetHook();
             hook.Unhook();
-            try
-            {
-                hook.Unhook();
-            }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
-            Assert.Fail();
         }
 
         [TestMethod()]

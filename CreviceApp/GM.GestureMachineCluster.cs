@@ -12,8 +12,6 @@ namespace Crevice.GestureMachine
 
     public class GestureMachineCluster : IDisposable
     {
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
         public IReadOnlyList<GestureMachineProfile> Profiles;
 
         public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> profiles)
@@ -23,17 +21,9 @@ namespace Crevice.GestureMachine
 
         public void Run()
         {
-            _semaphore.Wait();
-            try
+            foreach (var profile in Profiles)
             {
-                foreach (var profile in Profiles)
-                {
-                    profile.GestureMachine.Run(profile.RootElement);
-                }
-            }
-            finally
-            {
-                _semaphore.Release();
+                profile.GestureMachine.Run(profile.RootElement);
             }
         }
 
@@ -56,34 +46,18 @@ namespace Crevice.GestureMachine
 
         public void Reset()
         {
-            _semaphore.Wait();
-            try
+            foreach (var profile in Profiles)
             {
-                foreach (var profile in Profiles)
-                {
-                    profile.GestureMachine.Reset();
-                }
-            }
-            finally
-            {
-                _semaphore.Release();
+                profile.GestureMachine.Reset();
             }
         }
 
         public void Dispose()
         {
-            _semaphore.Wait();
-            try
+            GC.SuppressFinalize(this);
+            foreach (var profile in Profiles)
             {
-                GC.SuppressFinalize(this);
-                foreach (var profile in Profiles)
-                {
-                    profile.GestureMachine.Dispose();
-                }
-            }
-            finally
-            {
-                _semaphore.Release();
+                profile.GestureMachine.Dispose();
             }
         }
 
