@@ -62,7 +62,7 @@ namespace Crevice.UserScript.Keys
             var logicalSingleThrowKeys = new LogicalSingleThrowKeySet(10);
             var physicalSingleThrowKeys = new PhysicalSingleThrowKeySet(logicalSingleThrowKeys);
 
-            var logicalSystemKeys = new LogicalSystemKeySet(255);
+            var logicalSystemKeys = new LogicalSystemKeySet(256);
             var physicalSystemKeys = new PhysicalSystemKeySet(logicalSystemKeys);
 
             logicalKeys = new LogicalKeyDeclaration(logicalSingleThrowKeys, logicalSystemKeys);
