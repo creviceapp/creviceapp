@@ -14,9 +14,7 @@
 #endregion
 
 #region IDE support environment loading section.
-#if !CREVICEAPP
 #load "IDESupport\\MockEnv.csx"
-#endif
 #endregion
 
 using System;

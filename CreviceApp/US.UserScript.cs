@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
@@ -72,8 +71,11 @@ namespace Crevice.UserScript
         {
             using (Verbose.PrintElapsed("Parse UserScript"))
             {
+                var appEnvUserScript = userScriptString
+                    .Replace("#load \"IDESupport\\\\MockEnv.csx\"", "// #load \"IDESupport\\\\MockEnv.csx\"");
+
                 var script = CSharpScript.Create(
-                    userScriptString,
+                    appEnvUserScript,
                     ScriptOptions.Default
                         .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(scriptSourceResolverBaseDirectory))
                         .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(scriptMetadataResolverBaseDirectory))
@@ -84,10 +86,10 @@ namespace Crevice.UserScript
                             typeof(Uri).Assembly,
                             // System.Core.dll
                             typeof(Enumerable).Assembly,
-                            // CreviceApp.exe
+                            // crevice4.exe
                             // Note: For the reference to CreviceApp.exe, `Assembly.GetEntryAssembly()` does not work
                             // properly in the test environment. So instead of it, we should use `typeof(Program).Assembly)` here.
-                            typeof(Program).Assembly),    
+                            typeof(Program).Assembly),
                     globalsType: typeof(UserScriptExecutionContext));
                 return script;
             }
