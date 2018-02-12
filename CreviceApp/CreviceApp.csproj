@@ -7,7 +7,7 @@
     <ProjectGuid>{82B56652-6380-44ED-A193-742F7EEF290F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Crevice</RootNamespace>
-    <AssemblyName>Crevice4</AssemblyName>
+    <AssemblyName>crevice4</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

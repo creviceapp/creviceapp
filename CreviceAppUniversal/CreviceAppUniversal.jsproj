@@ -114,13 +114,13 @@
     <Content Include="win32\Crevice.Core.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="win32\Crevice4.exe">
+    <Content Include="win32\crevice4.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="win32\Crevice4.exe.config">
+    <Content Include="win32\crevice4.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="win32\Crevice4.pdb">
+    <Content Include="win32\crevice4.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="win32\Microsoft.CodeAnalysis.CSharp.dll">
