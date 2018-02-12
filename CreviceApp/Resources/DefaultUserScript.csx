@@ -1,20 +1,49 @@
-﻿using System;
+﻿// crevice4 setting file.
+// You can use Visual Studio Code for editing this file. 
+
+#region #r direction section.
+// You can use #r directive to load an assembly. #r directive must be on the top, 
+// above of all the other lines.
+//#r "other.dll"
+#endregion
+
+#region #load directive section.
+// You can use #load directive to load other csx file. #load directive must be 
+// on the top, above of all the other lines except #r directive.
+//#load "other.csx"
+#endregion
+
+#region IDE support environment loading section.
+#if !CREVICEAPP
+#load "IDESupport\\MockEnv.csx"
+#endif
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using CreviceApp.WinAPI.Window;
+#region Crvice API section.
+// You can use `Window` class which provides some useful functions relating 
+// Windows's window.
+//using Crevice.WinAPI.Window;
 
-using static CreviceApp.WinAPI.Constants.WindowsMessages;
-using static CreviceApp.WinAPI.Constants.VirtualKeys;
+// You can use some classes which relates Windows Core Audio API.
+//using Crevice.WinAPI.CoreAudio;
 
+// You can use windows messages, declared in `Winuser.h`, with prefix `WM_` by 
+// enabling the following code.
+//using static Crevice.WinAPI.Constants.WindowsMessages;
 
-/*
- * Examples for gestures for standard browsers.
- */
+// You can use virtual keys, declared in `Winuser.h`, with prefix `VK_` by 
+// enabling the following code.
+//using static Crevice.WinAPI.Constants.VirtualKeys;
+#endregion
 
-var Browser = @when((ctx) =>
+// Gestures for standard browsers.
+var Browser = When(ctx =>
 {
     return ctx.ForegroundWindow.ModuleName == "chrome.exe" ||
            ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
@@ -27,118 +56,115 @@ var Browser = @when((ctx) =>
 });
 
 Browser.
-@on(RightButton).
-@if(WheelUp).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.WheelUp).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_CONTROL).
-    ExtendedKeyDown(VK_SHIFT).
-    ExtendedKeyDown(VK_TAB).
-    ExtendedKeyUp(VK_TAB).
-    ExtendedKeyUp(VK_SHIFT).
-    ExtendedKeyUp(VK_CONTROL).
+    ExtendedKeyDown(Keys.ControlKey).
+    ExtendedKeyDown(Keys.ShiftKey).
+    ExtendedKeyDown(Keys.Tab).
+    ExtendedKeyUp(Keys.Tab).
+    ExtendedKeyUp(Keys.ShiftKey).
+    ExtendedKeyUp(Keys.ControlKey).
     Send(); // Previous tab
 });
 
 Browser.
-@on(RightButton).
-@if(WheelDown).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.WheelDown).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_CONTROL).
-    ExtendedKeyDown(VK_TAB).
-    ExtendedKeyUp(VK_TAB).
-    ExtendedKeyUp(VK_CONTROL).
+    ExtendedKeyDown(Keys.ControlKey).
+    ExtendedKeyDown(Keys.Tab).
+    ExtendedKeyUp(Keys.Tab).
+    ExtendedKeyUp(Keys.ControlKey).
     Send(); // Next tab
 });
 
 Browser.
-@on(RightButton).
-@if(MoveUp).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.MoveUp).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_HOME).
-    ExtendedKeyUp(VK_HOME).
+    ExtendedKeyDown(Keys.Home).
+    ExtendedKeyUp(Keys.Home).
     Send(); // Scroll to top
 });
 
 Browser.
-@on(RightButton).
-@if(MoveDown).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.MoveDown).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_END).
-    ExtendedKeyUp(VK_END).
+    ExtendedKeyDown(Keys.End).
+    ExtendedKeyUp(Keys.End).
     Send(); // Scroll to bottom
 });
 
 Browser.
-@on(RightButton).
-@if(MoveLeft).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.MoveLeft).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_LMENU).
-    ExtendedKeyDown(VK_LEFT).
-    ExtendedKeyUp(VK_LEFT).
-    ExtendedKeyUp(VK_LMENU).
+    ExtendedKeyDown(Keys.Menu).
+    ExtendedKeyDown(Keys.Left).
+    ExtendedKeyUp(Keys.Left).
+    ExtendedKeyUp(Keys.Menu).
     Send(); // Go back
 });
 
 Browser.
-@on(RightButton).
-@if(MoveRight).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.MoveRight).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_LMENU).
-    ExtendedKeyDown(VK_RIGHT).
-    ExtendedKeyUp(VK_RIGHT).
-    ExtendedKeyUp(VK_LMENU).
+    ExtendedKeyDown(Keys.Menu).
+    ExtendedKeyDown(Keys.Right).
+    ExtendedKeyUp(Keys.Right).
+    ExtendedKeyUp(Keys.Menu).
     Send(); // Go next
 });
 
 Browser.
-@on(RightButton).
-@if(MoveUp, MoveDown).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.MoveUp, Keys.MoveDown).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_F5).
-    ExtendedKeyUp(VK_F5).
+    ExtendedKeyDown(Keys.F5).
+    ExtendedKeyUp(Keys.F5).
     Send(); // Reload tab
 });
 
 Browser.
-@on(RightButton).
-@if(MoveDown, MoveRight).
-@do((ctx) =>
+On(Keys.RButton).
+On(Keys.MoveDown, Keys.MoveRight).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_CONTROL).
-    ExtendedKeyDown(VK_W).
-    ExtendedKeyUp(VK_W).
-    ExtendedKeyUp(VK_CONTROL).
+    ExtendedKeyDown(Keys.ControlKey).
+    ExtendedKeyDown(Keys.W).
+    ExtendedKeyUp(Keys.W).
+    ExtendedKeyUp(Keys.ControlKey).
     Send(); // Close tab
 });
 
-
-/* 
- * Examples for CoreAudio and Tooltip API.
- * The system master volume will be changed by WheelUp and WheelDown when the cursor is on the taskbar.
- *
-
-// This using clause should be placed the top of this script.
-using CreviceApp.WinAPI.CoreAudio;
-
+/*
+// Example for CoreAudio and Tooltip API.
+// The system master volume will be changed by Keys.WheelUp and Keys.WheelDown 
+// when the cursor is on the taskbar.
+// Note: Do not forget to enable the line `using Crevice.WinAPI.CoreAudio;`
+// disabled by default.
 var VolumeControl = new VolumeControl();
 var VolumeDelta = 0.01f;
 
-var Taskbar = @when((ctx) =>
+var Taskbar = When(ctx =>
 {
     return ctx.PointedWindow.ModuleName == "explorer.exe" &&
               (ctx.PointedWindow.ClassName == "MSTaskListWClass" ||
@@ -151,56 +177,53 @@ var Taskbar = @when((ctx) =>
 });
 
 Taskbar.
-@if(WheelUp).
-@do((ctx) =>
+On(Keys.WheelUp).
+Do(ctx =>
 {
     VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() + VolumeDelta);
     Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
 
 Taskbar.
-@if(WheelDown).
-@do((ctx) =>
+On(Keys.WheelDown).
+Do(ctx =>
 {
     VolumeControl.SetMasterVolume(VolumeControl.GetMasterVolume() - VolumeDelta);
     Tooltip(string.Format("Volume: {0:D2}", (int)(VolumeControl.GetMasterVolume() * 100)));
 });
- */
-
+*/
 
 /*
- * Examples for global gestures.
- * Caution: Unfortunately, It would be impossible for you to send special key strokes 
- * like Alt+Tab no matter how hard you try on Windows 8. This is the limitation of 
- * that operating system. You should have upgraded it to Windows 10.
- * 
-
-var Whenever = @when((ctx) =>
+// Example for global gesture.
+// Caution: Unfortunately, It would be impossible to send special key (e.g. Alt+Tab) , 
+// no matter how hard you try on Windows 8. This is the limitation of that operating 
+// system. You should have upgraded it to Windows 10.
+var Whenever = When(ctx =>
 {
     return true;
 });
 
 Whenever.
-@if(X1Button).
-@do((ctx) =>
+On(Keys.XButton1).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_MENU).
-    ExtendedKeyDown(VK_TAB).
-    ExtendedKeyUp(VK_TAB).
-    ExtendedKeyUp(VK_MENU).
+    ExtendedKeyDown(Keys.Menu).
+    ExtendedKeyDown(Keys.Tab).
+    ExtendedKeyUp(Keys.Tab).
+    ExtendedKeyUp(Keys.Menu).
     Send(); // Assign X1Button to Alt+Tab
 });
 
 Whenever.
-@if(X2Button).
-@do((ctx) =>
+On(Keys.XButton2).
+Do(ctx =>
 {
     SendInput.Multiple().
-    ExtendedKeyDown(VK_LWIN).
-    ExtendedKeyDown(VK_TAB).
-    ExtendedKeyUp(VK_TAB).
-    ExtendedKeyUp(VK_LWIN).
+    ExtendedKeyDown(Keys.LWin).
+    ExtendedKeyDown(Keys.Tab).
+    ExtendedKeyUp(Keys.Tab).
+    ExtendedKeyUp(Keys.LWin).
     Send(); // Assign X2Button to Win+Tab
 });
- */
+*/

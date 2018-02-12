@@ -169,7 +169,7 @@ namespace Crevice.UI
                 return WindowsHook.Result.Transfer;
             }
 
-            var key = SupportedKeys.PhysicalKeys[(int)keyCode];
+            var key = SupportedKeys.PhysicalKeys[keyCode];
 
             switch (evnt)
             {

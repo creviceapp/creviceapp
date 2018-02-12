@@ -8,8 +8,6 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace Crevice.GestureMachine
 {
-    using System.Threading;
-
     public class GestureMachineCluster : IDisposable
     {
         public IReadOnlyList<GestureMachineProfile> Profiles;

@@ -144,7 +144,7 @@ namespace CreviceTests
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("mscorlib.dll")));
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("System.dll")));
             Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("System.Core.dll")));
-            Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("Crevice4.exe")));
+            Assert.IsTrue(parsedScript.Options.MetadataReferences.Any(v => v.Display.Contains("crevice4.exe")));
         }
 
         [TestMethod()]
