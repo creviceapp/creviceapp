@@ -69,7 +69,7 @@ namespace CreviceTests
             keyboardHook.Unhook();
         }
 
-        static readonly Mutex mutex = new Mutex(true, "SingleInputSenderTestsMutex");
+        static readonly Mutex mutex = new Mutex(true);
 
         [TestInitialize()]
         public void TestInitialize()

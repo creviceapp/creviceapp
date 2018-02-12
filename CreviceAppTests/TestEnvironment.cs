@@ -10,6 +10,6 @@ namespace CreviceAppTests
 
     public static class TestVar
     {
-        public static readonly Mutex ConsoleMutex = new Mutex(true, "ConsoleMutex");
+        public static readonly Mutex ConsoleMutex = new Mutex(true);
     }
 }

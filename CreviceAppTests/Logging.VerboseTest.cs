@@ -33,7 +33,7 @@ namespace CreviceAppTests
             Console.SetError(_consoleError);
         }
 
-        static readonly Mutex mutex = new Mutex(true, "LoggingVerboseTestsMutex");
+        static readonly Mutex mutex = new Mutex(true);
 
         [TestInitialize()]
         public void TestInitialize()
