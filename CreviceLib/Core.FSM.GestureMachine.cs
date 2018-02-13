@@ -43,8 +43,8 @@ namespace Crevice.Core.FSM
 
         public StrokeWatcher StrokeWatcher { get; internal set; }
 
-        private IState _currentState = null;
-        public IState CurrentState
+        private State _currentState = null;
+        public State CurrentState
         {
             get => _currentState;
 

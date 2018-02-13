@@ -151,7 +151,7 @@ namespace Crevice.Core.FSM
             return base.Input(evnt);
         }
 
-        public override IState Timeout()
+        public override State Timeout()
         {
             if (!HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && CanCancel)
             {
@@ -160,7 +160,7 @@ namespace Crevice.Core.FSM
             return this;
         }
 
-        public override IState Reset()
+        public override State Reset()
         {
             Machine.invalidEvents.IgnoreNext(NormalEndTrigger);
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
@@ -172,7 +172,7 @@ namespace Crevice.Core.FSM
         public bool IsNormalEndTrigger(PhysicalReleaseEvent releaseEvent)
             => NormalEndTrigger == releaseEvent;
 
-        public IState LastState => History.Records.Last().State;
+        public State LastState => History.Records.Last().State;
 
         public bool HasPressExecutors => HasPressExecutors(DoubleThrowElements);
 
@@ -183,17 +183,17 @@ namespace Crevice.Core.FSM
         public IReadOnlyList<HistoryRecord> CreateHistory(
             IReadOnlyList<HistoryRecord> history,
             PhysicalPressEvent pressEvent,
-            IState state)
+            State state)
         {
             var newHistory = history.ToList();
             newHistory.Add(new HistoryRecord(pressEvent.Opposition, state));
             return newHistory;
         }
 
-        public static IReadOnlyCollection<PhysicalReleaseEvent> GetEndTriggers(IReadOnlyList<HistoryRecord> history)
+        private static IReadOnlyCollection<PhysicalReleaseEvent> GetEndTriggers(IReadOnlyList<HistoryRecord> history)
             => new HashSet<PhysicalReleaseEvent>(from h in history select h.ReleaseEvent);
 
-        public IReadOnlyCollection<PhysicalReleaseEvent> GetAbnormalEndTriggers(IReadOnlyList<HistoryRecord> history)
+        private static IReadOnlyCollection<PhysicalReleaseEvent> GetAbnormalEndTriggers(IReadOnlyList<HistoryRecord> history)
             => new HashSet<PhysicalReleaseEvent>(from h in history.Reverse().Skip(1) select h.ReleaseEvent);
 
         public IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> GetDoubleThrowElements(PhysicalPressEvent triggerEvent)
@@ -224,8 +224,8 @@ namespace Crevice.Core.FSM
                                        ds.Trigger.Equals(triggerEvent.LogicalNormalized))
                     select ds))
                 .Aggregate(new List<IReadOnlySingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
-        
-        public static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(
+
+        private static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(
             IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => (from d in doubleThrowElements
                 where d.IsFull
@@ -235,7 +235,7 @@ namespace Crevice.Core.FSM
                     select ds.Trigger))
                 .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
-        public static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(
+        private static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(
             IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => (from ds in doubleThrowElements
                 where ds.IsFull

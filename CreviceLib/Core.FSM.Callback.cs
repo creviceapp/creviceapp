@@ -104,10 +104,10 @@ namespace Crevice.Core.Callback
         #region Event StateChanged
         public class StateChangedEventArgs : EventArgs
         {
-            public readonly IState LastState;
-            public readonly IState CurrentState;
+            public readonly State LastState;
+            public readonly State CurrentState;
 
-            public StateChangedEventArgs(IState lastState, IState currentState)
+            public StateChangedEventArgs(State lastState, State currentState)
             {
                 LastState = lastState;
                 CurrentState = currentState;
@@ -116,7 +116,7 @@ namespace Crevice.Core.Callback
 
         public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
 
-        public virtual void OnStateChanged(IState lastState, IState currentState) 
+        public virtual void OnStateChanged(State lastState, State currentState) 
             => Receiver.OnStateChanged(Key, new StateChangedEventArgs(lastState, currentState));
         #endregion
 
@@ -157,9 +157,9 @@ namespace Crevice.Core.Callback
         #region Event MachineReset
         public class MachineResetEventArgs : EventArgs
         {
-            public readonly IState LastState;
+            public readonly State LastState;
 
-            public MachineResetEventArgs(IState lastState)
+            public MachineResetEventArgs(State lastState)
             {
                 LastState = lastState;
             }
@@ -167,7 +167,7 @@ namespace Crevice.Core.Callback
 
         public delegate void MachineResetEventHandler(object sender, MachineResetEventArgs e);
 
-        public virtual void OnMachineReset(IState state)
+        public virtual void OnMachineReset(State state)
             => Receiver.OnMachineReset(Key, new MachineResetEventArgs(state));
         #endregion
     }

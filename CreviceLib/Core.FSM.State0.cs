@@ -88,7 +88,7 @@ namespace Crevice.Core.FSM
             return base.Input(evnt);
         }
 
-        public IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> 
+        protected internal IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> 
             GetActiveDoubleThrowElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
             => (from w in RootElement.WhenElements
                 where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
@@ -98,7 +98,7 @@ namespace Crevice.Core.FSM
                         select d))
             .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        public IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> 
+        protected internal IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> 
             GetActiveSingleThrowElements(TEvalContext ctx, PhysicalFireEvent triggerEvent)
             => (from w in RootElement.WhenElements
                 where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)

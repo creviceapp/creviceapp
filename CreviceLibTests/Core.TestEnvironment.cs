@@ -80,7 +80,7 @@ namespace CreviceLibTests
         public int OnStateChangedCallCount { get; private set; } = 0;
 
         public override void OnStateChanged(
-            IState lastState, IState currentState)
+            State lastState, State currentState)
         {
             if (EnableStateChangedCallback)
             {
@@ -122,7 +122,7 @@ namespace CreviceLibTests
         public int OnMachineResetCallCount { get; private set; } = 0;
 
         public override void OnMachineReset(
-            IState state)
+            State state)
         {
             if (EnableMachineResetCallback)
             {

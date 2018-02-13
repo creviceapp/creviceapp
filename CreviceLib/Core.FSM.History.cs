@@ -10,8 +10,8 @@ namespace Crevice.Core.FSM
     public class HistoryRecord
     {
         public readonly PhysicalReleaseEvent ReleaseEvent;
-        public readonly IState State;
-        public HistoryRecord(PhysicalReleaseEvent releaseEvent, IState state)
+        public readonly State State;
+        public HistoryRecord(PhysicalReleaseEvent releaseEvent, State state)
         {
             ReleaseEvent = releaseEvent;
             State = state;
@@ -20,9 +20,9 @@ namespace Crevice.Core.FSM
 
     public class HistoryQueryResult
     {
-        public readonly IState FoundState;
+        public readonly State FoundState;
         public readonly IReadOnlyList<PhysicalReleaseEvent> SkippedReleaseEvents;
-        public HistoryQueryResult(IState foundState, IReadOnlyList<PhysicalReleaseEvent> skippedReleaseEvents)
+        public HistoryQueryResult(State foundState, IReadOnlyList<PhysicalReleaseEvent> skippedReleaseEvents)
         {
             FoundState = foundState;
             SkippedReleaseEvents = skippedReleaseEvents;
@@ -33,7 +33,7 @@ namespace Crevice.Core.FSM
     {
         public readonly IReadOnlyList<HistoryRecord> Records;
 
-        public History(PhysicalReleaseEvent releaseEvent, IState state)
+        public History(PhysicalReleaseEvent releaseEvent, State state)
             : this(new List<HistoryRecord>() { new HistoryRecord(releaseEvent, state) })
         { }
 
@@ -50,7 +50,7 @@ namespace Crevice.Core.FSM
             return new HistoryQueryResult(foundState, skippedReleaseEvents);
         }
 
-        public History CreateNext(PhysicalReleaseEvent releaseEvent, IState state)
+        public History CreateNext(PhysicalReleaseEvent releaseEvent, State state)
         {
             var newRecords = Records.ToList();
             newRecords.Add(new HistoryRecord(releaseEvent, state));
