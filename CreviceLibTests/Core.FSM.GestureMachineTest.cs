@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CreviceLibTests
 {
+    using System.Threading;
     using System.Drawing;
     using Crevice.Core.Stroke;
 
@@ -179,6 +180,41 @@ namespace CreviceLibTests
             {
                 var result = gm.Input(new Crevice.Core.Events.NullEvent());
                 Assert.AreEqual(result, false);
+            }
+        }
+
+        [TestMethod]
+        public void WhenEvaluatorTest()
+        {
+            {
+                using(var cde = new CountdownEvent(1))
+                {
+                    var root = new TestRootElement();
+                    root.When(ctx => { return false; })
+                        .On(TestEvents.LogicalSingleThrowKeys[0])
+                        .Do(ctx => { cde.Signal(); });
+                    using (var gm = new TestGestureMachine(root))
+                    {
+                        var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        Assert.AreEqual(result, false);
+                        Assert.AreEqual(cde.Wait(100), false);
+                    }
+                }
+            }
+            {
+                using (var cde = new CountdownEvent(1))
+                {
+                    var root = new TestRootElement();
+                    root.When(ctx => { return true; })
+                        .On(TestEvents.LogicalSingleThrowKeys[0])
+                        .Do(ctx => { cde.Signal(); });
+                    using (var gm = new TestGestureMachine(root))
+                    {
+                        var result = gm.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        Assert.AreEqual(result, true);
+                        Assert.AreEqual(cde.Wait(100), true);
+                    }
+                }
             }
         }
 
