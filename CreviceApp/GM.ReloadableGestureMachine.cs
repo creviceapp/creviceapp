@@ -145,43 +145,24 @@ namespace Crevice.GestureMachine
                     using (Verbose.PrintElapsed("Hot-reload GestureMachine"))
                     {
                         var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
-                        var balloonIconTitle = "";
-                        var balloonIconMessage = "";
-                        var balloonIcon = ToolTipIcon.None;
-                        var lastErrorMessage = "";
                         if (gmCluster == null)
                         {
-                            balloonIconTitle = "UserScript Compilation Error";
-                            balloonIconMessage = string.Format("{0} error(s) found in the UserScript.\r\nClick to view the detail.",
-                                compilationErrors.GetValueOrDefault().Count());
-                            balloonIcon = ToolTipIcon.Error;
-                            lastErrorMessage = UserScript.GetPrettyErrorMessage(compilationErrors.GetValueOrDefault());
+                            ShowErrorBalloon(compilationErrors.GetValueOrDefault());
                         }
                         else
                         {
                             gmCluster.Run();
-
-                            var gestures = gmCluster.Profiles.Select(p => p.RootElement.GestureCount).Sum();
-                            var activatedMessage = string.Format("{0} Gestures Activated", gestures);
-
                             Instance = gmCluster;
                             if (runtimeError == null)
                             {
-                                balloonIcon = ToolTipIcon.Info;
-                                balloonIconMessage = activatedMessage;
-                                lastErrorMessage = "";
+                                ShowInfoBalloon(gmCluster);
                             }
                             else
                             {
-                                balloonIcon = ToolTipIcon.Warning;
-                                balloonIconTitle = activatedMessage;
-                                balloonIconMessage = "The configuration may be loaded incompletely due to an error on the UserScript evaluation.\r\nClick to view the detail.";
-                                lastErrorMessage = runtimeError.ToString();
+                                ShowWarningBalloon(gmCluster, runtimeError);
                             }
-                            GlobalConfig.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
+                            UpdateTasktrayMessage(gmCluster.Profiles);
                         }
-                        GlobalConfig.MainForm.LastErrorMessage = lastErrorMessage;
-                        GlobalConfig.MainForm.ShowBalloon(balloonIconMessage, balloonIconTitle, balloonIcon, 10000);
                     }
                     _loading = false;
                     if (!_reloadRequest)
@@ -196,6 +177,71 @@ namespace Crevice.GestureMachine
                 ReleaseUnusedMemory();
                 _semaphore.Release();
             }
+        }
+
+        private void UpdateTasktrayMessage(IReadOnlyList<GestureMachineProfile> profiles)
+        {
+            var header = $"Crevice {Application.ProductVersion}";
+            var sum = profiles.Sum(p => p.RootElement.GestureCount);
+            var gesturesMessage = $"Gestures: {sum}";
+            var totalMessage = $"Total: {sum}";
+            if (profiles.Count > 1)
+            {
+                var perProfileMessages = Enumerable.
+                    Range(0, profiles.Count).
+                    Select(n => profiles.Take(n + 1).
+                        Select(p => $"({p.ProfileName}): {p.RootElement.GestureCount}").
+                        Aggregate("", (a, b) => a + "\r\n" + b)).
+                        Select(s => s.Trim()).
+                    Reverse().ToList();
+
+                if ((header + "\r\n" + perProfileMessages.First()).Length < 63)
+                {
+                    GlobalConfig.MainForm.UpdateTasktrayMessage(perProfileMessages.First());
+                    return;
+                }
+
+                perProfileMessages = perProfileMessages.Skip(1).
+                    Where(s => (header + "\r\n" + s + "\r\n...\r\n" + totalMessage).Length < 63).ToList();
+
+                if (perProfileMessages.Any())
+                {
+                    GlobalConfig.MainForm.UpdateTasktrayMessage(perProfileMessages.First() + "\r\n...\r\n" + totalMessage);
+                    return;
+                }
+            }
+            GlobalConfig.MainForm.UpdateTasktrayMessage(gesturesMessage);
+        }
+
+        private string GetActivatedMessage(GestureMachineCluster gmCluster) 
+            => $"{gmCluster.Profiles.Select(p => p.RootElement.GestureCount).Sum()} Gestures Activated";
+
+        private void ShowInfoBalloon(
+            GestureMachineCluster gmCluster)
+        {
+            GlobalConfig.MainForm.LastErrorMessage = "";
+            GlobalConfig.MainForm.ShowBalloon(GetActivatedMessage(gmCluster), "", ToolTipIcon.Info, 10000);
+        }
+
+        private void ShowWarningBalloon(
+            GestureMachineCluster gmCluster, 
+            Exception runtimeError)
+        {
+            GlobalConfig.MainForm.LastErrorMessage = runtimeError.ToString();
+            var text = "The configuration may be loaded incompletely due to an error on the UserScript evaluation.\r\n" +
+                "Click to view the detail.";
+            GlobalConfig.MainForm.ShowBalloon(text, GetActivatedMessage(gmCluster), ToolTipIcon.Warning, 10000);
+        }
+
+        private void ShowErrorBalloon(
+            System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> errors)
+        {
+            var errorMessage = UserScript.GetPrettyErrorMessage(errors);
+            GlobalConfig.MainForm.LastErrorMessage = errorMessage;
+
+            var title = "UserScript Compilation Error";
+            var text = $"{errors.Count()} error(s) found in the UserScript.\r\nClick to view the detail.";
+            GlobalConfig.MainForm.ShowBalloon(text, title, ToolTipIcon.Error, 10000);
         }
 
         private void ReleaseUnusedMemory()
