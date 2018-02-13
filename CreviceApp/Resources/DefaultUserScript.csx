@@ -23,7 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#region Crvice API section.
+#region Crevice API section.
 // You can use `Window` class which provides some useful functions relating 
 // Windows's window.
 //using Crevice.WinAPI.Window;
