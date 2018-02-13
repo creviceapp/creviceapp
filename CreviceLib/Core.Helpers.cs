@@ -8,11 +8,6 @@ namespace Crevice.Core
     {
         using Crevice.Core.Events;
 
-        public interface IIsDisposed
-        {
-            bool IsDisposed { get; }
-        }
-
         public class EventCounter<TEvent>
             where TEvent : Event
         {

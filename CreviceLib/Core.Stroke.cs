@@ -206,7 +206,7 @@ namespace Crevice.Core.Stroke
 
         public virtual void Queue(Point point)
         {
-            if (!IsDisposed)
+            if (!_disposed)
             {
                 Process(point);
             }
@@ -255,12 +255,12 @@ namespace Crevice.Core.Stroke
         public IReadOnlyList<StrokeDirection> GetStorkes()
             => strokes.Select(x => x.Direction).ToList();
 
-        public bool IsDisposed { get; private set; }
+        internal bool _disposed { get; private set; } = false;
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            IsDisposed = true;
+            _disposed = true;
             queue.CompleteAdding();
         }
 

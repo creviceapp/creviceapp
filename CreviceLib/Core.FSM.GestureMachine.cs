@@ -23,7 +23,7 @@ namespace Crevice.Core.FSM
     }
 
     public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
-        : IGestureMachine, IIsDisposed, IDisposable
+        : IGestureMachine, IDisposable
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
@@ -230,14 +230,14 @@ namespace Crevice.Core.FSM
             }
         }
 
-        public bool IsDisposed { get; private set; } = false;
+        internal bool _disposed { get; private set; } = false;
 
         public void Dispose()
         {
             lock (lockObject)
             {
                 GC.SuppressFinalize(this);
-                IsDisposed = true;
+                _disposed = true;
                 ReleaseGestureTimeoutTimer();
                 ReleaseStrokeWatcher();
             }
