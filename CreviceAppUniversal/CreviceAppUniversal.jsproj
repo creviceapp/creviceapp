@@ -147,7 +147,10 @@
     <Content Include="win32\Microsoft.CodeAnalysis.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="win32\MockEnv.csx">
+    <Content Include="win32\Scripts\DefaultUserScript.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Scripts\MockEnv.csx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="win32\System.AppContext.dll">

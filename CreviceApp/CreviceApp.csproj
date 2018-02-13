@@ -193,7 +193,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Crevice.manifest" />
-    <None Include="MockEnv.csx">
+    <None Include="Scripts\MockEnv.csx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -206,7 +206,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Resources\DefaultUserScript.csx" />
+    <None Include="Scripts\DefaultUserScript.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

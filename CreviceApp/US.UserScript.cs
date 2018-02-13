@@ -72,7 +72,7 @@ namespace Crevice.UserScript
             using (Verbose.PrintElapsed("Parse UserScript"))
             {
                 var appEnvUserScript = userScriptString
-                    .Replace("#load \"IDESupport\\\\MockEnv.csx\"", "// #load \"IDESupport\\\\MockEnv.csx\"");
+                    .Replace("#load \"IDESupport", "// #load \"IDESupport");
 
                 var script = CSharpScript.Create(
                     appEnvUserScript,

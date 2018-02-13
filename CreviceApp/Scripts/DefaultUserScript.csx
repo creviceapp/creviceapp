@@ -14,7 +14,7 @@
 #endregion
 
 #region IDE support environment loading section.
-#load "IDESupport\\MockEnv.csx"
+#load "IDESupport\\Scripts\\MockEnv.csx"
 #endregion
 
 using System;
