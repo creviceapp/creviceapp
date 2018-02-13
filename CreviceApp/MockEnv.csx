@@ -16,13 +16,12 @@ var debugCliOption = CLIOption.Parse(debugCliArgs);
 var debugGlobalConfig = new GlobalConfig(debugCliOption);
 var debugExecutionContext = new UserScriptExecutionContext(debugGlobalConfig);
 
-GestureMachineCluster GetDebugGestureMachine()
-    => new GestureMachineCluster(debugExecutionContext.Profiles);
-
 void DeclareProfile(string profileName) 
     => debugExecutionContext.DeclareProfile(profileName);
+
 IReadOnlyList<GestureMachineProfile> Profiles 
     => debugExecutionContext.Profiles;
+
 readonly SupportedKeys.LogicalKeyDeclaration Keys 
     = debugExecutionContext.Keys;
 
@@ -59,6 +58,7 @@ Crevice.Core.Stroke.StrokeDirection MoveRight
 
 IReadOnlyList<SupportedKeys.PhysicalKeyDeclaration> PhysicalKeys 
     => debugExecutionContext.PhysicalKeys;
+
 Crevice.WinAPI.SendInput.SingleInputSender SendInput 
     => debugExecutionContext.SendInput;
 
