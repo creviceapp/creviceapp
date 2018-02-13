@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace Crevice.UserScript
 {
+    using Crevice.Core.FSM;
     using Crevice.Config;
     using Crevice.GestureMachine;
     using Crevice.UserScript.Keys;
@@ -66,8 +67,8 @@ namespace Crevice.UserScript
             GlobalConfig = globalConfig;
         }
 
-        public GestureMachineCluster RootGestureMachine 
-            => GlobalConfig.MainForm.ReloadableGestureMachine.Instance;
+        public IGestureMachine RootGestureMachine 
+            => GlobalConfig.MainForm.GestureMachine;
 
         public UserConfig Config
             => CurrentProfile.UserConfig;

@@ -12,6 +12,7 @@ namespace Crevice.GestureMachine
     using Crevice.DSL;
 
     public class GestureMachineProfile
+        : IDisposable
     {
         public readonly RootElement RootElement = new RootElement();
 
@@ -28,6 +29,14 @@ namespace Crevice.GestureMachine
             UserConfig = new UserConfig(callbackManager.Receiver);
             GestureMachine = new GestureMachine(UserConfig.Core, callbackManager);
         }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            GestureMachine?.Dispose();
+        }
+
+        ~GestureMachineProfile() => Dispose();
     }
 
     public class GestureMachineProfileManager

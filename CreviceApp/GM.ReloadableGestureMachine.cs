@@ -9,6 +9,7 @@ using System.Windows.Forms;
 namespace Crevice.GestureMachine
 {
     using System.Threading;
+    using Crevice.Core.FSM;
     using Crevice.Logging;
     using Crevice.Config;
     using Crevice.UserScript;
@@ -18,13 +19,14 @@ namespace Crevice.GestureMachine
               System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic>?,
               Exception>;
 
-    public class ReloadableGestureMachine : IDisposable
+    public class ReloadableGestureMachine 
+        : IGestureMachine, IDisposable
     {
         private GestureMachineCluster _instance = new NullGestureMachineCluster();
-        public GestureMachineCluster Instance
+        private GestureMachineCluster Instance
         {
-            get { return _instance; }
-            private set
+            get => _instance;
+            set
             {
                 var old = Instance;
                 _instance = value;
@@ -34,6 +36,15 @@ namespace Crevice.GestureMachine
 
         public bool IsActivated()
             => Instance.GetType() != typeof(NullGestureMachineCluster);
+
+        public bool Input(Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
+            => Instance.Input(physicalEvent, point);
+
+        public bool Input(Core.Events.IPhysicalEvent physicalEvent)
+            => Instance.Input(physicalEvent);
+
+        public void Reset()
+            => Instance.Reset();
 
         private readonly GlobalConfig GlobalConfig;
 
@@ -164,7 +175,7 @@ namespace Crevice.GestureMachine
                             {
                                 balloonIcon = ToolTipIcon.Warning;
                                 balloonIconTitle = activatedMessage;
-                                balloonIconMessage = "The configuration may be incomplete due to the UserScript Evaluation Error.\r\nClick to view the detail.";
+                                balloonIconMessage = "The configuration may be loaded incompletely due to an error on the UserScript evaluation.\r\nClick to view the detail.";
                                 lastErrorMessage = runtimeError.ToString();
                             }
                             GlobalConfig.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);

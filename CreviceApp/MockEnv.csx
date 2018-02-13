@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
+using Crevice.Core.FSM;
 using Crevice.Config;
 using Crevice.UserScript;
 using Crevice.UserScript.Keys;
@@ -62,7 +63,7 @@ IReadOnlyList<SupportedKeys.PhysicalKeyDeclaration> PhysicalKeys
 Crevice.WinAPI.SendInput.SingleInputSender SendInput 
     => debugExecutionContext.SendInput;
 
-GestureMachineCluster RootGestureMachine 
+IGestureMachine RootGestureMachine 
     => debugExecutionContext.RootGestureMachine;
 
 UserConfig Config 

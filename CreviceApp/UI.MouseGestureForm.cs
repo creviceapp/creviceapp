@@ -51,7 +51,7 @@ namespace Crevice.UI
         private readonly LowLevelKeyboardHook KeyboardHook;
         private readonly LowLevelMouseHook MouseHook;
         protected readonly GlobalConfig GlobalConfig;
-        public readonly ReloadableGestureMachine ReloadableGestureMachine;
+        public readonly ReloadableGestureMachine GestureMachine;
 
         public MouseGestureForm()
             : this(new GlobalConfig())
@@ -62,13 +62,13 @@ namespace Crevice.UI
             KeyboardHook = new LowLevelKeyboardHook(KeyboardProc);
             MouseHook = new LowLevelMouseHook(MouseProc);
             GlobalConfig = globalConfig;
-            ReloadableGestureMachine = new ReloadableGestureMachine(globalConfig);
+            GestureMachine = new ReloadableGestureMachine(globalConfig);
         }
         
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            ReloadableGestureMachine.Dispose();
+            GestureMachine.Dispose();
         }
 
         protected const int WM_DISPLAYCHANGE = 0x007E;
@@ -94,7 +94,7 @@ namespace Crevice.UI
             {
                 case WM_DISPLAYCHANGE:
                     Verbose.Print("WndProc: WM_DISPLAYCHANGE");
-                    ReloadableGestureMachine.Instance.Reset();
+                    GestureMachine.Reset();
                     Verbose.Print("GestureMachine was reset.");
                     break;
 
@@ -174,16 +174,16 @@ namespace Crevice.UI
             switch (evnt)
             {
                 case LowLevelKeyboardHook.Event.WM_KEYDOWN:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(key.PressEvent));
+                    return ToHookResult(GestureMachine.Input(key.PressEvent));
 
                 case LowLevelKeyboardHook.Event.WM_SYSKEYDOWN:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(key.PressEvent));
+                    return ToHookResult(GestureMachine.Input(key.PressEvent));
 
                 case LowLevelKeyboardHook.Event.WM_KEYUP:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(key.ReleaseEvent));
+                    return ToHookResult(GestureMachine.Input(key.ReleaseEvent));
 
                 case LowLevelKeyboardHook.Event.WM_SYSKEYUP:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(key.ReleaseEvent));
+                    return ToHookResult(GestureMachine.Input(key.ReleaseEvent));
             }
             return WindowsHook.Result.Transfer;
         }
@@ -215,54 +215,54 @@ namespace Crevice.UI
             switch (evnt)
             {
                 case LowLevelMouseHook.Event.WM_MOUSEMOVE:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(NullEvent, point));
+                    return ToHookResult(GestureMachine.Input(NullEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONDOWN:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent, point));
+                    return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_LBUTTONUP:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.LButton.ReleaseEvent, point));
+                    return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.LButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONDOWN:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent, point));
+                    return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_RBUTTONUP:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent, point));
+                    return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONDOWN:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MButton.PressEvent, point));
+                    return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.MButton.PressEvent, point));
                 case LowLevelMouseHook.Event.WM_MBUTTONUP:
-                    return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.MButton.ReleaseEvent, point));
+                    return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.MButton.ReleaseEvent, point));
                 case LowLevelMouseHook.Event.WM_MOUSEWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelDown.FireEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelDown.FireEvent, point));
                     }
                     else
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONDOWN:
                     if (data.mouseData.asXButton.IsXButton1)
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton1.PressEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.XButton1.PressEvent, point));
                     }
                     else
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton2.PressEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.XButton2.PressEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_XBUTTONUP:
                     if (data.mouseData.asXButton.IsXButton1)
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton1.ReleaseEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.XButton1.ReleaseEvent, point));
                     }
                     else
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.XButton2.ReleaseEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.XButton2.ReleaseEvent, point));
                     }
                 case LowLevelMouseHook.Event.WM_MOUSEHWHEEL:
                     if (data.mouseData.asWheelDelta.delta < 0)
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelRight.FireEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelRight.FireEvent, point));
                     }
                     else
                     {
-                        return ToHookResult(ReloadableGestureMachine.Instance.Input(SupportedKeys.PhysicalKeys.WheelLeft.FireEvent, point));
+                        return ToHookResult(GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelLeft.FireEvent, point));
                     }
             }
             return WindowsHook.Result.Transfer;

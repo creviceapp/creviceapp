@@ -8,7 +8,10 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace Crevice.GestureMachine
 {
-    public class GestureMachineCluster : IDisposable
+    using Crevice.Core.FSM;
+
+    public class GestureMachineCluster 
+        : IGestureMachine, IDisposable
     {
         public IReadOnlyList<GestureMachineProfile> Profiles;
 
@@ -27,7 +30,6 @@ namespace Crevice.GestureMachine
 
         public bool Input(Core.Events.IPhysicalEvent physicalEvent, System.Drawing.Point? point)
         {
-
             foreach (var profile in Profiles)
             {
                 var eventIsConsumed = profile.GestureMachine.Input(physicalEvent, point);
@@ -55,13 +57,10 @@ namespace Crevice.GestureMachine
             GC.SuppressFinalize(this);
             foreach (var profile in Profiles)
             {
-                profile.GestureMachine.Dispose();
+                profile.Dispose();
             }
         }
 
-        ~GestureMachineCluster()
-        {
-            Dispose();
-        }
+        ~GestureMachineCluster() => Dispose();
     }
 }

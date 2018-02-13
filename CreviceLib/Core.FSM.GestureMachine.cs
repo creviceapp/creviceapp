@@ -13,8 +13,17 @@ namespace Crevice.Core.FSM
     using Crevice.Core.Stroke;
     using Crevice.Core.Helpers;
 
+    public interface IGestureMachine
+    {
+        bool Input(IPhysicalEvent evnt);
+
+        bool Input(IPhysicalEvent evnt, Point? point);
+
+        void Reset();
+    }
+
     public abstract class GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext>
-        : IIsDisposed, IDisposable
+        : IGestureMachine, IIsDisposed, IDisposable
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext

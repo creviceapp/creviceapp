@@ -38,7 +38,7 @@ namespace Crevice.UI
         private FileSystemWatcher _userScriptWatcher;
 
         private LauncherForm _launcherForm = null;
-
+        
         public MainForm(GlobalConfig globalConfig) : base(globalConfig)
         {
             _tooltip = new TooltipNotifier(this);
@@ -50,7 +50,7 @@ namespace Crevice.UI
         {
             Task.Run(() =>
             {
-                ReloadableGestureMachine.HotReload();
+                GestureMachine.HotReload();
             });
         }
 
@@ -68,7 +68,7 @@ namespace Crevice.UI
             RegisterNotifyIcon();
             UpdateTasktrayMessage("Configuration not loaded.");
             SetupUserScriptWatcher();
-            ReloadableGestureMachine.HotReload();
+            GestureMachine.HotReload();
             try
             {
                 EnableHook = true;
