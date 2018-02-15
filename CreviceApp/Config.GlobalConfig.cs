@@ -10,8 +10,6 @@ using System.Windows.Forms;
 
 namespace Crevice.Config
 {
-
-
     public class GlobalConfig
     {
         public readonly CLIOption.Result CLIOption;
@@ -29,12 +27,10 @@ namespace Crevice.Config
             
             MainForm = new UI.MainForm(this);
         }
-
+        
         // %USERPROFILE%\\AppData\\Roaming\\Crevice4
         public string DefaultUserDirectory
-            => Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Crevice4");
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Crevice4");
 
         // Parent directory of UserScriptFile.
         public string UserDirectory
@@ -53,11 +49,14 @@ namespace Crevice.Config
                 return uri.LocalPath;
             }
         }
-
+        
         public string UserScriptCacheFile
             => UserScriptFile + ".cache";
 
-        public string ReadUserScriptFile()
+        private string DisableIDESupportLoadDirectives(string userScriptString)
+            => userScriptString.Replace("#load \"IDESupport", "//#load \"IDESupport");
+
+        private string ReadUserScriptFile()
         {
             if (!File.Exists(UserScriptFile))
             {
@@ -66,15 +65,15 @@ namespace Crevice.Config
             return File.ReadAllText(UserScriptFile, Encoding.UTF8);
         }
         
-        public string GetOrSetDefaultUserScriptFile(string defaultUserScriptString)
+        public string GetOrSetDefaultUserScriptFile(string defaultUserScriptString, bool disableIDESupport = true)
         {
             string userScriptString = ReadUserScriptFile();
             if (userScriptString == null)
             {
                 WriteUserScriptFile(defaultUserScriptString);
-                return defaultUserScriptString;
+                userScriptString = defaultUserScriptString;
             }
-            return userScriptString;
+            return disableIDESupport ? DisableIDESupportLoadDirectives(userScriptString) : userScriptString;
         }
 
         public void WriteUserScriptFile(string scriptFileString)
