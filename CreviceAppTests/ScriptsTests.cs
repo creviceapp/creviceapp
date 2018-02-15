@@ -69,6 +69,8 @@ namespace Crevice4Tests
             var globalConfig = new GlobalConfig();
             var appEnvUserScriptString = globalConfig.GetOrSetDefaultUserScriptFile(userScriptString);
             var parsedScript = UserScript.ParseScript(appEnvUserScriptString, tempDir, tempDir);
+            var errors = UserScript.CompileUserScript(parsedScript);
+            Assert.AreEqual(errors.Count() == 0, true);
             var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptString, parsedScript);
             var ctx = new UserScriptExecutionContext(globalConfig);
             UserScript.EvaluateUserScriptAssembly(ctx, cache);
@@ -89,6 +91,8 @@ namespace Crevice4Tests
             var result = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig();
             var parsedScript = UserScript.ParseScript(userScriptString, tempDir, tempDir);
+            var errors = UserScript.CompileUserScript(parsedScript);
+            Assert.AreEqual(errors.Count() == 0, true);
             var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptString, parsedScript);
             var ctx = new UserScriptExecutionContext(globalConfig);
             UserScript.EvaluateUserScriptAssembly(ctx, cache);
