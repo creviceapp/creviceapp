@@ -71,11 +71,8 @@ namespace Crevice.UserScript
         {
             using (Verbose.PrintElapsed("Parse UserScript"))
             {
-                var appEnvUserScript = userScriptString
-                    .Replace("#load \"IDESupport", "// #load \"IDESupport");
-
                 var script = CSharpScript.Create(
-                    appEnvUserScript,
+                    userScriptString,
                     ScriptOptions.Default
                         .WithSourceResolver(ScriptSourceResolver.Default.WithBaseDirectory(scriptSourceResolverBaseDirectory))
                         .WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory(scriptMetadataResolverBaseDirectory))
@@ -87,7 +84,7 @@ namespace Crevice.UserScript
                             // System.Core.dll
                             typeof(Enumerable).Assembly,
                             // crevice4.exe
-                            // Note: For the reference to CreviceApp.exe, `Assembly.GetEntryAssembly()` does not work
+                            // Note: For the reference to crevice4.exe, `Assembly.GetEntryAssembly()` does not work
                             // properly in the test environment. So instead of it, we should use `typeof(Program).Assembly)` here.
                             typeof(Program).Assembly),
                     globalsType: typeof(UserScriptExecutionContext));

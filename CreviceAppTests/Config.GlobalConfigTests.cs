@@ -34,14 +34,14 @@ namespace CreviceTests
         public void DefaultUserDirectoryTest()
         {
             var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
+            Assert.AreEqual(globalConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"), true);
         }
 
         [TestMethod()]
         public void UserScriptFile0Test()
         {
             var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx"));
+            Assert.AreEqual(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx"), true);
         }
 
         [TestMethod()]
@@ -51,7 +51,7 @@ namespace CreviceTests
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\hoge.csx"));
+            Assert.AreEqual(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\hoge.csx"), true);
         }
         
         [TestMethod()]
@@ -61,14 +61,14 @@ namespace CreviceTests
             string[] args = { "--script", "C:\\hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserScriptFile.Equals("C:\\hoge.csx"));
+            Assert.AreEqual(globalConfig.UserScriptFile.Equals("C:\\hoge.csx"), true);
         }
 
         [TestMethod()]
         public void UserDirectory0Test()
         {
             var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
+            Assert.AreEqual(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"), true);
         }
 
         [TestMethod()]
@@ -78,7 +78,7 @@ namespace CreviceTests
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
+            Assert.AreEqual(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"), true);
         }
 
         [TestMethod()]
@@ -88,7 +88,7 @@ namespace CreviceTests
             string[] args = { "--script", "C:\\hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserDirectory.Equals("C:\\"));
+            Assert.AreEqual(globalConfig.UserDirectory.Equals("C:\\"), true);
         }
 
         [TestMethod()]
@@ -98,7 +98,7 @@ namespace CreviceTests
             string[] args = { "--script", Path.Combine(directory, "test.csx") };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.GetOrSetDefaultUserScriptFile("").Length == 0);
+            Assert.AreEqual(globalConfig.GetOrSetDefaultUserScriptFile("").Length == 0, true);
         }
 
         [TestMethod()]
@@ -108,7 +108,28 @@ namespace CreviceTests
             string[] args = { "--script", Path.Combine(directory, "test.csx") };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.GetOrSetDefaultUserScriptFile("hoge").Length > 0);
+            Assert.AreEqual(globalConfig.GetOrSetDefaultUserScriptFile("hoge").Length > 0, true);
+        }
+
+        [TestMethod()]
+        public void DisableIDESupportLoadDirectives0Test()
+        {
+            var directory = TestHelpers.GetTestDirectory();
+            string[] args = { "--script", Path.Combine(directory, "test.csx") };
+            var cliOption = CLIOption.Parse(args);
+            var globalConfig = new GlobalConfig(cliOption);
+            Assert.AreEqual(globalConfig.GetOrSetDefaultUserScriptFile("#load \"IDESupport"), "//#load \"IDESupport");
+        }
+
+        [TestMethod()]
+        public void DisableIDESupportLoadDirectives1Test()
+        {
+            var directory = TestHelpers.GetTestDirectory();
+            string[] args = { "--script", Path.Combine(directory, "test.csx") };
+            var cliOption = CLIOption.Parse(args);
+            var globalConfig = new GlobalConfig(cliOption);
+            Assert.AreEqual(
+                globalConfig.GetOrSetDefaultUserScriptFile("#load \"IDESupport", disableIDESupport: false), "#load \"IDESupport");
         }
 
 
@@ -116,7 +137,7 @@ namespace CreviceTests
         public void GetUserScriptCacheFileTest()
         {
             var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx.cache"));
+            Assert.AreEqual(globalConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx.cache"), true);
         }
     }
 }
