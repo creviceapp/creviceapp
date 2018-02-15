@@ -75,16 +75,6 @@ namespace Crevice.Core.FSM
         public GestureMachine(
             TConfig config,
             CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callbackManager,
-            TContextManager contextManager,
-            IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
-            : this(config, callbackManager, contextManager)
-        {
-            Run(rootElement);
-        }
-
-        public GestureMachine(
-            TConfig config,
-            CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext> callbackManager,
             TContextManager contextManager)
         {
             Config = config;

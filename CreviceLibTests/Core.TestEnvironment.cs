@@ -154,8 +154,10 @@ namespace CreviceLibTests
         public TestGestureMachine(
             TestRootElement rootElement,
             TestCallbackManager callbackManger)
-            : base(new TestGestureMachineConfig(), callbackManger, new TestContextManager(),  rootElement)
-        { }
+            : base(new TestGestureMachineConfig(), callbackManger, new TestContextManager())
+        {
+            Run(rootElement);
+        }
     }
 
     public class TestEvents

@@ -11,22 +11,12 @@ namespace Crevice.GestureMachine
     using Crevice.Core.Events;
     using Crevice.DSL;
 
-    public class NullGestureMachine : GestureMachine
-    {
-        public NullGestureMachine() : base(new RootElement()) { }
-    }
-    
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
         public GestureMachine(
             GestureMachineConfig gestureMachineConfig,
             CallbackManager callbackManager)
             : base(gestureMachineConfig, callbackManager, new ContextManager())
-        { }
-
-        public GestureMachine(
-            RootElement rootElement)
-            : base(new GestureMachineConfig(), new CallbackManager(), new ContextManager(), rootElement)
         { }
 
         public override bool Input(IPhysicalEvent evnt, Point? point)
