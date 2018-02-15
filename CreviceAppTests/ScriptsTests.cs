@@ -78,6 +78,31 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
+        public void DefaultUserScriptErrorTest()
+        {
+            var tempDir = TestHelpers.GetTestDirectory();
+            var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
+            var userScriptFile = Path.Combine(tempDir, "default.csx");
+            var userScriptString = File.ReadAllText(Path.Combine(binaryDir.FullName, "Scripts", "DefaultUserScript.csx"), Encoding.UTF8);
+
+            Setup(binaryDir, tempDir);
+
+            File.WriteAllText(userScriptFile, "hogehoge");
+
+            string[] args = { "-s", userScriptFile };
+            var result = CLIOption.Parse(args);
+            var globalConfig = new GlobalConfig();
+            var appEnvUserScriptString = globalConfig.GetOrSetDefaultUserScriptFile(userScriptString);
+            var parsedScript = UserScript.ParseScript(appEnvUserScriptString, tempDir, tempDir);
+            var errors = UserScript.CompileUserScript(parsedScript);
+            Assert.AreEqual(errors.Count() == 0, true);
+            var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptString, parsedScript);
+            var ctx = new UserScriptExecutionContext(globalConfig);
+            UserScript.EvaluateUserScriptAssembly(ctx, cache);
+            Assert.AreEqual(ctx.Profiles[0].RootElement.GestureCount > 0, true);
+        }
+
+        [TestMethod()]
         public void MockEnvTest()
         {
             var tempDir = TestHelpers.GetTestDirectory();
@@ -97,6 +122,27 @@ namespace Crevice4Tests
             var ctx = new UserScriptExecutionContext(globalConfig);
             UserScript.EvaluateUserScriptAssembly(ctx, cache);
             Assert.AreEqual(ctx.Profiles.Count == 0, true);
+        }
+
+        [TestMethod()]
+        public void MockEnvErrorTest()
+        {
+            var tempDir = TestHelpers.GetTestDirectory();
+            var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
+            var userScriptFile = Path.Combine(tempDir, "default.csx");
+            var userScriptString = File.ReadAllText(Path.Combine(binaryDir.FullName, "Scripts", "DefaultUserScript.csx"), Encoding.UTF8);
+
+            Setup(binaryDir, tempDir);
+
+            var mockFile = Path.Combine(tempDir, "IDESupport", "Scripts", "MockEnv.csx");
+            File.WriteAllText(mockFile, "hogehoge");
+
+            string[] args = { "-s", userScriptFile };
+            var result = CLIOption.Parse(args);
+            var globalConfig = new GlobalConfig();
+            var parsedScript = UserScript.ParseScript(userScriptString, tempDir, tempDir);
+            var errors = UserScript.CompileUserScript(parsedScript);
+            Assert.AreEqual(errors.Count() == 1, true);
         }
     }
 }
