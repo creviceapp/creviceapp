@@ -758,6 +758,40 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
+        public void IsStateTest()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var s0 = new TestState0(gm, root);
+                Assert.AreEqual(s0.IsState0, true);
+                Assert.AreEqual(s0.IsStateN, false);
+            }
+        }
+
+        [TestMethod]
+        public void ToState0Test()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var s0 = new TestState0(gm, root);
+                Assert.AreEqual(s0.ToState0() is TestState0, true);
+            }
+        }
+
+        [TestMethod]
+        public void ToStateNTest()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var s0 = new TestState0(gm, root);
+                Assert.AreEqual(s0.ToStateN() is null, true);
+            }
+        }
+
+        [TestMethod]
         public void ResetTest()
         {
             {

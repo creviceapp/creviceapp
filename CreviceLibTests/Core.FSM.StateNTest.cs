@@ -1572,6 +1572,52 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
+        public void IsStateTest()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var s0 = new TestState0(gm, root);
+                var history = new History<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var dt = new List<DoubleThrowElement<ExecutionContext>>();
+                var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
+                Assert.AreEqual(s1.IsState0, false);
+                Assert.AreEqual(s1.IsStateN, true);
+            }
+        }
+
+        [TestMethod]
+        public void ToState0Test()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var s0 = new TestState0(gm, root);
+                var history = new History<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var dt = new List<DoubleThrowElement<ExecutionContext>>();
+                var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
+                Assert.AreEqual(s1.ToState0() is null, true);
+            }
+        }
+
+        [TestMethod]
+        public void ToStateNTest()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var s0 = new TestState0(gm, root);
+                var history = new History<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var dt = new List<DoubleThrowElement<ExecutionContext>>();
+                var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
+                Assert.AreEqual(s1.ToStateN() is TestStateN, true);
+            }
+        }
+
+        [TestMethod]
         public void ResetTest()
         {
             {
