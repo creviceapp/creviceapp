@@ -12,11 +12,10 @@ using System.Runtime.CompilerServices;
 namespace Crevice4Tests
 {
     using System.Reflection;
-    using Crevice.Config;
-    using Crevice.UserScript;
+    using Crevice.GestureMachine;
 
     [TestClass()]
-    public class ScriptsTests
+    public class GestureMachineCandidateTests
     {
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
@@ -55,28 +54,7 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
-        public void DefaultUserScriptTest()
-        {
-            var tempDir = TestHelpers.GetTestDirectory();
-            var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
-            var userScriptFile = Path.Combine(tempDir, "default.csx");
-            var userScriptString = File.ReadAllText(Path.Combine(binaryDir.FullName, "Scripts", "DefaultUserScript.csx"), Encoding.UTF8);
-
-            Setup(binaryDir, tempDir);
-            
-            string[] args = { "-s", userScriptFile };
-            var result = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig();
-            var appEnvUserScriptString = globalConfig.GetOrSetDefaultUserScriptFile(userScriptString);
-            var parsedScript = UserScript.ParseScript(appEnvUserScriptString, tempDir, tempDir);
-            var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptString, parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
-            UserScript.EvaluateUserScriptAssembly(ctx, cache);
-            Assert.AreEqual(ctx.Profiles[0].RootElement.GestureCount > 0, true);
-        }
-
-        [TestMethod()]
-        public void MockEnvTest()
+        public void UserDirectoryStructureStringTest()
         {
             var tempDir = TestHelpers.GetTestDirectory();
             var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
@@ -85,14 +63,12 @@ namespace Crevice4Tests
 
             Setup(binaryDir, tempDir);
 
-            string[] args = { "-s", userScriptFile };
-            var result = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig();
-            var parsedScript = UserScript.ParseScript(userScriptString, tempDir, tempDir);
-            var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptString, parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
-            UserScript.EvaluateUserScriptAssembly(ctx, cache);
-            Assert.AreEqual(ctx.Profiles.Count == 0, true);
+            var candidate = new GestureMachineCandidate(tempDir, "", Path.Combine(tempDir, "default.csx.cache"), false);
+
+            var res0 = candidate.UserDirectoryStructureString;
+            File.WriteAllText(userScriptFile, "");
+            var res1 = candidate.UserDirectoryStructureString;
+            Assert.AreEqual(res0 == res1, false);
         }
     }
 }

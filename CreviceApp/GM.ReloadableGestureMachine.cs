@@ -58,18 +58,19 @@ namespace Crevice.GestureMachine
             var restoreFromCache = !IsActivated() || !GlobalConfig.CLIOption.NoCache;
             var saveCache = !GlobalConfig.CLIOption.NoCache;
             var userScriptString = GlobalConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            
             var candidate = new GestureMachineCandidate(
-                userScriptString, 
+                GlobalConfig.UserDirectory,
+                userScriptString,
                 GlobalConfig.UserScriptCacheFile,
-                true,
-                GlobalConfig.UserDirectory, GlobalConfig.UserDirectory);
-
-            UserScriptExecutionContext createContext() => new UserScriptExecutionContext(GlobalConfig);
+                allowRestore: restoreFromCache);
 
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
             Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
-            
+
+            UserScriptExecutionContext createContext() => new UserScriptExecutionContext(GlobalConfig);
+
             if (candidate.IsRestorable)
             {
                 try

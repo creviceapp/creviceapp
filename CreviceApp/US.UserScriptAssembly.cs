@@ -10,6 +10,8 @@ using System.Windows.Forms;
 
 namespace Crevice.UserScript
 {
+    using System.Linq;
+
     public sealed class UserScriptAssembly
     {
         [Serializable]
@@ -33,9 +35,7 @@ namespace Crevice.UserScript
             }
 
             public string CurrentAppVersion()
-            {
-                return string.Format("{0}-{1}", Application.ProductName, Application.ProductVersion);
-            }
+                => $"{Application.ProductName}-{Application.ProductVersion}";
 
             private string Hash(string str)
             {
@@ -45,10 +45,8 @@ namespace Crevice.UserScript
             }
 
             public bool IsCompatible(Cache cache, string userScriptCode)
-            {
-                return cache.AppVersion == CurrentAppVersion() &&
-                       cache.ScriptFileHash == Hash(userScriptCode);
-            }
+                => cache.AppVersion == CurrentAppVersion() &&
+                   cache.ScriptFileHash == Hash(userScriptCode);
 
             public Cache CreateCache(string script, byte[] pe, byte[] pdb)
             {
@@ -81,35 +79,23 @@ namespace Crevice.UserScript
         }
 
         private static UserScriptAssemblyImpl _singletonInstance = new UserScriptAssemblyImpl();
-        private static UserScriptAssemblyImpl GetInstance()
-        {
-            return _singletonInstance;
-        }
+        private static UserScriptAssemblyImpl GetInstance() => _singletonInstance;
+        
         private UserScriptAssembly() {}
 
-        public static string CurrentAppVersion()
-        {
-            return GetInstance().CurrentAppVersion();
-        }
+        public static string CurrentAppVersion() 
+            => GetInstance().CurrentAppVersion();
 
         public static bool IsCompatible(Cache cache, string userScriptCode)
-        {
-            return GetInstance().IsCompatible(cache, userScriptCode);
-        }
+            => GetInstance().IsCompatible(cache, userScriptCode);
 
-        public static Cache CreateCache(string userScriptCode, byte[] pe, byte[] pdb)
-        {
-            return GetInstance().CreateCache(userScriptCode, pe, pdb);
-        }
+        public static Cache CreateCache(string hashSource, byte[] pe, byte[] pdb)
+            => GetInstance().CreateCache(hashSource, pe, pdb);
 
         public static void Save(string path, Cache cache)
-        {
-            GetInstance().Save(path, cache);
-        }
+            => GetInstance().Save(path, cache);
 
         public static Cache Load(string path)
-        {
-            return GetInstance().Load(path);
-        }
+            => GetInstance().Load(path);
     }
 }

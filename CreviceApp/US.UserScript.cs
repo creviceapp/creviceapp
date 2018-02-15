@@ -92,7 +92,7 @@ namespace Crevice.UserScript
             }
         }
 
-        public static UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string userScriptString, Script parsedScript)
+        public static UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string hashSource, Script parsedScript)
         {
             using (Verbose.PrintElapsed("Generate UserScriptAssemblyCache"))
             {
@@ -109,7 +109,7 @@ namespace Crevice.UserScript
                 }
 #endif
 */
-                return UserScriptAssembly.CreateCache(userScriptString, peStream.GetBuffer(), pdbStream.GetBuffer());
+                return UserScriptAssembly.CreateCache(hashSource, peStream.GetBuffer(), pdbStream.GetBuffer());
             }
         }
 

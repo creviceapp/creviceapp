@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CreviceTests
+namespace Crevice4Tests
 {
     using Crevice.WinAPI.WindowsHookEx;
     using Crevice.WinAPI.SendInput;

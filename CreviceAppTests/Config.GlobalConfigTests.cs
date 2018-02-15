@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
 
-namespace CreviceTests
+namespace Crevice4Tests
 {
     using Crevice.Config;
 

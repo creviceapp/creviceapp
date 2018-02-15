@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceTests
+namespace Crevice4Tests
 {
     using System.Threading;
     using System.IO;

@@ -7,8 +7,8 @@
     <ProjectGuid>{2553D75A-6CF1-4BE3-9424-61D8A5A124BF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CreviceAppTests</RootNamespace>
-    <AssemblyName>CreviceAppTests</AssemblyName>
+    <RootNamespace>Crevice4Tests</RootNamespace>
+    <AssemblyName>Crevice4Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -129,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.GlobalConfigTests.cs" />
+    <Compile Include="GM.GestureMachineCandidateTests.cs" />
     <Compile Include="US.KeysTest.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="Logging.VerboseTest.cs" />

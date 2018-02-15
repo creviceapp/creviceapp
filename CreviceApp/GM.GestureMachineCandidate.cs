@@ -8,29 +8,27 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace Crevice.GestureMachine
 {
+    using System.IO;
     using Crevice.UserScript;
 
     public class GestureMachineCandidate
     {
+        public readonly string UserDirectory;
         public readonly string UserScriptString;
         public readonly string UserScriptCacheFile;
         public readonly bool RestoreAllowed;
-        public readonly string ScriptSourceResolverBaseDirectory;
-        public readonly string ScriptMetadataResolverBaseDirectory;
         
         public GestureMachineCandidate(
+            string userDirectory,
             string userScriptString,
             string userScriptCacheFile,
-            bool allowRestore,
-            string scriptSourceResolverBaseDirectory,
-            string scriptMetadataResolverBaseDirectory
+            bool allowRestore
             )
         {
+            UserDirectory = userDirectory;
             UserScriptString = userScriptString;
             UserScriptCacheFile = userScriptCacheFile;
             RestoreAllowed = allowRestore;
-            ScriptSourceResolverBaseDirectory = scriptSourceResolverBaseDirectory;
-            ScriptMetadataResolverBaseDirectory = scriptMetadataResolverBaseDirectory;
         }
 
         private Script _parsedUserScript = null;
@@ -42,8 +40,8 @@ namespace Crevice.GestureMachine
                 {
                     _parsedUserScript = UserScript.ParseScript(
                         UserScriptString, 
-                        ScriptSourceResolverBaseDirectory, 
-                        ScriptMetadataResolverBaseDirectory);
+                        UserDirectory,
+                        UserDirectory);
                 }
                 return _parsedUserScript;
             }
@@ -70,6 +68,12 @@ namespace Crevice.GestureMachine
             }
         }
 
+        internal string UserDirectoryStructureString
+            => new DirectoryInfo(UserDirectory)
+                .EnumerateFiles("*.csx", SearchOption.AllDirectories)
+                .Select(f => $"{f.FullName} {f.LastWriteTime}")
+                .Aggregate("", (a, b) => a + "\r\n" + b);
+
         private UserScriptAssembly.Cache _userScriptAssemblyCache = null;
         public UserScriptAssembly.Cache UserScriptAssemblyCache
         {
@@ -77,7 +81,7 @@ namespace Crevice.GestureMachine
             {
                 if (_userScriptAssemblyCache == null)
                 {
-                    _userScriptAssemblyCache = UserScript.GenerateUserScriptAssemblyCache(UserScriptString, ParsedUserScript);
+                    _userScriptAssemblyCache = UserScript.GenerateUserScriptAssemblyCache(UserScriptString + "\r\n" + UserDirectoryStructureString, ParsedUserScript);
                 }
                 return _userScriptAssemblyCache;
             }

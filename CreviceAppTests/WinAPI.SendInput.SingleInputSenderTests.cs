@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceTests
+namespace Crevice4Tests
 {
     using Crevice.WinAPI.WindowsHookEx;
     using Crevice.WinAPI.SendInput;
