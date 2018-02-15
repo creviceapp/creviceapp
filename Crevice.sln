@@ -19,6 +19,7 @@ Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "CreviceAppUniversal", "Crev
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreviceAppTests", "CreviceAppTests\CreviceAppTests.csproj", "{2553D75A-6CF1-4BE3-9424-61D8A5A124BF}"
 	ProjectSection(ProjectDependencies) = postProject
+		{79920806-A8C9-4749-B68E-8E0D09FA3A69} = {79920806-A8C9-4749-B68E-8E0D09FA3A69}
 		{82B56652-6380-44ED-A193-742F7EEF290F} = {82B56652-6380-44ED-A193-742F7EEF290F}
 	EndProjectSection
 EndProject

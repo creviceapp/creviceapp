@@ -128,6 +128,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="US.KeysTest.cs" />
     <Compile Include="TestEnvironment.cs" />
     <Compile Include="Logging.VerboseTest.cs" />
     <Compile Include="CLIOptionTests.cs" />
@@ -145,6 +146,10 @@
     <ProjectReference Include="..\CreviceApp\CreviceApp.csproj">
       <Project>{82b56652-6380-44ed-a193-742f7eef290f}</Project>
       <Name>CreviceApp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CreviceLib\CreviceLib.csproj">
+      <Project>{79920806-a8c9-4749-b68e-8e0d09fa3a69}</Project>
+      <Name>CreviceLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

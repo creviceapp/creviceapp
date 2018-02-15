@@ -100,6 +100,12 @@ namespace Crevice.UserScript.Keys
             public StrokeDirection MoveLeft => StrokeDirection.Left;
             public StrokeDirection MoveRight => StrokeDirection.Right;
 
+            public int KeyCode = 0x0000FFFF;
+            public int Modifiers = unchecked((int)0xFFFF0000);
+            public int Shift = 0x00010000;
+            public int Control = 0x00020000;
+            public int Alt = 0x00040000;
+
             public TKeyB None => SystemKeySet[0];
             public TKeyB LButton => SystemKeySet[1];
             public TKeyB RButton => SystemKeySet[2];
