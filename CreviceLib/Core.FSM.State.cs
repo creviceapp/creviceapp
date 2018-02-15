@@ -23,9 +23,7 @@ namespace Crevice.Core.FSM
         }
 
         public virtual Result<TConfig, TContextManager, TEvalContext, TExecContext> Input(IPhysicalEvent evnt)
-        {
-            return Result.Create(eventIsConsumed: false, nextState: this);
-        }
+            => Result.Create(eventIsConsumed: false, nextState: this);
 
         public virtual State<TConfig, TContextManager, TEvalContext, TExecContext> Timeout()
             => this;

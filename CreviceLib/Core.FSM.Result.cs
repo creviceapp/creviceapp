@@ -5,7 +5,7 @@ using System.Text;
 namespace Crevice.Core.FSM
 {
     using Crevice.Core.Context;
-
+    
     public struct Result<TConfig, TContextManager, TEvalContext, TExecContext>
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
@@ -23,7 +23,8 @@ namespace Crevice.Core.FSM
 
     public static class Result
     {
-        public static Result<TConfig, TContextManager, TEvalContext, TExecContext> Create<TConfig, TContextManager, TEvalContext, TExecContext>(
+        public static Result<TConfig, TContextManager, TEvalContext, TExecContext> 
+            Create<TConfig, TContextManager, TEvalContext, TExecContext>(
             bool eventIsConsumed,
             State<TConfig, TContextManager, TEvalContext, TExecContext> nextState) 
             where TConfig : GestureMachineConfig

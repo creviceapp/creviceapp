@@ -107,7 +107,9 @@ namespace Crevice.Core.Callback
             public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
             public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> CurrentState;
 
-            public StateChangedEventArgs(State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, State<TConfig, TContextManager, TEvalContext, TExecContext> currentState)
+            public StateChangedEventArgs(
+                State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, 
+                State<TConfig, TContextManager, TEvalContext, TExecContext> currentState)
             {
                 LastState = lastState;
                 CurrentState = currentState;
@@ -116,7 +118,9 @@ namespace Crevice.Core.Callback
 
         public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
 
-        public virtual void OnStateChanged(State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, State<TConfig, TContextManager, TEvalContext, TExecContext> currentState) 
+        public virtual void OnStateChanged(
+            State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, 
+            State<TConfig, TContextManager, TEvalContext, TExecContext> currentState) 
             => Receiver.OnStateChanged(Key, new StateChangedEventArgs(lastState, currentState));
         #endregion
 

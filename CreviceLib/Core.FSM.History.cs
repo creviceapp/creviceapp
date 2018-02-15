@@ -16,10 +16,27 @@ namespace Crevice.Core.FSM
     {
         public readonly PhysicalReleaseEvent ReleaseEvent;
         public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> State;
-        public HistoryRecord(PhysicalReleaseEvent releaseEvent, State<TConfig, TContextManager, TEvalContext, TExecContext> state)
+        public HistoryRecord(
+            PhysicalReleaseEvent releaseEvent, 
+            State<TConfig, TContextManager, TEvalContext, TExecContext> state)
         {
             ReleaseEvent = releaseEvent;
             State = state;
+        }
+    }
+
+    public static class HistoryRecord
+    {
+        public static HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>
+            Create<TConfig, TContextManager, TEvalContext, TExecContext>(
+            PhysicalReleaseEvent releaseEvent,
+            State<TConfig, TContextManager, TEvalContext, TExecContext> state)
+            where TConfig : GestureMachineConfig
+            where TContextManager : ContextManager<TEvalContext, TExecContext>
+            where TEvalContext : EvaluationContext
+            where TExecContext : ExecutionContext
+        {
+            return new HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>(releaseEvent, state);
         }
     }
 
@@ -31,7 +48,9 @@ namespace Crevice.Core.FSM
     {
         public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> FoundState;
         public readonly IReadOnlyList<PhysicalReleaseEvent> SkippedReleaseEvents;
-        public HistoryQueryResult(State<TConfig, TContextManager, TEvalContext, TExecContext> foundState, IReadOnlyList<PhysicalReleaseEvent> skippedReleaseEvents)
+        public HistoryQueryResult(
+            State<TConfig, TContextManager, TEvalContext, TExecContext> foundState, 
+            IReadOnlyList<PhysicalReleaseEvent> skippedReleaseEvents)
         {
             FoundState = foundState;
             SkippedReleaseEvents = skippedReleaseEvents;
@@ -46,8 +65,11 @@ namespace Crevice.Core.FSM
     {
         public readonly IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> Records;
 
-        public History(PhysicalReleaseEvent releaseEvent, State<TConfig, TContextManager, TEvalContext, TExecContext> state)
-            : this(new List<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>>() { new HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>(releaseEvent, state) })
+        public History(
+            PhysicalReleaseEvent releaseEvent, 
+            State<TConfig, TContextManager, TEvalContext, TExecContext> state)
+            : this(new List<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>>() {
+                HistoryRecord.Create(releaseEvent, state) })
         { }
 
         public History(IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> records)
@@ -55,7 +77,8 @@ namespace Crevice.Core.FSM
             Records = records;
         }
 
-        public HistoryQueryResult<TConfig, TContextManager, TEvalContext, TExecContext> Query(PhysicalReleaseEvent releaseEvent)
+        public HistoryQueryResult<TConfig, TContextManager, TEvalContext, TExecContext> 
+            Query(PhysicalReleaseEvent releaseEvent)
         {
             var nextHistory = Records.TakeWhile(t => t.ReleaseEvent != releaseEvent);
             var foundState = Records[nextHistory.Count()].State;
@@ -63,11 +86,38 @@ namespace Crevice.Core.FSM
             return new HistoryQueryResult<TConfig, TContextManager, TEvalContext, TExecContext>(foundState, skippedReleaseEvents);
         }
 
-        public History<TConfig, TContextManager, TEvalContext, TExecContext> CreateNext(PhysicalReleaseEvent releaseEvent, State<TConfig, TContextManager, TEvalContext, TExecContext> state)
+        public History<TConfig, TContextManager, TEvalContext, TExecContext> 
+            CreateNext(PhysicalReleaseEvent releaseEvent, State<TConfig, TContextManager, TEvalContext, TExecContext> state)
         {
             var newRecords = Records.ToList();
-            newRecords.Add(new HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>(releaseEvent, state));
+            newRecords.Add(HistoryRecord.Create(releaseEvent, state));
             return new History<TConfig, TContextManager, TEvalContext, TExecContext>(newRecords);
+        }
+    }
+
+    public static class History
+    {
+        public static History<TConfig, TContextManager, TEvalContext, TExecContext>
+            Create<TConfig, TContextManager, TEvalContext, TExecContext>(
+            PhysicalReleaseEvent releaseEvent,
+            State<TConfig, TContextManager, TEvalContext, TExecContext> state)
+            where TConfig : GestureMachineConfig
+            where TContextManager : ContextManager<TEvalContext, TExecContext>
+            where TEvalContext : EvaluationContext
+            where TExecContext : ExecutionContext
+        {
+            return new History<TConfig, TContextManager, TEvalContext, TExecContext>(releaseEvent, state);
+        }
+
+        public static History<TConfig, TContextManager, TEvalContext, TExecContext>
+            Create<TConfig, TContextManager, TEvalContext, TExecContext>(
+            IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> records)
+            where TConfig : GestureMachineConfig
+            where TContextManager : ContextManager<TEvalContext, TExecContext>
+            where TEvalContext : EvaluationContext
+            where TExecContext : ExecutionContext
+        {
+            return new History<TConfig, TContextManager, TEvalContext, TExecContext>(records);
         }
     }
 }

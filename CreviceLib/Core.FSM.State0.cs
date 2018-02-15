@@ -66,7 +66,7 @@ namespace Crevice.Core.FSM
                         var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                             Machine,
                             evalContext,
-                            new History<TConfig, TContextManager, TEvalContext, TExecContext>(pressEvent.Opposition, this),
+                            History.Create(pressEvent.Opposition, this),
                             doubleThrowElements,
                             depth: Depth + 1,
                             canCancel: true);
@@ -109,7 +109,8 @@ namespace Crevice.Core.FSM
                         select s))
                 .Aggregate(new List<IReadOnlySingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        private static IReadOnlyCollection<FireEvent> GetSingleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+        private static IReadOnlyCollection<FireEvent> 
+            GetSingleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
@@ -118,7 +119,8 @@ namespace Crevice.Core.FSM
                     select s.Trigger))
                 .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
 
-        private static IReadOnlyCollection<PressEvent> GetDoubleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+        private static IReadOnlyCollection<PressEvent> 
+            GetDoubleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
