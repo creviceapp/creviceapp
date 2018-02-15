@@ -128,8 +128,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.Config.GlobalConfigTests.cs" />
     <Compile Include="US.KeysTest.cs" />
-    <Compile Include="TestEnvironment.cs" />
+    <Compile Include="TestHelpers.cs" />
     <Compile Include="Logging.VerboseTest.cs" />
     <Compile Include="CLIOptionTests.cs" />
     <Compile Include="Core.UserScriptTests.cs" />

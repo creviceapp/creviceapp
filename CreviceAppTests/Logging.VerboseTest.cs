@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceAppTests
+namespace CreviceTests
 {
     using System.IO;
     using System.Threading;
@@ -20,7 +20,7 @@ namespace CreviceAppTests
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
-            TestVar.ConsoleMutex.WaitOne();
+            TestHelpers.ConsoleMutex.WaitOne();
             _consoleOut = Console.Out;
             _consoleError = Console.Error;
         }
@@ -28,7 +28,7 @@ namespace CreviceAppTests
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            TestVar.ConsoleMutex.ReleaseMutex();
+            TestHelpers.ConsoleMutex.ReleaseMutex();
             Console.SetOut(_consoleOut);
             Console.SetError(_consoleError);
         }
@@ -83,7 +83,7 @@ namespace CreviceAppTests
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
-            TestVar.ConsoleMutex.WaitOne();
+            TestHelpers.ConsoleMutex.WaitOne();
             _consoleOut = Console.Out;
             _consoleError = Console.Error;
         }
@@ -91,7 +91,7 @@ namespace CreviceAppTests
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            TestVar.ConsoleMutex.ReleaseMutex();
+            TestHelpers.ConsoleMutex.ReleaseMutex();
             Console.SetOut(_consoleOut);
             Console.SetError(_consoleError);
         }

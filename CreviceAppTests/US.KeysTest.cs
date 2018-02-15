@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceAppTests
+namespace CreviceTests
 {
     using Crevice.Core.Keys;
     using Crevice.Core.Stroke;

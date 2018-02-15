@@ -18,118 +18,17 @@ namespace CreviceTests
     public class UserScriptTests
     {
         [ClassInitialize()]
-        public static void CreateApplicationDirectory(TestContext context)
+        public static void ClassInitialize(TestContext context)
         {
-            var globalConfig = new GlobalConfig();
-            Directory.CreateDirectory(globalConfig.DefaultUserDirectory);
-        }
-
-        private static string GetBaseTemporaryDirectory()
-        {
-            return Path.Combine(Path.GetTempPath(), "Crevice4Test");
-        }
-
-        private static string CreateTemporaryTestDirectory([CallerMemberName] string memberName = "")
-        {
-            var randomString = Guid.NewGuid().ToString("N");
-            var directory = Path.Combine(GetBaseTemporaryDirectory(), randomString, memberName);
-            Directory.CreateDirectory(directory);
-            return directory;
+            TestHelpers.TestDirectoryMutex.WaitOne();
+            Directory.CreateDirectory(TestHelpers.TemporaryDirectory);
         }
 
         [ClassCleanup]
-        public static void CleanupDirectory()
+        public static void ClassCleanup()
         {
-            Directory.Delete(GetBaseTemporaryDirectory(), recursive: true);
-        }
-
-        [TestMethod()]
-        public void DefaultUserDirectoryTest()
-        {
-            var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
-        }
-
-        [TestMethod()]
-        public void UserScriptFile0Test()
-        {
-            var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx"));
-        }
-
-        [TestMethod()]
-        public void UserScriptFile1Test()
-        {
-            // When relative user script path is given.
-            string[] args = { "--script", "hoge.csx" };
-            var cliOption = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\hoge.csx"));
-        }
-        
-        [TestMethod()]
-        public void UserScriptFile2Test()
-        {
-            // When absolute user script path is given.
-            string[] args = { "--script", "C:\\hoge.csx" };
-            var cliOption = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserScriptFile.Equals("C:\\hoge.csx"));
-        }
-
-        [TestMethod()]
-        public void UserDirectory0Test()
-        {
-            var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
-        }
-
-        [TestMethod()]
-        public void UserDirectory1Test()
-        {
-            // When relative user script path is given.
-            string[] args = { "--script", "hoge.csx" };
-            var cliOption = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"));
-        }
-
-        [TestMethod()]
-        public void UserDirectory2Test()
-        {
-            // When absolute user script path is given.
-            string[] args = { "--script", "C:\\hoge.csx" };
-            var cliOption = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.UserDirectory.Equals("C:\\"));
-        }
-
-        [TestMethod()]
-        public void GetOrSetDefaultUserScriptFile0Test()
-        {
-            var directory = CreateTemporaryTestDirectory();
-            string[] args = { "--script", Path.Combine(directory, "test.csx") };
-            var cliOption = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.GetOrSetDefaultUserScriptFile("").Length == 0);
-        }
-
-        [TestMethod()]
-        public void GetOrSetDefaultUserScriptFile1Test()
-        {
-            var directory = CreateTemporaryTestDirectory();
-            string[] args = { "--script", Path.Combine(directory, "test.csx") };
-            var cliOption = CLIOption.Parse(args);
-            var globalConfig = new GlobalConfig(cliOption);
-            Assert.IsTrue(globalConfig.GetOrSetDefaultUserScriptFile("hoge").Length > 0);
-        }
-
-
-        [TestMethod()]
-        public void GetUserScriptCacheFileTest()
-        {
-            var globalConfig = new GlobalConfig();
-            Assert.IsTrue(globalConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx.cache"));
+            Directory.Delete(TestHelpers.TemporaryDirectory, recursive: true);
+            TestHelpers.TestDirectoryMutex.ReleaseMutex();
         }
 
         [TestMethod()]
@@ -297,8 +196,7 @@ namespace CreviceTests
         [TestMethod()]
         public void WatcherTest()
         {
-            var tempDir = CreateTemporaryTestDirectory();
-            Console.WriteLine(tempDir);
+            var tempDir = TestHelpers.GetTestDirectory();
             var mock = new SynchronizeInvokeMock();
             var watcher = new UserScript.DirectoryWatcher(mock, tempDir, "*.csx");
             var watcherTestfile = Path.Combine(tempDir, "watcher_test.csx");
