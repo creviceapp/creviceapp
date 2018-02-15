@@ -104,10 +104,10 @@ namespace Crevice.Core.Callback
         #region Event StateChanged
         public class StateChangedEventArgs : EventArgs
         {
-            public readonly State LastState;
-            public readonly State CurrentState;
+            public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
+            public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> CurrentState;
 
-            public StateChangedEventArgs(State lastState, State currentState)
+            public StateChangedEventArgs(State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, State<TConfig, TContextManager, TEvalContext, TExecContext> currentState)
             {
                 LastState = lastState;
                 CurrentState = currentState;
@@ -116,7 +116,7 @@ namespace Crevice.Core.Callback
 
         public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
 
-        public virtual void OnStateChanged(State lastState, State currentState) 
+        public virtual void OnStateChanged(State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, State<TConfig, TContextManager, TEvalContext, TExecContext> currentState) 
             => Receiver.OnStateChanged(Key, new StateChangedEventArgs(lastState, currentState));
         #endregion
 
@@ -157,9 +157,9 @@ namespace Crevice.Core.Callback
         #region Event MachineReset
         public class MachineResetEventArgs : EventArgs
         {
-            public readonly State LastState;
+            public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
 
-            public MachineResetEventArgs(State lastState)
+            public MachineResetEventArgs(State<TConfig, TContextManager, TEvalContext, TExecContext> lastState)
             {
                 LastState = lastState;
             }
@@ -167,7 +167,7 @@ namespace Crevice.Core.Callback
 
         public delegate void MachineResetEventHandler(object sender, MachineResetEventArgs e);
 
-        public virtual void OnMachineReset(State state)
+        public virtual void OnMachineReset(State<TConfig, TContextManager, TEvalContext, TExecContext> state)
             => Receiver.OnMachineReset(Key, new MachineResetEventArgs(state));
         #endregion
     }

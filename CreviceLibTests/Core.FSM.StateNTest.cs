@@ -28,7 +28,7 @@ namespace CreviceLibTests
             {
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var s0 = new TestState0(gm, root);
-                var history = new History(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var history = new History<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 {
                     var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);

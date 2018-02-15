@@ -43,8 +43,8 @@ namespace Crevice.Core.FSM
 
         public StrokeWatcher StrokeWatcher { get; internal set; }
 
-        private State _currentState = null;
-        public State CurrentState
+        private State<TConfig, TContextManager, TEvalContext, TExecContext> _currentState = null;
+        public State<TConfig, TContextManager, TEvalContext, TExecContext> CurrentState
         {
             get => _currentState;
 

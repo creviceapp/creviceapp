@@ -9,7 +9,6 @@ namespace Crevice.GestureMachine
     using System.Drawing;
     using Crevice.Core.FSM;
     using Crevice.Core.Events;
-    using Crevice.DSL;
 
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {

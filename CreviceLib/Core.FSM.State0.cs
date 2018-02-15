@@ -9,7 +9,8 @@ namespace Crevice.Core.FSM
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
 
-    public class State0<TConfig, TContextManager, TEvalContext, TExecContext> : State
+    public class State0<TConfig, TContextManager, TEvalContext, TExecContext> 
+        : State<TConfig, TContextManager, TEvalContext, TExecContext>
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
@@ -41,7 +42,7 @@ namespace Crevice.Core.FSM
             DoubleThrowTriggers = GetDoubleThrowTriggers(RootElement);
         }
 
-        public override Result Input(IPhysicalEvent evnt)
+        public override Result<TConfig, TContextManager, TEvalContext, TExecContext> Input(IPhysicalEvent evnt)
         {
             if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
@@ -50,7 +51,7 @@ namespace Crevice.Core.FSM
                 if (singleThrowElements.Any())
                 {
                     Machine.ContextManager.ExecuteDoExecutors(evalContext, singleThrowElements);
-                    return new Result(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
             else if (evnt is PhysicalPressEvent pressEvent && IsDoubleThrowTrigger(pressEvent))
@@ -65,13 +66,13 @@ namespace Crevice.Core.FSM
                         var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                             Machine,
                             evalContext,
-                            new History(pressEvent.Opposition, this),
+                            new History<TConfig, TContextManager, TEvalContext, TExecContext>(pressEvent.Opposition, this),
                             doubleThrowElements,
                             depth: Depth + 1,
                             canCancel: true);
-                        return new Result(eventIsConsumed: true, nextState: nextState);
+                        return Result.Create(eventIsConsumed: true, nextState: nextState);
                     }
-                    return new Result(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent && IsDoubleThrowTrigger(releaseEvent.Opposition))
@@ -82,7 +83,7 @@ namespace Crevice.Core.FSM
                 if (HasPressExecutors(doubleThrowElements) || HasReleaseExecutors(doubleThrowElements))
                 {
                     Machine.ContextManager.ExecuteReleaseExecutors(evalContext, doubleThrowElements);
-                    return new Result(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
             return base.Input(evnt);

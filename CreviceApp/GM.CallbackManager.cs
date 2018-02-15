@@ -37,7 +37,7 @@ namespace Crevice.GestureMachine
         }
 
         public override void OnMachineReset(
-            State state)
+            State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> state)
         {
             Verbose.Print("MachineReset");
             base.OnMachineReset(state);

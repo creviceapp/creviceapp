@@ -80,7 +80,8 @@ namespace CreviceLibTests
         public int OnStateChangedCallCount { get; private set; } = 0;
 
         public override void OnStateChanged(
-            State lastState, State currentState)
+            State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> lastState, 
+            State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> currentState)
         {
             if (EnableStateChangedCallback)
             {
@@ -122,7 +123,7 @@ namespace CreviceLibTests
         public int OnMachineResetCallCount { get; private set; } = 0;
 
         public override void OnMachineReset(
-            State state)
+            State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> state)
         {
             if (EnableMachineResetCallback)
             {

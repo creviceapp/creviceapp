@@ -10,7 +10,8 @@ namespace Crevice.Core.FSM
     using Crevice.Core.DSL;
     using Crevice.Core.Stroke;
 
-    public class StateN<TConfig, TContextManager, TEvalContext, TExecContext> : State
+    public class StateN<TConfig, TContextManager, TEvalContext, TExecContext>
+        : State<TConfig, TContextManager, TEvalContext, TExecContext>
         where TConfig : GestureMachineConfig
         where TContextManager : ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
@@ -19,7 +20,7 @@ namespace Crevice.Core.FSM
         public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
 
         public readonly TEvalContext Ctx;
-        public readonly History History;
+        public readonly History<TConfig, TContextManager, TEvalContext, TExecContext> History;
         public readonly IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements;
         public readonly bool CanCancel;
         
@@ -44,7 +45,7 @@ namespace Crevice.Core.FSM
         public StateN(
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             TEvalContext ctx,
-            History history,
+            History<TConfig, TContextManager, TEvalContext, TExecContext> history,
             IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements,
             int depth,
             bool canCancel = true)
@@ -63,7 +64,7 @@ namespace Crevice.Core.FSM
             AbnormalEndTriggers = GetAbnormalEndTriggers(History.Records);
         }
 
-        public override Result Input(IPhysicalEvent evnt)
+        public override Result<TConfig, TContextManager, TEvalContext, TExecContext> Input(IPhysicalEvent evnt)
         {
             if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
@@ -78,7 +79,7 @@ namespace Crevice.Core.FSM
                         DoubleThrowElements,
                         depth: Depth,
                         canCancel: false);
-                    return new Result(eventIsConsumed: true, nextState: notCancellableCopyState);
+                    return Result.Create(eventIsConsumed: true, nextState: notCancellableCopyState);
                 }
             }
             else if (evnt is PhysicalPressEvent pressEvent && IsDoubleThrowTrigger(pressEvent))
@@ -97,9 +98,9 @@ namespace Crevice.Core.FSM
                             doubleThrowElements,
                             depth: Depth + 1,
                             canCancel: CanCancel);
-                        return new Result(eventIsConsumed: true, nextState: nextState);
+                        return Result.Create(eventIsConsumed: true, nextState: nextState);
                     }
-                    return new Result(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
@@ -122,13 +123,13 @@ namespace Crevice.Core.FSM
                     {
                         Machine.CallbackManager.OnGestureCancelled(this);
                     }
-                    return new Result(eventIsConsumed: true, nextState: LastState);
+                    return Result.Create(eventIsConsumed: true, nextState: LastState);
                 }
                 else if (IsAbnormalEndTrigger(releaseEvent))
                 {
                     var queryResult = History.Query(releaseEvent);
                     Machine.invalidEvents.IgnoreNext(queryResult.SkippedReleaseEvents);
-                    return new Result(eventIsConsumed: true, nextState: queryResult.FoundState);
+                    return Result.Create(eventIsConsumed: true, nextState: queryResult.FoundState);
                 }
                 else if (IsDoubleThrowTrigger(releaseEvent.Opposition))
                 {
@@ -144,14 +145,14 @@ namespace Crevice.Core.FSM
                         // And if the release event comes firstly inverse to the expectation, in this pattern, 
                         // it should also be executed.
                         Machine.ContextManager.ExecuteReleaseExecutors(Ctx, doubleThrowElements);
-                        return new Result(eventIsConsumed: true, nextState: this);
+                        return Result.Create(eventIsConsumed: true, nextState: this);
                     }
                 }
             }
             return base.Input(evnt);
         }
 
-        public override State Timeout()
+        public override State<TConfig, TContextManager, TEvalContext, TExecContext> Timeout()
         {
             if (!HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && CanCancel)
             {
@@ -160,7 +161,7 @@ namespace Crevice.Core.FSM
             return this;
         }
 
-        public override State Reset()
+        public override State<TConfig, TContextManager, TEvalContext, TExecContext> Reset()
         {
             Machine.invalidEvents.IgnoreNext(NormalEndTrigger);
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
@@ -172,28 +173,28 @@ namespace Crevice.Core.FSM
         public bool IsNormalEndTrigger(PhysicalReleaseEvent releaseEvent)
             => NormalEndTrigger == releaseEvent;
 
-        public State LastState => History.Records.Last().State;
+        public State<TConfig, TContextManager, TEvalContext, TExecContext> LastState => History.Records.Last().State;
 
-        public bool HasPressExecutors => HasPressExecutors(DoubleThrowElements);
+        public new bool HasPressExecutors => HasPressExecutors(DoubleThrowElements);
 
-        public bool HasDoExecutors => HasDoExecutors(DoubleThrowElements);
+        public new bool HasDoExecutors => HasDoExecutors(DoubleThrowElements);
 
-        public bool HasReleaseExecutors => HasReleaseExecutors(DoubleThrowElements);
+        public new bool HasReleaseExecutors => HasReleaseExecutors(DoubleThrowElements);
 
-        public IReadOnlyList<HistoryRecord> CreateHistory(
-            IReadOnlyList<HistoryRecord> history,
+        public IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> CreateHistory(
+            IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> history,
             PhysicalPressEvent pressEvent,
-            State state)
+            State<TConfig, TContextManager, TEvalContext, TExecContext> state)
         {
             var newHistory = history.ToList();
-            newHistory.Add(new HistoryRecord(pressEvent.Opposition, state));
+            newHistory.Add(new HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>(pressEvent.Opposition, state));
             return newHistory;
         }
 
-        private static IReadOnlyCollection<PhysicalReleaseEvent> GetEndTriggers(IReadOnlyList<HistoryRecord> history)
+        private static IReadOnlyCollection<PhysicalReleaseEvent> GetEndTriggers(IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> history)
             => new HashSet<PhysicalReleaseEvent>(from h in history select h.ReleaseEvent);
 
-        private static IReadOnlyCollection<PhysicalReleaseEvent> GetAbnormalEndTriggers(IReadOnlyList<HistoryRecord> history)
+        private static IReadOnlyCollection<PhysicalReleaseEvent> GetAbnormalEndTriggers(IReadOnlyList<HistoryRecord<TConfig, TContextManager, TEvalContext, TExecContext>> history)
             => new HashSet<PhysicalReleaseEvent>(from h in history.Reverse().Skip(1) select h.ReleaseEvent);
 
         public IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> GetDoubleThrowElements(PhysicalPressEvent triggerEvent)
