@@ -94,6 +94,7 @@ namespace Crevice4Tests
                     });
                     Assert.AreEqual(cde.Wait(100000), true);
                     cde.Reset();
+                    Thread.Sleep(10000);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
                     form.GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent);
                     Assert.AreEqual(cde.Wait(100000), true);
@@ -102,6 +103,7 @@ namespace Crevice4Tests
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 1);
                     form.GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent);
                     Assert.AreEqual(cde.Wait(100000), true);
+                    form.Close();
                     Application.ExitThread();
                 }
             }

@@ -29,9 +29,6 @@ namespace Crevice.UI
             InitializeComponent();
         }
 
-        private string GetActivatedMessage(GestureMachineCluster gmCluster)
-            => $"{gmCluster.Profiles.Select(p => p.RootElement.GestureCount).Sum()} Gestures Activated";
-        
         protected override void OnShown(EventArgs e)
         {
             RegisterNotifyIcon(NotifyIcon1);

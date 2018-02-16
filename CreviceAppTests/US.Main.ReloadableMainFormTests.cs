@@ -80,6 +80,7 @@ namespace Crevice4Tests
                     Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles.Count > 0, true);
                     Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles[0].RootElement.GestureCount > 0, true);
                     Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), false);
+                    form.Close();
                     Application.ExitThread();
                 }
             }
