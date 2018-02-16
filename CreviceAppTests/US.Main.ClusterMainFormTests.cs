@@ -108,14 +108,17 @@ namespace Crevice4Tests
                     });
                     Assert.AreEqual(cde.Wait(10000), true);
                     cde.Reset();
+
+                    Console.Write($"CurrentState: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState}");
+                    Console.Write($"IsRunning: {form._gestureMachineCluster.Profiles[0].GestureMachine.IsRunning}");
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].RootElement.GestureCount, 2);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
-                    Assert.AreEqual(form.GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), true);
+                    Assert.AreEqual(form._gestureMachineCluster.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), true);
                     Assert.AreEqual(cde.Wait(10000), true);
                     cde.Reset();
-                    Assert.AreEqual(form.GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent), true);
+                    Assert.AreEqual(form._gestureMachineCluster.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent), true);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 1);
-                    Assert.AreEqual(form.GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent), true);
+                    Assert.AreEqual(form._gestureMachineCluster.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent), true);
                     Assert.AreEqual(cde.Wait(10000), true);
                     form.Close();
                 }
