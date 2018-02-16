@@ -12,7 +12,6 @@ using System.Runtime.CompilerServices;
 namespace Crevice4Tests
 {
     using System.Reflection;
-    using System.Windows.Forms;
 
     using Crevice.Config;
     using Crevice.UI;
