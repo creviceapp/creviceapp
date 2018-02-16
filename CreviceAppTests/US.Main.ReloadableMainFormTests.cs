@@ -67,21 +67,23 @@ namespace Crevice4Tests
 
             string[] args = { "-s", userScriptFile };
             var cliOption = CLIOption.Parse(args);
-            var cde = new CountdownEvent(1);
-            using (var form = new ReloadableMainForm(cliOption))
+            using (var cde = new CountdownEvent(1))
             {
-                form.Shown += new EventHandler((sender, e) => {
-                    cde.Signal();
-                });
-                var task = Task.Run(() => {
-                    Application.Run(form);
-                });
-                Assert.AreEqual(cde.Wait(1000), true);
-                cde.Reset();
-                Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles.Count > 0, true);
-                Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles[0].RootElement.GestureCount > 0, true);
-                Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), false);
-                form.Close();
+                using (var form = new ReloadableMainForm(cliOption))
+                {
+                    form._reloadableGestureMachine.Reloaded += new EventHandler((sender, e) => {
+                        cde.Signal();
+                    });
+                    var task = Task.Run(() => {
+                        Application.Run(form);
+                    });
+                    Assert.AreEqual(cde.Wait(10000), true);
+                    cde.Reset();
+                    Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles.Count > 0, true);
+                    Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles[0].RootElement.GestureCount > 0, true);
+                    Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), false);
+                    Application.ExitThread();
+                }
             }
         }
     }

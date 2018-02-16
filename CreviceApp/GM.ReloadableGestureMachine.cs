@@ -54,6 +54,10 @@ namespace Crevice.GestureMachine
             _config = config;
         }
 
+        public event EventHandler Reloaded;
+
+        protected virtual void OnReloaded(EventArgs args) => Reloaded?.Invoke(this, args);
+
         private GetGestureMachineResult GetGestureMachine()
         {
             var restoreFromCache = !IsActivated() || !_config.CLIOption.NoCache;
@@ -169,6 +173,8 @@ namespace Crevice.GestureMachine
                     _loading = false;
                     if (!_reloadRequest)
                     {
+                        OnReloaded(new EventArgs());
+                        ReleaseUnusedMemory();
                         break;
                     }
                     Verbose.Print("Hot reload request exists; Retrying...");
@@ -176,7 +182,6 @@ namespace Crevice.GestureMachine
             }
             finally
             {
-                ReleaseUnusedMemory();
                 _semaphore.Release();
             }
         }
