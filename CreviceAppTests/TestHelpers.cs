@@ -26,5 +26,28 @@ namespace Crevice4Tests
             Directory.CreateDirectory(directory);
             return directory;
         }
+
+        public static void SetupUserDirectory(DirectoryInfo src, string dst)
+        {
+            var userScriptFile = Path.Combine(dst, "default.csx");
+            var userScriptString = File.ReadAllText(Path.Combine(src.FullName, "Scripts", "DefaultUserScript.csx"), Encoding.UTF8);
+
+            Directory.CreateDirectory(Path.Combine(dst, "IDESupport"));
+
+            foreach (var file in src.EnumerateFiles())
+            {
+                File.Copy(file.FullName, Path.Combine(dst, "IDESupport", file.Name));
+            }
+
+            foreach (var dir in src.EnumerateDirectories())
+            {
+                Directory.CreateDirectory(Path.Combine(dst, "IDESupport", dir.Name));
+                foreach (var file in dir.EnumerateFiles())
+                {
+                    File.Copy(file.FullName, Path.Combine(dst, "IDESupport", dir.Name, file.Name));
+                }
+            }
+        }
+
     }
 }

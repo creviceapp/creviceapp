@@ -16,19 +16,18 @@ namespace Crevice.UI
 
     public partial class LauncherForm : Form
     {
-        protected readonly GlobalConfig GlobalConfig;
+        private readonly MainFormBase _mainForm;
 
-        public LauncherForm(GlobalConfig globalConfig)
+        public LauncherForm(MainFormBase mainForm)
         {
-            GlobalConfig = globalConfig;
+            _mainForm = mainForm;
             Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
         }
 
         private static Microsoft.Win32.RegistryKey AutorunRegistry()
-        {
-            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-        }
+            => Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+        
         private static bool AutoRun
         {
             get
@@ -111,17 +110,13 @@ namespace Crevice.UI
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
-            GlobalConfig.MainForm.Close();
+            _mainForm.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
-        {
-            GlobalConfig.MainForm.StartExternalProcess("explorer.exe", "/select, " + GlobalConfig.UserScriptFile);
-        }
+            => _mainForm.OpenUserScriptWithNotepad();
 
         private void button3_Click(object sender, EventArgs e)
-        {
-            ShowProductInfoForm();
-        }
+            => ShowProductInfoForm();
     }
 }

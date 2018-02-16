@@ -14,33 +14,33 @@ using System.Windows.Forms;
 
 namespace Crevice.UI
 {
+    using Crevice.Core.FSM;
     using Crevice.Logging;
-    using Crevice.Config;
     using Crevice.UserScript.Keys;
     using Crevice.GestureMachine;
     using WinAPI.WindowsHookEx;
 
     public class MouseGestureForm : Form
     {
-        private bool _enableHook = false;
-        protected bool EnableHook
+        private bool _hookEnabled = false;
+        protected bool HookEnabled
         {
-            get { return _enableHook; }
+            get =>_hookEnabled;
             set
             {
-                if (_enableHook != value)
+                if (_hookEnabled != value)
                 {
                     if (value)
                     {
                         KeyboardHook.SetHook();
                         MouseHook.SetHook();
-                        _enableHook = true;
+                        _hookEnabled = true;
                     }
                     else
                     {
                         KeyboardHook.Unhook();
                         MouseHook.Unhook();
-                        _enableHook = false;
+                        _hookEnabled = false;
                     }
                 }
             }
@@ -48,45 +48,18 @@ namespace Crevice.UI
 
         private readonly Core.Events.NullEvent NullEvent = new Core.Events.NullEvent();
 
+        public virtual IGestureMachine GestureMachine { get; } = new NullGestureMachine();
+
         private readonly LowLevelKeyboardHook KeyboardHook;
         private readonly LowLevelMouseHook MouseHook;
-        protected readonly GlobalConfig GlobalConfig;
-        public readonly ReloadableGestureMachine GestureMachine;
-
+        
         public MouseGestureForm()
-            : this(new GlobalConfig())
-        { }
-
-        public MouseGestureForm(GlobalConfig globalConfig)
         {
             KeyboardHook = new LowLevelKeyboardHook(KeyboardProc);
             MouseHook = new LowLevelMouseHook(MouseProc);
-            GlobalConfig = globalConfig;
-            GestureMachine = new ReloadableGestureMachine(globalConfig);
         }
         
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            GestureMachine.Dispose();
-        }
-
         protected const int WM_DISPLAYCHANGE = 0x007E;
-        protected const int WM_POWERBROADCAST = 0x0218;
-
-        protected const int PBT_APMQUERYSUSPEND = 0x0000;
-        protected const int PBT_APMQUERYSTANDBY = 0x0001;
-        protected const int PBT_APMQUERYSUSPENDFAILED = 0x0002;
-        protected const int PBT_APMQUERYSTANDBYFAILED = 0x0003;
-        protected const int PBT_APMSUSPEND = 0x0004;
-        protected const int PBT_APMSTANDBY = 0x0005;
-        protected const int PBT_APMRESUMECRITICAL = 0x0006;
-        protected const int PBT_APMRESUMESUSPEND = 0x0007;
-        protected const int PBT_APMRESUMESTANDBY = 0x0008;
-        protected const int PBT_APMBATTERYLOW = 0x0009;
-        protected const int PBT_APMPOWERSTATUSCHANGE = 0x000A;
-        protected const int PBT_APMOEMEVENT = 0x000B;
-        protected const int PBT_APMRESUMEAUTOMATIC = 0x0012;
 
         protected override void WndProc(ref Message m)
         {
@@ -96,52 +69,6 @@ namespace Crevice.UI
                     Verbose.Print("WndProc: WM_DISPLAYCHANGE");
                     GestureMachine.Reset();
                     Verbose.Print("GestureMachine was reset.");
-                    break;
-
-                case WM_POWERBROADCAST:
-                    int reason = m.WParam.ToInt32();
-                    switch(reason)
-                    {
-                        case PBT_APMQUERYSUSPEND:
-                            Verbose.Print("WndProc: PBT_APMQUERYSUSPEND");
-                            break;
-                        case PBT_APMQUERYSTANDBY:
-                            Verbose.Print("WndProc: PBT_APMQUERYSTANDBY");
-                            break;
-                        case PBT_APMQUERYSUSPENDFAILED:
-                            Verbose.Print("WndProc: PBT_APMQUERYSUSPENDFAILED");
-                            break;
-                        case PBT_APMQUERYSTANDBYFAILED:
-                            Verbose.Print("WndProc: PBT_APMQUERYSTANDBYFAILED");
-                            break;
-                        case PBT_APMSUSPEND:
-                            Verbose.Print("WndProc: PBT_APMSUSPEND");
-                            break;
-                        case PBT_APMSTANDBY:
-                            Verbose.Print("WndProc: PBT_APMSTANDBY");
-                            break;
-                        case PBT_APMRESUMECRITICAL:
-                            Verbose.Print("WndProc: PBT_APMRESUMECRITICAL");
-                            break;
-                        case PBT_APMRESUMESUSPEND:
-                            Verbose.Print("WndProc: PBT_APMRESUMESUSPEND");
-                            break;
-                        case PBT_APMRESUMESTANDBY:
-                            Verbose.Print("WndProc: PBT_APMRESUMESTANDBY");
-                            break;
-                        case PBT_APMBATTERYLOW:
-                            Verbose.Print("WndProc: PBT_APMBATTERYLOW");
-                            break;
-                        case PBT_APMPOWERSTATUSCHANGE:
-                            Verbose.Print("WndProc: PBT_APMPOWERSTATUSCHANGE");
-                            break;
-                        case PBT_APMOEMEVENT:
-                            Verbose.Print("WndProc: PBT_APMOEMEVENT");
-                            break;
-                        case PBT_APMRESUMEAUTOMATIC:
-                            Verbose.Print("WndProc: PBT_APMRESUMEAUTOMATIC");
-                            break;
-                    }
                     break;
             }
             base.WndProc(ref m);

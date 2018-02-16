@@ -56,8 +56,8 @@ namespace Crevice
             Verbose.Print("Setting ProcessPriority to {0}", cliOption.ProcessPriority);
             SetProcessPriority(cliOption.ProcessPriority);
 
-            var globalConfig = new GlobalConfig(cliOption);
-            Application.Run(globalConfig.MainForm);
+            var mainForm = new UI.ReloadableMainForm(cliOption);
+            Application.Run(mainForm);
         }
 
         private static void SetProcessPriority(ProcessPriorityClass priority)

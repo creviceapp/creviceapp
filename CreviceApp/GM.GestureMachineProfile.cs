@@ -38,7 +38,7 @@ namespace Crevice.GestureMachine
 
         ~GestureMachineProfile() => Dispose();
     }
-
+    
     public class GestureMachineProfileManager
     {
         private readonly List<GestureMachineProfile> profiles = new List<GestureMachineProfile>();

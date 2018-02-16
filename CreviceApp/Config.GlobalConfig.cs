@@ -10,22 +10,23 @@ using System.Windows.Forms;
 
 namespace Crevice.Config
 {
+    using Crevice.UI;
+    
     public class GlobalConfig
     {
         public readonly CLIOption.Result CLIOption;
 
-        public readonly UI.MainForm MainForm;
+        public readonly MainFormBase MainForm;
 
-        public GlobalConfig() : this(Config.CLIOption.ParseEnvironmentCommandLine())
+        public GlobalConfig()
+            : this(Config.CLIOption.ParseEnvironmentCommandLine())
         { }
 
-        public GlobalConfig(CLIOption.Result cliOption)
+        public GlobalConfig(CLIOption.Result cliOption, MainFormBase mainForm = null)
         {
             CLIOption = cliOption;
-
+            MainForm = mainForm;
             Directory.CreateDirectory(UserDirectory);
-            
-            MainForm = new UI.MainForm(this);
         }
         
         // %USERPROFILE%\\AppData\\Roaming\\Crevice4

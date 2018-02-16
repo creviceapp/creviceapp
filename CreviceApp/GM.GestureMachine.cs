@@ -10,6 +10,13 @@ namespace Crevice.GestureMachine
     using Crevice.Core.FSM;
     using Crevice.Core.Events;
 
+    public class NullGestureMachine : GestureMachine
+    {
+        public NullGestureMachine()
+            : base(new GestureMachineConfig(), new CallbackManager())
+        { }
+    }
+
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
         public GestureMachine(

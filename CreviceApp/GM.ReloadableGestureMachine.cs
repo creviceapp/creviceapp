@@ -12,6 +12,7 @@ namespace Crevice.GestureMachine
     using Crevice.Core.FSM;
     using Crevice.Logging;
     using Crevice.Config;
+    using Crevice.UI;
     using Crevice.UserScript;
 
     using GetGestureMachineResult =
@@ -22,7 +23,7 @@ namespace Crevice.GestureMachine
     public class ReloadableGestureMachine 
         : IGestureMachine, IDisposable
     {
-        private GestureMachineCluster _instance = new NullGestureMachineCluster();
+        internal GestureMachineCluster _instance = new NullGestureMachineCluster();
         private GestureMachineCluster Instance
         {
             get => _instance;
@@ -46,30 +47,30 @@ namespace Crevice.GestureMachine
         public void Reset()
             => Instance.Reset();
 
-        private readonly GlobalConfig GlobalConfig;
+        private readonly GlobalConfig _config;
 
-        public ReloadableGestureMachine(GlobalConfig globalConfig)
+        public ReloadableGestureMachine(GlobalConfig config)
         {
-            GlobalConfig = globalConfig;
+            _config = config;
         }
 
         private GetGestureMachineResult GetGestureMachine()
         {
-            var restoreFromCache = !IsActivated() || !GlobalConfig.CLIOption.NoCache;
-            var saveCache = !GlobalConfig.CLIOption.NoCache;
-            var userScriptString = GlobalConfig.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            var restoreFromCache = !IsActivated() || !_config.CLIOption.NoCache;
+            var saveCache = !_config.CLIOption.NoCache;
+            var userScriptString = _config.GetOrSetDefaultUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
             
             var candidate = new GestureMachineCandidate(
-                GlobalConfig.UserDirectory,
+                _config.UserDirectory,
                 userScriptString,
-                GlobalConfig.UserScriptCacheFile,
+                _config.UserScriptCacheFile,
                 allowRestore: restoreFromCache);
 
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
             Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
 
-            UserScriptExecutionContext createContext() => new UserScriptExecutionContext(GlobalConfig);
+            UserScriptExecutionContext createContext() => new UserScriptExecutionContext(_config);
 
             if (candidate.IsRestorable)
             {
@@ -98,7 +99,7 @@ namespace Crevice.GestureMachine
                     {
                         try
                         {
-                            UserScript.SaveUserScriptAssemblyCache(GlobalConfig.UserScriptCacheFile, candidate.UserScriptAssemblyCache);
+                            UserScript.SaveUserScriptAssemblyCache(_config.UserScriptCacheFile, candidate.UserScriptAssemblyCache);
                         }
                         catch (Exception ex)
                         {
@@ -148,7 +149,7 @@ namespace Crevice.GestureMachine
                         var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
                         if (gmCluster == null)
                         {
-                            ShowErrorBalloon(compilationErrors.GetValueOrDefault());
+                            _config.MainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
                         }
                         else
                         {
@@ -156,13 +157,13 @@ namespace Crevice.GestureMachine
                             Instance = gmCluster;
                             if (runtimeError == null)
                             {
-                                ShowInfoBalloon(gmCluster);
+                                _config.MainForm.ShowInfoBalloon(gmCluster);
                             }
                             else
                             {
-                                ShowWarningBalloon(gmCluster, runtimeError);
+                                _config.MainForm.ShowWarningBalloon(gmCluster, runtimeError);
                             }
-                            UpdateTasktrayMessage(gmCluster.Profiles);
+                            _config.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
                         }
                     }
                     _loading = false;
@@ -179,72 +180,7 @@ namespace Crevice.GestureMachine
                 _semaphore.Release();
             }
         }
-
-        private void UpdateTasktrayMessage(IReadOnlyList<GestureMachineProfile> profiles)
-        {
-            var header = $"Crevice {Application.ProductVersion}";
-            var sum = profiles.Sum(p => p.RootElement.GestureCount);
-            var gesturesMessage = $"Gestures: {sum}";
-            var totalMessage = $"Total: {sum}";
-            if (profiles.Count > 1)
-            {
-                var perProfileMessages = Enumerable.
-                    Range(0, profiles.Count).
-                    Select(n => profiles.Take(n + 1).
-                        Select(p => $"({p.ProfileName}): {p.RootElement.GestureCount}").
-                        Aggregate("", (a, b) => a + "\r\n" + b)).
-                        Select(s => s.Trim()).
-                    Reverse().ToList();
-
-                if ((header + "\r\n" + perProfileMessages.First()).Length < 63)
-                {
-                    GlobalConfig.MainForm.UpdateTasktrayMessage(perProfileMessages.First());
-                    return;
-                }
-
-                perProfileMessages = perProfileMessages.Skip(1).
-                    Where(s => (header + "\r\n" + s + "\r\n...\r\n" + totalMessage).Length < 63).ToList();
-
-                if (perProfileMessages.Any())
-                {
-                    GlobalConfig.MainForm.UpdateTasktrayMessage(perProfileMessages.First() + "\r\n...\r\n" + totalMessage);
-                    return;
-                }
-            }
-            GlobalConfig.MainForm.UpdateTasktrayMessage(gesturesMessage);
-        }
-
-        private string GetActivatedMessage(GestureMachineCluster gmCluster) 
-            => $"{gmCluster.Profiles.Select(p => p.RootElement.GestureCount).Sum()} Gestures Activated";
-
-        private void ShowInfoBalloon(
-            GestureMachineCluster gmCluster)
-        {
-            GlobalConfig.MainForm.LastErrorMessage = "";
-            GlobalConfig.MainForm.ShowBalloon(GetActivatedMessage(gmCluster), "", ToolTipIcon.Info, 10000);
-        }
-
-        private void ShowWarningBalloon(
-            GestureMachineCluster gmCluster, 
-            Exception runtimeError)
-        {
-            GlobalConfig.MainForm.LastErrorMessage = runtimeError.ToString();
-            var text = "The configuration may be loaded incompletely due to an error on the UserScript evaluation.\r\n" +
-                "Click to view the detail.";
-            GlobalConfig.MainForm.ShowBalloon(text, GetActivatedMessage(gmCluster), ToolTipIcon.Warning, 10000);
-        }
-
-        private void ShowErrorBalloon(
-            System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> errors)
-        {
-            var errorMessage = UserScript.GetPrettyErrorMessage(errors);
-            GlobalConfig.MainForm.LastErrorMessage = errorMessage;
-
-            var title = "UserScript Compilation Error";
-            var text = $"{errors.Count()} error(s) found in the UserScript.\r\nClick to view the detail.";
-            GlobalConfig.MainForm.ShowBalloon(text, title, ToolTipIcon.Error, 10000);
-        }
-
+        
         private void ReleaseUnusedMemory()
         {
             using (Verbose.PrintElapsed("Release unused memory"))
@@ -278,9 +214,6 @@ namespace Crevice.GestureMachine
             }
         }
 
-        ~ReloadableGestureMachine()
-        {
-            Dispose();
-        }
+        ~ReloadableGestureMachine() => Dispose();
     }
 }

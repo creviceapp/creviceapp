@@ -135,6 +135,8 @@
     <Compile Include="Logging.VerboseTest.cs" />
     <Compile Include="CLIOptionTests.cs" />
     <Compile Include="ScriptsTests.cs" />
+    <Compile Include="US.Main.ReloadableMainFormTests.cs" />
+    <Compile Include="US.Main.ClusterMainFormTests.cs" />
     <Compile Include="US.UserScriptTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinAPI.SendInput.SingleInputSenderTests.cs" />

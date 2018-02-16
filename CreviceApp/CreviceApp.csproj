@@ -141,11 +141,22 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.LauncherForm.Designer.cs" />
-    <Compile Include="UI.MainForm.cs">
+    <Compile Include="UI.Main.ClusterMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.MainForm.Designer.cs" />
-    <Compile Include="UI.MouseGestureForm.cs">
+    <Compile Include="UI.Main.ClusterMainForm.Designer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI.Main.ReloadableMainForm.Designer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI.Main.ReloadableMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI.Main.MainFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI.Main.MouseGestureForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.ProductInfoForm.cs">
@@ -179,8 +190,8 @@
     <Compile Include="WinAPI.Window.cs" />
     <Compile Include="WinAPI.WindowsHookEx.cs" />
     <EmbeddedResource Include="UI.LauncherForm.resx" />
-    <EmbeddedResource Include="UI.MainForm.resx" />
-    <EmbeddedResource Include="UI.MouseGestureForm.resx" />
+    <EmbeddedResource Include="UI.Main.ClusterMainForm.resx" />
+    <EmbeddedResource Include="UI.Main.ReloadableMainForm.resx" />
     <EmbeddedResource Include="UI.ProductInfoForm.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
