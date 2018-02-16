@@ -102,7 +102,7 @@ namespace Crevice4Tests
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 1);
                     form.GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent);
                     Assert.AreEqual(cde.Wait(1000), true);
-                    form.Close();
+                    Application.ExitThread();
                 }
             }
         }
