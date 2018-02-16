@@ -109,8 +109,11 @@ namespace Crevice4Tests
                     Assert.AreEqual(cde.Wait(10000), true);
                     cde.Reset();
 
-                    Console.Write($"CurrentState: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState}");
-                    Console.Write($"IsRunning: {form._gestureMachineCluster.Profiles[0].GestureMachine.IsRunning}");
+                    Console.WriteLine($"CurrentState: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState}");
+                    Console.WriteLine($"IsRunning: {form._gestureMachineCluster.Profiles[0].GestureMachine.IsRunning}");
+                    Console.WriteLine($"DoubleThrowTriggers: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().DoubleThrowTriggers}");
+                    Console.WriteLine($"SingleThrowTriggers: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().SingleThrowTriggers}");
+                    Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().SingleThrowTriggers.Contains(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), true);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].RootElement.GestureCount, 2);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
                     Assert.AreEqual(form._gestureMachineCluster.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), true);
