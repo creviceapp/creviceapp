@@ -71,17 +71,19 @@ namespace Crevice4Tests
         [TestMethod()]
         public void LowLevelKeyboardHookTest()
         {
-            var sender = new SingleInputSender();
-            var list = new List<LowLevelKeyboardHook.Event>();
-            var hook = new LowLevelKeyboardHook((evnt, data) => {
-                list.Add(evnt);
-                return LowLevelKeyboardHook.Result.Cancel;
-            });
-            Assert.AreEqual(list.Count, 0);
-            hook.SetHook();
-            sender.UnicodeKeyStroke("A");
-            hook.Unhook();
-            Assert.AreEqual(list.Count, 2);
+            using (var cde = new CountdownEvent(2))
+            {
+
+                var sender = new SingleInputSender();
+                var hook = new LowLevelKeyboardHook((evnt, data) => {
+                    cde.Signal();
+                    return LowLevelKeyboardHook.Result.Cancel;
+                });
+                hook.SetHook();
+                sender.UnicodeKeyStroke("A");
+                Assert.AreEqual(cde.Wait(10000), true);
+                hook.Unhook();
+            }
         }
 
         [TestMethod()]

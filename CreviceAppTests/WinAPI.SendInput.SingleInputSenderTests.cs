@@ -99,7 +99,7 @@ namespace Crevice4Tests
                     sender.LeftDown();
                     sender.LeftUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
         }
@@ -115,7 +115,7 @@ namespace Crevice4Tests
                     sender.LeftDown();
                     sender.LeftUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
         }
@@ -130,7 +130,7 @@ namespace Crevice4Tests
                 {
                     sender.LeftClick();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_LBUTTONDOWN);
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_LBUTTONUP);
@@ -147,7 +147,7 @@ namespace Crevice4Tests
                     sender.RightDown();
                     sender.RightUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
         }
@@ -163,7 +163,7 @@ namespace Crevice4Tests
                     sender.RightDown();
                     sender.RightUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
         }
@@ -178,7 +178,7 @@ namespace Crevice4Tests
                 {
                     sender.RightClick();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_RBUTTONDOWN);
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
@@ -223,7 +223,7 @@ namespace Crevice4Tests
                     {
                         sender.Move(dx, dy);
                     });
-                    cde.Wait(1000);
+                    cde.Wait(10000);
                 }
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
@@ -251,7 +251,7 @@ namespace Crevice4Tests
                     {
                         sender.MoveTo(x, y);
                     });
-                    cde.Wait(1000);
+                    cde.Wait(10000);
                 }
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
@@ -281,7 +281,7 @@ namespace Crevice4Tests
                     {
                         sender.Move(dx, dy, logical: true);
                     });
-                    cde.Wait(1000);
+                    cde.Wait(10000);
                 }
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
@@ -310,7 +310,7 @@ namespace Crevice4Tests
                     {
                         sender.MoveTo(x, y, logical: true);
                     });
-                    cde.Wait(1000);
+                    cde.Wait(10000);
                 }
                 var evnt = mouseEvents[0].Item1;
                 var pos = mouseEvents[0].Item2.pt;
@@ -331,7 +331,7 @@ namespace Crevice4Tests
                     sender.MiddleDown();
                     sender.MiddleUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
         }
@@ -347,7 +347,7 @@ namespace Crevice4Tests
                     sender.MiddleDown();
                     sender.MiddleUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
         }
@@ -362,7 +362,7 @@ namespace Crevice4Tests
                 {
                     sender.MiddleClick();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MBUTTONDOWN);
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_MBUTTONUP);
@@ -378,7 +378,7 @@ namespace Crevice4Tests
                 {
                     sender.VerticalWheel(120);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEWHEEL);
             Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
@@ -394,7 +394,7 @@ namespace Crevice4Tests
                 {
                     sender.WheelDown();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents.Count, 1);
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEWHEEL);
@@ -411,7 +411,7 @@ namespace Crevice4Tests
                 {
                     sender.WheelUp();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEWHEEL);
             Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
@@ -427,7 +427,7 @@ namespace Crevice4Tests
                 {
                     sender.HorizontalWheel(120);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEHWHEEL);
             Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
@@ -443,7 +443,7 @@ namespace Crevice4Tests
                 {
                     sender.WheelLeft();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents.Count, 1);
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEHWHEEL);
@@ -460,7 +460,7 @@ namespace Crevice4Tests
                 {
                     sender.WheelRight();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_MOUSEHWHEEL);
             Assert.AreEqual(mouseEvents[0].Item2.mouseData.asWheelDelta.delta, 120);
@@ -477,7 +477,7 @@ namespace Crevice4Tests
                     sender.X1Down();
                     sender.X1Up();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
             Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton1);
@@ -494,7 +494,7 @@ namespace Crevice4Tests
                     sender.X1Down();
                     sender.X1Up();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
             Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.IsXButton1);
@@ -510,7 +510,7 @@ namespace Crevice4Tests
                 {
                     sender.X1Click();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
             Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton1);
@@ -529,7 +529,7 @@ namespace Crevice4Tests
                     sender.X2Down();
                     sender.X2Up();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
             Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton2);
@@ -546,7 +546,7 @@ namespace Crevice4Tests
                     sender.X2Down();
                     sender.X2Up();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_XBUTTONUP);
             Assert.IsTrue(mouseEvents[1].Item2.mouseData.asXButton.IsXButton2);
@@ -562,7 +562,7 @@ namespace Crevice4Tests
                 {
                     sender.X2Click();
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(mouseEvents[0].Item1, LowLevelMouseHook.Event.WM_XBUTTONDOWN);
             Assert.IsTrue(mouseEvents[0].Item2.mouseData.asXButton.IsXButton2);
@@ -581,7 +581,7 @@ namespace Crevice4Tests
                     sender.KeyDown(VirtualKeys.VK_A);
                     sender.KeyUp(VirtualKeys.VK_A);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
@@ -600,7 +600,7 @@ namespace Crevice4Tests
                     sender.KeyDown(VirtualKeys.VK_A);
                     sender.KeyUp(VirtualKeys.VK_A);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
@@ -619,7 +619,7 @@ namespace Crevice4Tests
                     sender.ExtendedKeyDown(VirtualKeys.VK_A);
                     sender.ExtendedKeyUp(VirtualKeys.VK_A);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
@@ -638,7 +638,7 @@ namespace Crevice4Tests
                     sender.ExtendedKeyDown(VirtualKeys.VK_A);
                     sender.ExtendedKeyUp(VirtualKeys.VK_A);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
@@ -657,7 +657,7 @@ namespace Crevice4Tests
                     sender.KeyDownWithScanCode(VirtualKeys.VK_A);
                     sender.KeyUpWithScanCode(VirtualKeys.VK_A);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_A);
@@ -676,7 +676,7 @@ namespace Crevice4Tests
                     sender.KeyDownWithScanCode(VirtualKeys.VK_A);
                     sender.KeyUpWithScanCode(VirtualKeys.VK_A);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_A);
@@ -695,7 +695,7 @@ namespace Crevice4Tests
                     sender.ExtendedKeyDownWithScanCode(VirtualKeys.VK_LWIN);
                     sender.ExtendedKeyUpWithScanCode(VirtualKeys.VK_LWIN);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, VirtualKeys.VK_LWIN);
@@ -714,7 +714,7 @@ namespace Crevice4Tests
                     sender.ExtendedKeyDownWithScanCode(VirtualKeys.VK_LWIN);
                     sender.ExtendedKeyUpWithScanCode(VirtualKeys.VK_LWIN);
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, VirtualKeys.VK_LWIN);
@@ -733,7 +733,7 @@ namespace Crevice4Tests
                     sender.UnicodeKeyDown('A');
                     sender.UnicodeKeyUp('A');
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, 0xE7);
@@ -752,7 +752,7 @@ namespace Crevice4Tests
                     sender.UnicodeKeyDown('A');
                     sender.UnicodeKeyUp('A');
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[1].Item1, LowLevelKeyboardHook.Event.WM_KEYUP);
             Assert.AreEqual(keyboardEvents[1].Item2.vkCode, 0xE7);
@@ -770,7 +770,7 @@ namespace Crevice4Tests
                 {
                     sender.UnicodeKeyStroke("A");
                 });
-                cde.Wait(1000);
+                cde.Wait(10000);
             }
             Assert.AreEqual(keyboardEvents[0].Item1, LowLevelKeyboardHook.Event.WM_KEYDOWN);
             Assert.AreEqual(keyboardEvents[0].Item2.vkCode, 0xE7);

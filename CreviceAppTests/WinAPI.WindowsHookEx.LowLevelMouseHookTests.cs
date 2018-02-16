@@ -52,6 +52,7 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void SetHookThrowsInvalidOperationExceptionTest()
         {
             var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
@@ -60,52 +61,55 @@ namespace Crevice4Tests
             {
                 hook.SetHook();
             }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
             finally
             {
                 hook.Unhook();
             }
-            Assert.Fail();
         }
 
         [TestMethod()]
-        public void UnhookThrowsInvalidOperationExceptionTestTest()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void UnhookThrowsInvalidOperationExceptionTest0Test()
         {
             var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
             hook.SetHook();
             hook.Unhook();
-            try
-            {
-                hook.Unhook();
-            }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
-            Assert.Fail();
+            hook.Unhook();
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void UnhookThrowsInvalidOperationExceptionTest1Test()
+        {
+            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
+            hook.Unhook();
         }
 
         [TestMethod()]
         public void LowLevelMouseHookProcTest()
         {
-            var sender = new SingleInputSender();
-            var list = new List<LowLevelMouseHook.Event>();
-            var hook = new LowLevelMouseHook((evnt, data) => {
-                if (data.FromCreviceApp)
+            using (var cde = new CountdownEvent(2))
+            {
+                var hook = new LowLevelMouseHook((evnt, data) => {
+                    if (data.FromCreviceApp)
+                    {
+                        cde.Signal();
+                        return LowLevelMouseHook.Result.Cancel;
+                    }
+                    return LowLevelMouseHook.Result.Transfer;
+                });
+                try
                 {
-                    list.Add(evnt);
-                    return LowLevelMouseHook.Result.Cancel;
+                    var sender = new SingleInputSender();
+                    hook.SetHook();
+                    sender.RightClick();
+                    Assert.AreEqual(cde.Wait(10000), true);
                 }
-                return LowLevelMouseHook.Result.Transfer;
-            });
-            Assert.AreEqual(list.Count, 0);
-            hook.SetHook();
-            sender.RightClick();
-            hook.Unhook();
-            Assert.AreEqual(list.Count, 2);
+                finally
+                {
+                    hook.Unhook();
+                }
+            }
         }
 
         [TestMethod()]
