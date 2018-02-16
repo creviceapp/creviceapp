@@ -26,13 +26,13 @@ namespace Crevice.UI
         {
             _config = new GlobalConfig(cliOption, this);
             _gestureMachineCluster = gestureMachineCluster;
+            _gestureMachineCluster.Run();
             InitializeComponent();
         }
 
         protected override void OnShown(EventArgs e)
         {
             RegisterNotifyIcon(NotifyIcon1);
-            _gestureMachineCluster.Run();
             UpdateTasktrayMessage(_gestureMachineCluster.Profiles);
             ShowInfoBalloon(_gestureMachineCluster);
             base.OnShown(e);
