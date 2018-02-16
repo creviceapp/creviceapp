@@ -32,7 +32,13 @@ namespace Crevice.GestureMachine
 
             try
             {
-                return task.Wait(100) && task.Result;
+                var finished = task.Wait(1000);
+                if (!finished)
+                {
+                    Verbose.Print("Evaluation of WhenEvaluator aborted because it does not finished within limit time.");
+                    return false;
+                }
+                return task.Result;
             }
             catch (Exception ex)
             {

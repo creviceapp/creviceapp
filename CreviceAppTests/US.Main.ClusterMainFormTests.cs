@@ -115,6 +115,9 @@ namespace Crevice4Tests
                     Console.WriteLine($"SingleThrowTriggers: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().SingleThrowTriggers}");
                     Console.WriteLine($"SupportedKeys.Keys.WheelUp.FireEvent.EventId: {SupportedKeys.Keys.WheelUp.FireEvent.EventId}");
                     Console.WriteLine($"SupportedKeys.PhysicalKeys.WheelUp.FireEvent.LogicalNormalized.EventId: {SupportedKeys.PhysicalKeys.WheelUp.FireEvent.LogicalNormalized.EventId}");
+                    Console.WriteLine($"Contains: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().SingleThrowTriggers.Contains(SupportedKeys.PhysicalKeys.WheelUp.FireEvent.LogicalNormalized)}");
+                    var evaluateContext = form._gestureMachineCluster.Profiles[0].GestureMachine.ContextManager.CreateEvaluateContext();
+                    Console.WriteLine($"GetActiveSingleThrowElements: {form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().GetActiveSingleThrowElements(evaluateContext, SupportedKeys.PhysicalKeys.WheelUp.FireEvent)}");
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.ToState0().SingleThrowTriggers.Contains(SupportedKeys.PhysicalKeys.WheelUp.FireEvent.LogicalNormalized), true);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].RootElement.GestureCount, 2);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
