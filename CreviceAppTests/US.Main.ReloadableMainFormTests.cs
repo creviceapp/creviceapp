@@ -75,7 +75,7 @@ namespace Crevice4Tests
                     var task = Task.Run(() => {
                         Application.Run(form);
                     });
-                    Assert.AreEqual(cde.Wait(10000), true);
+                    Assert.AreEqual(cde.Wait(100000), true);
                     cde.Reset();
                     Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles.Count > 0, true);
                     Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles[0].RootElement.GestureCount > 0, true);
