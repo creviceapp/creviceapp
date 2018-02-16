@@ -94,10 +94,10 @@ namespace Crevice4Tests
                     });
                     Assert.AreEqual(cde.Wait(10000), true);
                     cde.Reset();
-                    Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
-                    form.GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent);
-                    Assert.AreEqual(cde.Wait(10000), true);
-                    cde.Reset();
+                    //Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
+                    //form.GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent);
+                    //Assert.AreEqual(cde.Wait(10000), true);
+                    //cde.Reset();
                     form.GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 1);
                     form.GestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent);
