@@ -58,6 +58,8 @@ namespace Crevice4Tests
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
+            TestHelpers.MouseMutex.WaitOne();
+            TestHelpers.KeyboardMutex.WaitOne();
             mouseHook.SetHook();
             keyboardHook.SetHook();
         }
@@ -65,6 +67,8 @@ namespace Crevice4Tests
         [ClassCleanup()]
         public static void ClassCleanup()
         {
+            TestHelpers.MouseMutex.ReleaseMutex();
+            TestHelpers.KeyboardMutex.ReleaseMutex();
             mouseHook.Unhook();
             keyboardHook.Unhook();
         }

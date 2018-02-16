@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Crevice4Tests
@@ -13,6 +14,32 @@ namespace Crevice4Tests
     [TestClass()]
     public class LowLevelKeyboardHookTests
     {
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext context)
+        {
+            TestHelpers.KeyboardMutex.WaitOne();
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            TestHelpers.KeyboardMutex.ReleaseMutex();
+        }
+
+        static readonly Mutex mutex = new Mutex(true);
+
+        [TestInitialize()]
+        public void TestInitialize()
+        {
+            mutex.WaitOne();
+        }
+
+        [TestCleanup()]
+        public void TestCleanup()
+        {
+            mutex.ReleaseMutex();
+        }
+        
         [TestMethod()]
         public void ActivatedTest()
         {

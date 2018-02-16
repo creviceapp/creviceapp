@@ -24,6 +24,8 @@ namespace Crevice4Tests
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
+            TestHelpers.MouseMutex.WaitOne();
+            TestHelpers.KeyboardMutex.WaitOne();
             TestHelpers.TestDirectoryMutex.WaitOne();
             Directory.CreateDirectory(TestHelpers.TemporaryDirectory);
         }
@@ -32,7 +34,23 @@ namespace Crevice4Tests
         public static void ClassCleanup()
         {
             Directory.Delete(TestHelpers.TemporaryDirectory, recursive: true);
+            TestHelpers.MouseMutex.ReleaseMutex();
+            TestHelpers.KeyboardMutex.ReleaseMutex();
             TestHelpers.TestDirectoryMutex.ReleaseMutex();
+        }
+
+        static readonly Mutex mutex = new Mutex(true);
+
+        [TestInitialize()]
+        public void TestInitialize()
+        {
+            mutex.WaitOne();
+        }
+    
+        [TestCleanup()]
+        public void TestCleanup()
+        {
+            mutex.ReleaseMutex();
         }
 
         [TestMethod()]

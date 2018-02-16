@@ -14,6 +14,32 @@ namespace Crevice4Tests
     [TestClass()]
     public class LowLevelMouseHookTests
     {
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext context)
+        {
+            TestHelpers.MouseMutex.WaitOne();
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            TestHelpers.MouseMutex.ReleaseMutex();
+        }
+
+        static readonly Mutex mutex = new Mutex(true);
+
+        [TestInitialize()]
+        public void TestInitialize()
+        {
+            mutex.WaitOne();
+        }
+
+        [TestCleanup()]
+        public void TestCleanup()
+        {
+            mutex.ReleaseMutex();
+        }
+
         [TestMethod()]
         public void ActivatedTest()
         {

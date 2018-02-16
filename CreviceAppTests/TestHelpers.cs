@@ -12,8 +12,9 @@ namespace Crevice4Tests
 
     public static class TestHelpers
     {
+        public static readonly Mutex MouseMutex = new Mutex(true);
+        public static readonly Mutex KeyboardMutex = new Mutex(true);
         public static readonly Mutex ConsoleMutex = new Mutex(true);
-
         public static readonly Mutex TestDirectoryMutex = new Mutex(true);
 
         public static string TemporaryDirectory
