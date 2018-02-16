@@ -15,8 +15,6 @@ namespace Crevice4Tests
     using System.Windows.Forms;
 
     using Crevice.Config;
-    using Crevice.UserScript;
-    using Crevice.GestureMachine;
     using Crevice.UI;
     using Crevice.UserScript.Keys;
 
