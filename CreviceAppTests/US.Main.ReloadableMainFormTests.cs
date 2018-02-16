@@ -52,7 +52,7 @@ namespace Crevice4Tests
                 Assert.AreEqual(form.Config.CLIOption, cliOption);
             }
         }
-        /*
+        
         [TestMethod()]
         public void InputTest()
         {
@@ -85,6 +85,5 @@ namespace Crevice4Tests
                 }
             }
         }
-        */
     }
 }

@@ -21,11 +21,11 @@ namespace Crevice.UI
         private readonly GlobalConfig _config;
         protected internal override GlobalConfig Config => _config; 
 
-        public ClusterMainForm(CLIOption.Result cliOption, GestureMachineCluster gestureMachineCluster)
+        public ClusterMainForm(CLIOption.Result cliOption, IReadOnlyList<GestureMachineProfile> gestureMachineProfiles)
             : base()
         {
             _config = new GlobalConfig(cliOption, this);
-            _gestureMachineCluster = gestureMachineCluster;
+            _gestureMachineCluster = new GestureMachineCluster(gestureMachineProfiles);
             _gestureMachineCluster.Run();
             InitializeComponent();
         }

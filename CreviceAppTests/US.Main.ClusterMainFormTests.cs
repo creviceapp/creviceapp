@@ -54,8 +54,7 @@ namespace Crevice4Tests
             ctx.When(x => { return true; })
             .On(SupportedKeys.Keys.WheelUp)
             .Do(x => { });
-            var gestureMachineCluster = new GestureMachineCluster(ctx.Profiles);
-            using (var form = new ClusterMainForm(cliOption, gestureMachineCluster))
+            using (var form = new ClusterMainForm(cliOption, ctx.Profiles))
             {
                 Assert.AreEqual(form.Config.CLIOption, cliOption);
                 Assert.AreEqual(form._gestureMachineCluster.Profiles, ctx.Profiles);
@@ -83,8 +82,7 @@ namespace Crevice4Tests
                    .Do(x => { cde.Signal(); });
                 when.On(SupportedKeys.Keys.RButton)
                    .Do(x => { cde.Signal(); });
-                var gestureMachineCluster = new GestureMachineCluster(ctx.Profiles);
-                using (var form = new ClusterMainForm(cliOption, gestureMachineCluster))
+                using (var form = new ClusterMainForm(cliOption, ctx.Profiles))
                 {
                     form.Shown += new EventHandler((sender, e) => {
                         cde.Signal();
@@ -94,6 +92,7 @@ namespace Crevice4Tests
                     });
                     Assert.AreEqual(cde.Wait(10000), true);
                     cde.Reset();
+                    Assert.AreEqual(form._gestureMachineCluster.Profiles[0].RootElement.GestureCount, 2);
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 0);
                     Assert.AreEqual(form.GestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), true);
                     Assert.AreEqual(cde.Wait(10000), true);
