@@ -68,12 +68,6 @@ namespace Crevice.GestureMachine
             }
         }
 
-        internal string UserDirectoryStructureString
-            => new DirectoryInfo(UserDirectory)
-                .EnumerateFiles("*.csx", SearchOption.AllDirectories)
-                .Select(f => $"{f.FullName} {f.LastWriteTime}")
-                .Aggregate("", (a, b) => a + "\r\n" + b);
-
         private UserScriptAssembly.Cache _userScriptAssemblyCache = null;
         public UserScriptAssembly.Cache UserScriptAssemblyCache
         {
@@ -81,7 +75,7 @@ namespace Crevice.GestureMachine
             {
                 if (_userScriptAssemblyCache == null)
                 {
-                    _userScriptAssemblyCache = UserScript.GenerateUserScriptAssemblyCache(UserScriptString + "\r\n" + UserDirectoryStructureString, ParsedUserScript);
+                    _userScriptAssemblyCache = UserScript.GenerateUserScriptAssemblyCache(UserScriptCacheFile, UserScriptString, ParsedUserScript);
                 }
                 return _userScriptAssemblyCache;
             }

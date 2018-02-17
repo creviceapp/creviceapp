@@ -12,6 +12,8 @@ using System.Runtime.CompilerServices;
 namespace Crevice4Tests
 {
     using System.Reflection;
+    using Crevice.Config;
+    using Crevice.UserScript;
     using Crevice.GestureMachine;
 
     [TestClass()]
@@ -54,7 +56,7 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
-        public void UserDirectoryStructureStringTest()
+        public void UserScriptEnvironmentChangeDetectionTest()
         {
             var tempDir = TestHelpers.GetTestDirectory();
             var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
@@ -63,12 +65,15 @@ namespace Crevice4Tests
 
             Setup(binaryDir, tempDir);
 
-            var candidate = new GestureMachineCandidate(tempDir, "", Path.Combine(tempDir, "default.csx.cache"), false);
-
-            var res0 = candidate.UserDirectoryStructureString;
+            var cacheDir = Path.Combine(tempDir, "default.csx.cache");
+            var candidate0 = new GestureMachineCandidate(tempDir, "", cacheDir, true);
+            Assert.AreEqual(candidate0.IsRestorable, false);
+            UserScript.SaveUserScriptAssemblyCache(cacheDir, candidate0.UserScriptAssemblyCache);
+            var candidate1 = new GestureMachineCandidate(tempDir, "", cacheDir, true);
+            Assert.AreEqual(candidate1.IsRestorable, true);
             File.WriteAllText(userScriptFile, "");
-            var res1 = candidate.UserDirectoryStructureString;
-            Assert.AreEqual(res0 == res1, false);
+            var candidate2 = new GestureMachineCandidate(tempDir, "", cacheDir, true);
+            Assert.AreEqual(candidate2.IsRestorable, false);
         }
     }
 }

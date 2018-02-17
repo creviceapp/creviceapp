@@ -92,7 +92,19 @@ namespace Crevice.UserScript
             }
         }
 
-        public static UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(string hashSource, Script parsedScript)
+        private static string GetUserDirectoryStructureString(string cachePath)
+            => new FileInfo(cachePath).Directory
+                .EnumerateFiles("*.csx", SearchOption.AllDirectories)
+                .Select(f => $"{f.FullName} {f.LastWriteTime}")
+                .Aggregate("", (a, b) => a + "\r\n" + b);
+
+        private static string GetHashSource(string cachePath, string userScriptString)
+            => GetUserDirectoryStructureString(cachePath) + "\r\n" + userScriptString;
+        
+        public static UserScriptAssembly.Cache GenerateUserScriptAssemblyCache(
+            string cachePath, 
+            string userScriptString, 
+            Script parsedScript)
         {
             using (Verbose.PrintElapsed("Generate UserScriptAssemblyCache"))
             {
@@ -100,16 +112,14 @@ namespace Crevice.UserScript
                 var peStream = new MemoryStream();
                 var pdbStream = new MemoryStream();
                 compilation.Emit(peStream, pdbStream);
-                /*
 #if DEBUG
                 using (Verbose.PrintElapsed("Debug| Output UserScriptAssemblies"))
                 {
-                    File.WriteAllBytes((UserScriptFile + ".debug.dll"), peStream.GetBuffer());
-                    File.WriteAllBytes((UserScriptFile + ".debug.pdb"), pdbStream.GetBuffer());
+                    File.WriteAllBytes((cachePath + ".debug.dll"), peStream.GetBuffer());
+                    File.WriteAllBytes((cachePath + ".debug.pdb"), pdbStream.GetBuffer());
                 }
 #endif
-*/
-                return UserScriptAssembly.CreateCache(hashSource, peStream.GetBuffer(), pdbStream.GetBuffer());
+                return UserScriptAssembly.CreateCache(GetHashSource(cachePath, userScriptString), peStream.GetBuffer(), pdbStream.GetBuffer());
             }
         }
 
@@ -181,7 +191,7 @@ namespace Crevice.UserScript
                 try
                 {
                     var loadedCache = UserScriptAssembly.Load(cachePath);
-                    if (!UserScriptAssembly.IsCompatible(loadedCache, userScriptString))
+                    if (!UserScriptAssembly.IsCompatible(loadedCache, GetHashSource(cachePath, userScriptString)))
                     {
                         Verbose.Print("UserScriptCacheFile was discarded because the signature was not match with this application.");
                         return null;

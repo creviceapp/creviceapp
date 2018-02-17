@@ -20,7 +20,7 @@ namespace Crevice.UserScript
             public string AppVersion { get; set; }
             public byte[] PE { get; set; }
             public byte[] PDB { get; set; }
-            public string ScriptFileHash { get; set; }
+            public string HashCode { get; set; }
         }
 
         public class UserScriptAssemblyImpl
@@ -46,7 +46,7 @@ namespace Crevice.UserScript
 
             public bool IsCompatible(Cache cache, string userScriptCode)
                 => cache.AppVersion == CurrentAppVersion() &&
-                   cache.ScriptFileHash == Hash(userScriptCode);
+                   cache.HashCode == Hash(userScriptCode);
 
             public Cache CreateCache(string script, byte[] pe, byte[] pdb)
             {
@@ -55,7 +55,7 @@ namespace Crevice.UserScript
                     AppVersion = CurrentAppVersion(),
                     PE = pe,
                     PDB = pdb,
-                    ScriptFileHash = Hash(script)
+                    HashCode = Hash(script)
                 };
                 return cache;
             }
@@ -86,8 +86,8 @@ namespace Crevice.UserScript
         public static string CurrentAppVersion() 
             => GetInstance().CurrentAppVersion();
 
-        public static bool IsCompatible(Cache cache, string userScriptCode)
-            => GetInstance().IsCompatible(cache, userScriptCode);
+        public static bool IsCompatible(Cache cache, string hashSource)
+            => GetInstance().IsCompatible(cache, hashSource);
 
         public static Cache CreateCache(string hashSource, byte[] pe, byte[] pdb)
             => GetInstance().CreateCache(hashSource, pe, pdb);
