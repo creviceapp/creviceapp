@@ -776,7 +776,7 @@ namespace CreviceLibTests
             using (var gm = new TestGestureMachine(root))
             {
                 var s0 = new TestState0(gm, root);
-                Assert.AreEqual(s0.ToState0() is TestState0, true);
+                Assert.AreEqual(s0.AsState0() is TestState0, true);
             }
         }
 
@@ -787,7 +787,7 @@ namespace CreviceLibTests
             using (var gm = new TestGestureMachine(root))
             {
                 var s0 = new TestState0(gm, root);
-                Assert.AreEqual(s0.ToStateN() is null, true);
+                Assert.AreEqual(s0.AsStateN() is null, true);
             }
         }
 

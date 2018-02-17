@@ -54,10 +54,10 @@ namespace Crevice.Core.FSM
         public bool IsState0 => GetType() == typeof(State0<TConfig, TContextManager, TEvalContext, TExecContext>);
         public bool IsStateN => GetType() == typeof(StateN<TConfig, TContextManager, TEvalContext, TExecContext>);
 
-        public State0<TConfig, TContextManager, TEvalContext, TExecContext> ToState0()
+        public State0<TConfig, TContextManager, TEvalContext, TExecContext> AsState0()
             => this as State0<TConfig, TContextManager, TEvalContext, TExecContext>;
 
-        public StateN<TConfig, TContextManager, TEvalContext, TExecContext> ToStateN()
+        public StateN<TConfig, TContextManager, TEvalContext, TExecContext> AsStateN()
             => this as StateN<TConfig, TContextManager, TEvalContext, TExecContext>;
     }
 }

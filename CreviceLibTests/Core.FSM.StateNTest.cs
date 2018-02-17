@@ -1598,7 +1598,7 @@ namespace CreviceLibTests
                 var history = History.Create(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
-                Assert.AreEqual(s1.ToState0() is null, true);
+                Assert.AreEqual(s1.AsState0() is null, true);
             }
         }
 
@@ -1613,7 +1613,7 @@ namespace CreviceLibTests
                 var history = History.Create(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
-                Assert.AreEqual(s1.ToStateN() is TestStateN, true);
+                Assert.AreEqual(s1.AsStateN() is TestStateN, true);
             }
         }
 
