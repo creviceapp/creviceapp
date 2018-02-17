@@ -49,10 +49,10 @@ namespace Crevice.Core.Stroke
             StrokeExtensionThreshold = strokeExtensionThreshold;
             Absorb(input);
         }
-
+        
         public virtual Stroke Input(IReadOnlyList<Point> input)
         {
-            var p0 = input.First();
+            var p0 = points.Count > 0 ? points.Last() : input.First();
             var p1 = input.Last();
             var dx = Math.Abs(p0.X - p1.X);
             var dy = Math.Abs(p0.Y - p1.Y);
@@ -242,9 +242,14 @@ namespace Crevice.Core.Stroke
                             if (stroke != res)
                             {
                                 strokes.Add(res);
+                                buffer.Clear();
+                                Callbacks.OnStrokeUpdated(strokes);
                             }
-                            buffer.Clear();
-                            Callbacks.OnStrokeUpdated(strokes);
+                            else if(res.Points.Count != stroke.Points.Count)
+                            {
+                                buffer.Clear();
+                                Callbacks.OnStrokeUpdated(strokes);
+                            }
                         }
                     }
                 }
