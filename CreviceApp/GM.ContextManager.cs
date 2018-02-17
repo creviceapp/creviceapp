@@ -32,17 +32,21 @@ namespace Crevice.GestureMachine
 
             try
             {
-                var finished = task.Wait(1000);
-                if (!finished)
+                if (!task.Wait(1000))
                 {
                     Verbose.Print("Evaluation of WhenEvaluator aborted because it does not finished within limit time.");
                     return false;
                 }
                 return task.Result;
             }
+            catch (AggregateException ex)
+            {
+                Verbose.Error("An exception was thrown while evaluating an evaluator: {0}", ex.InnerException.ToString());
+                return false;
+            }
             catch (Exception ex)
             {
-                Verbose.Error("An exception was thrown while evaluating an evaluator: {0}", ex.ToString());
+                Verbose.Error("An unexpected exception was thrown while evaluating an evaluator: {0}", ex.ToString());
                 return false;
             }
         }
