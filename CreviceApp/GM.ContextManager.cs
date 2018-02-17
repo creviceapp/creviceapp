@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 
 namespace Crevice.GestureMachine
 {
+    using System.Threading;
     using System.Drawing;
     using Crevice.Logging;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
+    using Crevice.Threading;
 
     public class ContextManager : ContextManager<EvaluationContext, ExecutionContext>
     {
         public Point CursorPosition { get; set; }
+        
+        public int EvaluationLimitTime { get; } = 1000; // ms
 
         public override EvaluationContext CreateEvaluateContext()
             => new EvaluationContext(CursorPosition);
@@ -21,20 +25,31 @@ namespace Crevice.GestureMachine
         public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
             => new ExecutionContext(evaluationContext, CursorPosition);
 
+        private readonly TaskFactory _evaluationTaskFactory
+            = LowLatencyScheduler.CreateTaskFactory(
+                "EvaluationTaskScheduler", 
+                ThreadPriority.Highest, 
+                Math.Max(2, Environment.ProcessorCount / 2));
+
+        private readonly TaskFactory _executionTaskFactory
+            = LowLatencyScheduler.CreateTaskFactory(
+                "ExecutionTaskScheduler", 
+                ThreadPriority.Highest, 
+                Math.Max(2, Environment.ProcessorCount / 2));
+
         public override bool Evaluate(
             EvaluationContext evalContext,
             IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
         {
-            var task = Task.Factory.StartNew(() =>
-            {
-                return whenElement.WhenEvaluator(evalContext);
-            });
-
             try
             {
-                if (!task.Wait(1000))
+                var task = _evaluationTaskFactory.StartNew(() =>
                 {
-                    Verbose.Print("Evaluation of WhenEvaluator aborted because it does not finished within limit time.");
+                    return whenElement.WhenEvaluator(evalContext);
+                });
+                if (!task.Wait(EvaluationLimitTime))
+                {
+                    Verbose.Print("Evaluation of WhenEvaluator was aborted because it was not finished within limit time ({0}ms).", EvaluationLimitTime);
                     return false;
                 }
                 return task.Result;
@@ -55,7 +70,7 @@ namespace Crevice.GestureMachine
             ExecutionContext execContext,
             ExecuteAction<ExecutionContext> executeAction)
         {
-            Task.Factory.StartNew(() =>
+            _executionTaskFactory.StartNew(() =>
             {
                 executeAction(execContext);
             });

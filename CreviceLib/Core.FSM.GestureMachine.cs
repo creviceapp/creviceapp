@@ -69,8 +69,8 @@ namespace Crevice.Core.FSM
             }
         }
 
-        internal virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
-        internal virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
+        protected internal virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
+        protected internal virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
 
         public GestureMachine(
             TConfig config,

@@ -137,6 +137,7 @@
     <Compile Include="GM.ContextManager.cs" />
     <Compile Include="GM.ExecutionContext.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Threading.cs" />
     <Compile Include="UI.LauncherForm.cs">
       <SubType>Form</SubType>
     </Compile>
