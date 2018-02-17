@@ -76,17 +76,13 @@ namespace Crevice.UI
 
         public WindowsHook.Result KeyboardProc(LowLevelKeyboardHook.Event evnt, LowLevelKeyboardHook.KBDLLHOOKSTRUCT data)
         {
-            Debug.Print("KeyboardEvent: {0} - {1} | {2}",
-                    data.vkCode,
-                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))
-                    );
-
             if (data.FromCreviceApp)
             {
-                Debug.Print("{0} was passed to the next hook because this event has the signature of CreviceApp",
-                    Enum.GetName(typeof(LowLevelKeyboardHook.Event),
-                    evnt));
+                Verbose.Print("KeyboardEvent(vkCode={0}, event={1}, dwExtraInfo={2}) " +
+                    "was passed to the next hook because this event has the signature of CreviceApp",
+                    data.vkCode,
+                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
+                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
                 return WindowsHook.Result.Transfer;
             }
 
@@ -117,23 +113,20 @@ namespace Crevice.UI
 
         public WindowsHook.Result MouseProc(LowLevelMouseHook.Event evnt, LowLevelMouseHook.MSLLHOOKSTRUCT data)
         {
-            Debug.Print("MouseEvent: {0} | {1}",
-                    Enum.GetName(typeof(LowLevelMouseHook.Event), evnt),
-                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))
-                    );
-
             if (data.FromCreviceApp)
             {
-                Debug.Print("{0} was passed to the next hook because this event has the signature of CreviceApp",
-                    Enum.GetName(typeof(LowLevelMouseHook.Event),
-                    evnt));
+                Verbose.Print("KeyboardEvent(event={0}, dwExtraInfo={1}) " +
+                    "was passed to the next hook because this event has the signature of CreviceApp",
+                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
+                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
                 return WindowsHook.Result.Transfer;
             }
             else if (data.FromTablet)
             {
-                Debug.Print("{0} was passed to the next hook because this event has the signature of Tablet",
-                    Enum.GetName(typeof(LowLevelMouseHook.Event),
-                    evnt));
+                Verbose.Print("KeyboardEvent(event={0}, dwExtraInfo={1}) " +
+                   "was passed to the next hook because this event has the signature of Tablet",
+                   Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
+                   BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
                 return WindowsHook.Result.Transfer;
             }
 

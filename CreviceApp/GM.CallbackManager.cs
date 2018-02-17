@@ -11,6 +11,7 @@ namespace Crevice.GestureMachine
     using Crevice.Core.Callback;
     using Crevice.UserScript.Keys;
     using Crevice.WinAPI.SendInput;
+    using Crevice.Core.Stroke;
 
     public class CallbackManager : CallbackManager<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
@@ -18,10 +19,42 @@ namespace Crevice.GestureMachine
 
         private readonly SingleInputSender SingleInputSender = new SingleInputSender();
 
+        public override void OnStrokeReset()
+        {
+            Verbose.Print("Stroke was reset.");
+            base.OnStrokeReset();
+        }
+
+        public override void OnStrokeUpdated(
+            IReadOnlyList<Stroke> strokes)
+        {
+            var strokeString = strokes
+                .Select(s => {
+                    if (s.Direction == StrokeDirection.Up) return "↑";
+                    if (s.Direction == StrokeDirection.Down) return "↓";
+                    if (s.Direction == StrokeDirection.Left) return "←";
+                    /*if (s.Direction == StrokeDirection.Right)*/ return "→"; })
+                .Aggregate("", (a, b) => a + b);
+            var strokePoints =
+                strokes
+                .Select(s => s.Points.Count.ToString())
+                .Aggregate((a, b) => a + ", " + b);
+            Verbose.Print("Stroke was updated; Directions={0}, Points={1}", strokeString, strokePoints);
+            base.OnStrokeUpdated(strokes);
+        }
+
+        public override void OnStateChanged(
+            State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> lastState, 
+            State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> currentState)
+        {
+            Verbose.Print("State was changed; {0} to {1}", lastState, currentState);
+            base.OnStateChanged(lastState, currentState);
+        }
+
         public override void OnGestureCancelled(
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
-            Verbose.Print("GestureCancelled");
+            Verbose.Print("Gesture was cancelled.");
             var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
             ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvent(systemKey));
             base.OnGestureCancelled(stateN);
@@ -30,7 +63,7 @@ namespace Crevice.GestureMachine
         public override void OnGestureTimeout(
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
-            Verbose.Print("GestureTimeout");
+            Verbose.Print("Gesture was timeout.");
             var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
             ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvent(systemKey));
             base.OnGestureTimeout(stateN);
@@ -39,7 +72,7 @@ namespace Crevice.GestureMachine
         public override void OnMachineReset(
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> state)
         {
-            Verbose.Print("MachineReset");
+            Verbose.Print("GestureMachine was reset; LastState={0}", state);
             base.OnMachineReset(state);
         }
 
