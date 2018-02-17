@@ -42,7 +42,6 @@ namespace Crevice.Threading
                 });
                 thread.Name = $"{Name}(Priority={Priority}, PoolSize={PoolSize}): {i}";
                 thread.Priority = Priority;
-                thread.IsBackground = true;
                 thread.Start();
                 threads[i] = thread;
             }

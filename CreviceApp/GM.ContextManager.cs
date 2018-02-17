@@ -28,13 +28,13 @@ namespace Crevice.GestureMachine
         private readonly TaskFactory _evaluationTaskFactory
             = LowLatencyScheduler.CreateTaskFactory(
                 "EvaluationTaskScheduler", 
-                ThreadPriority.Highest, 
+                ThreadPriority.AboveNormal, 
                 Math.Max(2, Environment.ProcessorCount / 2));
 
         private readonly TaskFactory _executionTaskFactory
             = LowLatencyScheduler.CreateTaskFactory(
                 "ExecutionTaskScheduler", 
-                ThreadPriority.Highest, 
+                ThreadPriority.AboveNormal, 
                 Math.Max(2, Environment.ProcessorCount / 2));
 
         public override bool Evaluate(

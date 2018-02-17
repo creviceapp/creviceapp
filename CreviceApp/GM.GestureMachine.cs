@@ -30,7 +30,7 @@ namespace Crevice.GestureMachine
         private readonly TaskFactory _strokeWatcherTaskFactory
             = LowLatencyScheduler.CreateTaskFactory(
                 "StrokeWatcherTaskScheduler", 
-                ThreadPriority.Highest, 
+                ThreadPriority.AboveNormal, 
                 1);
         protected override TaskFactory StrokeWatcherTaskFactory 
             => _strokeWatcherTaskFactory;
