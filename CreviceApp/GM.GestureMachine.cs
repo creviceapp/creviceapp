@@ -35,14 +35,6 @@ namespace Crevice.GestureMachine
         protected override TaskFactory StrokeWatcherTaskFactory 
             => _strokeWatcherTaskFactory;
 
-        private readonly TaskFactory _lowPriorityTaskFactory
-            = LowLatencyScheduler.CreateTaskFactory(
-                "LowPriorityTaskScheduler", 
-                ThreadPriority.Lowest, 
-                1);
-        protected override TaskFactory LowPriorityTaskFactory
-            => _lowPriorityTaskFactory;
-
         public override bool Input(IPhysicalEvent evnt, Point? point)
         {
             lock (lockObject)
