@@ -67,15 +67,7 @@ var Chrome = When(ctx =>
 });
 ```
 
-`ctx` is `Crevice.GestureMachine.EvaluationContext`, and have following properties:
-
-Type | Property Name
------|-----
-System.Drawing.Point|GestureStartPosition
-ForegroundWindowInfo|ForegroundWindow
-PointedWindowInfo|PointedWindow
-
-These values are guaranteed that same values are provided as `ctx`'s property in `Press`, `Do`, and `Release` clauses.
+`ctx` is EvaluationContext, see [Crevice4 Core API/EvaluationContext](#evaluationcontext) for more details.
 
 The next to `When` are `On` and `Do` clauses.
 
@@ -112,16 +104,7 @@ Do(ctx => // and release mouse's right button,
 });
 ```
 
-`ctx` is `Crevice.GestureMachine.ExecutionContext`, and have following properties:
-
-Type | Property Name
------|-----
-System.Drawing.Point | GestureStartPosition
-System.Drawing.Point | GestureEndPosition
-ForegroundWindowInfo | ForegroundWindow
-PointedWindowInfo | PointedWindow
-
-These values, except for `GestureEndPosition`, are guaranteed that same values are provided as `ctx`'s property in `When` clause. 
+`ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details.
 
 ## Press
 
@@ -135,16 +118,7 @@ Press(ctx => // without waiting for release event,
 });
 ```
 
-`ctx` is `Crevice.GestureMachine.ExecutionContext`, and have following properties:
-
-Type | Property Name
------|-----
-System.Drawing.Point | GestureStartPosition
-System.Drawing.Point | GestureEndPosition
-ForegroundWindowInfo | ForegroundWindow
-PointedWindowInfo | PointedWindow
-
-These values, except for `GestureEndPosition`, are guaranteed that same values are provided as `ctx`'s property in `When` clause.
+`ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details.
 
 ## Release
 
@@ -158,16 +132,7 @@ Release(ctx => // and release mouse's right button,
 });
 ```
 
-`ctx` is `Crevice.GestureMachine.ExecutionContext`, and have following properties:
-
-Type | Property Name
------|-----
-System.Drawing.Point | GestureStartPosition
-System.Drawing.Point | GestureEndPosition
-ForegroundWindowInfo | ForegroundWindow
-PointedWindowInfo | PointedWindow
-
-These values, except for `GestureEndPosition`, are guaranteed that same values are provided as `ctx`'s property in `When` clause. 
+`ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details.
 
 ## Button gesture
 As you may know, mouse gestures with buttons are called "rocker gesture" in mouse gesture utility communities. But we call it, including it with keyboard buttons, simply `Button gesture` here. 
@@ -193,10 +158,23 @@ Do(ctx => // and release mouse's left or right button,
 });
 ```
 
-Both above gestures are `Button gesture` by the standard buttons. `On` clause with standard buttons can be used for declare `Do` clause but also `Press` and `Release` clauses.
+Even if after pressing a button which means the start of a gesture, you can cancel it by holding the button pressing until it to be timeout.
 
-## Button gesture with Press/Release
-`Do` clause is just simple but there is cases does not fit to use it. For example, where there is need to hook to press / release events of buttons. `Press` and `Release` clauses fit to that case. These can be written just after `On` clause.
+```cs
+Browser.
+On(Keys.RButton). // If you WRONGLY pressed mouse's right button,
+Do(ctx => // you hold the button until timeout and release it,
+{
+    // then this code will NOT be executed.
+});
+```
+
+This means actions declared in `Do` clause is not assured it's execution.
+
+Above three gestures are `Button gesture` by the standard buttons. `On` clause with standard buttons can be used for declare `Do` clause but also `Press` and `Release` clauses.
+
+### Button gesture with Press/Release
+`Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to press / release events of buttons. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
 
 ```cs
 var Whenever = When(ctx => {
@@ -217,11 +195,10 @@ Release(ctx =>
 ```
  
 And for `Release` clause, it can be after `Do` clause.
-Actions given in `Press` and `Release` clauses are different from it of `Do` clause, the execution of these are assured.
 
 ```cs
 Whenever.
-On(XButton2).
+On(Keys.XButton2).
 Press(ctx =>
 {
     // Assured.
@@ -237,8 +214,9 @@ Release(ctx =>
     // Assured.
 });
 ```
+Actions declared in `Press` and `Release` clauses are different from it of `Do` clause, the execution of these are assured.
 
-## Single state button gesture
+### Button gesture with single state button
 
 Few of the buttons in `Keys` are different from the standard buttons; these have only one state, and only one event. So, `On` clauses with these can not be used with `Press` and `Release` clauses.
 
@@ -286,7 +264,7 @@ Do(ctx => // and release right button,
 });
 ```
 
-`Stroke gesture` represents special case when a standard button is pressed, so it have the same grammatical limitation to `Single state button gesture`.
+`Stroke gesture` represents special case when a standard button is pressed, so it have the same grammatical limitation to `Button gesture with single state button`.
 
 Grammatical limitations:
 * `On` clause with `Keys.Move*` does not have `Press()` and `Release()` functions.
@@ -337,25 +315,77 @@ Config.UI.TooltipPositionBinding = (point) =>
 
 ## Events
 
+### StrokeReset {ignore=true}
+
 ```cs
-// event Crevice.GestureMachine.CallbackManager.StrokeResetEventHandler
 Config.Callback.StrokeReset += (sender, e) { };
+```
+This event activated when the state of mouse's stroke to be reset.
+`e` is `StrokeResetEventHandler`, and it does not have special properties.
 
-// event Crevice.GestureMachine.CallbackManager.StrokeUpdatedEventHandler 
+
+### StrokeUpdated {ignore=true}
+```cs
 Config.Callback.StrokeUpdated += (sender, e) { };
+```
 
-// event Crevice.GestureMachine.CallbackManager.StateChangedEventHandler 
+This event activated when the state of mouse's stroke to be changed.
+
+`e` is `StrokeUpdatedEventHandler `.
+Type | Property Name | Description |
+-----|-----|------
+IReadOnlyList\<Stroke\> | Strokes | 
+
+### StateChanged {ignore=true}
+```cs
 Config.Callback.StateChanged += (sender, e) { };
+```
 
-// event Crevice.GestureMachine.CallbackManager.GestureCancelledEventHandler 
+This event activated when the state of GestureMachine to be changed. 
+`e` is `StateChangedEventHandler`.
+
+Type | Property Name | Description |
+-----|-----|------
+State | LastState | 
+State | CurrentState |
+
+### GestureChancelled {ignore=true}
+```cs
 Config.Callback.GestureCancelled += (sender, e) { };
+```
 
-// event Crevice.GestureMachine.CallbackManager.GestureTimeoutEventHandler 
+This event activated when the gesture to be cancelled.
+`e` is `GestureCancelledEventHandler`.
+
+Type | Property Name | Description |
+-----|-----|------
+StateN | LastState | 
+
+### GestureTimeout {ignore=true}
+
+```cs
 Config.Callback.GestureTimeout += (sender, e) { };
+```
 
-// event Crevice.GestureMachine.CallbackManager.MachineResetEventHandler 
+This event activated when the gesture to be timeout.
+`e` is `GestureTimeoutEventHandler`.
+
+Type | Property Name | Description |
+-----|-----|------
+StateN | LastState | 
+
+### MachineReset {ignore=true}
+
+```cs
 Config.Callback.MachineReset += (sender, e) { };
 ```
+
+This event activated when GestureMachine to be reset for some reasons.
+`e` is `MachineResetEventHandler`.
+
+Type | Property Name | Description |
+-----|-----|------
+State | LastState | 
 
 # Comamand line interface
 
@@ -388,17 +418,15 @@ Usage:
   --help            Display this help screen.
 ```
 
-Added in Crevice 3.0.
-
 # Crevice4 Core API
 
 ## EvaluationContext
 
 `Crevice.GestureMachine.EvaluationContext` have following properties:
 
-### Property
+### Properties {ignore=true}
 
-Type | Name | Description |
+Type | Property Name | Description |
 -----|-----|-----|
 System.Drawing.Point | GestureStartPosition
 ForegroundWindowInfo | ForegroundWindow | The window which was on the foreground when a gesture started. This is an instance of `WindowInfo`.
@@ -406,151 +434,127 @@ PointedWindowInfo | PointedWindow | The window which was under the cursor when a
 
 These values are guaranteed that same values are provided as `ExecutionContext`'s property in `Press`, `Do`, and `Release` clauses.
 
-### ExecutionContext
+## ExecutionContext
 
 `Crevice.GestureMachine.ExecutionContext` have following properties:
 
-### Property
+### Properties {ignore=true}
 
-Type | Name | Description |
+Type | Property Name | Description |
 -----|-----|-----|
 System.Drawing.Point | GestureStartPosition
 System.Drawing.Point | GestureEndPosition
-ForegroundWindowInfo | ForegroundWindow | The window which was on the foreground when a gesture started. This is an instance of `WindowInfo`.
-PointedWindowInfo | PointedWindow | The window which was under the cursor when a gesture started. This is an instance of `WindowInfo`.
+WindowInfo | ForegroundWindow | The window which was on the foreground when a gesture started. This is an instance of `WindowInfo`.
+WindowInfo | PointedWindow | The window which was under the cursor when a gesture started. This is an instance of `WindowInfo`.
 
 These values, except for `GestureEndPosition`, are guaranteed that same values are provided as `EvaluationContext`'s property in `When` clause. 
 
-### WindowInfo
+## WindowInfo
 
 `WindowInfo` is a thin wrapper of the handle of a window. This class provides properties and methods to use window handles more easily.
 
-#### Properties
-This class provides properties as following; `WindowHandle`, `ThreadId`, `ProcessId`, `WindowId`, `Text`, `ClassName`, `Parent`, `ModulePath`, `ModuleName`.
+#### Properties {ignore=true}
 
-#### Methods
+Type | Property Name | Description |
+-----|-----|-----|
+IntPtr | WindowHandle
+int | ThreadId
+int | ProcessId
+IntPtr | WindowId
+string | Text
+string | ClassName
+WindowInfo | Parent
+string | ModulePath
+string | ModuleName
 
-##### SendMessage(uint Msg, uint wParam, uint lParam)
+#### Methods {ignore=true}
 
-A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`. 
-This function returns a `long` value directly from win32 API.
+Return Value | Method Definition | Description |
+-----|-----|-----|
+long | SendMessage(int Msg, int wParam, int lParam) | A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`.
+bool | PostMessage(int Msg, int wParam, int lParam) | A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
+bool | BringWindowToTop() | A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
+WindowInfo | FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow) | A shortcut to win32 API `FindWindowEx(WindowHandle, hwndChildAfter, lpszClass, lpszWindow)`. 
+WindowInfo | FindWindowEx(string lpszClass, string lpszWindow) | A shortcut to win32 API `FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow)`.
+IReadOnlyList\<WindowInfo\> | GetChildWindows() | A shortcut to win32 API `EnumChildWindows(WindowHandle, EnumWindowProc, IntPtr.Zero)`.
+IReadOnlyList\<WindowInfo\> |  GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags) | A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, flags)`. This function recursively calls `ChildWindowFromPointEx` until reach to the last descendant window.
+IReadOnlyList\<WindowInfo\> | GetPointedDescendantWindows(Point point) | A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`. This function recursively calls `ChildWindowFromPointEx` until reach to the last descendant window.
+void | Activate() | Brings window into the foreground and activates the window.
 
-##### PostMessage(uint Msg, uint wParam, uint lParam)
+## SendInput
 
-A shortcut to win32 API `PostMessage(WindowHandle, Msg, wParam, lParam)`.
-This function returns a `bool` value directly from win32 API.
-
-##### BringWindowToTop()
-
-A shortcut to win32 API `BringWindowToTop(WindowHandle)`.
-This function returns a `bool` value directly from win32 API.
-
-##### FindWindowEx(IntPtr hwndChildAfter, string lpszClass, string lpszWindow)
-
-A shortcut to win32 API `FindWindowEx(WindowHandle, hwndChildAfter, lpszClass, lpszWindow)`.
-This function returns an instance of `WindowInfo`.
-
-##### FindWindowEx(string lpszClass, string lpszWindow)
-
-A shortcut to win32 API `FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow)`.
-This function returns an instance of `WindowInfo`.
-
-##### GetChildWindows()
-
-A shortcut to win32 API `EnumChildWindows(WindowHandle, EnumWindowProc, IntPtr.Zero)`.
-This function returns an instance of `IEmumerable<WindowInfo>`.
-
-##### GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
-
-A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, flags)`.
-This function recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
-
-##### GetPointedDescendantWindows(Point point)
-
-A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`.
-This function recursively calls `ChildWindowFromPointEx` until the last descendant window and returns an instance of `IEmumerable<WindowInfo>`.
-
-##### Activate()
-Brings window into the foreground and activates the window.
-
-### SendInput
-
-Send mouse and keyboard input events to the foreground window. 
-This API provides single and multiple sending method. 
-The events sent by single sending method is guaranteed to arrive to the window in order, but this does not necessarily mean it will not be interrupted by the other events. 
-Multiple sending method guarantees that the events sent by it will not be interrupted by the other events.
-Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to be called `Send()` at last.
+Send mouse and keyboard input events to the foreground window. This API provides single and multiple sending method. The events sent by single sending method is guaranteed to arrive to the window in order, but this does not necessarily mean it will not be interrupted by the other events. Multiple sending method guarantees that the events sent by it will not be interrupted by the other events.Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to be called `Send()` at last.
 
 ```cs
-SendInput.ExtendedKeyDown(VK_LWIN);
+SendInput.ExtendedKeyDown(Keys.LWin);
 // When D key interrupts here,
 // Win+D will be invoked unintentionally.
-SendInput.ExtendedKeyUp(VK_LWIN); 
+SendInput.ExtendedKeyUp(Keys.LWin); 
 ```
 
 ```cs
 SendInput.Multiple().
-ExtendedKeyDown(VK_LWIN).
-ExtendedKeyUp(VK_LWIN).
+ExtendedKeyDown(Keys.LWin).
+ExtendedKeyUp(Keys.LWin).
 Send(); // This won't be interrupted by any other input.
 ```
 
-#### Mouse event
-`Down`, `Up`, and `Click` events are supported for the push-release type buttons of mouse devices as following; `LeftButton`, `MiddleButton`, `RightButton`, `X1Button`, `X2Button`. For example, the provided API for `LeftButton` is `LeftDown()`, `LeftUp()` and `LeftClick()`. 
+### Mouse event
 
-For single push type buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. 
+`Down`, `Up`, and `Click` events are supported for the standard push-release type buttons of mouse devices. For example, the provided API for mouse's left button is `LeftDown()`, `LeftUp()` and `LeftClick()`. For single state buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. In addition to these, for move event of mouse cursor, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are provided.
 
-For move events, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are provided.
+##### Methods {ignore=true}
 
-##### Complete list of supported methods
-- LeftDown()
-- LeftUp()
-- LeftClick()
-- RightDown()
-- RightUp()
-- RightClick()
-- Move(int dx, int dy)
-- MoveTo(int x, int y)
-- MiddleDown()
-- MiddleUp()
-- MiddleClick()
-- VerticalWheel(short delta)
-- WheelDown()
-- WheelUp()
-- HorizontalWheel(short delta)
-- WheelLeft()
-- WheelRight()
-- X1Down()
-- X1Up()
-- X1Click()
-- X2Down()
-- X2Up()
-- X2Click()
+Button | Method Definition | Description
+-----|-----|-----
+Keys.LButton | LeftDown()
+Keys.LButton | LeftUp()
+Keys.LButton | LeftClick() | Shortcut to `LeftDown()` and `LeftUp()`.
+Keys.RButton | RightDown()
+Keys.RButton | RightUp()
+Keys.RButton | RightClick() | Shortcut to `RightDown()` and `RightUp()`.
+ - | Move(int dx, int dy) | Move the cursor relatively. `dx` and `dy` are relative values.
+ - | MoveTo(int x, int y) | Move the cursor to the specified point. `x` and `y` are absolute values.
+Keys.MButton | MiddleDown()
+Keys.MButton | MiddleUp()
+Keys.MButton | MiddleClick() | Shortcut to `MiddleDown()` and `MiddleUp()`.
+- | VerticalWheel(int delta) | Send vertical wheel message. If `delta` is positive value, the direction of the wheel is up, otherwise down.
+Keys.WheelDown | WheelDown() | Shortcut to `VerticalWheel(-120)`.
+Keys.WheelUp | WheelUp() | Shortcut to `VerticalWheel(120)`.
+- | HorizontalWheel(int delta) | Send horizontal wheel message. If `delta` is positive value, the direction of the wheel is right, otherwise left.
+Keys.WheelLeft | WheelLeft() |  Shortcut to `HorizontalWheel(-120)`.
+Keys.WheelRight | WheelRight() |  Shortcut to `HorizontalWheel(120)`.
+Keys.XButton1 | X1Down()
+Keys.XButton1 | X1Up()
+Keys.XButton1 | X1Click() | Shortcut to `X1Down()` and `X1Up()`.
+Keys.XButton2 | X2Down()
+Keys.XButton2 | X2Up()
+Keys.XButton2 | X2Click() | Shortcut to `X2Down()` and `X2Up()`.
 
-#### Keyboard event
+### Keyboard event
 
-A keyboard event is synthesized from a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events, `KeyDown(ushort keyCode)` and `KeyUp(ushort keyCode)` are provided. 
+A keyboard event is synthesized from a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events, `KeyDown(int keyCode)` and `KeyUp(int keyCode)` are provided. 
 
 ```cs
-SendInput.KeyDown(VK_A);
-SendInput.KeyUp(VK_A); // Send `A` to the foreground application.
+SendInput.KeyDown(Keys.A);
+SendInput.KeyUp(Keys.A); // Send `A` to the foreground application.
 ```
 
-`ExetendedKeyDown(ushort keyCode)` and `ExtentedKeyUp(ushort keyCode)` are provided when `ExtendedKey` flag is needed to be set.
+`ExetendedKeyDown(int keyCode)` and `ExtentedKeyUp(int keyCode)` are provided when `ExtendedKey` flag is needed to be set.
 
 ```cs
-SendInput.ExetendedKeyDown(VK_LWIN);
-SendInput.ExtentedKeyUp(VK_LWIN); // Send `Win` to the foreground application.
+SendInput.ExetendedKeyDown(Keys.LWin);
+SendInput.ExtentedKeyUp(Keys.LWin); // Send `Win` to the foreground application.
 ```
 
 For four API above mentioned, combined it with `ScanCode` flag,
-`KeyDownWithScanCode(ushort keyCode)`, `KeyUpWithScanCode(ushort keyCode)`, `ExtendedKeyDownWithScanCode(ushort keyCode)` and `ExtendedKeyUpWithScanCode(ushort keyCode)` are provided.
+`KeyDownWithScanCode(int keyCode)`, `KeyUpWithScanCode(int keyCode)`, `ExtendedKeyDownWithScanCode(int keyCode)` and `ExtendedKeyUpWithScanCode(int keyCode)` are provided.
 
 ```cs
-SendInput.ExtendedKeyDownWithScanCode(VK_LCONTROL);
-SendInput.KeyDownWithScanCode(VK_S);
-SendInput.KeyUpWithScanCode(VK_S);
-SendInput.ExtendedKeyUpWithScanCode(VK_LCONTROL); // Send `Ctrl+S` with scan code to the foreground application.
+SendInput.ExtendedKeyDownWithScanCode(Keys.LControlKey);
+SendInput.KeyDownWithScanCode(Keys.S);
+SendInput.KeyUpWithScanCode(Keys.S);
+SendInput.ExtendedKeyUpWithScanCode(Keys.LControlKey); // Send `Ctrl+S` with scan code to the foreground application.
 ```
 
 And finally, for to support `Unicode` flag, following functions are provided; `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)`,  `UnicodeKeyStroke(string str)`.
@@ -560,65 +564,118 @@ SendInput.UnicodeKeyDown('🍣');
 SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
 ```
 
-Note: `keyCode` is a virtual key code. See [VirtualKeys](#virtualkeys).
+##### Methods {ignore=true}
 
-##### Complete list of supported methods
+Flag | Method Definition | Description
+-----|-----|-----
+- | KeyDown(int keyCode) |
+- | KeyUp(int keyCode) |
+Extended | ExetendedKeyDown(int keyCode)
+Extended | ExtentedKeyUp(int keyCode)
+ScanCode | KeyDownWithScanCode(int keyCode)
+ScanCode | KeyUpWithScanCode(int keyCode)
+Extended & ScanCode | ExtendedKeyDownWithScanCode(int keyCode)
+Extended & ScanCode | ExtendedKeyUpWithScanCode(int keyCode)
+- | UnicodeKeyDown(char c)
+- | UnicodeKeyUp(char c)
+- | UnicodeKeyStroke(string str)
 
-- KeyDown(ushort keyCode)
-- KeyUp(ushort keyCode)
-- ExtendedKeyDown(ushort keyCode)
-- ExtendedKeyUp(ushort keyCode)
-- KeyDownWithScanCode(ushort keyCode)
-- KeyUpWithScanCode(ushort keyCode)
-- ExtendedKeyDownWithScanCode(ushort keyCode)
-- ExtendedKeyUpWithScanCode(ushort keyCode)
-- UnicodeKeyDown(char c)
-- UnicodeKeyUp(char c)
-- UnicodeKeyStroke(string str)
+## Notification
 
-### Notification
-
-#### Tooltip(string text)
-
-Show tooltip message at the right bottom corner of the display on the cursor.
+### Tooltip
 
 ```cs
 Tooltip("This is tooltip.");
 ```
 
-#### Tooltip(string text, Point point)
+#### Methods {ignore=true}
 
-Show a tooltip message at the specified position.
+ Method Definition | Description
+-----|-----
+Tooltip(string text) | Show tooltip message at the right bottom corner of the display on the cursor, by default. You can configure the position by changing `Config.UI.TooltipPositionBinding`, see [Config/Bindings](#bindings).
+Tooltip(string text, Point point) | Show a tooltip message at the specified position.
+Tooltip(string text, Point point, int duration) | Show a tooltip message at the specified position for a specified period.
 
-#### Tooltip(string text, Point point, int duration)
-
-Show a tooltip message at the specified position for a specified period.
-
-#### Balloon(string text)
-
-Show a balloon message.
+### Balloon
 
 ```cs
 Balloon("This is balloon.");
 ```
+#### Methods {ignore=true}
 
-#### Balloon(string text, string title)
+ Method Definition | Description
+-----|-----
+Balloon(string text) | Show a balloon message.
+Balloon(string text, string title) | Show a balloon message and a title.
+Balloon(string text, string title, int timeout) | Show a balloon message and a title for a specified period.
+Balloon(string text, string title, ToolTipIcon icon) | Show a balloon message, a title, and a icon.
+Balloon(string text, string title, ToolTipIcon icon, int timeout) | Show a balloon message, a title, and a icon for a specified period.
 
-Show a balloon message and a title.
+## Keys
 
-#### Balloon(string text, string title, int timeout)
+`Keys` provides the definition of all buttons and keys of mouse and keyboard for it's property. This is almost all same as [System.Windows.Forms.Keys](https://msdn.microsoft.com/library/system.windows.forms.keys(v=vs.110).aspx) but for some extentions, wheel and stroke events.
 
-Show a balloon message and a title for a specified period.
+### Differences from System.Windows.Forms.Keys {ignore=true}
 
-#### Balloon(string text, string title, ToolTipIcon icon)
+#### Extended properties {ignore=true}
 
-Show a balloon message, a title, and a icon.
+Property Name | Description
+-----|-----
+WheelUp |
+WheelDown |
+WheelLeft |
+WheelRight |
+MoveUp |
+MoveDown | 
+MoveLeft |
+MoveRight |
 
-#### Balloon(string text, string title, ToolTipIcon icon, int timeout)
+These properties are differ than the other properties; these can not be treated as a int value.
 
-Show a balloon message, a title, and a icon for a specified period.
+```cs
+var n = 0 + Keys.A; // n == 65
+```
 
-## Extension API
+```cs
+var n = 0 + Keys.WheelUp; // Compilation error.
+```
+
+#### Indexer {ignore=true}
+
+`Keys` supports indexer for getting a key represents specified keyCode.
+
+```cs
+Assert.AreEquals(Keys[64], Keys.A);
+```
+
+This is useful for getting a key which is not assigned as a `Keys`'s property, but be careful to that the keyCode have the range, 0 to 255.
+
+```cs
+var key = Keys[256]; // This throws IndexOutOfRangeException(); 
+```
+
+# Extension API
+
+### Window
+
+`Window` is a utility static class about Windows's window.
+To use this class, declare as following:
+```cs
+using CreviceApp.WinAPI.Window;
+```
+
+#### Methods {ignore=true}
+
+Return Value | Method Definition | Description
+-----|-----|-----
+WindowInfo | Window.From(IntPtr hWnd) | This function wraps `IntPtr` and returns an instance of `WindowInfo`.
+System.Drawing.Point | Window.GetCursorPos() | A shortcut to win32 API `GetCursorPos()`.
+System.Drawing.Point | Window.GetLogicalCursorPos() | Returns logical cursor position culculated based on win32 API `GetPhysicalCursorPos()` and physical and logical screen size.
+System.Drawing.Point | Window.GetPhysicalCursorPos() | A shortcut to win32 API `GetPhysicalCursorPos()`.
+WindowInfo | WindowFromPoint(Point point) | Returns a window under the cursor.
+WindowInfo | FindWindow(string lpClassName, string lpWindowName) | Find a window matches given class name and window name.
+IReadOnlyList<WindowInfo> | GetTopLevelWindows() | Enumerates all windows.
+IReadOnlyList<WindowInfo> | GetThreadWindows(int threadId) | Enumerates all windows belonging specified thread.
 
 ### VirtualKeys
 
@@ -642,43 +699,6 @@ using static CreviceApp.WinAPI.Constants.WindowsMessages;
 ```
 
 For more details, see [Window Messages (Windows)](https://msdn.microsoft.com/en-us/library/windows/desktop/ff381405(v=vs.85).aspx).
-
-### Window
-
-`Window` is a utility static class about Windows's window.
-To use this class, declare as following:
-```cs
-using CreviceApp.WinAPI.Window;
-```
-
-#### From(IntPtr hWnd)
-
-This function wraps `IntPtr` and returns an instance of `WindowInfo`.
-
-#### GetCursorPos()
-
-Returns current position of the cursor.
-This function returns an instance of `Point`.
-
-#### WindowFromPoint(Point point)
-
-Returns a window under the cursor.
-This function returns an instance of `WindowInfo`.
-
-#### FindWindow(string lpClassName, string lpWindowName)
-
-Find a window matches given class name and window name.
-This function returns an instance of `WindowInfo`.
-
-#### GetTopLevelWindows()
-
-Enumerates all windows.
-This function returns an instance of `IEnumerable<WindowInfo>`.
-
-#### GetThreadWindows(uint threadId)
-
-Enumerates all windows belonging specified thread.
-This function returns an instance of `IEnumerable<WindowInfo>`.
 
 ### VolumeControl
 
