@@ -154,7 +154,7 @@ namespace Crevice4Tests
                 Assert.AreEqual(result.HelpMessage,
                     "\r\n" +
                     "Usage:\r\n" +
-                    "  CreviceApp.exe [--nogui] [--script path] [--help]\r\n" +
+                    "  crevice4.exe [--nogui] [--script path] [--help]\r\n" +
                     "\r\n" +
                     "  -g, --nogui       (Default: False) Disable GUI features. Set to true if you \r\n" +
                     "                    use Crevice as a CUI application.\r\n" +
@@ -189,7 +189,7 @@ namespace Crevice4Tests
                 Assert.AreEqual(result.HelpMessage,
                     "\r\n" +
                     "Usage:\r\n" +
-                    "  CreviceApp.exe [--nogui] [--script path] [--help]\r\n" +
+                    "  crevice4.exe [--nogui] [--script path] [--help]\r\n" +
                     "\r\n" +
                     "  -g, --nogui       (Default: False) Disable GUI features. Set to true if you \r\n" +
                     "                    use Crevice as a CUI application.\r\n" +

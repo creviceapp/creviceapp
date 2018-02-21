@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace Crevice.GestureMachine
 {
     using System.Drawing;
-    using Crevice.Core.Context;
     using Crevice.WinAPI.Window.Impl;
 
     public class EvaluationContext : Core.Context.EvaluationContext

@@ -74,7 +74,7 @@ namespace Crevice.Config
             help.AddDashesToOption = true;
 
             help.AddPreOptionsLine("Usage:\r\n" +
-                                   "  CreviceApp.exe [--nogui] [--script path] [--help]");
+                                   "  crevice4.exe [--nogui] [--script path] [--help]");
             if (LastParserState?.Errors.Any() == true)
             {
                 var errors = help.RenderParsingErrorsText(this, 2);
