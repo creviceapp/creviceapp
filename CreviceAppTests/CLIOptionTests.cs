@@ -168,7 +168,7 @@ namespace Crevice4Tests
                     "                    option if you need to change the default location of user \r\n" +
                     "                    script file. If given value is relative path, Crevice will \r\n" +
                     "                    resolve it to absolute path based on the default directory \r\n" +
-                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).\r\n" +
+                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice4).\r\n" +
                     "\r\n" +
                     "  -p, --priority    (Default: High) Process priority. Acceptable values are the\r\n" +
                     "                    following: AboveNormal, BelowNormal, High, Idle, Normal, \r\n" +
@@ -203,7 +203,7 @@ namespace Crevice4Tests
                     "                    option if you need to change the default location of user \r\n" +
                     "                    script file. If given value is relative path, Crevice will \r\n" +
                     "                    resolve it to absolute path based on the default directory \r\n" +
-                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).\r\n" +
+                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice4).\r\n" +
                     "\r\n" +
                     "  -p, --priority    (Default: High) Process priority. Acceptable values are the\r\n" +
                     "                    following: AboveNormal, BelowNormal, High, Idle, Normal, \r\n" +
