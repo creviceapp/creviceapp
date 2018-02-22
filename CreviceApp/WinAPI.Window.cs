@@ -291,19 +291,19 @@ namespace Crevice.WinAPI.Window
                 return new WindowInfo(NativeMethods.FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow));
             }
             
-            public IEnumerable<WindowInfo> GetChildWindows()
+            public IReadOnlyList<WindowInfo> GetChildWindows()
             {
-                return new Enumerables.ChildWindows(WindowHandle);
+                return new Enumerables.ChildWindows(WindowHandle).ToList();
             }
 
-            public IEnumerable<WindowInfo> GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
+            public IReadOnlyList<WindowInfo> GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
             {
-                return new Enumerables.PointedDescendantWindows(WindowHandle, point, flags);
+                return new Enumerables.PointedDescendantWindows(WindowHandle, point, flags).ToList();
             }
 
-            public IEnumerable<WindowInfo> GetPointedDescendantWindows(Point point)
+            public IReadOnlyList<WindowInfo> GetPointedDescendantWindows(Point point)
             {
-                return new Enumerables.PointedDescendantWindows(WindowHandle, point, Window.WindowFromPointFlags.CWP_ALL);
+                return new Enumerables.PointedDescendantWindows(WindowHandle, point, Window.WindowFromPointFlags.CWP_ALL).ToList();
             }
         }
 
@@ -331,28 +331,21 @@ namespace Crevice.WinAPI.Window
 
         namespace Enumerables
         {
+            using System.Collections;
+
             // http://qiita.com/katabamisan/items/081547f42512e93a31ab
 
             public abstract class WindowEnumerable : IEnumerable<WindowInfo>
             {
                 internal delegate bool EnumWindowsProcDelegate(IntPtr hWnd, IntPtr lParam);
 
-                internal List<IntPtr> handles;
-
-                public WindowEnumerable()
-                {
-                    handles = new List<IntPtr>();
-                }
+                internal readonly List<IntPtr> handles = new List<IntPtr>();
 
                 public IEnumerator<WindowInfo> GetEnumerator()
-                {
-                    return handles.Select(x => new WindowInfo(x)).GetEnumerator();
-                }
+                    => handles.Select(x => new WindowInfo(x)).GetEnumerator();
 
-                System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-                {
-                    return handles.Select(x => new WindowInfo(x)).GetEnumerator();
-                }
+                IEnumerator IEnumerable.GetEnumerator()
+                    => GetEnumerator();
 
                 internal bool EnumWindowProc(IntPtr handle, IntPtr lParam)
                 {
@@ -370,9 +363,7 @@ namespace Crevice.WinAPI.Window
                 }
 
                 public TopLevelWindows()
-                    : base()
                 {
-                    handles = new List<IntPtr>();
                     NativeMethods.EnumWindows(EnumWindowProc, IntPtr.Zero);
                 }
             }
@@ -388,9 +379,8 @@ namespace Crevice.WinAPI.Window
                 public readonly IntPtr WindowHandle;
 
                 public ChildWindows(IntPtr hWnd)
-                    : base()
                 {
-                    this.WindowHandle = hWnd;
+                    WindowHandle = hWnd;
                     NativeMethods.EnumChildWindows(hWnd, EnumWindowProc, IntPtr.Zero);
                 }
 
@@ -411,10 +401,9 @@ namespace Crevice.WinAPI.Window
                 public readonly Point Point;
 
                 public PointedDescendantWindows(IntPtr hWnd, Point point, Window.WindowFromPointFlags flags)
-                    : base()
                 {
-                    this.WindowHandle = hWnd;
-                    this.Point = point;
+                    WindowHandle = hWnd;
+                    Point = point;
                     if (hWnd != IntPtr.Zero)
                     {
                         var res = ChildWindowFromPointEx(hWnd, point, flags);
@@ -446,9 +435,8 @@ namespace Crevice.WinAPI.Window
                 public readonly int ThreadId;
 
                 public ThreadWindows(int threadId)
-                    : base()
                 {
-                    this.ThreadId = threadId;
+                    ThreadId = threadId;
                     NativeMethods.EnumThreadWindows(threadId, EnumWindowProc, IntPtr.Zero);
                 }
             }
@@ -554,14 +542,14 @@ namespace Crevice.WinAPI.Window
             return From(NativeMethods.FindWindow(lpClassName, lpWindowName));
         }
         
-        public static IEnumerable<Impl.WindowInfo> GetTopLevelWindows()
+        public static IReadOnlyList<Impl.WindowInfo> GetTopLevelWindows()
         {
-            return new Impl.Enumerables.TopLevelWindows();
+            return new Impl.Enumerables.TopLevelWindows().ToList();
         }
 
-        public static IEnumerable<Impl.WindowInfo> GetThreadWindows(int threadId)
+        public static IReadOnlyList<Impl.WindowInfo> GetThreadWindows(int threadId)
         {
-            return new Impl.Enumerables.ThreadWindows(threadId);
+            return new Impl.Enumerables.ThreadWindows(threadId).ToList();
         }
     }
 }
