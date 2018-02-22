@@ -169,9 +169,8 @@ namespace Crevice.WinAPI.Constants
         public const int VK_LAUNCH_APP1          = 0xB6; // Start Application 1 key
         public const int VK_LAUNCH_APP2          = 0xB7; // Start Application 2 key
         //                  -                         0xB8-B9 // Reserved
-        public const int VK_OEM_1                = 0xBA; // Used for miscellaneous characters; it can vary by keyboard.
-                                                            // For the US standard keyboard, the ';:' key = VK_OEM_PLUS, // 0xBB
-                                                            // For any country/region, the '+' key
+        public const int VK_OEM_1                = 0xBA; // Used for miscellaneous characters; it can vary by keyboard. For the US standard keyboard, the ';:' key.
+        public const int VK_OEM_PLUS             = 0xBB; // For any country/region, the '+' key
         public const int VK_OEM_COMMA            = 0xBC; // For any country/region, the ',' key
         public const int VK_OEM_MINUS            = 0xBD; // For any country/region, the '-' key
         public const int VK_OEM_PERIOD           = 0xBE; // For any country/region, the '.' key
@@ -207,6 +206,6 @@ namespace Crevice.WinAPI.Constants
         public const int VK_ZOOM                 = 0xFB; // Zoom key
         public const int VK_NONAME               = 0xFC; // Reserved
         public const int VK_PA1                  = 0xFD; // PA1 key
-        public const int VK_OEM_CLEAR            = 0xFE; // 
+        public const int VK_OEM_CLEAR            = 0xFE; // Clear key
     }
 }
