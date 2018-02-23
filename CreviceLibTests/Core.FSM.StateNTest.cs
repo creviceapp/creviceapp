@@ -28,7 +28,7 @@ namespace CreviceLibTests
             {
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var s0 = new TestState0(gm, root);
-                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 {
                     var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
@@ -71,11 +71,12 @@ namespace CreviceLibTests
                     .On(TestEvents.LogicalSingleThrowKeys[0])
                     .Do((ctx) => { doCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
+
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                     Assert.AreEqual((result.NextState as TestStateN).History, (s1 as TestStateN).History);
                     Assert.AreEqual((result.NextState as TestStateN).Ctx, (s1 as TestStateN).Ctx);
                     Assert.AreEqual((result.NextState as TestStateN).DoubleThrowElements, (s1 as TestStateN).DoubleThrowElements);
@@ -85,16 +86,49 @@ namespace CreviceLibTests
                 }
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys1[0].FireEvent);
+                    Assert.AreEqual((result.NextState as TestStateN).History, (s1 as TestStateN).History);
+                    Assert.AreEqual((result.NextState as TestStateN).Ctx, (s1 as TestStateN).Ctx);
+                    Assert.AreEqual((result.NextState as TestStateN).DoubleThrowElements, (s1 as TestStateN).DoubleThrowElements);
+                    Assert.AreEqual((result.NextState as TestStateN).CanCancel, false);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, true);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                    Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -109,14 +143,15 @@ namespace CreviceLibTests
                 var doCalled = false;
                 root.When((ctx) => { return true; })
                     .On(TestEvents.LogicalDoubleThrowKeys[0])
-                    .On(TestEvents.PhysicalSingleThrowKeys[0])
+                    .On(TestEvents.PhysicalSingleThrowKeys0[0])
                     .Do((ctx) => { doCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
+
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                     Assert.AreEqual((result.NextState as TestStateN).History, (s1 as TestStateN).History);
                     Assert.AreEqual((result.NextState as TestStateN).Ctx, (s1 as TestStateN).Ctx);
                     Assert.AreEqual((result.NextState as TestStateN).DoubleThrowElements, (s1 as TestStateN).DoubleThrowElements);
@@ -126,16 +161,38 @@ namespace CreviceLibTests
                 }
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys1[0].FireEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                    Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -151,28 +208,28 @@ namespace CreviceLibTests
                     var pressCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[1])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[1])
                         .Press((ctx) => { pressCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
@@ -186,30 +243,54 @@ namespace CreviceLibTests
                     var pressCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                         .Press((ctx) => { pressCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s0);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
-                        Assert.AreEqual(result.EventIsConsumed, true);
-                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                        Assert.AreEqual(result.NextState, s0);
-                        Assert.AreEqual(result.EventIsConsumed, true);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                     }
                 }
@@ -229,25 +310,25 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[1])
                         .Press((ctx) => { pressCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
@@ -264,26 +345,49 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Press((ctx) => { pressCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                     }
+
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s0);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                     }
                     {
                         pressCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                        Assert.AreEqual(result.NextState, s0);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                    }
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
                     }
@@ -300,32 +404,55 @@ namespace CreviceLibTests
                 var doCalled = false;
                 root.When((ctx) => { return true; })
                     .On(TestEvents.LogicalDoubleThrowKeys[0])
-                    .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                    .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                     .Do((ctx) => { doCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
-                    Assert.AreEqual(result.NextState == s1, false);
-                    Assert.AreEqual(result.NextState is TestStateN, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasDoExecutors, true);
-                    Assert.AreEqual(result.EventIsConsumed, true);
-                    Assert.AreEqual(doCalled, false);
-                }
-                {
-                    doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                    Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -343,29 +470,52 @@ namespace CreviceLibTests
                     .On(TestEvents.LogicalDoubleThrowKeys[0])
                     .Do((ctx) => { doCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
+
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
-                    Assert.AreEqual(result.NextState == s1, false);
-                    Assert.AreEqual(result.NextState is TestStateN, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasDoExecutors, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState == s1, true);
                     Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(doCalled, false);
                 }
                 {
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
                     Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    Assert.AreEqual(result.NextState == s0, false);
+                    Assert.AreEqual(result.NextState == s1, false);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, true);
+                }
+                {
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -381,28 +531,28 @@ namespace CreviceLibTests
                     var releaseCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[1])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[1])
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(releaseCalled, true);
@@ -416,28 +566,28 @@ namespace CreviceLibTests
                     var releaseCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s0);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(releaseCalled, false);
@@ -457,16 +607,45 @@ namespace CreviceLibTests
                 var doCalled = false;
                 root.When((ctx) => { return true; })
                     .On(TestEvents.LogicalDoubleThrowKeys[0])
-                    .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                    .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                     .Press((ctx) => { pressCalled = true; })
                     .Do((ctx) => { doCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
                 {
                     pressCalled = false;
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(pressCalled, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    pressCalled = false;
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(pressCalled, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+                {
+                    pressCalled = false;
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(pressCalled, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    pressCalled = false;
+                    doCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(pressCalled, false);
@@ -475,21 +654,19 @@ namespace CreviceLibTests
                 {
                     pressCalled = false;
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
-                    Assert.AreEqual(result.NextState == s1, false);
-                    Assert.AreEqual(result.NextState is TestStateN, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasPressExecutors, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasDoExecutors, true);
-                    Assert.AreEqual(result.EventIsConsumed, true);
-                    Assert.AreEqual(pressCalled, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                 }
                 {
                     pressCalled = false;
                     doCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                    Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                 }
@@ -510,25 +687,43 @@ namespace CreviceLibTests
                     .Press((ctx) => { pressCalled = true; })
                     .Do((ctx) => { doCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
                 {
                     doCalled = false;
                     pressCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(pressCalled, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    pressCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                 }
                 {
                     doCalled = false;
                     pressCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(pressCalled, false);
+                    Assert.AreEqual(doCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    pressCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    Assert.AreEqual(result.NextState == s0, false);
                     Assert.AreEqual(result.NextState == s1, false);
-                    Assert.AreEqual(result.NextState is TestStateN, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasPressExecutors, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasDoExecutors, true);
                     Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(pressCalled, true);
                     Assert.AreEqual(doCalled, false);
@@ -536,8 +731,18 @@ namespace CreviceLibTests
                 {
                     doCalled = false;
                     pressCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                    Assert.AreEqual(result.NextState, s0);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(pressCalled, true);
+                    Assert.AreEqual(doCalled, true);
+                }
+                {
+                    doCalled = false;
+                    pressCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
@@ -555,16 +760,45 @@ namespace CreviceLibTests
                 var releaseCalled = false;
                 root.When((ctx) => { return true; })
                     .On(TestEvents.LogicalDoubleThrowKeys[0])
-                    .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                    .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                     .Do((ctx) => { doCalled = true; })
                     .Release((ctx) => { releaseCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
                 {
                     doCalled = false;
                     releaseCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(doCalled, false);
+                    Assert.AreEqual(releaseCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    releaseCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                    Assert.AreEqual(releaseCalled, false);
+                }
+                {
+                    doCalled = false;
+                    releaseCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s0);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                    Assert.AreEqual(releaseCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    releaseCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
@@ -573,21 +807,19 @@ namespace CreviceLibTests
                 {
                     doCalled = false;
                     releaseCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
-                    Assert.AreEqual(result.NextState == s1, false);
-                    Assert.AreEqual(result.NextState is TestStateN, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasDoExecutors, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasReleaseExecutors, true);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
                 {
                     doCalled = false;
                     releaseCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                    Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
@@ -608,25 +840,23 @@ namespace CreviceLibTests
                     .Do((ctx) => { doCalled = true; })
                     .Release((ctx) => { releaseCalled = true; });
                 var s0 = new TestState0(gm, root);
-                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                 Assert.AreEqual(s1 is TestStateN, true);
                 {
                     doCalled = false;
                     releaseCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                    var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, false);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
+
                 {
                     doCalled = false;
                     releaseCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
-                    Assert.AreEqual(result.NextState == s1, false);
-                    Assert.AreEqual(result.NextState is TestStateN, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasDoExecutors, true);
-                    Assert.AreEqual((result.NextState as TestStateN).HasReleaseExecutors, true);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState == s1, true);
                     Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
@@ -634,11 +864,41 @@ namespace CreviceLibTests
                 {
                     doCalled = false;
                     releaseCalled = false;
-                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
                     Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
+                }
+
+                {
+                    doCalled = false;
+                    releaseCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    Assert.AreEqual(result.NextState == s0, false);
+                    Assert.AreEqual(result.NextState == s1, false);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                    Assert.AreEqual(releaseCalled, false);
+                }
+                {
+                    doCalled = false;
+                    releaseCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                    result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, true);
+                    Assert.AreEqual(releaseCalled, true);
+                }
+                {
+                    doCalled = false;
+                    releaseCalled = false;
+                    var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                    Assert.AreEqual(result.NextState, s1);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(doCalled, false);
+                    Assert.AreEqual(releaseCalled, true);
                 }
             }
         }
@@ -654,16 +914,16 @@ namespace CreviceLibTests
                     var releaseCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[1])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[1])
                         .Press((ctx) => { pressCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -672,7 +932,7 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
@@ -681,7 +941,7 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
@@ -697,16 +957,45 @@ namespace CreviceLibTests
                     var releaseCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                         .Press((ctx) => { pressCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s0);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -715,18 +1004,19 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
-                        Assert.AreEqual(result.EventIsConsumed, true);
-                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                        Assert.AreEqual(result.NextState, s0);
-                        Assert.AreEqual(result.EventIsConsumed, true);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(releaseCalled, false);
                     }
@@ -749,12 +1039,12 @@ namespace CreviceLibTests
                         .Press((ctx) => { pressCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -763,7 +1053,7 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
@@ -772,7 +1062,7 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
@@ -792,12 +1082,13 @@ namespace CreviceLibTests
                         .Press((ctx) => { pressCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
+
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -806,21 +1097,58 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                        Assert.AreEqual(result.NextState is TestStateN, true);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s0);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys1[0].FireEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
                         Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
-                        // todo
                         pressCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                        Assert.AreEqual(result.NextState, s0);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(releaseCalled, true);
+                    }
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
-                        Assert.AreEqual(releaseCalled, false);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                 }
             }
@@ -838,18 +1166,18 @@ namespace CreviceLibTests
                     var releaseCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[1])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[1])
                         .Press((ctx) => { pressCalled = true; })
                         .Do((ctx) => { doCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -860,7 +1188,7 @@ namespace CreviceLibTests
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
@@ -871,7 +1199,7 @@ namespace CreviceLibTests
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
@@ -885,18 +1213,19 @@ namespace CreviceLibTests
                     var releaseCalled = false;
                     root.When((ctx) => { return true; })
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
-                        .On(TestEvents.PhysicalDoubleThrowKeys[0])
+                        .On(TestEvents.PhysicalDoubleThrowKeys0[0])
                         .Press((ctx) => { pressCalled = true; })
                         .Do((ctx) => { doCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
+
                     {
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -907,21 +1236,66 @@ namespace CreviceLibTests
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                         Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
-                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(doCalled, false);
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
-                        // Todo
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s0);
                         Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys1[0].FireEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(doCalled, false);
                         Assert.AreEqual(releaseCalled, false);
@@ -947,13 +1321,13 @@ namespace CreviceLibTests
                         .Do((ctx) => { doCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
                     {
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[1].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[1].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -964,7 +1338,7 @@ namespace CreviceLibTests
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                         Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
@@ -975,7 +1349,7 @@ namespace CreviceLibTests
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
@@ -998,13 +1372,14 @@ namespace CreviceLibTests
                         .Do((ctx) => { doCalled = true; })
                         .Release((ctx) => { releaseCalled = true; });
                     var s0 = new TestState0(gm, root);
-                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent).NextState;
+                    var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
                     Assert.AreEqual(s1 is TestStateN, true);
+
                     {
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, false);
                         Assert.AreEqual(pressCalled, false);
@@ -1015,7 +1390,43 @@ namespace CreviceLibTests
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                        Assert.AreEqual(result.NextState is TestStateN, true);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s0);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalSingleThrowKeys1[0].FireEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, false);
+                        Assert.AreEqual(pressCalled, false);
+                        Assert.AreEqual(doCalled, false);
+                        Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
@@ -1023,16 +1434,26 @@ namespace CreviceLibTests
                         Assert.AreEqual(releaseCalled, false);
                     }
                     {
-                        // todo
                         pressCalled = false;
                         doCalled = false;
                         releaseCalled = false;
-                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
-                        Assert.AreEqual(result.NextState, s0);
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(doCalled, true);
+                        Assert.AreEqual(releaseCalled, true);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(doCalled, false);
-                        Assert.AreEqual(releaseCalled, false);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                 }
             }
@@ -1053,37 +1474,37 @@ namespace CreviceLibTests
                                     .On(TestEvents.LogicalDoubleThrowKeys[0])
                                     .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res0.EventIsConsumed, true);
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
                 Assert.AreEqual(s1.History.Records.Count, 1);
-                Assert.AreEqual(s1.History.Records[0].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(s1.History.Records[0].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                 Assert.AreEqual(s1.History.Records[0].State, s0);
 
-                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
                 var s2 = res1.NextState as TestStateN;
                 Assert.AreEqual(s2.History.Records.Count, 2);
-                Assert.AreEqual(s2.History.Records[1].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                Assert.AreEqual(s2.History.Records[1].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                 Assert.AreEqual(s2.History.Records[1].State, s1);
 
-                var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res2.EventIsConsumed, true);
                 Assert.AreEqual(res2.NextState is TestStateN, true);
                 var s3 = res2.NextState as TestStateN;
                 Assert.AreEqual(s3.History.Records.Count, 3);
-                Assert.AreEqual(s3.History.Records[2].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(s3.History.Records[2].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                 Assert.AreEqual(s3.History.Records[2].State, s2);
 
-                var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res3.EventIsConsumed, true);
                 Assert.AreEqual(res3.NextState is TestStateN, true);
                 var s4 = res3.NextState as TestStateN;
                 Assert.AreEqual(s4.History.Records.Count, 4);
-                Assert.AreEqual(s4.History.Records[3].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                Assert.AreEqual(s4.History.Records[3].ReleaseEvent, TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                 Assert.AreEqual(s4.History.Records[3].State, s3);
             }
         }
@@ -1104,38 +1525,38 @@ namespace CreviceLibTests
                                         .On(TestEvents.LogicalDoubleThrowKeys[1])
                                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res0.EventIsConsumed, true);
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
-                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
                 Assert.AreEqual(s1.AbnormalEndTriggers.Count, 0);
 
                 var s2 = res1.NextState as TestStateN;
-                var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res2.EventIsConsumed, true);
                 Assert.AreEqual(res2.NextState is TestStateN, true);
                 Assert.AreEqual(s2.AbnormalEndTriggers.Count, 1);
-                Assert.AreEqual(s2.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent), true);
+                Assert.AreEqual(s2.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent), true);
 
                 var s3 = res2.NextState as TestStateN;
-                var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res3.EventIsConsumed, true);
                 Assert.AreEqual(res3.NextState is TestStateN, true);
                 Assert.AreEqual(s3.AbnormalEndTriggers.Count, 2);
-                Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent), true);
-                Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent), true);
+                Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent), true);
+                Assert.AreEqual(s3.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent), true);
 
                 var s4 = res3.NextState as TestStateN;
-                var res4 = s4.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res4 = s4.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res4.EventIsConsumed, true);
                 Assert.AreEqual(res4.NextState is TestStateN, true);
                 Assert.AreEqual(s4.AbnormalEndTriggers.Count, 2);
-                Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent), true);
-                Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent), true);
+                Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent), true);
+                Assert.AreEqual(s4.AbnormalEndTriggers.Contains(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent), true);
             }
         }
 
@@ -1154,33 +1575,33 @@ namespace CreviceLibTests
                                     .On(TestEvents.LogicalDoubleThrowKeys[0])
                                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res0.EventIsConsumed, true);
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
-                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
                 Assert.AreEqual(s1.History.Records.Count, 1);
 
                 var s2 = res1.NextState as TestStateN;
-                var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res2 = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res2.EventIsConsumed, true);
                 Assert.AreEqual(res2.NextState is TestStateN, true);
                 Assert.AreEqual(s2.History.Records.Count, 2);
 
                 var s3 = res2.NextState as TestStateN;
-                var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res3 = s3.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res3.EventIsConsumed, true);
                 Assert.AreEqual(res3.NextState is TestStateN, true);
                 Assert.AreEqual(s3.History.Records.Count, 3);
 
-                var queryResult = s3.History.Query(TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
+                var queryResult = s3.History.Query(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                 Assert.AreEqual(queryResult.FoundState, s1);
                 Assert.AreEqual(queryResult.SkippedReleaseEvents.Count, 2);
-                Assert.AreEqual(queryResult.SkippedReleaseEvents[0], TestEvents.PhysicalDoubleThrowKeys[1].ReleaseEvent);
-                Assert.AreEqual(queryResult.SkippedReleaseEvents[1], TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(queryResult.SkippedReleaseEvents[0], TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
+                Assert.AreEqual(queryResult.SkippedReleaseEvents[1], TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
             }
         }
 
@@ -1196,16 +1617,16 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[1])
                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res0.EventIsConsumed, true);
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
                 var s1 = res0.NextState as TestStateN;
-                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(res1.EventIsConsumed, true);
                 Assert.AreEqual(res1.NextState is TestStateN, true);
                 Assert.AreEqual(s1.History.Records.Count, 1);
-                Assert.AreEqual(s1.NormalEndTrigger, TestEvents.PhysicalDoubleThrowKeys[0].ReleaseEvent);
+                Assert.AreEqual(s1.NormalEndTrigger, TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
             }
         }
 
@@ -1220,7 +1641,7 @@ namespace CreviceLibTests
                     .On(TestEvents.LogicalDoubleThrowKeys[0])
                     .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 Assert.AreEqual(res0.EventIsConsumed, true);
                 Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1242,7 +1663,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Press((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestState0, true);
                 }
@@ -1256,7 +1677,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1274,7 +1695,7 @@ namespace CreviceLibTests
                         .Press((ctx) => { })
                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1293,7 +1714,7 @@ namespace CreviceLibTests
                         .Do((ctx) => { })
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1310,7 +1731,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestState0, true);
                 }
@@ -1329,7 +1750,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Press((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestState0, true);
                 }
@@ -1344,7 +1765,7 @@ namespace CreviceLibTests
                         .Press((ctx) => { })
                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1361,7 +1782,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1379,7 +1800,7 @@ namespace CreviceLibTests
                         .Do((ctx) => { })
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1396,7 +1817,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestState0, true);
                 }
@@ -1415,7 +1836,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Press((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestState0, true);
                 }
@@ -1430,7 +1851,7 @@ namespace CreviceLibTests
                         .Press((ctx) => { })
                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1447,7 +1868,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1465,7 +1886,7 @@ namespace CreviceLibTests
                         .Do((ctx) => { })
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1484,7 +1905,7 @@ namespace CreviceLibTests
                         .Do((ctx) => { })
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
@@ -1501,7 +1922,7 @@ namespace CreviceLibTests
                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                         .Release((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
                     Assert.AreEqual(res0.NextState is TestState0, true);
                 }
@@ -1521,9 +1942,9 @@ namespace CreviceLibTests
                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 var s1 = res0.NextState as TestStateN;
-                var result = s1.GetDoubleThrowElements(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                var result = s1.GetDoubleThrowElements(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(result.Count, 1);
                 Assert.AreEqual(result[0], when.DoubleThrowElements[0].DoubleThrowElements[0]);
             }
@@ -1542,9 +1963,9 @@ namespace CreviceLibTests
                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 var s1 = res0.NextState as TestStateN;
-                var result = s1.GetSingleThrowElements(TestEvents.PhysicalSingleThrowKeys[0].FireEvent);
+                var result = s1.GetSingleThrowElements(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                 Assert.AreEqual(result.Count, 1);
                 Assert.AreEqual(result[0], when.DoubleThrowElements[0].SingleThrowElements[0]);
             }
@@ -1563,7 +1984,7 @@ namespace CreviceLibTests
                         .Do((ctx) => { });
                 var s0 = new TestState0(gm, root);
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
-                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 var s1 = res0.NextState as TestStateN;
                 var result = s1.GetStrokeElements(new List<StrokeDirection>() { StrokeDirection.Up });
                 Assert.AreEqual(result.Count, 1);
@@ -1579,7 +2000,7 @@ namespace CreviceLibTests
             {
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var s0 = new TestState0(gm, root);
-                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
                 Assert.AreEqual(s1.IsState0, false);
@@ -1595,7 +2016,7 @@ namespace CreviceLibTests
             {
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var s0 = new TestState0(gm, root);
-                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
                 Assert.AreEqual(s1.AsState0() is null, true);
@@ -1610,7 +2031,7 @@ namespace CreviceLibTests
             {
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var s0 = new TestState0(gm, root);
-                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent.Opposition, s0);
+                var history = History.Create(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent.Opposition, s0);
                 var dt = new List<DoubleThrowElement<ExecutionContext>>();
                 var s1 = new TestStateN(gm, evalContext, history, dt, depth: 0);
                 Assert.AreEqual(s1.AsStateN() is TestStateN, true);
@@ -1633,7 +2054,7 @@ namespace CreviceLibTests
                                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
                     var s1 = res0.NextState as TestStateN;
@@ -1654,11 +2075,11 @@ namespace CreviceLibTests
                                         .On(TestEvents.LogicalDoubleThrowKeys[0])
                                         .Do((ctx) => { });
                     var s0 = new TestState0(gm, root);
-                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys[0].PressEvent);
+                    var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.NextState is TestStateN, true);
 
                     var s1 = res0.NextState as TestStateN;
-                    var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys[1].PressEvent);
+                    var res1 = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                     Assert.AreEqual(res1.NextState is TestStateN, true);
 
                     var s2 = res1.NextState as TestStateN;

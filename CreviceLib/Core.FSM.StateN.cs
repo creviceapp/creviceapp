@@ -82,25 +82,32 @@ namespace Crevice.Core.FSM
                     return Result.Create(eventIsConsumed: true, nextState: notCancellableCopyState);
                 }
             }
-            else if (evnt is PhysicalPressEvent pressEvent && IsDoubleThrowTrigger(pressEvent))
+            else if (evnt is PhysicalPressEvent pressEvent)
             {
-                var doubleThrowElements = GetDoubleThrowElements(pressEvent);
-                if (doubleThrowElements.Any())
+                if (IsRepeatedStartTrigger(pressEvent))
                 {
-                    Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
-
-                    if (CanTransition(doubleThrowElements))
-                    {
-                        var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                            Machine,
-                            Ctx,
-                            History.CreateNext(pressEvent.Opposition, this),
-                            doubleThrowElements,
-                            depth: Depth + 1,
-                            canCancel: CanCancel);
-                        return Result.Create(eventIsConsumed: true, nextState: nextState);
-                    }
                     return Result.Create(eventIsConsumed: true, nextState: this);
+                }
+                else if (IsDoubleThrowTrigger(pressEvent))
+                {
+                    var doubleThrowElements = GetDoubleThrowElements(pressEvent);
+                    if (doubleThrowElements.Any())
+                    {
+                        Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
+
+                        if (CanTransition(doubleThrowElements))
+                        {
+                            var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                                Machine,
+                                Ctx,
+                                History.CreateNext(pressEvent.Opposition, this),
+                                doubleThrowElements,
+                                depth: Depth + 1,
+                                canCancel: CanCancel);
+                            return Result.Create(eventIsConsumed: true, nextState: nextState);
+                        }
+                        return Result.Create(eventIsConsumed: true, nextState: this);
+                    }
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
@@ -168,6 +175,11 @@ namespace Crevice.Core.FSM
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }
+
+        public PhysicalPressEvent RepeatedStartTrigger => History.Records.Last().ReleaseEvent.Opposition;
+
+        public bool IsRepeatedStartTrigger(PhysicalPressEvent pressEvent)
+            => RepeatedStartTrigger == pressEvent;
 
         public PhysicalReleaseEvent NormalEndTrigger => History.Records.Last().ReleaseEvent;
 

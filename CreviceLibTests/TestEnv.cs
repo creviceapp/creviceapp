@@ -167,7 +167,9 @@ namespace CreviceLibTests
     {
         public static LogicalSingleThrowKeySet LogicalSingleThrowKeys = new LogicalSingleThrowKeySet(2);
         public static LogicalDoubleThrowKeySet LogicalDoubleThrowKeys = new LogicalDoubleThrowKeySet(2);
-        public static PhysicalSingleThrowKeySet PhysicalSingleThrowKeys = new PhysicalSingleThrowKeySet(LogicalSingleThrowKeys);
-        public static PhysicalDoubleThrowKeySet PhysicalDoubleThrowKeys = new PhysicalDoubleThrowKeySet(LogicalDoubleThrowKeys);
+        public static PhysicalSingleThrowKeySet PhysicalSingleThrowKeys0 = new PhysicalSingleThrowKeySet(LogicalSingleThrowKeys);
+        public static PhysicalDoubleThrowKeySet PhysicalDoubleThrowKeys0 = new PhysicalDoubleThrowKeySet(LogicalDoubleThrowKeys);
+        public static PhysicalSingleThrowKeySet PhysicalSingleThrowKeys1 = new PhysicalSingleThrowKeySet(LogicalSingleThrowKeys);
+        public static PhysicalDoubleThrowKeySet PhysicalDoubleThrowKeys1 = new PhysicalDoubleThrowKeySet(LogicalDoubleThrowKeys);
     }
 }
