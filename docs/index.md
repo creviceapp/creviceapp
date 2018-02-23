@@ -5,13 +5,16 @@
 
 Crevice4 is multi purpose utility which supports gestures with mouse and keyboard. You can use C# language in your customizable userscript file, so there is nothing that can not be done for you.
 
-Note: Crevice4 requires Windows 7 or later, and .Net Framework 4.6.1 or later.
 
-## Quickstart
-
+You can get
 // todo link to microsoft app store.
 
 Extract zip file to any location, and click `crevice4.exe`.
+
+
+Note: Crevice4 requires Windows 7 or later, and .Net Framework 4.6.1 or later.
+
+## Quickstart
 
 After the first execution of the application, you could find `default.csx` in the directory `%APPDATA%\Crevice4`. It's the userscript file. Please open it with a text editor and take a look through it.
 
@@ -51,9 +54,15 @@ Do(ctx =>
 
 This is a mouse gesture definition; when you press and hold `Keys.RButton`, and then if you `Keys.WheelUp` the mouse, codes declared in `Do` will be executed.
 
-This file is just a C# Script file. So, you can use `#load` directive to load another csx file, and can use `#r` directive to add assembly references to the script. By default, the script has the assembly references to `microlib.dll`, `System.dll`, `System.Core.dll`, `Microsoft.CSharp.dll` and `crevice4.exe`. In other words, if there need to add an another assembly reference to the script, it should be declared by using `#r` directive at the head of the script.
+As long as Crevice4 is executing, you can edit userscript file at any time. While reading the following sections, of course. Crevice4 supports **hotloading** feature. Whenever Crevice4 detects an update of user script file, it will be compiled and evaluated immediately, then the new userscript will be loaded if the compilation is successful. If the compilation is failed, error message will be shown. You can see the details of it by clicking it.
 
-For more information about C# Script, please see [Directives - Interactive Window · dotnet/roslyn Wiki](https://github.com/dotnet/roslyn/wiki/Interactive-Window#directives).
+//todo See movie
+
+The userscript file is just a C# Scripting file. See [Overview of C# Scripting](#overview-of-c-scripting) for more details.
+
+// todo hot reload
+
+// error example
 
 # Gesture DSL
 
@@ -163,7 +172,7 @@ Even if after pressing a button which means the start of a gesture, you can canc
 ```cs
 Browser.
 On(Keys.RButton). // If you WRONGLY pressed mouse's right button,
-Do(ctx => // you hold the button until timeout and release it,
+Do(ctx => // you hold the button until it to be timeout and release it,
 {
     // then this code will NOT be executed.
 });
@@ -174,7 +183,7 @@ This means actions declared in `Do` clause is not assured it's execution.
 Above three gestures are `Button gesture` by the standard buttons. `On` clause with standard buttons can be used for declare `Do` clause but also `Press` and `Release` clauses.
 
 ### Button gesture with Press/Release
-`Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to press / release events of buttons. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
+`Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to press / release events of a button. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
 
 ```cs
 var Whenever = When(ctx => {
@@ -206,7 +215,7 @@ Press(ctx =>
 Do(ctx =>
 {
     // Not assured. 
-    // e.g. When the gesture to timeout,
+    // e.g. When the gesture to be timeout,
     //      this action will not be executed.
 }).
 Release(ctx =>
@@ -304,14 +313,288 @@ You can load the content in another C# Scripting file by `#load` directive.
 
 Note : This directive should be placed on the top of your C# Scripting code except for `#r` directive.
 
-# Example
+# Practical example
+
+## Change the state of window
+
+### Maximize foreground window
+
+```cs
+Do(ctx =>
+{
+    var SC_MAXIMIZE = 0xF030;
+    ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+});
+```
+
+### Minimize foreground window
+
+```cs
+Do(ctx =>
+{
+    var SC_MINIMIZE = 0xF020;
+    ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0);
+});
+```
+
+### Restore foreground window
+
+```cs
+Do(ctx =>
+{
+    var SC_RESTORE = 0xF120;
+    ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_RESTORE, 0);
+});
+```
+
+### Close foreground window
+
+```cs
+Do(ctx =>
+{
+    var SC_CLOSE = 0xF060;
+    ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_CLOSE, 0);
+});
+```
+
+There are more a lot of number of parameters used for operating window. See [WM\_SYSCOMMAND message](https://msdn.microsoft.com/library/windows/desktop/ms646360%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396) for more details.
+
+## Shortcut for fixed phrase 
+
+If you are typing boring boilerplate on your computer everyday, Crevice4 can automate it by assigning it as a gesture.
+
+```cs
+using System.Windows.Forms;
+
+using Crevice.Core.DSL;
+using Crevice.Core.Keys;
+using Crevice.GestureMachine;
+
+class KeyCommandManager
+{
+    private List<LogicalDoubleThrowKey> currentKeys 
+        = new List<LogicalDoubleThrowKey>();
+
+    private List<(List<LogicalDoubleThrowKey>, Action)> key2Action 
+        = new List<(List<LogicalDoubleThrowKey>, Action)>();
+
+    public void Setup(
+        DoubleThrowElement<ExecutionContext> onElement)
+    {
+        var uniqueKeys = key2Action.
+            Select(t => t.Item1).
+            Aggregate(new List<LogicalDoubleThrowKey>(), (a, b) => { a.AddRange(b); return a; }).
+            Distinct();
+        foreach (var key in uniqueKeys)
+        {
+            onElement.
+            On(key).
+            Press(ctx => 
+            {
+                AddKey(key);
+            }).
+            Release(ctx => 
+            {
+                // Do nothing.
+            });
+        }
+    }
+
+    public void Register(Action action, params LogicalDoubleThrowKey[] keyArr)
+        => key2Action.Add((keyArr.ToList(), action));
+
+    public void Reset() => currentKeys.Clear();
+
+    public void AddKey(LogicalDoubleThrowKey key) => currentKeys.Add(key);
+
+    public void ExecuteCommand()
+    {
+        var actions = key2Action.
+            Where(t => currentKeys.SequenceEqual(t.Item1)).
+            Select(t => t.Item2);
+        foreach (var action in actions)
+        {
+            action();
+        }
+    }
+}
+```
+
+```cs
+var keyCommandManager = new KeyCommandManager();
+
+// Register a pair of an action that sends fixed message to the foreground application 
+// and a sequence of key, `Keys.T` - `Keys.I`
+keyCommandManager.Register(() => 
+{
+    Clipboard.SetText("Thank you for your inquiry asking about our product.");
+    SendInput.Multiple().
+    ExtendedKeyDown(Keys.ControlKey).
+    ExtendedKeyDown(Keys.V).
+    ExtendedKeyUp(Keys.V).
+    ExtendedKeyUp(Keys.ControlKey).
+    Send(); // Ctrl+V
+}, Keys.T, Keys.I);
+
+var Whenever = When(ctx => { return true; });
+var WheneverOn = Whenever.On(Keys.RControlKey);
+
+// Declare gesture definition generated automatically from registered data;
+// On(Keys.RControlKey).On(Keys.T).Do() and On(Keys.RControlKey).On(Keys.I).Do().
+keyCommandManager.Setup(WheneverOn);
+
+WheneverOn.
+Press(ctx => {
+    // Do nothing.
+}).
+Release(ctx => {
+    keyCommandManager.ExecuteCommand();
+    keyCommandManager.Reset();
+});
+```
+
+## Define C-x C-x command like Emacs
+
+
+## Change gesture behavior by modifier key
+
+In this case, you can use keyboard's modifier key for declaring the gesture definition, but there is one problem. Gesture definition can only be declared with **ordered** `On` clauses. For example, for a gesture definition takes two modifier keys as it's modifier, you should declare the gesture definition with all pattern of the combination of modifier keys.
+
+```cs
+// Pattern 1/2.
+On(Keys.ControlKey).
+On(Keys.ShiftKey).
+On(Keys.RButton).
+Do(ctx => {
+
+});
+```
+
+```cs
+// Pattern 2/2.
+On(Keys.ShiftKey).
+On(Keys.ControlKey).
+On(Keys.RButton).
+Do(ctx => {
+
+});
+```
+
+By using win32 API `GetKeyState()` instead of the above way, you can easily declare gesture declaration which supports modifier keys.
+
+```cs
+[System.Runtime.InteropServices.DllImport("user32.dll")]
+static extern short GetKeyState(int nVirtKey);
+```
+
+```cs
+On(Keys.RButton).
+Do((tx =>
+{
+    // When shift and control key is pressed
+    if (GetKeyState(Keys.ShiftKey) < 0 && 
+        GetKeyState(Keys.ControlKey) < 0) 
+    {
+        // this code will be executed.
+    }
+});
+```
+
+## Fix super sensitive mouse scroll wheel
+
+In recent years, mouse devides that can be purchased in the market include those specially designed for internet browsing. For example, there are major manufacturer product with very sensitive scroll wheel, Logitech M545/546. It is very convenient for the purpose, but it is a bit difficult to handle with other uses. Here we try to make the wheel scroll easier to use for other purposes by introducing a class that adjusts sensitivity.
+```cs
+class VerticalWheelManager
+{
+    public readonly int SuppressionDuration;
+    public readonly int ForceEmitThreshold;
+    public readonly VerticalWheel Up;
+    public readonly VerticalWheel Down;
+    public VerticalWheelManager(int duration, int threshold)
+    {
+        this.SuppressionDuration = duration;
+        this.ForceEmitThreshold = threshold;
+        this.Up = new VerticalWheel(this);
+        this.Down = new VerticalWheel(this);
+    }
+
+    public class VerticalWheel
+    {
+        private int count = 0;
+        private readonly System.Threading.Timer timer;
+        private readonly VerticalWheelManager manager;
+        public VerticalWheel(VerticalWheelManager manager)
+        {
+            this.manager = manager;
+            this.timer = new System.Threading.Timer(new System.Threading.TimerCallback( delegate { Reset(); } ));
+        }
+        private VerticalWheel GetCounterpart()
+        {
+            return manager.Up == this ? manager.Down : manager.Up;
+        }
+        public bool Check()
+        {
+            GetCounterpart().Reset();
+            count += 1;
+            if (count == (manager.ForceEmitThreshold < 2 ? 1 : 2))
+            {
+                timer.Change(manager.SuppressionDuration, System.Threading.Timeout.Infinite);
+                return true;
+            }
+            if (count > manager.ForceEmitThreshold)
+            {
+                Reset();
+                return Check();
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public void Reset()
+        {
+            count = 0;
+            timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+        }
+    }
+}
+
+var VWManager = new VerticalWheelManager(
+    400, // Duration in milliseconds for suppression of wheel events.
+    6    // Max number of the wheel events which will be suppressed in the duration for suppression.
+);
+```
+
+```cs
+Do(ctx =>
+{
+    if (VWManager.Up.Check())
+    {
+        // This code will be executed when `cumulative number of Up event > ForceEmitThreshold` or
+        // `time passed after previous execution > SuppressionDuration`.
+    }
+});
+```
+
+```cs
+Do(ctx =>
+{
+    if (VWManager.Down.Check())
+    {
+        // This code will be executed when `cumulative number of Down event > ForceEmitThreshold` or
+        // `time passed after previous execution > SuppressionDuration`.
+    }
+});
+```
+
+Also, it is difficult to only perform wheel click on these devices. You can solve this problem by assigning wheel click to an arbitrary gesture.
 
 # Edit user script by Visual Studio Code
 
 
 # Profile
 
-`Profile` is the concept extends former gesture definition in parallel. 
+`Profile` is the concept extends the specification of former gesture definition in parallel direction. 
 
 ## Single context problem on Crevice3
 
@@ -330,7 +613,7 @@ Release(ctx =>
 });
 ```
 
-But at the same time, if your user script file have another gesture definition which has it's own context, do you think above gesture defintion works properly always?
+But at the same time, if your userscript file have another gesture definition which has it's own context, do you think above gesture defintion works properly always?
 
 ```cs
 // Another gesture.
