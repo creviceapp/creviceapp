@@ -180,10 +180,8 @@ namespace Crevice.Core.FSM
             return LastState;
         }
 
-        public PhysicalPressEvent RepeatedStartTrigger => History.Records.Last().ReleaseEvent.Opposition;
-
         public bool IsRepeatedStartTrigger(PhysicalPressEvent pressEvent)
-            => RepeatedStartTrigger == pressEvent;
+            => EndTriggers.Contains(pressEvent.Opposition);
 
         public PhysicalReleaseEvent NormalEndTrigger => History.Records.Last().ReleaseEvent;
 

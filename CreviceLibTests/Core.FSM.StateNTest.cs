@@ -2548,6 +2548,35 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
+        public void IgnoreRepeatedPressEvents()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .On(TestEvents.LogicalDoubleThrowKeys[1])
+                    .Do((ctx) => { });
+                var s0 = new TestState0(gm, root);
+                var s1 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent).NextState;
+                Assert.AreEqual(s1 == s0, false);
+                var s2 = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent).NextState;
+                Assert.AreEqual(s2 == s0, false);
+                Assert.AreEqual(s2 == s1, false);
+                {
+                    var result = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    Assert.AreEqual(result.NextState, s2);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                }
+                {
+                    var result = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                    Assert.AreEqual(result.NextState, s2);
+                    Assert.AreEqual(result.EventIsConsumed, true);
+                }
+            }
+        }
+
+        [TestMethod]
         public void CreateHistoryTest()
         {
             var root = new TestRootElement();
