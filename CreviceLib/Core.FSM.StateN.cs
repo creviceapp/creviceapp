@@ -34,6 +34,11 @@ namespace Crevice.Core.FSM
             => DoubleThrowTriggers.Contains(pressEvent) ||
                DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized);
 
+        public readonly IReadOnlyCollection<PressEvent> DecomposedTriggers;
+        public bool IsDecomposedTrigger(PhysicalPressEvent pressEvent)
+            => DecomposedTriggers.Contains(pressEvent) ||
+               DecomposedTriggers.Contains(pressEvent.LogicalNormalized);
+
         public readonly IReadOnlyCollection<PhysicalReleaseEvent> EndTriggers;
         public bool IsEndTrigger(PhysicalReleaseEvent releaseEvent)
             => EndTriggers.Contains(releaseEvent);
@@ -60,6 +65,7 @@ namespace Crevice.Core.FSM
             // Caches.
             SingleThrowTriggers = GetSingleThrowTriggers(DoubleThrowElements);
             DoubleThrowTriggers = GetDoubleThrowTriggers(DoubleThrowElements);
+            DecomposedTriggers = GetDecomposedTriggers(DoubleThrowElements);
             EndTriggers = GetEndTriggers(History.Records);
             AbnormalEndTriggers = GetAbnormalEndTriggers(History.Records);
         }
@@ -84,6 +90,7 @@ namespace Crevice.Core.FSM
             }
             else if (evnt is PhysicalPressEvent pressEvent)
             {
+                // ここで、過去全てのpressEventを対象にするべきか
                 if (IsRepeatedStartTrigger(pressEvent))
                 {
                     return Result.Create(eventIsConsumed: true, nextState: this);
@@ -94,18 +101,22 @@ namespace Crevice.Core.FSM
                     if (doubleThrowElements.Any())
                     {
                         Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
-
-                        if (CanTransition(doubleThrowElements))
-                        {
-                            var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                                Machine,
-                                Ctx,
-                                History.CreateNext(pressEvent.Opposition, this),
-                                doubleThrowElements,
-                                depth: Depth + 1,
-                                canCancel: CanCancel);
-                            return Result.Create(eventIsConsumed: true, nextState: nextState);
-                        }
+                        var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                            Machine,
+                            Ctx,
+                            History.CreateNext(pressEvent.Opposition, this),
+                            doubleThrowElements,
+                            depth: Depth + 1,
+                            canCancel: CanCancel);
+                        return Result.Create(eventIsConsumed: true, nextState: nextState);
+                    }
+                }
+                else if (IsDecomposedTrigger(pressEvent))
+                {
+                    var decomposedElements = GetDecomposedElements(pressEvent);
+                    if (decomposedElements.Any())
+                    {
+                        Machine.ContextManager.ExecutePressExecutors(Ctx, decomposedElements);
                         return Result.Create(eventIsConsumed: true, nextState: this);
                     }
                 }
@@ -140,20 +151,13 @@ namespace Crevice.Core.FSM
                 }
                 else if (IsDoubleThrowTrigger(releaseEvent.Opposition))
                 {
-                    var doubleThrowElements = GetDoubleThrowElements(releaseEvent.Opposition);
-
-                    // The following condition, will be true when the opposition of the DoubleThrowTrigger 
-                    // of next `StateN` is given as a input, and when next `StateN` has press or release executors.
-                    if (HasPressExecutors(doubleThrowElements) ||
-                        HasReleaseExecutors(doubleThrowElements))
-                    {
-                        // If the next provisional `StateN` does not have any do executor, this `StateN` does not transit 
-                        // to the next `StateN`, then release executers of it should be executed here.
-                        // And if the release event comes firstly inverse to the expectation, in this pattern, 
-                        // it should also be executed.
-                        Machine.ContextManager.ExecuteReleaseExecutors(Ctx, doubleThrowElements);
-                        return Result.Create(eventIsConsumed: true, nextState: this);
-                    }
+                    return Result.Create(eventIsConsumed: true, nextState: this);
+                }
+                else if (IsDecomposedTrigger(releaseEvent.Opposition))
+                {
+                    var decomposedElements = GetDecomposedElements(releaseEvent.Opposition);
+                    Machine.ContextManager.ExecuteReleaseExecutors(Ctx, decomposedElements);
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
             return base.Input(evnt);
@@ -224,6 +228,17 @@ namespace Crevice.Core.FSM
                     select dd))
                 .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
+        public IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>>
+            GetDecomposedElements(PhysicalPressEvent triggerEvent)
+            => (from d in DoubleThrowElements
+                where d.IsFull
+                select (
+                    from dd in d.DecomposedElements
+                    where dd.IsFull && (dd.Trigger.Equals(triggerEvent) ||
+                                        dd.Trigger.Equals(triggerEvent.LogicalNormalized))
+                    select dd))
+                .Aggregate(new List<IReadOnlyDecomposedElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+
         public IReadOnlyList<IReadOnlyStrokeElement<TExecContext>> 
             GetStrokeElements(IReadOnlyList<StrokeDirection> strokes)
             => (from d in DoubleThrowElements
@@ -261,6 +276,16 @@ namespace Crevice.Core.FSM
                 where ds.IsFull
                 select (
                     from dd in ds.DoubleThrowElements
+                    where dd.IsFull
+                    select dd.Trigger))
+                .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+
+        private static IReadOnlyCollection<PressEvent>
+            GetDecomposedTriggers(IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+            => (from ds in doubleThrowElements
+                where ds.IsFull
+                select (
+                    from dd in ds.DecomposedElements
                     where dd.IsFull
                     select dd.Trigger))
                 .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });

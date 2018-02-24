@@ -44,6 +44,21 @@ namespace Crevice.Core.Context
             }
         }
 
+        public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDecomposedElement<TExecContext>> doubleThrowElements)
+        {
+            if (doubleThrowElements.Any())
+            {
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in doubleThrowElements)
+                {
+                    foreach (var executor in element.PressExecutors)
+                    {
+                        Execute(execContext, executor);
+                    }
+                }
+            }
+        }
+
         public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
@@ -90,6 +105,21 @@ namespace Crevice.Core.Context
         }
 
         public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+        {
+            if (doubleThrowElements.Any())
+            {
+                var execContext = CreateExecutionContext(evalContext);
+                foreach (var element in doubleThrowElements)
+                {
+                    foreach (var executor in element.ReleaseExecutors)
+                    {
+                        Execute(execContext, executor);
+                    }
+                }
+            }
+        }
+
+        public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDecomposedElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {

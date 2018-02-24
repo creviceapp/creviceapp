@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CreviceLibTests
 {
     using System.Linq;
-    using Crevice.Core.Keys;
     using Crevice.Core.Context;
     using Crevice.Core.DSL;
     using Crevice.Core.FSM;
@@ -15,7 +14,6 @@ namespace CreviceLibTests
     using TestRootElement = Crevice.Core.DSL.RootElement<Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
     using TestState0 = Crevice.Core.FSM.State0<TestGestureMachineConfig, TestContextManager, Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
     using TestStateN = Crevice.Core.FSM.StateN<TestGestureMachineConfig, TestContextManager, Crevice.Core.Context.EvaluationContext, Crevice.Core.Context.ExecutionContext>;
-
 
     [TestClass]
     public class StateNTest
@@ -223,7 +221,15 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, true);
+                    }
+                    {
+                        pressCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                     }
@@ -322,7 +328,7 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.NextState is TestStateN, true);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                     }
@@ -373,7 +379,8 @@ namespace CreviceLibTests
                     {
                         pressCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].PressEvent);
-                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                     }
@@ -515,7 +522,7 @@ namespace CreviceLibTests
                     doCalled = false;
                     var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s1);
-                    Assert.AreEqual(result.EventIsConsumed, false);
+                    Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -546,16 +553,25 @@ namespace CreviceLibTests
                     {
                         releaseCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                     {
                         releaseCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
             }
@@ -898,7 +914,7 @@ namespace CreviceLibTests
                     Assert.AreEqual(result.NextState, s1);
                     Assert.AreEqual(result.EventIsConsumed, true);
                     Assert.AreEqual(doCalled, false);
-                    Assert.AreEqual(releaseCalled, true);
+                    Assert.AreEqual(releaseCalled, false);
                 }
             }
         }
@@ -933,10 +949,21 @@ namespace CreviceLibTests
                         pressCalled = false;
                         releaseCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                         Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                     {
                         pressCalled = false;
@@ -945,7 +972,7 @@ namespace CreviceLibTests
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
             }
@@ -1054,10 +1081,21 @@ namespace CreviceLibTests
                         pressCalled = false;
                         releaseCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState is TestStateN, true);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                         Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                     {
                         pressCalled = false;
@@ -1066,7 +1104,7 @@ namespace CreviceLibTests
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
             }
@@ -1148,7 +1186,7 @@ namespace CreviceLibTests
                         Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
             }
@@ -1189,11 +1227,24 @@ namespace CreviceLibTests
                         doCalled = false;
                         releaseCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState is TestStateN, true);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                         Assert.AreEqual(doCalled, false);
                         Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(doCalled, true);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                     {
                         pressCalled = false;
@@ -1204,7 +1255,7 @@ namespace CreviceLibTests
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(doCalled, false);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
                 {
@@ -1339,11 +1390,24 @@ namespace CreviceLibTests
                         doCalled = false;
                         releaseCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                        Assert.AreEqual(result.NextState is TestStateN, true);
+                        Assert.AreEqual(result.NextState == s0, false);
+                        Assert.AreEqual(result.NextState == s1, false);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, true);
                         Assert.AreEqual(doCalled, false);
                         Assert.AreEqual(releaseCalled, false);
+                    }
+                    {
+                        pressCalled = false;
+                        doCalled = false;
+                        releaseCalled = false;
+                        var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                        result = result.NextState.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
+                        Assert.AreEqual(result.NextState, s1);
+                        Assert.AreEqual(result.EventIsConsumed, true);
+                        Assert.AreEqual(pressCalled, true);
+                        Assert.AreEqual(doCalled, true);
+                        Assert.AreEqual(releaseCalled, true);
                     }
                     {
                         pressCalled = false;
@@ -1354,7 +1418,7 @@ namespace CreviceLibTests
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(doCalled, false);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
             }
@@ -1453,7 +1517,7 @@ namespace CreviceLibTests
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(pressCalled, false);
                         Assert.AreEqual(doCalled, false);
-                        Assert.AreEqual(releaseCalled, true);
+                        Assert.AreEqual(releaseCalled, false);
                     }
                 }
             }
@@ -1665,7 +1729,7 @@ namespace CreviceLibTests
                     var s0 = new TestState0(gm, root);
                     var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
-                    Assert.AreEqual(res0.NextState is TestState0, true);
+                    Assert.AreEqual(res0.NextState is TestStateN, true);
                 }
             }
             {
@@ -1733,7 +1797,7 @@ namespace CreviceLibTests
                     var s0 = new TestState0(gm, root);
                     var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
-                    Assert.AreEqual(res0.NextState is TestState0, true);
+                    Assert.AreEqual(res0.NextState is TestStateN, true);
                 }
             }
         }
@@ -1752,7 +1816,7 @@ namespace CreviceLibTests
                     var s0 = new TestState0(gm, root);
                     var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
-                    Assert.AreEqual(res0.NextState is TestState0, true);
+                    Assert.AreEqual(res0.NextState is TestStateN, true);
                 }
             }
             {
@@ -1819,7 +1883,7 @@ namespace CreviceLibTests
                     var s0 = new TestState0(gm, root);
                     var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
-                    Assert.AreEqual(res0.NextState is TestState0, true);
+                    Assert.AreEqual(res0.NextState is TestStateN, true);
                 }
             }
         }
@@ -1838,7 +1902,7 @@ namespace CreviceLibTests
                     var s0 = new TestState0(gm, root);
                     var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
-                    Assert.AreEqual(res0.NextState is TestState0, true);
+                    Assert.AreEqual(res0.NextState is TestStateN, true);
                 }
             }
             {
@@ -1924,7 +1988,7 @@ namespace CreviceLibTests
                     var s0 = new TestState0(gm, root);
                     var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(res0.EventIsConsumed, true);
-                    Assert.AreEqual(res0.NextState is TestState0, true);
+                    Assert.AreEqual(res0.NextState is TestStateN, true);
                 }
             }
         }

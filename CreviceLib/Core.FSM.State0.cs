@@ -29,6 +29,11 @@ namespace Crevice.Core.FSM
             => DoubleThrowTriggers.Contains(pressEvent) ||
                DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized);
 
+        public readonly IReadOnlyCollection<PressEvent> DecomposedTriggers;
+        public bool IsDecomposedTrigger(PhysicalPressEvent pressEvent)
+            => DecomposedTriggers.Contains(pressEvent) ||
+               DecomposedTriggers.Contains(pressEvent.LogicalNormalized);
+
         public State0(
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
             IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
@@ -40,6 +45,7 @@ namespace Crevice.Core.FSM
             // Caches.
             SingleThrowTriggers = GetSingleThrowTriggers(RootElement);
             DoubleThrowTriggers = GetDoubleThrowTriggers(RootElement);
+            DecomposedTriggers = GetDecomposedTriggers(RootElement);
         }
 
         public override Result<TConfig, TContextManager, TEvalContext, TExecContext> Input(IPhysicalEvent evnt)
@@ -54,15 +60,16 @@ namespace Crevice.Core.FSM
                     return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
-            else if (evnt is PhysicalPressEvent pressEvent && IsDoubleThrowTrigger(pressEvent))
+
+            else if (evnt is PhysicalPressEvent pressEvent)
             {
-                var evalContext = Machine.ContextManager.CreateEvaluateContext();
-                var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
-                if (doubleThrowElements.Any())
+                if (IsDoubleThrowTrigger(pressEvent))
                 {
-                    Machine.ContextManager.ExecutePressExecutors(evalContext, doubleThrowElements);
-                    if (CanTransition(doubleThrowElements))
+                    var evalContext = Machine.ContextManager.CreateEvaluateContext();
+                    var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
+                    if (doubleThrowElements.Any())
                     {
+                        Machine.ContextManager.ExecutePressExecutors(evalContext, doubleThrowElements);
                         var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                             Machine,
                             evalContext,
@@ -72,23 +79,47 @@ namespace Crevice.Core.FSM
                             canCancel: true);
                         return Result.Create(eventIsConsumed: true, nextState: nextState);
                     }
-                    return Result.Create(eventIsConsumed: true, nextState: this);
-                }
-            }
-            else if (evnt is PhysicalReleaseEvent releaseEvent && IsDoubleThrowTrigger(releaseEvent.Opposition))
-            {
-                var evalContext = Machine.ContextManager.CreateEvaluateContext();
-                var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, releaseEvent.Opposition);
-                
-                if (HasPressExecutors(doubleThrowElements) || HasReleaseExecutors(doubleThrowElements))
+                } 
+                else if (IsDecomposedTrigger(pressEvent))
                 {
-                    Machine.ContextManager.ExecuteReleaseExecutors(evalContext, doubleThrowElements);
+                    var evalContext = Machine.ContextManager.CreateEvaluateContext();
+                    var decomposedElements = GetActiveDecomposedElements(evalContext, pressEvent);
+                    if (decomposedElements.Any())
+                    {
+                        Machine.ContextManager.ExecutePressExecutors(evalContext, decomposedElements);
+                        return Result.Create(eventIsConsumed: true, nextState: this);
+                    }
+                }
+
+            }
+            else if (evnt is PhysicalReleaseEvent releaseEvent)
+            {
+                if (IsDoubleThrowTrigger(releaseEvent.Opposition))
+                {
                     return Result.Create(eventIsConsumed: true, nextState: this);
                 }
+                else if (IsDecomposedTrigger(releaseEvent.Opposition))
+                {
+                    var evalContext = Machine.ContextManager.CreateEvaluateContext();
+                    var decomposedElements = GetActiveDecomposedElements(evalContext, releaseEvent.Opposition);
+                    if (decomposedElements.Any())
+                    {
+                        Machine.ContextManager.ExecuteReleaseExecutors(evalContext, decomposedElements);
+                        return Result.Create(eventIsConsumed: true, nextState: this);
+                    }
+                }
+                
             }
             return base.Input(evnt);
         }
 
+        /*
+        private static IDictionary<FireEvent, WhenElement<TEvalContext, TExecContext>> 
+            GetInverseFireToWhenMap(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+            => 
+        */
+
+        // todo cache the resutl fo when
         protected internal IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> 
             GetActiveDoubleThrowElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
             => (from w in RootElement.WhenElements
@@ -98,6 +129,16 @@ namespace Crevice.Core.FSM
                                            d.Trigger.Equals(triggerEvent.LogicalNormalized))
                         select d))
             .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+
+        protected internal IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>>
+            GetActiveDecomposedElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
+            => (from w in RootElement.WhenElements
+                where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
+                select (from d in w.DecomposedElements
+                        where d.IsFull && (d.Trigger.Equals(triggerEvent) ||
+                                           d.Trigger.Equals(triggerEvent.LogicalNormalized))
+                        select d))
+            .Aggregate(new List<IReadOnlyDecomposedElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
         protected internal IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> 
             GetActiveSingleThrowElements(TEvalContext ctx, PhysicalFireEvent triggerEvent)
@@ -125,6 +166,16 @@ namespace Crevice.Core.FSM
                 where w.IsFull
                 select (
                     from d in w.DoubleThrowElements
+                    where d.IsFull
+                    select d.Trigger))
+                .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+
+        private static IReadOnlyCollection<PressEvent>
+            GetDecomposedTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+            => (from w in rootElement.WhenElements
+                where w.IsFull
+                select (
+                    from d in w.DecomposedElements
                     where d.IsFull
                     select d.Trigger))
                 .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });

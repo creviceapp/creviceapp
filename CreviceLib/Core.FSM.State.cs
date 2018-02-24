@@ -31,14 +31,6 @@ namespace Crevice.Core.FSM
         public virtual State<TConfig, TContextManager, TEvalContext, TExecContext> Reset()
             => this;
 
-        protected static bool CanTransition(
-            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
-            => doubleThrowElements.Any(d =>
-                    d.DoExecutors.Any() ||
-                    d.StrokeElements.Any(ds => ds.IsFull) ||
-                    d.SingleThrowElements.Any(ds => ds.IsFull) ||
-                    d.DoubleThrowElements.Any(dd => dd.IsFull));
-
         protected static bool HasPressExecutors(
             IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => doubleThrowElements.Any(d => d.PressExecutors.Any());
