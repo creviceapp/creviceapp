@@ -38,6 +38,7 @@ namespace Crevice4Tests
         public void TestCleanup()
         {
             mutex.ReleaseMutex();
+            Thread.Sleep(1000);
         }
 
         [TestMethod()]
@@ -102,7 +103,8 @@ namespace Crevice4Tests
                 {
                     hook.SetHook();
                     var sender = new SingleInputSender();
-                    sender.RightClick();
+                    sender.RightDown();
+                    sender.RightUp();
                     Assert.AreEqual(cde.Wait(10000), true);
                 }
             }
