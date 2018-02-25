@@ -117,13 +117,18 @@ namespace Crevice.Core.FSM
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
             {
+                var oppositeEvent = releaseEvent.Opposition;
+
                 if (IsNormalEndTrigger(releaseEvent))
                 {
                     var strokeSequence = Machine.StrokeWatcher.GetStrokeSequence();
-                    if (strokeSequence.Any() && IsStrokeTrigger(strokeSequence))
+                    if (strokeSequence.Any())
                     {
-                        var strokeElements = GetStrokeElementsByTrigger(strokeSequence);
-                        Machine.ContextManager.ExecuteDoExecutors(Ctx, strokeElements);
+                        if (IsStrokeTrigger(strokeSequence))
+                        {
+                            var strokeElements = GetStrokeElementsByTrigger(strokeSequence);
+                            Machine.ContextManager.ExecuteDoExecutors(Ctx, strokeElements);
+                        }
                         Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
                     }
                     else if (HasPressExecutors || HasDoExecutors || HasReleaseExecutors)
@@ -143,13 +148,17 @@ namespace Crevice.Core.FSM
                     Machine.invalidEvents.IgnoreNext(queryResult.SkippedReleaseEvents);
                     return Result.Create(eventIsConsumed: true, nextState: queryResult.FoundState);
                 }
-                else if (IsDoubleThrowTrigger(releaseEvent.Opposition))
+                else if (IsDoubleThrowTrigger(oppositeEvent))
                 {
-                    return Result.Create(eventIsConsumed: true, nextState: this);
+                    var doubleThrowElements = GetDoubleThrowElementsByTrigger(oppositeEvent);
+                    if (doubleThrowElements.Any())
+                    {
+                        return Result.Create(eventIsConsumed: true, nextState: this);
+                    }
                 }
-                else if (IsDecomposedTrigger(releaseEvent.Opposition))
+                else if (IsDecomposedTrigger(oppositeEvent))
                 {
-                    var decomposedElements = GetDecomposedElementsByTrigger(releaseEvent.Opposition);
+                    var decomposedElements = GetDecomposedElementsByTrigger(oppositeEvent);
                     Machine.ContextManager.ExecuteReleaseExecutors(Ctx, decomposedElements);
                     return Result.Create(eventIsConsumed: true, nextState: this);
                 }
