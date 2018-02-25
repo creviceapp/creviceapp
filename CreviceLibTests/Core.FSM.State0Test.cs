@@ -785,71 +785,169 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
-        public void GetActiveDoubleThrowElementsTest()
+        public void GetInversedSingleThrowTriggerDictionaryTest()
         {
             var root = new TestRootElement();
             using (var gm = new TestGestureMachine(root))
             {
                 var when = root.When((ctx) => { return true; });
-                when.On(TestEvents.LogicalDoubleThrowKeys[0])
-                    .Do((ctx) => { });
-                var s0 = new TestState0(gm, root);
-                var evalContext = gm.ContextManager.CreateEvaluateContext();
-                var result = s0.GetActiveDoubleThrowElements(evalContext, TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                Assert.AreEqual(result.Count, 1);
-                Assert.AreEqual(result[0], when.DoubleThrowElements[0]);
+                when.On(TestEvents.LogicalSingleThrowKeys[0]).Do((ctx) => { });
+                when.On(TestEvents.LogicalSingleThrowKeys[0]).Do((ctx) => { });
+                var s0 = new TestState0(gm, root) as TestState0;
+                var result = TestState0.GetInversedSingleThrowTrigger(root);
+                var key = TestEvents.LogicalSingleThrowKeys[0].FireEvent;
+                Assert.AreEqual(result[key].Count(), 1);
+                Assert.AreEqual(result[key].First(), when);
             }
         }
 
         [TestMethod]
-        public void GetActiveSingleThrowElementsTest()
+        public void GetInversedDoubleThrowTriggerDictionaryTest()
         {
-            var root = new TestRootElement();
-            using (var gm = new TestGestureMachine(root))
             {
-                var when = root.When((ctx) => { return true; });
-                when
-                    .On(TestEvents.LogicalSingleThrowKeys[0])
-                    .Do((ctx) => { });
-                var s0 = new TestState0(gm, root);
-                var evalContext = gm.ContextManager.CreateEvaluateContext();
-                var result = s0.GetActiveSingleThrowElements(evalContext, TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
-                Assert.AreEqual(result.Count, 1);
-                Assert.AreEqual(result[0], when.SingleThrowElements[0]);
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDoubleThrowTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Do((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDoubleThrowTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDoubleThrowTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Do((ctx) => { });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDoubleThrowTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Do((ctx) => { });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDoubleThrowTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    when.On(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDoubleThrowTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
             }
         }
 
         [TestMethod]
-        public void SingleThrowTriggersTest()
+        public void GetInversedDecomposedTriggerDictionaryTest()
         {
-            var root = new TestRootElement();
-            using (var gm = new TestGestureMachine(root))
             {
-                var when = root.When((ctx) => { return true; });
-                when
-                    .On(TestEvents.LogicalSingleThrowKeys[0])
-                    .Do((ctx) => { });
-                var s0 = new TestState0(gm, root);
-                var result = s0.SingleThrowTriggers;
-                Assert.AreEqual(result.Count, 1);
-                Assert.AreEqual(result.Contains(when.SingleThrowElements[0].Trigger), true);
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDecomposedTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
             }
-        }
-
-        [TestMethod]
-        public void DoubleThrowTriggersTest()
-        {
-            var root = new TestRootElement();
-            using (var gm = new TestGestureMachine(root))
             {
-                var when = root.When((ctx) => { return true; });
-                when
-                    .On(TestEvents.LogicalDoubleThrowKeys[0])
-                    .Do((ctx) => { });
-                var s0 = new TestState0(gm, root);
-                var result = s0.DoubleThrowTriggers;
-                Assert.AreEqual(result.Count, 1);
-                Assert.AreEqual(result.Contains(when.DoubleThrowElements[0].Trigger), true);
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDecomposedTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Press((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDecomposedTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
+            }
+            {
+                var root = new TestRootElement();
+                using (var gm = new TestGestureMachine(root))
+                {
+                    var when = root.When((ctx) => { return true; });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    when.OnDecomposed(TestEvents.LogicalDoubleThrowKeys[0]).Release((ctx) => { });
+                    var s0 = new TestState0(gm, root) as TestState0;
+                    var result = TestState0.GetInversedDecomposedTrigger(root);
+                    var key = TestEvents.LogicalDoubleThrowKeys[0].PressEvent;
+                    Assert.AreEqual(result[key].Count(), 1);
+                    Assert.AreEqual(result[key].First(), when);
+                }
             }
         }
 
