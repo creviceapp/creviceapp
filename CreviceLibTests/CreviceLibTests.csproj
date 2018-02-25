@@ -56,6 +56,7 @@
     <Compile Include="Core.FSM.GestureMachineTest.cs" />
     <Compile Include="Core.FSM.State0Test.cs" />
     <Compile Include="Core.FSM.StateNTest.cs" />
+    <Compile Include="Core.StrokeSequenceTest.cs" />
     <Compile Include="Core.StrokeTest.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TestEnv.cs" />

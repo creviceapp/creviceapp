@@ -19,20 +19,12 @@ namespace Crevice.Core.FSM
         public readonly GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> Machine;
         public readonly IReadOnlyRootElement<TEvalContext, TExecContext> RootElement;
 
-        public readonly IReadOnlyCollection<FireEvent> SingleThrowTriggers;
-        public bool IsSingleThrowTrigger(PhysicalFireEvent fireEvent)
-            => SingleThrowTriggers.Contains(fireEvent) ||
-               SingleThrowTriggers.Contains(fireEvent.LogicalNormalized);
-
-        public readonly IReadOnlyCollection<PressEvent> DoubleThrowTriggers;
-        public bool IsDoubleThrowTrigger(PhysicalPressEvent pressEvent)
-            => DoubleThrowTriggers.Contains(pressEvent) ||
-               DoubleThrowTriggers.Contains(pressEvent.LogicalNormalized);
-
-        public readonly IReadOnlyCollection<PressEvent> DecomposedTriggers;
-        public bool IsDecomposedTrigger(PhysicalPressEvent pressEvent)
-            => DecomposedTriggers.Contains(pressEvent) ||
-               DecomposedTriggers.Contains(pressEvent.LogicalNormalized);
+        public readonly IDictionary<FireEvent, IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>>
+            InversedSingleThrowTrigger;
+        public readonly IDictionary<PressEvent, IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>>
+            InversedDoubleThrowTrigger;
+        public readonly IDictionary<PressEvent, IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>>
+            InversedDecomposedTrigger;
 
         public State0(
             GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> machine,
@@ -43,20 +35,21 @@ namespace Crevice.Core.FSM
             RootElement = rootElement;
 
             // Caches.
-            SingleThrowTriggers = GetSingleThrowTriggers(RootElement);
-            DoubleThrowTriggers = GetDoubleThrowTriggers(RootElement);
-            DecomposedTriggers = GetDecomposedTriggers(RootElement);
+            InversedSingleThrowTrigger = GetInversedSingleThrowTrigger(RootElement);
+            InversedDoubleThrowTrigger = GetInversedDoubleThrowTrigger(RootElement);
+            InversedDecomposedTrigger = GetInversedDecomposedTrigger(RootElement);
         }
 
         public override Result<TConfig, TContextManager, TEvalContext, TExecContext> Input(IPhysicalEvent evnt)
         {
             if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
-                var evalContext = Machine.ContextManager.CreateEvaluateContext();
-                var singleThrowElements = GetActiveSingleThrowElements(evalContext, fireEvent);
+                var whenElements = GetWhenElementsBySingleThrowTrigger(fireEvent);
+                var evaluationContext = Machine.ContextManager.CreateEvaluateContext();
+                var singleThrowElements = GetActiveSingleThrowElements(whenElements, evaluationContext, fireEvent);
                 if (singleThrowElements.Any())
                 {
-                    Machine.ContextManager.ExecuteDoExecutors(evalContext, singleThrowElements);
+                    Machine.ContextManager.ExecuteDoExecutors(evaluationContext, singleThrowElements);
                     return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
@@ -65,14 +58,15 @@ namespace Crevice.Core.FSM
             {
                 if (IsDoubleThrowTrigger(pressEvent))
                 {
-                    var evalContext = Machine.ContextManager.CreateEvaluateContext();
-                    var doubleThrowElements = GetActiveDoubleThrowElements(evalContext, pressEvent);
+                    var whenElements = GetWhenElementsByDoubleThrowTrigger(pressEvent);
+                    var evaluationContext = Machine.ContextManager.CreateEvaluateContext();
+                    var doubleThrowElements = GetActiveDoubleThrowElements(whenElements, evaluationContext, pressEvent);
                     if (doubleThrowElements.Any())
                     {
-                        Machine.ContextManager.ExecutePressExecutors(evalContext, doubleThrowElements);
+                        Machine.ContextManager.ExecutePressExecutors(evaluationContext, doubleThrowElements);
                         var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
                             Machine,
-                            evalContext,
+                            evaluationContext,
                             History.Create(pressEvent.Opposition, this),
                             doubleThrowElements,
                             depth: Depth + 1,
@@ -82,15 +76,15 @@ namespace Crevice.Core.FSM
                 } 
                 else if (IsDecomposedTrigger(pressEvent))
                 {
-                    var evalContext = Machine.ContextManager.CreateEvaluateContext();
-                    var decomposedElements = GetActiveDecomposedElements(evalContext, pressEvent);
+                    var whenElements = GetWhenElementsByDecomposedTrigger(pressEvent);
+                    var evaluationContext = Machine.ContextManager.CreateEvaluateContext();
+                    var decomposedElements = GetActiveDecomposedElements(whenElements, evaluationContext, pressEvent);
                     if (decomposedElements.Any())
                     {
-                        Machine.ContextManager.ExecutePressExecutors(evalContext, decomposedElements);
+                        Machine.ContextManager.ExecutePressExecutors(evaluationContext, decomposedElements);
                         return Result.Create(eventIsConsumed: true, nextState: this);
                     }
                 }
-
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
             {
@@ -100,49 +94,90 @@ namespace Crevice.Core.FSM
                 }
                 else if (IsDecomposedTrigger(releaseEvent.Opposition))
                 {
-                    var evalContext = Machine.ContextManager.CreateEvaluateContext();
-                    var decomposedElements = GetActiveDecomposedElements(evalContext, releaseEvent.Opposition);
+                    var whenElements = GetWhenElementsByDecomposedTrigger(releaseEvent.Opposition);
+                    var evaluationContext = Machine.ContextManager.CreateEvaluateContext();
+                    var decomposedElements = GetActiveDecomposedElements(whenElements, evaluationContext, releaseEvent.Opposition);
                     if (decomposedElements.Any())
                     {
-                        Machine.ContextManager.ExecuteReleaseExecutors(evalContext, decomposedElements);
+                        Machine.ContextManager.ExecuteReleaseExecutors(evaluationContext, decomposedElements);
                         return Result.Create(eventIsConsumed: true, nextState: this);
                     }
                 }
-                
             }
             return base.Input(evnt);
         }
 
-        /*
-        private static IDictionary<FireEvent, WhenElement<TEvalContext, TExecContext>> 
-            GetInverseFireToWhenMap(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
-            => 
-        */
+        public bool IsSingleThrowTrigger(PhysicalFireEvent fireEvent)
+            => InversedSingleThrowTrigger.Keys.Contains(fireEvent) ||
+               InversedSingleThrowTrigger.Keys.Contains(fireEvent.LogicalNormalized);
 
-        // todo cache the resutl fo when
+        public bool IsDoubleThrowTrigger(PhysicalPressEvent pressEvent)
+            => InversedDoubleThrowTrigger.Keys.Contains(pressEvent) ||
+               InversedDoubleThrowTrigger.Keys.Contains(pressEvent.LogicalNormalized);
+
+        public bool IsDecomposedTrigger(PhysicalPressEvent pressEvent)
+            => InversedDecomposedTrigger.Keys.Contains(pressEvent) ||
+               InversedDecomposedTrigger.Keys.Contains(pressEvent.LogicalNormalized);
+
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsBySingleThrowTrigger(PhysicalFireEvent fireEvent)
+        {
+            if (InversedSingleThrowTrigger.TryGetValue(fireEvent, out var whenElements))
+            {
+                return whenElements;
+            }
+            return InversedSingleThrowTrigger[fireEvent.LogicalNormalized];
+        }
+
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsByDoubleThrowTrigger(PhysicalPressEvent pressEvent)
+        {
+            if (InversedDoubleThrowTrigger.TryGetValue(pressEvent, out var whenElements))
+            {
+                return whenElements;
+            }
+            return InversedDoubleThrowTrigger[pressEvent.LogicalNormalized];
+        }
+
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsByDecomposedTrigger(PhysicalPressEvent pressEvent)
+        {
+            if (InversedDecomposedTrigger.TryGetValue(pressEvent, out var whenElements))
+            {
+                return whenElements;
+            }
+            return InversedDecomposedTrigger[pressEvent.LogicalNormalized];
+        }
+
         protected internal IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> 
-            GetActiveDoubleThrowElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
-            => (from w in RootElement.WhenElements
+            GetActiveDoubleThrowElements(
+                IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements,
+                TEvalContext ctx, 
+                PhysicalPressEvent triggerEvent)
+            => (from w in whenElements
                 where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
                 select (from d in w.DoubleThrowElements
                         where d.IsFull && (d.Trigger.Equals(triggerEvent)  ||
                                            d.Trigger.Equals(triggerEvent.LogicalNormalized))
                         select d))
-            .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+                .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
         protected internal IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>>
-            GetActiveDecomposedElements(TEvalContext ctx, PhysicalPressEvent triggerEvent)
-            => (from w in RootElement.WhenElements
+            GetActiveDecomposedElements(
+                IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements,
+                TEvalContext ctx, 
+                PhysicalPressEvent triggerEvent)
+            => (from w in whenElements
                 where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
                 select (from d in w.DecomposedElements
                         where d.IsFull && (d.Trigger.Equals(triggerEvent) ||
                                            d.Trigger.Equals(triggerEvent.LogicalNormalized))
                         select d))
-            .Aggregate(new List<IReadOnlyDecomposedElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
+                .Aggregate(new List<IReadOnlyDecomposedElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
         protected internal IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> 
-            GetActiveSingleThrowElements(TEvalContext ctx, PhysicalFireEvent triggerEvent)
-            => (from w in RootElement.WhenElements
+            GetActiveSingleThrowElements(
+                IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements, 
+                TEvalContext ctx, 
+                PhysicalFireEvent triggerEvent)
+            => (from w in whenElements
                 where w.IsFull && Machine.ContextManager.Evaluate(ctx, w)
                 select (from s in w.SingleThrowElements
                         where s.IsFull && (s.Trigger.Equals(triggerEvent) ||
@@ -150,34 +185,49 @@ namespace Crevice.Core.FSM
                         select s))
                 .Aggregate(new List<IReadOnlySingleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        private static IReadOnlyCollection<FireEvent> 
-            GetSingleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+        internal static IDictionary<FireEvent, IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>>
+            GetInversedSingleThrowTrigger(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
                     from s in w.SingleThrowElements
                     where s.IsFull
-                    select s.Trigger))
-                .Aggregate(new HashSet<FireEvent>(), (a, b) => { a.UnionWith(b); return a; });
+                    select Tuple.Create(w, s.Trigger)))
+                .Aggregate(new List<Tuple<IReadOnlyWhenElement<TEvalContext, TExecContext>, FireEvent>>(), (a, b) =>
+                {
+                    a.AddRange(b); return a;
+                })
+                .ToLookup(t => t.Item2, t => t.Item1)
+                .ToDictionary(x => x.Key, x => x.Distinct().ToList() as IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>);
 
-        private static IReadOnlyCollection<PressEvent> 
-            GetDoubleThrowTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+        internal static IDictionary<PressEvent, IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>>
+            GetInversedDoubleThrowTrigger(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
                     from d in w.DoubleThrowElements
                     where d.IsFull
-                    select d.Trigger))
-                .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+                    select Tuple.Create(w, d.Trigger)))
+                .Aggregate(new List<Tuple<IReadOnlyWhenElement<TEvalContext, TExecContext>, PressEvent>>(), (a, b) =>
+                {
+                    a.AddRange(b); return a;
+                })
+                .ToLookup(t => t.Item2, t => t.Item1)
+                .ToDictionary(x => x.Key, x => x.Distinct().ToList() as IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>);
 
-        private static IReadOnlyCollection<PressEvent>
-            GetDecomposedTriggers(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
+        internal static IDictionary<PressEvent, IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>>
+            GetInversedDecomposedTrigger(IReadOnlyRootElement<TEvalContext, TExecContext> rootElement)
             => (from w in rootElement.WhenElements
                 where w.IsFull
                 select (
                     from d in w.DecomposedElements
                     where d.IsFull
-                    select d.Trigger))
-                .Aggregate(new HashSet<PressEvent>(), (a, b) => { a.UnionWith(b); return a; });
+                    select Tuple.Create(w, d.Trigger)))
+                .Aggregate(new List<Tuple<IReadOnlyWhenElement<TEvalContext, TExecContext>, PressEvent>>(), (a, b) =>
+                {
+                    a.AddRange(b); return a;
+                })
+                .ToLookup(t => t.Item2, t => t.Item1)
+                .ToDictionary(x => x.Key, x => x.Distinct().ToList() as IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>);
     }
 }

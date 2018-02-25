@@ -91,8 +91,11 @@ namespace Crevice.Core.Stroke
             });
         }
 
-        public IReadOnlyList<StrokeDirection> GetStorkes()
-            => strokes.Select(x => x.Direction).ToList();
+        public IReadOnlyList<Stroke> GetStorkes()
+            => strokes.ToList();
+
+        public StrokeSequence GetStrokeSequence()
+            => new StrokeSequence(strokes.Select(x => x.Direction));
 
         internal bool _disposed { get; private set; } = false;
 

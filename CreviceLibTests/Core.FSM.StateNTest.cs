@@ -3071,9 +3071,32 @@ namespace CreviceLibTests
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 var s1 = res0.NextState as TestStateN;
-                var result = s1.GetDoubleThrowElements(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                Assert.AreEqual(s1.Depth, 1);
+                var result = s1.GetDoubleThrowElementsByTrigger(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                 Assert.AreEqual(result.Count, 1);
                 Assert.AreEqual(result[0], when.DoubleThrowElements[0].DoubleThrowElements[0]);
+            }
+        }
+
+        [TestMethod]
+        public void GetDecomposedElementsTest()
+        {
+            var root = new TestRootElement();
+            using (var gm = new TestGestureMachine(root))
+            {
+                var when = root.When((ctx) => { return true; });
+                when
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                        .OnDecomposed(TestEvents.LogicalDoubleThrowKeys[1])
+                        .Press((ctx) => { });
+                var s0 = new TestState0(gm, root);
+                var evalContext = gm.ContextManager.CreateEvaluateContext();
+                var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                var s1 = res0.NextState as TestStateN;
+                Assert.AreEqual(s1.Depth, 1);
+                var result = s1.GetDecomposedElementsByTrigger(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
+                Assert.AreEqual(result.Count, 1);
+                Assert.AreEqual(result[0], when.DoubleThrowElements[0].DecomposedElements[0]);
             }
         }
 
@@ -3092,7 +3115,7 @@ namespace CreviceLibTests
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 var s1 = res0.NextState as TestStateN;
-                var result = s1.GetSingleThrowElements(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
+                var result = s1.GetSingleThrowElementsByTrigger(TestEvents.PhysicalSingleThrowKeys0[0].FireEvent);
                 Assert.AreEqual(result.Count, 1);
                 Assert.AreEqual(result[0], when.DoubleThrowElements[0].SingleThrowElements[0]);
             }
@@ -3113,7 +3136,7 @@ namespace CreviceLibTests
                 var evalContext = gm.ContextManager.CreateEvaluateContext();
                 var res0 = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                 var s1 = res0.NextState as TestStateN;
-                var result = s1.GetStrokeElements(new List<StrokeDirection>() { StrokeDirection.Up });
+                var result = s1.GetStrokeElementsByTrigger(new StrokeSequence() { StrokeDirection.Up });
                 Assert.AreEqual(result.Count, 1);
                 Assert.AreEqual(result[0], when.DoubleThrowElements[0].StrokeElements[0]);
             }

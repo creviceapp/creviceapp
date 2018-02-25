@@ -382,7 +382,7 @@ namespace Crevice.Core.DSL
     public interface IReadOnlyStrokeElement<TExecContext> : IReadOnlyElement
         where TExecContext : ExecutionContext
     {
-        IReadOnlyList<StrokeDirection> Strokes { get; }
+        StrokeSequence Strokes { get; }
         IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
     }
 
@@ -393,14 +393,14 @@ namespace Crevice.Core.DSL
 
         public override int GestureCount => DoExecutors.Count;
 
-        public IReadOnlyList<StrokeDirection> Strokes { get; }
+        public StrokeSequence Strokes { get; }
 
         private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
         public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
 
         public StrokeElement(params StrokeDirection[] strokes)
         {
-            Strokes = strokes;
+            Strokes = new StrokeSequence(strokes);
         }
 
         public StrokeElement<TExecContext> Do(ExecuteAction<TExecContext> executor)

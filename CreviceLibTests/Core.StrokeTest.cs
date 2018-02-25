@@ -58,8 +58,8 @@ namespace CreviceLibTests
                 Assert.AreEqual(callback.OnStrokeUpdatedCDE.Wait(10000), true);
                 callback.OnStrokeUpdatedCDE.Reset();
 
-                var strokes = gm.StrokeWatcher.GetStorkes();
-                Assert.AreEqual(strokes.SequenceEqual(new List<StrokeDirection>() { StrokeDirection.Down, StrokeDirection.Right }), true);
+                var strokeSequence = gm.StrokeWatcher.GetStrokeSequence();
+                Assert.AreEqual(strokeSequence, new StrokeSequence { StrokeDirection.Down, StrokeDirection.Right });
 
                 gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                 Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);

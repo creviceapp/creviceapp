@@ -30,7 +30,7 @@ namespace Crevice.Core.FSM
 
         public virtual State<TConfig, TContextManager, TEvalContext, TExecContext> Reset()
             => this;
-
+        
         protected static bool HasPressExecutors(
             IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => doubleThrowElements.Any(d => d.PressExecutors.Any());
@@ -42,7 +42,7 @@ namespace Crevice.Core.FSM
         protected static bool HasReleaseExecutors(
             IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
             => doubleThrowElements.Any(d => d.ReleaseExecutors.Any());
-
+        
         public bool IsState0 => GetType() == typeof(State0<TConfig, TContextManager, TEvalContext, TExecContext>);
         public bool IsStateN => GetType() == typeof(StateN<TConfig, TContextManager, TEvalContext, TExecContext>);
 
