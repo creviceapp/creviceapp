@@ -43,27 +43,24 @@ namespace Crevice4Tests
         [TestMethod()]
         public void ActivatedTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
-            Assert.IsFalse(hook.IsActivated);
-            hook.SetHook();
-            Assert.IsTrue(hook.IsActivated);
-            hook.Unhook();
-            Assert.IsFalse(hook.IsActivated);
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            {
+                Assert.IsFalse(hook.IsActivated);
+                hook.SetHook();
+                Assert.IsTrue(hook.IsActivated);
+                hook.Unhook();
+                Assert.IsFalse(hook.IsActivated);
+            }
         }
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SetHookThrowsInvalidOperationExceptionTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
-            hook.SetHook();
-            try
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
             {
                 hook.SetHook();
-            }
-            finally
-            {
-                hook.Unhook();
+                hook.SetHook();
             }
         }
 
@@ -71,18 +68,22 @@ namespace Crevice4Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void UnhookThrowsInvalidOperationExceptionTest0Test()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
-            hook.SetHook();
-            hook.Unhook();
-            hook.Unhook();
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            {
+                hook.SetHook();
+                hook.Unhook();
+                hook.Unhook();
+            }
         }
 
         [TestMethod()]
         [ExpectedException(typeof(InvalidOperationException))]
         public void UnhookThrowsInvalidOperationExceptionTest1Test()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
-            hook.Unhook();
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            {
+                hook.Unhook();
+            }
         }
 
         [TestMethod()]
@@ -90,24 +91,19 @@ namespace Crevice4Tests
         {
             using (var cde = new CountdownEvent(2))
             {
-                var hook = new LowLevelMouseHook((evnt, data) => {
+                using(var hook = new LowLevelMouseHook((evnt, data) => {
                     if (data.FromCreviceApp)
                     {
                         cde.Signal();
                         return LowLevelMouseHook.Result.Cancel;
                     }
                     return LowLevelMouseHook.Result.Transfer;
-                });
-                try
+                }))
                 {
-                    var sender = new SingleInputSender();
                     hook.SetHook();
+                    var sender = new SingleInputSender();
                     sender.RightClick();
                     Assert.AreEqual(cde.Wait(10000), true);
-                }
-                finally
-                {
-                    hook.Unhook();
                 }
             }
         }
@@ -115,20 +111,24 @@ namespace Crevice4Tests
         [TestMethod()]
         public void DisposeWhenActivatedTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
-            hook.SetHook();
-            Assert.IsTrue(hook.IsActivated);
-            hook.Dispose();
-            Assert.IsFalse(hook.IsActivated);
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            {
+                hook.SetHook();
+                Assert.IsTrue(hook.IsActivated);
+                hook.Dispose();
+                Assert.IsFalse(hook.IsActivated);
+            }
         }
 
         [TestMethod()]
         public void DisposeWhenNotActivatedTest()
         {
-            var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; });
-            Assert.IsFalse(hook.IsActivated);
-            hook.Dispose();
-            Assert.IsFalse(hook.IsActivated);
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            {
+                Assert.IsFalse(hook.IsActivated);
+                hook.Dispose();
+                Assert.IsFalse(hook.IsActivated);
+            }
         }
     }
 }
