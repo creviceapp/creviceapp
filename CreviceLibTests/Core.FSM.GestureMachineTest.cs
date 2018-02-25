@@ -226,8 +226,8 @@ namespace CreviceLibTests
             when
                 .On(TestEvents.LogicalDoubleThrowKeys[0])
                     .On(TestEvents.LogicalDoubleThrowKeys[1])
-                        .On(TestEvents.LogicalDoubleThrowKeys[0])
-                            .On(TestEvents.LogicalDoubleThrowKeys[1])
+                        .On(TestEvents.LogicalDoubleThrowKeys[2])
+                            .On(TestEvents.LogicalDoubleThrowKeys[3])
                             .Do((ctx) => { });
             {
                 var callback = new TestCallbackManager(enableMachineResetCallback: true);
@@ -290,7 +290,7 @@ namespace CreviceLibTests
                     Assert.IsTrue(s0 != gm.CurrentState);
                     Assert.IsTrue(s1 != gm.CurrentState);
                     var s2 = gm.CurrentState;
-                    gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys0[2].PressEvent);
                     Assert.IsTrue(s0 != gm.CurrentState);
                     Assert.IsTrue(s1 != gm.CurrentState);
                     Assert.IsTrue(s2 != gm.CurrentState);
@@ -299,8 +299,9 @@ namespace CreviceLibTests
                     gm.Reset();
                     Assert.AreEqual(callback.OnMachineResetCDE.Wait(10000), true);
                     Assert.AreEqual(callback.OnMachineResetCallCount, 1);
-                    Assert.AreEqual(gm.invalidEvents[TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent], 2);
+                    Assert.AreEqual(gm.invalidEvents[TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent], 1);
                     Assert.AreEqual(gm.invalidEvents[TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent], 1);
+                    Assert.AreEqual(gm.invalidEvents[TestEvents.PhysicalDoubleThrowKeys0[2].ReleaseEvent], 1);
                     Assert.AreEqual(s0, gm.CurrentState);
                 }
             }
