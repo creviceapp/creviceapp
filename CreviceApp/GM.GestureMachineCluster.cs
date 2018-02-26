@@ -13,7 +13,7 @@ namespace Crevice.GestureMachine
     public class GestureMachineCluster 
         : IGestureMachine, IDisposable
     {
-        public IReadOnlyList<GestureMachineProfile> Profiles;
+        public readonly IReadOnlyList<GestureMachineProfile> Profiles;
 
         public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> profiles)
         {

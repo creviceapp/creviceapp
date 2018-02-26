@@ -85,16 +85,20 @@ namespace Crevice.GestureMachine
             }
         }
 
-        protected GestureMachineCluster Create(
+        protected GestureMachineCluster Restore(
             UserScriptExecutionContext ctx,
             UserScriptAssembly.Cache userScriptAssembly)
         {
-            UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
+            try
+            {
+                UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
+            }
+            catch (Exception) { }
             return new GestureMachineCluster(ctx.Profiles);
         }
 
-        public GestureMachineCluster CreateNew(UserScriptExecutionContext ctx)
-            => Create(ctx, UserScriptAssemblyCache);
+        public GestureMachineCluster Create(UserScriptExecutionContext ctx)
+            => new GestureMachineCluster(ctx.Profiles);
 
         private bool _restorationFailed = false;
         private UserScriptAssembly.Cache _restorationCache = null;
@@ -121,6 +125,6 @@ namespace Crevice.GestureMachine
             => RestorationCache != null;
 
         public GestureMachineCluster Restore(UserScriptExecutionContext ctx)
-            => Create(ctx, RestorationCache);
+            => Restore(ctx, RestorationCache);
     }
 }

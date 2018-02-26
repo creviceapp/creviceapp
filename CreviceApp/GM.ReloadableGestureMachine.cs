@@ -73,14 +73,13 @@ namespace Crevice.GestureMachine
             Verbose.Print("restoreFromCache: {0}", restoreFromCache);
             Verbose.Print("saveCache: {0}", saveCache);
             Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
-
-            UserScriptExecutionContext createContext() => new UserScriptExecutionContext(_config);
-
+            
             if (candidate.IsRestorable)
             {
+                var ctx = new UserScriptExecutionContext(_config);
                 try
                 {
-                    return new GetGestureMachineResult(candidate.Restore(createContext()), null, null);
+                    return new GetGestureMachineResult(candidate.Restore(ctx), null, null);
                 }
                 catch (Exception ex)
                 {
@@ -96,9 +95,10 @@ namespace Crevice.GestureMachine
 
             Verbose.Print("No error found in the UserScript on compilation phase.");
             {
+                var ctx = new UserScriptExecutionContext(_config);
                 try
                 {
-                    UserScript.EvaluateUserScriptAssembly(createContext(), candidate.UserScriptAssemblyCache);
+                    UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
                     if (saveCache)
                     {
                         try
@@ -110,14 +110,14 @@ namespace Crevice.GestureMachine
                             Verbose.Error("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
                         }
                     }
+                    Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
+                    return new GetGestureMachineResult(candidate.Create(ctx), null, null);
                 }
                 catch (Exception ex)
                 {
                     Verbose.Error("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
-                    return new GetGestureMachineResult(candidate.CreateNew(createContext()), null, ex);
+                    return new GetGestureMachineResult(candidate.Create(ctx), null, ex);
                 }
-                Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
-                return new GetGestureMachineResult(candidate.CreateNew(createContext()), null, null);
             }
         }
 

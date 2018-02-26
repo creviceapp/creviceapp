@@ -168,6 +168,22 @@ namespace Crevice4Tests
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
+        [TestMethod()]
+        [ExpectedException(typeof(UserScript.EvaluationAbortedException))]
+        public void CompileAndEvaluateUserScript_AnbiguousOnOnDecomposed_Test()
+        {
+            // When the user script containing a error is given.
+            var globalConfig = new GlobalConfig();
+            var userScriptString = 
+                "var Never = When(ctx => { return false; });" +
+                "Never.On(Keys.RButton);" +
+                "Never.OnDecomposed(Keys.RButton);";
+            var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
+            var userScriptCache = UserScript.CompileUserScript(parsedScript);
+            var ctx = new UserScriptExecutionContext(globalConfig);
+            UserScript.EvaluateUserScript(ctx, parsedScript);
+        }
+
         public class SynchronizeInvokeMock : System.ComponentModel.ISynchronizeInvoke
         {
             public bool InvokeRequired
