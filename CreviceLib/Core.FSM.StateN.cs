@@ -70,18 +70,15 @@ namespace Crevice.Core.FSM
             if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
                 var singleThrowElements = GetSingleThrowElementsByTrigger(fireEvent);
-                if (singleThrowElements.Any())
-                {
-                    Machine.ContextManager.ExecuteDoExecutors(Ctx, singleThrowElements);
-                    var notCancellableCopyState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                        Machine,
-                        Ctx,
-                        History,
-                        DoubleThrowElements,
-                        depth: Depth,
-                        canCancel: false);
-                    return Result.Create(eventIsConsumed: true, nextState: notCancellableCopyState);
-                }
+                Machine.ContextManager.ExecuteDoExecutors(Ctx, singleThrowElements);
+                var notCancellableCopyState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                    Machine,
+                    Ctx,
+                    History,
+                    DoubleThrowElements,
+                    depth: Depth,
+                    canCancel: false);
+                return Result.Create(eventIsConsumed: true, nextState: notCancellableCopyState);
             }
             else if (evnt is PhysicalPressEvent pressEvent)
             {
@@ -92,27 +89,21 @@ namespace Crevice.Core.FSM
                 else if (IsDoubleThrowTrigger(pressEvent))
                 {
                     var doubleThrowElements = GetDoubleThrowElementsByTrigger(pressEvent);
-                    if (doubleThrowElements.Any())
-                    {
-                        Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
-                        var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                            Machine,
-                            Ctx,
-                            History.CreateNext(pressEvent.Opposition, this),
-                            doubleThrowElements,
-                            depth: Depth + 1,
-                            canCancel: CanCancel);
-                        return Result.Create(eventIsConsumed: true, nextState: nextState);
-                    }
+                    Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
+                    var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                        Machine,
+                        Ctx,
+                        History.CreateNext(pressEvent.Opposition, this),
+                        doubleThrowElements,
+                        depth: Depth + 1,
+                        canCancel: CanCancel);
+                    return Result.Create(eventIsConsumed: true, nextState: nextState);
                 }
                 else if (IsDecomposedTrigger(pressEvent))
                 {
                     var decomposedElements = GetDecomposedElementsByTrigger(pressEvent);
-                    if (decomposedElements.Any())
-                    {
-                        Machine.ContextManager.ExecutePressExecutors(Ctx, decomposedElements);
-                        return Result.Create(eventIsConsumed: true, nextState: this);
-                    }
+                    Machine.ContextManager.ExecutePressExecutors(Ctx, decomposedElements);
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
@@ -151,10 +142,7 @@ namespace Crevice.Core.FSM
                 else if (IsDoubleThrowTrigger(oppositeEvent))
                 {
                     var doubleThrowElements = GetDoubleThrowElementsByTrigger(oppositeEvent);
-                    if (doubleThrowElements.Any())
-                    {
-                        return Result.Create(eventIsConsumed: true, nextState: this);
-                    }
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
                 else if (IsDecomposedTrigger(oppositeEvent))
                 {
