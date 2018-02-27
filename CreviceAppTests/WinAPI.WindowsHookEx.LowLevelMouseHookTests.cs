@@ -95,9 +95,8 @@ namespace Crevice4Tests
                     if (data.FromCreviceApp)
                     {
                         cde.Signal();
-                        return LowLevelMouseHook.Result.Cancel;
                     }
-                    return LowLevelMouseHook.Result.Transfer;
+                    return LowLevelMouseHook.Result.Cancel;
                 }))
                 {
                     hook.SetHook();
