@@ -43,7 +43,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void ActivatedTest()
         {
-            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Cancel; }))
             {
                 Assert.IsFalse(hook.IsActivated);
                 hook.SetHook();
@@ -57,7 +57,7 @@ namespace Crevice4Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void SetHookThrowsInvalidOperationExceptionTest()
         {
-            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Cancel; }))
             {
                 hook.SetHook();
                 hook.SetHook();
@@ -68,7 +68,7 @@ namespace Crevice4Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void UnhookThrowsInvalidOperationExceptionTest0Test()
         {
-            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Cancel; }))
             {
                 hook.SetHook();
                 hook.Unhook();
@@ -80,7 +80,7 @@ namespace Crevice4Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void UnhookThrowsInvalidOperationExceptionTest1Test()
         {
-            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Cancel; }))
             {
                 hook.Unhook();
             }
@@ -111,7 +111,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void DisposeWhenActivatedTest()
         {
-            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Cancel; }))
             {
                 hook.SetHook();
                 Assert.IsTrue(hook.IsActivated);
@@ -123,7 +123,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void DisposeWhenNotActivatedTest()
         {
-            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Transfer; }))
+            using (var hook = new LowLevelMouseHook((evnt, data) => { return LowLevelMouseHook.Result.Cancel; }))
             {
                 Assert.IsFalse(hook.IsActivated);
                 hook.Dispose();

@@ -43,7 +43,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void ActivatedTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
             Assert.IsFalse(hook.IsActivated);
             hook.SetHook();
             Assert.IsTrue(hook.IsActivated);
@@ -55,7 +55,7 @@ namespace Crevice4Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void SetHookThrowsInvalidOperationExceptionTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
             hook.SetHook();
             hook.SetHook();
         }
@@ -64,7 +64,7 @@ namespace Crevice4Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void UnhookThrowsInvalidOperationExceptionTestTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
             hook.Unhook();
         }
 
@@ -89,7 +89,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void DisposeWhenActivatedTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
             hook.SetHook();
             Assert.IsTrue(hook.IsActivated);
             hook.Dispose();
@@ -99,7 +99,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void DisposeWhenNotActivatedTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Transfer; });
+            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
             Assert.IsFalse(hook.IsActivated);
             hook.Dispose();
             Assert.IsFalse(hook.IsActivated);

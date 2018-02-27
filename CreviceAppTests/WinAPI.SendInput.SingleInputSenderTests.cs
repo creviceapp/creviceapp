@@ -31,9 +31,8 @@ namespace Crevice4Tests
             {
                 mouseEvents.Add(Tuple.Create(evnt, data));
                 globalCDE.Signal();
-                return LowLevelMouseHook.Result.Cancel;
             }
-            return LowLevelMouseHook.Result.Transfer;
+            return LowLevelMouseHook.Result.Cancel;
         });
 
         static readonly List<Tuple<LowLevelKeyboardHook.Event, LowLevelKeyboardHook.KBDLLHOOKSTRUCT>> keyboardEvents = new List<Tuple<LowLevelKeyboardHook.Event, LowLevelKeyboardHook.KBDLLHOOKSTRUCT>>();
