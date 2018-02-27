@@ -93,18 +93,11 @@ namespace Crevice.Core.FSM
                 if (IsDoubleThrowTrigger(oppositeEvent) || IsDecomposedTrigger(oppositeEvent))
                 {
                     var ctx = Machine.ContextManager.CreateEvaluateContext();
-                    var whenElements = FilterActiveWhenElements(
-                        GetWhenElementsByDoubleThrowTrigger(oppositeEvent)
-                            .Union(GetWhenElementsByDecomposedTrigger(oppositeEvent)), ctx);
-                    
-                    var doubleThrowElements = GetDoubleThrowElements(whenElements, oppositeEvent);
+                    var whenElements = FilterActiveWhenElements(GetWhenElementsByDecomposedTrigger(oppositeEvent), ctx);
                     var decomposedElements = GetDecomposedElements(whenElements, oppositeEvent);
                     if (decomposedElements.Any())
                     {
                         Machine.ContextManager.ExecuteReleaseExecutors(ctx, decomposedElements);
-                    }
-                    if (doubleThrowElements.Any() || decomposedElements.Any())
-                    {
                         return Result.Create(eventIsConsumed: true, nextState: this);
                     }
                 }
@@ -242,7 +235,7 @@ namespace Crevice.Core.FSM
                 .ToDictionary(x => x.Key, x => x.Distinct().ToList() as IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>);
 
         public override string ToString()
-            => $"StateN(" +
+            => $"State0(" +
                     $"Depth: {Depth}, " +
                     $"SingleThrowTriggers: [{string.Join(", ", InversedSingleThrowTrigger.Keys.Select(k => k.LogicalKey))}], " +
                     $"DoubleThrowTriggers: [{string.Join(", ", InversedDoubleThrowTrigger.Keys.Select(k => k.LogicalKey))}], " +

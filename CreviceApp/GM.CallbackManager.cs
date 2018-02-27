@@ -56,6 +56,7 @@ namespace Crevice.GestureMachine
         {
             Verbose.Print("Gesture was cancelled.");
             var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
+            Verbose.Print($"Restoring press and release event: {string.Join(", ", systemKeys)}");
             ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvents(systemKeys));
             base.OnGestureCancelled(stateN);
         }
@@ -65,6 +66,7 @@ namespace Crevice.GestureMachine
         {
             Verbose.Print("Gesture was timeout.");
             var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
+            Verbose.Print($"Restoring press event: {string.Join(", ", systemKeys)}");
             ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvents(systemKeys));
             base.OnGestureTimeout(stateN);
         }
@@ -111,7 +113,7 @@ namespace Crevice.GestureMachine
                     }
                     else
                     {
-                        SingleInputSender.ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId);
+                        SingleInputSender.ExtendedKeyDownWithScanCode(systemKey.KeyId);
                     }
                 }
             };
@@ -150,8 +152,8 @@ namespace Crevice.GestureMachine
                     else
                     {
                         SingleInputSender.Multiple()
-                            .ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId)
-                            .ExtendedKeyUpWithScanCode((ushort)systemKey.KeyId)
+                            .ExtendedKeyDownWithScanCode(systemKey.KeyId)
+                            .ExtendedKeyUpWithScanCode(systemKey.KeyId)
                             .Send();
                     }
                 }

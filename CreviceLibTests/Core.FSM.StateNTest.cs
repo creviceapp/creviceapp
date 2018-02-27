@@ -377,7 +377,7 @@ namespace CreviceLibTests
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(pressCalled, false);
                         }
 
@@ -465,7 +465,7 @@ namespace CreviceLibTests
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(pressCalled, false);
                         }
                     }
@@ -525,7 +525,7 @@ namespace CreviceLibTests
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(pressCalled, false);
                         }
                     }
@@ -709,7 +709,7 @@ namespace CreviceLibTests
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(pressCalled, false);
                         }
                     }
@@ -862,7 +862,7 @@ namespace CreviceLibTests
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(doCalled, false);
                         }
 
@@ -947,7 +947,7 @@ namespace CreviceLibTests
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(doCalled, false);
                         }
                     }
@@ -1004,7 +1004,7 @@ namespace CreviceLibTests
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(doCalled, false);
                         }
                     }
@@ -1185,7 +1185,7 @@ namespace CreviceLibTests
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(doCalled, false);
                         }
                     }
@@ -1341,7 +1341,7 @@ namespace CreviceLibTests
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[0].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(releaseCalled, false);
                         }
 
@@ -1429,7 +1429,7 @@ namespace CreviceLibTests
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(releaseCalled, false);
                         }
                     }
@@ -1489,7 +1489,7 @@ namespace CreviceLibTests
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys1[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(releaseCalled, false);
                         }
                     }
@@ -1673,7 +1673,7 @@ namespace CreviceLibTests
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                             Assert.AreEqual(result.NextState, s1);
-                            Assert.AreEqual(result.EventIsConsumed, true);
+                            Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case when a button pressed before application to be started.
                             Assert.AreEqual(releaseCalled, false);
                         }
                     }

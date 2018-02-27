@@ -147,11 +147,6 @@ namespace Crevice.Core.FSM
                     }
                     return Result.Create(eventIsConsumed: true, nextState: queryResult.FoundState);
                 }
-                else if (IsDoubleThrowTrigger(oppositeEvent))
-                {
-                    var doubleThrowElements = GetDoubleThrowElementsByTrigger(oppositeEvent);
-                    return Result.Create(eventIsConsumed: true, nextState: this);
-                }
                 else if (IsDecomposedTrigger(oppositeEvent))
                 {
                     var decomposedElements = GetDecomposedElementsByTrigger(oppositeEvent);

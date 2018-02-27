@@ -255,7 +255,7 @@ namespace CreviceLibTests
                     pressCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                 }
             }
@@ -298,7 +298,7 @@ namespace CreviceLibTests
                     pressCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                 }
             }
@@ -412,7 +412,7 @@ namespace CreviceLibTests
                     doCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -456,7 +456,7 @@ namespace CreviceLibTests
                     doCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(doCalled, false);
                 }
             }
@@ -571,7 +571,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(releaseCalled, false);
                 }
             }
@@ -614,7 +614,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(releaseCalled, false);
                 }
             }
@@ -736,7 +736,7 @@ namespace CreviceLibTests
                     doCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                 }
@@ -789,7 +789,7 @@ namespace CreviceLibTests
                     doCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                 }
@@ -929,7 +929,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
@@ -983,7 +983,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
@@ -1124,7 +1124,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
@@ -1177,7 +1177,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(releaseCalled, false);
                 }
@@ -1325,7 +1325,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
@@ -1388,7 +1388,7 @@ namespace CreviceLibTests
                     releaseCalled = false;
                     var result = s0.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(result.NextState, s0);
-                    Assert.AreEqual(result.EventIsConsumed, true);
+                    Assert.AreEqual(result.EventIsConsumed, false); // Should be false for the case the gesture to be timeout.
                     Assert.AreEqual(pressCalled, false);
                     Assert.AreEqual(doCalled, false);
                     Assert.AreEqual(releaseCalled, false);
