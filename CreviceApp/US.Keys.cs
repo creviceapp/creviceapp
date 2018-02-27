@@ -27,7 +27,7 @@ namespace Crevice.UserScript.Keys
                 case 3: return "WheelLeft";
                 case 4: return "WheelRight";
             }
-            return $"0x{keyId.ToString("x")}";
+            return $"[0x{keyId.ToString("x")}]";
         }
     }
 
@@ -37,7 +37,7 @@ namespace Crevice.UserScript.Keys
             : base(keyId) { }
 
         public override string ToString()
-            => $"LogicalMouseWheelKey({LogicalMouseWheelKeySet.KeyIdToKeyName(KeyId)})";
+            => $"Keys.{LogicalMouseWheelKeySet.KeyIdToKeyName(KeyId)}";
     }
 
     public class PhysicalMouseWheelKeySet : KeySet<PhysicalMouseWheelKey>
@@ -60,7 +60,7 @@ namespace Crevice.UserScript.Keys
             : base(logicalKey, keyId) { }
 
         public override string ToString()
-            => $"PhysicalMouseWheelKey({LogicalMouseWheelKeySet.KeyIdToKeyName(KeyId)})";
+            => $"PhysicalKeys.{LogicalMouseWheelKeySet.KeyIdToKeyName(KeyId)}";
     }
 
     public class LogicalSystemKeySet : KeySet<LogicalSystemKey>
@@ -248,7 +248,7 @@ namespace Crevice.UserScript.Keys
                 case 253: return "Pa1";
                 case 254: return "OemClear";
             }
-            return $"0x{keyId.ToString("x")}";
+            return $"[0x{keyId.ToString("x")}]";
         }
     }
 
@@ -261,7 +261,7 @@ namespace Crevice.UserScript.Keys
             => key.KeyId;
 
         public override string ToString()
-            => $"LogicalSystemKey({LogicalSystemKeySet.KeyIdToKeyName(KeyId)})";
+            => $"Keys.{LogicalSystemKeySet.KeyIdToKeyName(KeyId)}";
     }
 
     public class PhysicalSystemKeySet : KeySet<PhysicalSystemKey>
@@ -287,7 +287,7 @@ namespace Crevice.UserScript.Keys
             => key.KeyId;
 
         public override string ToString()
-            => $"PhysicalSystemKey({LogicalSystemKeySet.KeyIdToKeyName(KeyId)})";
+            => $"PhysicalKeys.{LogicalSystemKeySet.KeyIdToKeyName(KeyId)}";
     }
 
     public class SupportedKeys

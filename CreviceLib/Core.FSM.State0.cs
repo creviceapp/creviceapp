@@ -244,8 +244,8 @@ namespace Crevice.Core.FSM
         public override string ToString()
             => $"StateN(" +
                     $"Depth: {Depth}, " +
-                    $"SingleThrowTriggers: [{string.Join(" ", InversedSingleThrowTrigger.Keys.Select(k => k.LogicalKey))}] " +
-                    $"DoubleThrowTriggers: [{string.Join(" ", InversedDoubleThrowTrigger.Keys.Select(k => k.LogicalKey))}] " +
-                    $"DecomposedTriggers: [{string.Join(" ", InversedDecomposedTrigger.Keys.Select(k => k.LogicalKey))}])";
+                    $"SingleThrowTriggers: [{string.Join(", ", InversedSingleThrowTrigger.Keys.Select(k => k.LogicalKey))}], " +
+                    $"DoubleThrowTriggers: [{string.Join(", ", InversedDoubleThrowTrigger.Keys.Select(k => k.LogicalKey))}], " +
+                    $"DecomposedTriggers: [{string.Join(", ", InversedDecomposedTrigger.Keys.Select(k => k.LogicalKey))}])";
     }
 }

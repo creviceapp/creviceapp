@@ -349,10 +349,10 @@ namespace Crevice.Core.FSM
             => $"StateN(" +
                     $"Depth: {Depth}, " +
                     $"CanCancel: {CanCancel}, " +
-                    $"SingleThrowTriggers: [{string.Join(" ", InversedSingleThrowTrigger.Keys.Select(k => k.LogicalKey))}] " +
-                    $"DoubleThrowTriggers: [{string.Join(" ", InversedDoubleThrowTrigger.Keys.Select(k => k.LogicalKey))}] " +
-                    $"StrokeTriggers: [{string.Join(" ", InversedStrokeTrigger.Keys)}] " +
-                    $"DecomposedTriggers: [{string.Join(" ", InversedDecomposedTrigger.Keys.Select(k => k.LogicalKey))}] " +
-                    $"EndTriggers: [{string.Join(" ", History.Records.Select(r => r.ReleaseEvent.LogicalKey))}])";
+                    $"SingleThrowTriggers: [{string.Join(", ", InversedSingleThrowTrigger.Keys.Select(k => k.LogicalKey))}], " +
+                    $"DoubleThrowTriggers: [{string.Join(", ", InversedDoubleThrowTrigger.Keys.Select(k => k.LogicalKey))}], " +
+                    $"StrokeTriggers: [{string.Join(", ", InversedStrokeTrigger.Keys)}], " +
+                    $"DecomposedTriggers: [{string.Join(", ", InversedDecomposedTrigger.Keys.Select(k => k.LogicalKey))}], " +
+                    $"EndTriggers: [{string.Join(", ", History.Records.Select(r => r.ReleaseEvent.LogicalKey))}])";
     }
 }
