@@ -344,5 +344,15 @@ namespace Crevice.Core.FSM
                 })
                 .ToLookup(t => t.Item2, t => t.Item1)
                 .ToDictionary(x => x.Key, x => x.Distinct().ToList() as IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>>);
+
+        public override string ToString()
+            => $"StateN(" +
+                    $"Depth: {Depth}, " +
+                    $"CanCancel: {CanCancel}, " +
+                    $"SingleThrowTriggers: [{string.Join(" ", InversedSingleThrowTrigger.Keys.Select(k => k.LogicalKey))}] " +
+                    $"DoubleThrowTriggers: [{string.Join(" ", InversedDoubleThrowTrigger.Keys.Select(k => k.LogicalKey))}] " +
+                    $"StrokeTriggers: [{string.Join(" ", InversedStrokeTrigger.Keys)}] " +
+                    $"DecomposedTriggers: [{string.Join(" ", InversedDecomposedTrigger.Keys.Select(k => k.LogicalKey))}] " +
+                    $"EndTriggers: [{string.Join(" ", History.Records.Select(r => r.ReleaseEvent.LogicalKey))}])";
     }
 }

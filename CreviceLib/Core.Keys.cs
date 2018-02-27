@@ -77,7 +77,7 @@ namespace Crevice.Core.Keys
         public LogicalSingleThrowKey(int keyId)
         {
             KeyId = keyId;
-            FireEvent = new LogicalFireEvent();
+            FireEvent = new LogicalFireEvent(this);
         }
     }
     
@@ -104,7 +104,7 @@ namespace Crevice.Core.Keys
         public PhysicalSingleThrowKey(LogicalSingleThrowKey logicalKey, int keyId)
         {
             KeyId = keyId;
-            FireEvent = new PhysicalFireEvent(logicalKey);
+            FireEvent = new PhysicalFireEvent(logicalKey, this);
         }
     }
     

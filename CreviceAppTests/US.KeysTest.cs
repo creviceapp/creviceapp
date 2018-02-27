@@ -20,10 +20,10 @@ namespace Crevice4Tests
         [TestMethod()]
         public void WheelTest()
         {
-            Assert.AreEqual(Keys.WheelUp is LogicalSingleThrowKey, true);
-            Assert.AreEqual(Keys.WheelDown is LogicalSingleThrowKey, true);
-            Assert.AreEqual(Keys.WheelLeft is LogicalSingleThrowKey, true);
-            Assert.AreEqual(Keys.WheelRight is LogicalSingleThrowKey, true);
+            Assert.AreEqual(Keys.WheelUp is LogicalMouseWheelKey, true);
+            Assert.AreEqual(Keys.WheelDown is LogicalMouseWheelKey, true);
+            Assert.AreEqual(Keys.WheelLeft is LogicalMouseWheelKey, true);
+            Assert.AreEqual(Keys.WheelRight is LogicalMouseWheelKey, true);
         }
 
         [TestMethod()]

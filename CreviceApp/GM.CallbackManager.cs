@@ -47,7 +47,7 @@ namespace Crevice.GestureMachine
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> lastState, 
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> currentState)
         {
-            Verbose.Print("State was changed; {0} to {1}", lastState, currentState);
+            Verbose.Print("State was changed to {1}", currentState);
             base.OnStateChanged(lastState, currentState);
         }
 
