@@ -12,26 +12,25 @@ You can get
 Extract zip file to any location, and click `crevice4.exe`.
 
 
-Note: Crevice4 requires Windows 7 or later, and .Net Framework 4.6.1 or later.
+_Note: Crevice4 requires Windows 7 or later, and .Net Framework 4.6.1 or later._
 
 ## Quickstart
 
-After the first execution of the application, you could find `default.csx` in the directory `%APPDATA%\Crevice4`. It's the userscript file. Please open it with a text editor and take a look through it.
+After the first execution of the application, you can find `default.csx` in the directory `%APPDATA%\Crevice4`. It's the userscript file. Please open it with a text editor and take a look through it.
 
 
-After several `using` declaring lines, you will see `Browser` definition following:
+After several `using` declaring lines, you can see `Browser` definition as following (but here, a little bit shortened):
 
 ```cs
 var Browser = When(ctx =>
 {
     return ctx.ForegroundWindow.ModuleName == "chrome.exe" ||
            ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
-           ctx.ForegroundWindow.ModuleName == "opera.exe" ||
            ctx.ForegroundWindow.ModuleName == "iexplore.exe");
 });
 ```
 
-When the `ModuleName` of `ForegroundWindow` is as follows, `chrome.exe`, `firefox.exe`, `opera.exe`, and so on, then, `When` returns true; this is the declaration of the context which specialized to `Browser`. 
+When the `ModuleName` of `ForegroundWindow` is one of follows, `chrome.exe`, `firefox.exe`, or `iexplore.exe`, then, `When` returns true; this is the declaration of initialization of a context which specialized to `Browser`. 
 
 After that, the declaration of gestures follows. Let's see the first one:
 
@@ -52,23 +51,27 @@ Do(ctx =>
 });
 ```
 
-This is a mouse gesture definition; when you press and hold `Keys.RButton`, and then if you `Keys.WheelUp` the mouse, codes declared in `Do` will be executed.
+This is a mouse gesture definition; when you press and hold `Keys.RButton`, and then if you `Keys.WheelUp` it, the actions declared in `Do` will be executed.
 
-As long as Crevice4 is executing, you can edit userscript file at any time. While reading the following sections, of course. Crevice4 supports **hotloading** feature. Whenever Crevice4 detects an update of user script file, it will be compiled and evaluated immediately, then the new userscript will be loaded if the compilation is successful. If the compilation is failed, error message will be shown. You can see the details of it by clicking it.
+As long as Crevice4 is executing, you can edit userscript file at any time. While reading the following sections, of course. Crevice4 supports **hotloading** feature. Whenever Crevice4 detects an update of user script file, it will be compiled and evaluated immediately, then the userscript updated will be loaded if the compilation is successful. 
 
-//todo See movie
+// todo movie
 
-The userscript file is just a C# Scripting file. See [Overview of C# Scripting](#overview-of-c-scripting) for more details.
+If the compilation is failed, error message will be shown. You can see the details of it by clicking it.
 
-// todo hot reload
+// todo movie
 
-// error example
+If the evaluation is falied, warning message will be shown. You can see the details of it by clicking it.
+
+//todo movie
+
+The userscript file is just a C# Scripting file. You can do anything you want by writing your own script in it, or else **by just copying codes** from [Stack Overflow](https://stackoverflow.com/). See [Overview of C# Scripting](#overview-of-c-scripting) for more details.
 
 # Gesture DSL
 
 ## When
 
-All gesture definition starts from `When` clause, representing the condition for the activation of a gesture.
+All gesture definition starts from `When` clause, representing the condition for the activation of a gesture. And also `When` clause is the first context of a gesture.
 ```cs
 var Chrome = When(ctx =>
 {
@@ -76,13 +79,13 @@ var Chrome = When(ctx =>
 });
 ```
 
-`ctx` is EvaluationContext, see [Crevice4 Core API/EvaluationContext](#evaluationcontext) for more details.
+_Note: `ctx` is EvaluationContext, see [Crevice4 Core API/EvaluationContext](#evaluationcontext) for more details._
 
 The next to `When` are `On` and `OnDecomposed` clauses.
 
 ## On 
 
-`On` clause takes a button or a sequence of stroke as it's argument. This clause can be declared successively if you needed. Declaration of one or more `On` clause is a gesture.
+`On` clause takes a button or a sequence of stroke as it's argument. This clause can be declared successively if you needed. So, `On` clause is the second or later context of a gesture. 
 
 ```cs
 // Button gesture.
@@ -122,7 +125,7 @@ On(Keys.RButton).
 Release(ctx => {});
 ```
 
-And also, these clauses are ca n be declared at the same time.
+And also, these clauses are can be declared at the same time.
 
 ```cs
 Chrome.
@@ -134,7 +137,7 @@ Release(ctx => {});
 
 ## OnDecomposed
 
-`OnDecomposed` clause takes a button as It's argument. In contrast to `On` clause, this clause **can not** be declared successively, and **can not** take `Do` clause as the next clause. This clause exists for the cases that you want to simply hook the press and release events to an action. This clause takes `Press` and `Release` clauses as the next clause. These clauses will directly be connected to the action, and if a button pressed, each of all the events published while it will invoke it.
+`OnDecomposed` clause takes a button as It's argument. Like `On`, `OnDecomposedOn` clause is the second or later context of a gesture, too. But, in contrast to `On` clause, this clause **can not** be declared successively, and **can not** take `Do` clause as the next clause. This clause exists for the cases that you want to simply hook the press and release events to an action. This clause takes `Press` and `Release` clauses as the next clause. These clauses will directly be connected to the action, and if a button pressed, each of all the events published while it will invoke it.
 
 ```cs
 Chrome.
@@ -146,17 +149,20 @@ Press(ctx =>
 Release(ctx => {});
 ```
 
-Note: `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context.
 
-```cs
-Chrome.
-On(Keys.RButton).
-OnDecomposed(Keys.RButton). // Runtime error will be thrown and warning messsage will be shown.
-```
+##### Grammatical limitations: { ignore=true }
+* `OnDecomposed` clause does not have `Do()` functions.
+* `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context.
+
+   ```cs
+   Chrome.
+   On(Keys.RButton).
+   OnDecomposed(Keys.RButton). // Runtime error will be thrown and warning messsage will be shown.
+   ```
 
 ## Do
 
-`Do` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled.
+`Do` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled. `Do` clause is the last context of a gesture. 
 
 ```cs
 On(Keys.RButton). // If you press mouse's right button,
@@ -166,11 +172,11 @@ Do(ctx => // and release mouse's right button,
 });
 ```
 
-`ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details.
+_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details._
 
 ## Press
 
-`Press` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled, except for the last `On` clause's release event.
+`Press` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled, except for the last clause's release event. `Press` clause is the last context of a gesture. 
 
 ```cs
 On(Keys.RButton). // If you press mouse's right button,
@@ -180,11 +186,11 @@ Press(ctx => // without waiting for release event,
 });
 ```
 
-`ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details.
+_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details._
 
 ## Release
 
-`Release` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled.
+`Release` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled. `Release` clause is the last context of a gesture. 
 
 ```cs
 On(Keys.RButton). // If you press mouse's right button,
@@ -194,10 +200,10 @@ Release(ctx => // and release mouse's right button,
 });
 ```
 
-`ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details.
+_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details._
 
 ## Button gesture
-As you may know, mouse gestures with buttons are called "rocker gesture" in mouse gesture utility communities. But we call it, including it with keyboard buttons, simply `Button gesture` here. 
+As you may know, mouse gestures with it's buttons are called "rocker gesture" in mouse gesture utility communities. But we call it, including it with keyboard's keys, simply `Button gesture` here. 
 
 ```cs
 // Button gesture.
@@ -236,7 +242,7 @@ This means actions declared in `Do` clause is not assured it's execution.
 Above three gestures are `Button gesture` by the standard buttons. `On` clause with standard buttons can be used for declare `Do` clause but also `Press` and `Release` clauses.
 
 ### Button gesture with Press/Release
-`Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to press / release events of a button. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
+`Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to the press or release event of a button. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
 
 ```cs
 var Whenever = When(ctx => {
@@ -254,9 +260,12 @@ Release(ctx =>
 {
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
+// But be careful that this conversion is incomplete. You should 
+// use `OnDecomposed` instead of `On` clause in case you need to 
+// support the repeat function which keyboard's keys possess.
 ```
  
-And for `Release` clause, it can be after `Do` clause.
+For `Release` clause, it can be after `Do` clause.
 
 ```cs
 Whenever.
@@ -276,6 +285,7 @@ Release(ctx =>
     // Assured.
 });
 ```
+
 Actions declared in `Press` and `Release` clauses are different from it of `Do` clause, the execution of these are assured.
 
 ### Button gesture with single state button
@@ -300,7 +310,8 @@ On(Keys.WheelUp).
 Release(ctx => { }); // Compilation error
 ```
 
-Grammatical limitations:
+
+##### Grammatical limitations: { ignore=true }
 * `On` clause with single state button does not have `Press()` and `Release()` functions.
 
 Single state buttons are `Keys.WheelUp`,  `Keys.WheelDown`,  `Keys.WheelLeft`, and  `Keys.WheelRight`.
@@ -328,9 +339,9 @@ Do(ctx => // and release right button,
 
 `Stroke gesture` represents special case when a standard button is pressed, so it have the same grammatical limitation to `Button gesture with single state button`.
 
-Grammatical limitations:
+##### Grammatical limitations: { ignore=true }
 * `On` clause with `Keys.Move*` does not have `Press()` and `Release()` functions.
-* `On` clause with `Keys.Move*` should have `Button gesture` by standard button as the previous element.
+* `On` clause with `Keys.Move*` should have `Button gesture` by standard button as the previous context.
 * `On` clause with `Keys.Move*` should be the last element of the sequence of `On` clauses.
 
 # Overview of C# Scripting
@@ -352,9 +363,8 @@ You can add reference to assemblies by `#r` directive.
 #r "Microsoft.VisualStudio" 
 ```
 
-
-Note 1: This directive should be placed on the top of your C# Scripting code.
-Note 2: This directive does not support to load NuGet package automatically. You can do it by download NuGet package by yourself, extract dll files, and add refereces to it by using `#r` directive.
+_Note 1: This directive should be placed on the top of your C# Scripting code._
+_Note 2: This directive does not support to load NuGet package automatically. You can do it by download NuGet package by yourself, extract dll files, and add refereces to it by using `#r` directive._
 
 ## #load directive
 
@@ -364,7 +374,7 @@ You can load the content in another C# Scripting file by `#load` directive.
 #load "path_to/another.csx"
 ```
 
-Note : This directive should be placed on the top of your C# Scripting code except for `#r` directive.
+_Note : This directive should be placed on the top of your C# Scripting code except for `#r` directive._
 
 # Practical example
 
@@ -420,7 +430,7 @@ Do(ctx =>
 });
 ```
 
-There are more a lot of number of parameters used for operating window. See [WM\_SYSCOMMAND message](https://msdn.microsoft.com/library/windows/desktop/ms646360%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396) for more details.
+There are more a lot of numbers of parameters can be used for operate the window. See [WM\_SYSCOMMAND message](https://msdn.microsoft.com/library/windows/desktop/ms646360%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396) for more details.
 
 ## Shortcut for fixed phrase 
 
@@ -428,7 +438,6 @@ If you are typing boring boilerplate on your computer everyday, Crevice can auto
 
 ```cs
 using System.Windows.Forms;
-
 using Crevice.Core.DSL;
 using Crevice.Core.Keys;
 using Crevice.GestureMachine;
@@ -501,7 +510,7 @@ var Whenever = When(ctx => { return true; });
 var WheneverOn = Whenever.On(Keys.RControlKey);
 
 // Declare gesture definition generated automatically from registered data;
-// On(Keys.RControlKey).On(Keys.T).Do() and On(Keys.RControlKey).On(Keys.I).Do().
+// On(Keys.RControlKey).OnDecomposed(Keys.T).Press() and OnDecomposed(Keys.RControlKey).On(Keys.I).Press().
 keyCommandManager.Setup(WheneverOn);
 
 WheneverOn.
@@ -513,6 +522,105 @@ Release(ctx => {
 
 ## Define C-x C-x command like Emacs
 
+The following code is the example of Emacs like C-x C-x gesture definition. It seems like previous `KeyCommandManager`, but is more complicated in it's behavior. `EmacsLikeCommandManager` has a state that can be permanent. 
+
+```cs
+
+using System.Windows.Forms;
+using Crevice.Core.DSL;
+using Crevice.Core.Keys;
+using Crevice.GestureMachine;
+
+class EmacsLikeCommandManager
+{
+    private readonly Action<string> showStatus;
+    private readonly List<LogicalDoubleThrowKey> currentKeys 
+        = new List<LogicalDoubleThrowKey>();
+    private readonly List<(List<LogicalDoubleThrowKey>, Action)> key2Action 
+        = new List<(List<LogicalDoubleThrowKey>, Action)>();
+
+    public EmacsLikeCommandManager(Action<string> showStatus)
+    {
+        this.showStatus = showStatus;
+    }
+    public void Setup(
+        DoubleThrowElement<ExecutionContext> onElement)
+    {
+        var uniqueKeys = key2Action.
+            Select(t => t.Item1).
+            Aggregate(new List<LogicalDoubleThrowKey>(), (a, b) => { a.AddRange(b); return a; }).
+            Distinct();
+        foreach (var key in uniqueKeys)
+        {
+            onElement.
+            OnDecomposed(key).
+            Press(ctx => 
+            {
+                AddKey(key);
+                showStatus(string.Join("->", currentKeys.Select(k => k.KeyId)));
+                if (ExecuteCommand())
+                {
+                    Reset();
+                }
+            });
+        }
+    }
+    public void Register(Action action, params Crevice.Core.Keys.LogicalDoubleThrowKey[] keyArr){
+        key2Action.Add((keyArr.ToList(), action));
+    }
+    public void Reset() => currentKeys.Clear();
+    public void AddKey(Crevice.Core.Keys.LogicalDoubleThrowKey key) => currentKeys.Add(key);
+    public bool ExecuteCommand()
+    {
+        var actions = key2Action.
+            Where(t => currentKeys.SequenceEqual(t.Item1)).
+            Select(t => t.Item2);
+        foreach (var action in actions)
+        {
+            action();
+        }
+        return actions.Any();
+    }
+}
+```
+
+If you press `Keys.A` while pressing `Keys.RControlKey`, the first condition to be filled. After that, you can release `Keys.RControlKey`. If you press `Keys.P` while pressing `Keys.RControlKey` again, then all condition to be filled.  A registered text will be pasted from clipboard to foreground application. Like Emacs, you can use C-g to reset the manager's state.
+
+```cs
+var keyCommandManager = new EmacsLikeCommandManager(str => 
+{
+    // You need to use Crevice API remotely, if a class uses it.
+    Tooltip(str);
+});
+
+// Register a pair of an action that sends fixed message to the foreground application 
+// and a sequence of keys, `Keys.A` - `Keys.P`.
+keyCommandManager.Register(() => 
+{
+    Clipboard.SetText("I appreciate your commitment in promoting the program!");
+    SendInput.Multiple().
+    ExtendedKeyDown(Keys.ControlKey).
+    ExtendedKeyDown(Keys.V).
+    ExtendedKeyUp(Keys.V).
+    ExtendedKeyUp(Keys.ControlKey).
+    Send(); // Ctrl+V
+}, Keys.A, Keys.P); // Ctrl+A -> Ctrl+P
+
+var Whenever = When(ctx => { return true; });
+var WheneverOn = Whenever.On(Keys.RControlKey);
+
+// Declare gesture definition generated automatically from registered data;
+// On(Keys.RControlKey).OnDecomposed(Keys.A).Press() and On(Keys.RControlKey).OnDecomposed(Keys.P).Press().
+keyCommandManager.Setup(WheneverOn);
+
+WheneverOn. // Ctrl+G to reset.
+OnDecomposed(Keys.G).
+Press(ctx => 
+{
+    Tooltip("");
+    keyCommandManager.Reset();
+});
+```
 
 ## Change gesture behavior by modifier key
 
@@ -549,7 +657,7 @@ static extern short GetKeyState(int nVirtKey);
 On(Keys.RButton).
 Do((tx =>
 {
-    // When shift and control key is pressed
+    // When shift and control modifier key is pressed
     if (GetKeyState(Keys.ShiftKey) < 0 && 
         GetKeyState(Keys.ControlKey) < 0) 
     {
