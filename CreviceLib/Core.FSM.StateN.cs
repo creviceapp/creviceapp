@@ -71,14 +71,7 @@ namespace Crevice.Core.FSM
             {
                 var singleThrowElements = GetSingleThrowElementsByTrigger(fireEvent);
                 Machine.ContextManager.ExecuteDoExecutors(Ctx, singleThrowElements);
-                var notCancellableCopyState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                    Machine,
-                    Ctx,
-                    History,
-                    DoubleThrowElements,
-                    depth: Depth,
-                    canCancel: false);
-                return Result.Create(eventIsConsumed: true, nextState: notCancellableCopyState);
+                return Result.Create(eventIsConsumed: true, nextState: ToNonCancellableClone());
             }
             else if (evnt is PhysicalPressEvent pressEvent)
             {
@@ -88,22 +81,27 @@ namespace Crevice.Core.FSM
                 }
                 else if (IsDoubleThrowTrigger(pressEvent))
                 {
-                    var doubleThrowElements = GetDoubleThrowElementsByTrigger(pressEvent);
-                    Machine.ContextManager.ExecutePressExecutors(Ctx, doubleThrowElements);
-                    var nextState = new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
-                        Machine,
-                        Ctx,
-                        History.CreateNext(pressEvent.Opposition, this),
-                        doubleThrowElements,
-                        depth: Depth + 1,
-                        canCancel: CanCancel);
-                    return Result.Create(eventIsConsumed: true, nextState: nextState);
+                    var nextDoubleThrowElements = GetDoubleThrowElementsByTrigger(pressEvent);
+                    if (HasPressExecutors(nextDoubleThrowElements) ||
+                        HasReleaseExecutors(nextDoubleThrowElements))
+                    {
+                        Machine.ContextManager.ExecutePressExecutors(Ctx, nextDoubleThrowElements);
+                        return Result.Create(eventIsConsumed: true, 
+                            nextState: CreateNonCancellableNextState(pressEvent, nextDoubleThrowElements));
+                    }
+                    else if (!CanCancel)
+                    {
+                        return Result.Create(eventIsConsumed: true, 
+                            nextState: CreateNonCancellableNextState(pressEvent, nextDoubleThrowElements));
+                    }
+                    return Result.Create(eventIsConsumed: true, 
+                        nextState: CreateCancellableNextState(pressEvent, nextDoubleThrowElements));
                 }
                 else if (IsDecomposedTrigger(pressEvent))
                 {
                     var decomposedElements = GetDecomposedElementsByTrigger(pressEvent);
                     Machine.ContextManager.ExecutePressExecutors(Ctx, decomposedElements);
-                    return Result.Create(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: ToNonCancellableClone());
                 }
             }
             else if (evnt is PhysicalReleaseEvent releaseEvent)
@@ -131,12 +129,22 @@ namespace Crevice.Core.FSM
                     {
                         Machine.CallbackManager.OnGestureCancelled(this);
                     }
+
+                    if (!CanCancel && LastState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+                    {
+                        return Result.Create(eventIsConsumed: true, nextState: stateN.ToNonCancellableClone());
+                    }
                     return Result.Create(eventIsConsumed: true, nextState: LastState);
                 }
                 else if (IsAbnormalEndTrigger(releaseEvent))
                 {
                     var queryResult = History.Query(releaseEvent);
                     Machine.invalidEvents.IgnoreNext(queryResult.SkippedReleaseEvents);
+
+                    if (!CanCancel && queryResult.FoundState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+                    {
+                        return Result.Create(eventIsConsumed: true, nextState: stateN.ToNonCancellableClone());
+                    }
                     return Result.Create(eventIsConsumed: true, nextState: queryResult.FoundState);
                 }
                 else if (IsDoubleThrowTrigger(oppositeEvent))
@@ -148,7 +156,7 @@ namespace Crevice.Core.FSM
                 {
                     var decomposedElements = GetDecomposedElementsByTrigger(oppositeEvent);
                     Machine.ContextManager.ExecuteReleaseExecutors(Ctx, decomposedElements);
-                    return Result.Create(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: ToNonCancellableClone());
                 }
             }
             return base.Input(evnt);
@@ -170,6 +178,24 @@ namespace Crevice.Core.FSM
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }
+
+        private StateN<TConfig, TContextManager, TEvalContext, TExecContext> ToNonCancellableClone()
+            => new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                    Machine, Ctx, History, DoubleThrowElements, depth: Depth, canCancel: false);
+
+        private StateN<TConfig, TContextManager, TEvalContext, TExecContext> CreateCancellableNextState(
+            PhysicalPressEvent pressEvent,
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+            => new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                    Machine, Ctx, History.CreateNext(pressEvent.Opposition, this), 
+                    doubleThrowElements, depth: Depth + 1, canCancel: true);
+
+        private StateN<TConfig, TContextManager, TEvalContext, TExecContext> CreateNonCancellableNextState(
+            PhysicalPressEvent pressEvent,
+            IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+            => new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
+                    Machine, Ctx, History.CreateNext(pressEvent.Opposition, ToNonCancellableClone()),
+                    doubleThrowElements, depth: Depth + 1, canCancel: false);
 
         public bool IsRepeatedStartTrigger(PhysicalPressEvent pressEvent)
             => EndTriggers.Contains(pressEvent.Opposition);

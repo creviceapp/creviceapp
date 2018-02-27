@@ -44,12 +44,16 @@ namespace Crevice4Tests
         [TestInitialize()]
         public void TestInitialize()
         {
+            TestHelpers.MouseMutex.WaitOne();
+            TestHelpers.KeyboardMutex.WaitOne();
             mutex.WaitOne();
         }
     
         [TestCleanup()]
         public void TestCleanup()
         {
+            TestHelpers.MouseMutex.ReleaseMutex();
+            TestHelpers.KeyboardMutex.ReleaseMutex();
             mutex.ReleaseMutex();
         }
 

@@ -38,7 +38,6 @@ namespace Crevice4Tests
         public void TestCleanup()
         {
             mutex.ReleaseMutex();
-            Thread.Sleep(1000);
         }
 
         [TestMethod()]

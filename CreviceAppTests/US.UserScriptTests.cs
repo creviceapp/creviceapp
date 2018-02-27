@@ -27,7 +27,10 @@ namespace Crevice4Tests
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            Directory.Delete(TestHelpers.TemporaryDirectory, recursive: true);
+            if (Directory.Exists(TestHelpers.TemporaryDirectory))
+            {
+                Directory.Delete(TestHelpers.TemporaryDirectory, recursive: true);
+            }
             TestHelpers.TestDirectoryMutex.ReleaseMutex();
         }
 
