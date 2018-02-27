@@ -47,7 +47,7 @@ namespace Crevice.GestureMachine
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> lastState, 
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> currentState)
         {
-            Verbose.Print("State was changed to {1}", currentState);
+            Verbose.Print("State was changed to {0}", currentState);
             base.OnStateChanged(lastState, currentState);
         }
 
@@ -55,8 +55,8 @@ namespace Crevice.GestureMachine
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
             Verbose.Print("Gesture was cancelled.");
-            var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
-            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvent(systemKey));
+            var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
+            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressAndReleaseEvents(systemKeys));
             base.OnGestureCancelled(stateN);
         }
 
@@ -64,8 +64,8 @@ namespace Crevice.GestureMachine
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
             Verbose.Print("Gesture was timeout.");
-            var systemKey = stateN.NormalEndTrigger.PhysicalKey as PhysicalSystemKey;
-            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvent(systemKey));
+            var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
+            ExecuteInBackground(SystemKeyRestorationTaskFactory, RestoreKeyPressEvents(systemKeys));
             base.OnGestureTimeout(stateN);
         }
 
@@ -79,75 +79,81 @@ namespace Crevice.GestureMachine
         protected internal void ExecuteInBackground(TaskFactory taskFactory, Action action)
             => taskFactory.StartNew(action);
 
-        internal Action RestoreKeyPressEvent(PhysicalSystemKey systemKey)
+        internal Action RestoreKeyPressEvents(IEnumerable<PhysicalSystemKey> systemKeys)
         {
             return () =>
             {
-                if (systemKey == SupportedKeys.PhysicalKeys.None)
+                foreach (var systemKey in systemKeys)
                 {
+                    if (systemKey == SupportedKeys.PhysicalKeys.None)
+                    {
 
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
-                {
-                    SingleInputSender.LeftDown();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
-                {
-                    SingleInputSender.RightDown();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
-                {
-                    SingleInputSender.MiddleDown();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
-                {
-                    SingleInputSender.X1Down();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
-                {
-                    SingleInputSender.X2Down();
-                }
-                else
-                {
-                    SingleInputSender.ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId);
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
+                    {
+                        SingleInputSender.LeftDown();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
+                    {
+                        SingleInputSender.RightDown();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
+                    {
+                        SingleInputSender.MiddleDown();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
+                    {
+                        SingleInputSender.X1Down();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
+                    {
+                        SingleInputSender.X2Down();
+                    }
+                    else
+                    {
+                        SingleInputSender.ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId);
+                    }
                 }
             };
         }
 
-        internal Action RestoreKeyPressAndReleaseEvent(PhysicalSystemKey systemKey)
+        internal Action RestoreKeyPressAndReleaseEvents(IEnumerable<PhysicalSystemKey> systemKeys)
         {
             return () =>
             {
-                if (systemKey == SupportedKeys.PhysicalKeys.None)
+                foreach(var systemKey in systemKeys)
                 {
+                    if (systemKey == SupportedKeys.PhysicalKeys.None)
+                    {
 
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
-                {
-                    SingleInputSender.LeftClick();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
-                {
-                    SingleInputSender.RightClick();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
-                {
-                    SingleInputSender.MiddleClick();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
-                {
-                    SingleInputSender.X1Click();
-                }
-                else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
-                {
-                    SingleInputSender.X2Click();
-                }
-                else
-                {
-                    SingleInputSender.Multiple()
-                        .ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId)
-                        .ExtendedKeyUpWithScanCode((ushort)systemKey.KeyId)
-                        .Send();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.LButton)
+                    {
+                        SingleInputSender.LeftClick();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.RButton)
+                    {
+                        SingleInputSender.RightClick();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.MButton)
+                    {
+                        SingleInputSender.MiddleClick();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.XButton1)
+                    {
+                        SingleInputSender.X1Click();
+                    }
+                    else if (systemKey == SupportedKeys.PhysicalKeys.XButton2)
+                    {
+                        SingleInputSender.X2Click();
+                    }
+                    else
+                    {
+                        SingleInputSender.Multiple()
+                            .ExtendedKeyDownWithScanCode((ushort)systemKey.KeyId)
+                            .ExtendedKeyUpWithScanCode((ushort)systemKey.KeyId)
+                            .Send();
+                    }
                 }
             };
         }
