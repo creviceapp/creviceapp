@@ -98,7 +98,8 @@ namespace Crevice4Tests
             var gmcluster = candidate.Create(ctx);
             Assert.AreEqual(gmcluster == null, false);
             // Todo: why this test not passing...??
-            //Assert.AreEqual(gmcluster.Profiles.Any(), true);
+            //Assert.AreEqual(ctx.Profiles.Any(), true);
+            //sAssert.AreEqual(gmcluster.Profiles.Any(), true);
         }
 
         [TestMethod()]

@@ -154,22 +154,30 @@ namespace Crevice.UserScript
             }
         }
 
+        private static async Task EvaluateAsync(MethodInfo methodInfo, object[] parameters)
+        {
+            try
+            {
+                var result = methodInfo.Invoke(null, parameters);
+                var task = result as Task<object>;
+                await task;
+            }
+            catch (AggregateException ex)
+            {
+                throw new EvaluationAbortedException(ex.InnerException);
+            }
+        }
+
         public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
         {
             using (Verbose.PrintElapsed("Evaluate UserScriptAssembly"))
             {
+                
                 var type = userScriptAssembly.GetType("Submission#0");
                 var factory = type.GetMethod("<Factory>");
                 var parameters = new object[] { new object[] { ctx, null } };
-                try
-                {
-                    var result = factory.Invoke(null, parameters);
-                    (result as Task<object>).Wait();
-                }
-                catch (AggregateException ex)
-                {
-                    throw new EvaluationAbortedException(ex.InnerException);
-                }
+                var task = EvaluateAsync(factory, parameters);
+                task.Wait();
             }
         }
 

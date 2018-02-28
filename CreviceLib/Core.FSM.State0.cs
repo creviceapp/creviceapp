@@ -121,7 +121,8 @@ namespace Crevice.Core.FSM
         public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> FilterActiveWhenElements(
                 IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements,
                 TEvalContext ctx)
-            => whenElements.Where(w => Machine.ContextManager.Evaluate(ctx, w)).ToList();
+            => whenElements.AsParallel().WithDegreeOfParallelism(Math.Max(2, Environment.ProcessorCount / 2))
+                .Where(w => Machine.ContextManager.Evaluate(ctx, w)).ToList();
         
         public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsBySingleThrowTrigger(PhysicalFireEvent fireEvent)
         {

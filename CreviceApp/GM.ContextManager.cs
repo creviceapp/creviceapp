@@ -36,34 +36,40 @@ namespace Crevice.GestureMachine
                 "ExecutionTaskScheduler", 
                 ThreadPriority.AboveNormal, 
                 Math.Max(2, Environment.ProcessorCount / 2));
+        
+        private async Task<bool> EvaluateAsync(Task<bool> task)
+        {
+            try
+            {
+                if (await Task.WhenAny(task, Task.Delay(EvaluationLimitTime)) == task)
+                {
+                    return task.Result;
+                }
+                else
+                {
+                    Verbose.Error("Evaluation of WhenEvaluator was timeout; (EvaluationLimitTime: {0}ms)", EvaluationLimitTime);
+                }
+            }
+            catch (AggregateException ex)
+            {
+                Verbose.Error("An exception was thrown while evaluating an evaluator: {0}", ex.InnerException.ToString());
+            }
+            catch (Exception ex)
+            {
+                Verbose.Error("An unexpected exception was thrown while evaluating an evaluator: {0}", ex.ToString());
+            }
+            return false;
+        }
 
         public override bool Evaluate(
             EvaluationContext evalContext,
             IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
         {
-            try
+            var task = _evaluationTaskFactory.StartNew(() =>
             {
-                var task = _evaluationTaskFactory.StartNew(() =>
-                {
-                    return whenElement.WhenEvaluator(evalContext);
-                });
-                if (!task.Wait(EvaluationLimitTime))
-                {
-                    Verbose.Print("Evaluation of WhenEvaluator was aborted because it was not finished within limit time ({0}ms).", EvaluationLimitTime);
-                    return false;
-                }
-                return task.Result;
-            }
-            catch (AggregateException ex)
-            {
-                Verbose.Error("An exception was thrown while evaluating an evaluator: {0}", ex.InnerException.ToString());
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Verbose.Error("An unexpected exception was thrown while evaluating an evaluator: {0}", ex.ToString());
-                return false;
-            }
+                return whenElement.WhenEvaluator(evalContext);
+            });
+            return EvaluateAsync(task).Result;
         }
 
         public override void Execute(
