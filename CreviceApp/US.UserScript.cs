@@ -131,13 +131,19 @@ namespace Crevice.UserScript
             }
         }
 
+
+        public static async Task RunAsyncUserScript(UserScriptExecutionContext ctx, Script parsedScript)
+        {
+            await parsedScript.RunAsync(ctx);
+        }
+
         public static void EvaluateUserScript(UserScriptExecutionContext ctx, Script parsedScript)
         {
             using (Verbose.PrintElapsed("Evaluate UserScript"))
             {
                 try
                 {
-                    parsedScript.RunAsync(ctx).Wait();
+                    RunAsyncUserScript(ctx, parsedScript).Wait();
                 }
                 catch (AggregateException ex)
                 {
@@ -154,30 +160,28 @@ namespace Crevice.UserScript
             }
         }
 
-        private static async Task EvaluateAsync(MethodInfo methodInfo, object[] parameters)
+        private static async Task EvaluateAsyncUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
         {
-            try
-            {
-                var result = methodInfo.Invoke(null, parameters);
-                var task = result as Task<object>;
-                await task;
-            }
-            catch (AggregateException ex)
-            {
-                throw new EvaluationAbortedException(ex.InnerException);
-            }
+            var type = userScriptAssembly.GetType("Submission#0");
+            var methodInfo = type.GetMethod("<Factory>");
+            var parameters = new object[] { new object[] { ctx, null } };
+            var result = methodInfo.Invoke(null, parameters);
+            var task = result as Task<object>;
+            await task;
         }
 
         public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
         {
             using (Verbose.PrintElapsed("Evaluate UserScriptAssembly"))
             {
-                
-                var type = userScriptAssembly.GetType("Submission#0");
-                var factory = type.GetMethod("<Factory>");
-                var parameters = new object[] { new object[] { ctx, null } };
-                var task = EvaluateAsync(factory, parameters);
-                task.Wait();
+                try
+                {
+                    EvaluateAsyncUserScriptAssembly(ctx, userScriptAssembly).Wait();
+                }
+                catch (AggregateException ex)
+                {
+                    throw new EvaluationAbortedException(ex.InnerException);
+                }
             }
         }
 

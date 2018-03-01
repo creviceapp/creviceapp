@@ -159,7 +159,7 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(Microsoft.CodeAnalysis.Scripting.CompilationErrorException))]
+        [ExpectedException(typeof(UserScript.EvaluationAbortedException))]
         public void CompileAndEvaluateUserScript1_4Test()
         {
             // When the user script containing a error is given.

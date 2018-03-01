@@ -37,8 +37,14 @@ namespace Crevice.GestureMachine
                 ThreadPriority.AboveNormal, 
                 Math.Max(2, Environment.ProcessorCount / 2));
         
-        private async Task<bool> EvaluateAsync(Task<bool> task)
+        private async Task<bool> EvaluateAsync(
+            EvaluationContext evalContext,
+            IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
         {
+            var task = _evaluationTaskFactory.StartNew(() =>
+            {
+                return whenElement.WhenEvaluator(evalContext);
+            });
             try
             {
                 if (await Task.WhenAny(task, Task.Delay(EvaluationLimitTime)) == task)
@@ -65,11 +71,9 @@ namespace Crevice.GestureMachine
             EvaluationContext evalContext,
             IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
         {
-            var task = _evaluationTaskFactory.StartNew(() =>
-            {
-                return whenElement.WhenEvaluator(evalContext);
-            });
-            return EvaluateAsync(task).Result;
+            var task = EvaluateAsync(evalContext, whenElement);
+            task.Wait();
+            return task.Result;
         }
 
         public override void Execute(

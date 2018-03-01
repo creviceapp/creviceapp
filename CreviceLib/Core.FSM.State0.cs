@@ -117,7 +117,6 @@ namespace Crevice.Core.FSM
             => InversedDecomposedTrigger.Keys.Contains(pressEvent) ||
                InversedDecomposedTrigger.Keys.Contains(pressEvent.LogicalNormalized);
 
-
         public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> FilterActiveWhenElements(
                 IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements,
                 TEvalContext ctx)
