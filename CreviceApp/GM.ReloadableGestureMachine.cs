@@ -31,6 +31,7 @@ namespace Crevice.GestureMachine
             {
                 var old = Instance;
                 _instance = value;
+                old?.Stop();
                 old?.Dispose();
             }
         }

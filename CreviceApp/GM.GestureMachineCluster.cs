@@ -18,7 +18,6 @@ namespace Crevice.GestureMachine
         public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> profiles)
         {
             Profiles = profiles;
-            Console.WriteLine($"{profiles.Count}");
         }
 
         public void Run()
@@ -50,6 +49,14 @@ namespace Crevice.GestureMachine
             foreach (var profile in Profiles)
             {
                 profile.GestureMachine.Reset();
+            }
+        }
+
+        public void Stop()
+        {
+            foreach (var profile in Profiles)
+            {
+                profile.GestureMachine.Stop();
             }
         }
 

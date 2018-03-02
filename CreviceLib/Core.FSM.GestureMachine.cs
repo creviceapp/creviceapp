@@ -64,7 +64,7 @@ namespace Crevice.Core.FSM
                     }
                     var lastState = _currentState;
                     _currentState = value;
-                    CallbackManager.OnStateChanged(lastState, _currentState);
+                    CallbackManager.OnStateChange(lastState, _currentState);
                 }
             }
         }
@@ -97,6 +97,7 @@ namespace Crevice.Core.FSM
                 CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
                 RootElement = rootElement;
                 IsRunning = true;
+                CallbackManager.OnMachineStart();
             }
         }
 
@@ -220,10 +221,20 @@ namespace Crevice.Core.FSM
             }
         }
 
+        public void Stop()
+        {
+            Reset();
+            CallbackManager.OnMachineStop();
+        }
+
         internal bool _disposed { get; private set; } = false;
 
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
             _disposed = true;
             Dispose(true);
             GC.SuppressFinalize(this);

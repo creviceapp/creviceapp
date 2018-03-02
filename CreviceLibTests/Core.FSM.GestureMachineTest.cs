@@ -308,7 +308,7 @@ namespace CreviceLibTests
         }
 
         [TestMethod]
-        public void OnStateChangedTest()
+        public void OnStateChangeTest()
         {
             {
                 var root = new TestRootElement();
@@ -321,19 +321,19 @@ namespace CreviceLibTests
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 1);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 1);
 
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 2);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 2);
 
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 3);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 3);
                 }
             }
             {
@@ -348,37 +348,37 @@ namespace CreviceLibTests
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 1);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 1);
 
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 2);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 2);
 
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 3);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 3);
 
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[1].ReleaseEvent);
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 4);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 4);
                     
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(callback.OnStateChangedCDE.Wait(10000), true);
                     callback.OnStateChangedCDE.Reset();
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
-                    Assert.AreEqual(callback.OnStateChangedCallCount, 5);
+                    Assert.AreEqual(callback.OnStateChangeCallCount, 5);
                 }
             }
         }
 
         [TestMethod]
-        public void OnGestureCancelledTest()
+        public void OnGestureCancelTest()
         {
             {
                 var root = new TestRootElement();
@@ -391,9 +391,9 @@ namespace CreviceLibTests
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    Assert.AreEqual(callback.OnGestureCancelledCallCount, 0);
+                    Assert.AreEqual(callback.OnGestureCancelCallCount, 0);
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
-                    Assert.AreEqual(callback.OnGestureCancelledCallCount, 0);
+                    Assert.AreEqual(callback.OnGestureCancelCallCount, 0);
                 }
             }
             {
@@ -408,10 +408,10 @@ namespace CreviceLibTests
                     Assert.AreEqual(gm.CurrentState is TestState0, true);
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
                     Assert.AreEqual(gm.CurrentState is TestStateN, true);
-                    Assert.AreEqual(callback.OnGestureCancelledCallCount, 0);
+                    Assert.AreEqual(callback.OnGestureCancelCallCount, 0);
                     gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].ReleaseEvent);
                     Assert.AreEqual(callback.OnGestureCancelledCDE.Wait(10000), true);
-                    Assert.AreEqual(callback.OnGestureCancelledCallCount, 1);
+                    Assert.AreEqual(callback.OnGestureCancelCallCount, 1);
                 }
             }
         }
@@ -585,6 +585,61 @@ namespace CreviceLibTests
                     Assert.AreEqual((gm.CurrentState as TestStateN).CanCancel, false);
                     Assert.AreEqual(callback.OnGestureTimeoutCDE.Wait(1000), false);
                     Assert.AreEqual(callback.OnGestureTimeoutCallCount, 0);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void OnMachineResetTest()
+        {
+            {
+                var root = new TestRootElement();
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .Do((ctx) => { });
+                var callback = new TestCallbackManager(enableMachineResetCallback: true);
+                using (var gm = new TestGestureMachine(root, callback))
+                {
+                    Assert.AreEqual(callback.OnMachineResetCallCount, 0);
+                    gm.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
+                    gm.Reset();
+                    Assert.AreEqual(callback.OnMachineResetCDE.Wait(10000), true);
+                    Assert.AreEqual(callback.OnMachineResetCallCount, 1);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void OnMachineStartTest()
+        {
+            {
+                var root = new TestRootElement();
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .Do((ctx) => { });
+                var callback = new TestCallbackManager(enableMachineStartCallback: true);
+                using (var gm = new TestGestureMachine(root, callback))
+                {
+                    Assert.AreEqual(callback.OnMachineStartCDE.Wait(10000), true);
+                    Assert.AreEqual(callback.OnMachineStartCallCount, 1);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void OnMachineStopTest()
+        {
+            {
+                var root = new TestRootElement();
+                root.When((ctx) => { return true; })
+                    .On(TestEvents.LogicalDoubleThrowKeys[0])
+                    .Do((ctx) => { });
+                var callback = new TestCallbackManager(enableMachineStopCallback: true);
+                using (var gm = new TestGestureMachine(root, callback))
+                {
+                    gm.Stop();
+                    Assert.AreEqual(callback.OnMachineStopCDE.Wait(10000), true);
+                    Assert.AreEqual(callback.OnMachineStopCallCount, 1);
                 }
             }
         }

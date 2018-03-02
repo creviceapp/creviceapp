@@ -69,7 +69,6 @@ namespace Crevice.UI
                 ShowFatalErrorDialog("SetWindowsHookEX(WH_MOUSE_LL) was failed.");
                 Application.Exit();
             }
-            Verbose.Print("CreviceApp was started.");
         }
         
         protected void RegisterNotifyIcon(NotifyIcon notifyIcon)
@@ -102,7 +101,6 @@ namespace Crevice.UI
             }
             base.OnClosed(e);
             _tooltip.Dispose();
-            Verbose.Print("CreviceApp was ended.");
             WinAPI.Console.Console.FreeConsole();
         }
 

@@ -66,7 +66,7 @@ namespace Crevice.Core.Stroke
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
                                 strokes.Add(stroke);
                                 buffer.Clear();
-                                Callbacks.OnStrokeUpdated(strokes);
+                                Callbacks.OnStrokeUpdate(strokes);
                             }
                         }
                         else
@@ -77,12 +77,12 @@ namespace Crevice.Core.Stroke
                             {
                                 strokes.Add(res);
                                 buffer.Clear();
-                                Callbacks.OnStrokeUpdated(strokes);
+                                Callbacks.OnStrokeUpdate(strokes);
                             }
                             else if (res.Points.Count != stroke.Points.Count)
                             {
                                 buffer.Clear();
-                                Callbacks.OnStrokeUpdated(strokes);
+                                Callbacks.OnStrokeUpdate(strokes);
                             }
                         }
                     }

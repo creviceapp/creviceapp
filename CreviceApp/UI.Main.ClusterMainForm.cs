@@ -10,6 +10,7 @@ using System.Windows.Forms;
 namespace Crevice.UI
 {
     using Crevice.Core.FSM;
+    using Crevice.Logging;
     using Crevice.Config;
     using Crevice.GestureMachine;
 
@@ -32,6 +33,7 @@ namespace Crevice.UI
 
         protected override void OnShown(EventArgs e)
         {
+            Verbose.Print("CreviceApp was started.");
             RegisterNotifyIcon(NotifyIcon1);
             UpdateTasktrayMessage(_gestureMachineCluster.Profiles);
             ShowInfoBalloon(_gestureMachineCluster);
@@ -42,7 +44,9 @@ namespace Crevice.UI
         {
             base.OnClosed(e);
             NotifyIcon1.Visible = false;
+            _gestureMachineCluster.Stop();
             _gestureMachineCluster.Dispose();
+            Verbose.Print("CreviceApp was ended.");
         }
 
         public override void UpdateTasktrayMessage(string message)

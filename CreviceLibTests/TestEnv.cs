@@ -30,11 +30,13 @@ namespace CreviceLibTests
     class TestCallbackManager : CallbackManager<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext>
     {
         public readonly bool EnableStrokeResetCallback;
-        public readonly bool EnableStrokeUpdatedCallback;
-        public readonly bool EnableStateChangedCallback;
+        public readonly bool EnableStrokeUpdateCallback;
+        public readonly bool EnableStateChangeCallback;
         public readonly bool EnableGestureTimeoutCallback;
-        public readonly bool EnableGestureCancelledCallback;
+        public readonly bool EnableGestureCancelCallback;
         public readonly bool EnableMachineResetCallback;
+        public readonly bool EnableMachineStartCallback;
+        public readonly bool EnableMachineStopCallback;
 
         public TestCallbackManager(
             bool enableStrokeResetCallback = false,
@@ -42,14 +44,18 @@ namespace CreviceLibTests
             bool enableStateChangedCallback = false,
             bool enableGestureTimeoutCallback = false,
             bool enableGestureCancelledCallback = false,
-            bool enableMachineResetCallback = false)
+            bool enableMachineResetCallback = false,
+            bool enableMachineStartCallback = false,
+            bool enableMachineStopCallback = false)
         {
             EnableStrokeResetCallback = enableStrokeResetCallback;
-            EnableStrokeUpdatedCallback = enableStrokeUpdatedCallback;
-            EnableStateChangedCallback = enableStateChangedCallback;
+            EnableStrokeUpdateCallback = enableStrokeUpdatedCallback;
+            EnableStateChangeCallback = enableStateChangedCallback;
             EnableGestureTimeoutCallback = enableGestureTimeoutCallback;
-            EnableGestureCancelledCallback = enableGestureCancelledCallback;
+            EnableGestureCancelCallback = enableGestureCancelledCallback;
             EnableMachineResetCallback = enableMachineResetCallback;
+            EnableMachineStartCallback = enableMachineStartCallback;
+            EnableMachineStopCallback = enableMachineStopCallback;
         }
 
         public readonly System.Threading.CountdownEvent OnStrokeResetCDE = new System.Threading.CountdownEvent(1);
@@ -68,28 +74,28 @@ namespace CreviceLibTests
         public readonly System.Threading.CountdownEvent OnStrokeUpdatedCDE = new System.Threading.CountdownEvent(1);
         public int OnStrokeUpdatedCallCount { get; private set; } = 0;
 
-        public override void OnStrokeUpdated(IReadOnlyList<Stroke> strokes)
+        public override void OnStrokeUpdate(IReadOnlyList<Stroke> strokes)
         {
-            if (EnableStrokeUpdatedCallback)
+            if (EnableStrokeUpdateCallback)
             {
                 OnStrokeUpdatedCallCount += 1;
                 OnStrokeUpdatedCDE.Signal();
-                base.OnStrokeUpdated(strokes);
+                base.OnStrokeUpdate(strokes);
             }
         }
 
         public readonly System.Threading.CountdownEvent OnStateChangedCDE = new System.Threading.CountdownEvent(1);
-        public int OnStateChangedCallCount { get; private set; } = 0;
+        public int OnStateChangeCallCount { get; private set; } = 0;
 
-        public override void OnStateChanged(
+        public override void OnStateChange(
             State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> lastState, 
             State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> currentState)
         {
-            if (EnableStateChangedCallback)
+            if (EnableStateChangeCallback)
             {
-                OnStateChangedCallCount += 1;
+                OnStateChangeCallCount += 1;
                 OnStateChangedCDE.Signal();
-                base.OnStateChanged(lastState, currentState);
+                base.OnStateChange(lastState, currentState);
             }
         }
 
@@ -108,16 +114,16 @@ namespace CreviceLibTests
         }
 
         public readonly System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
-        public int OnGestureCancelledCallCount { get; private set; } = 0;
+        public int OnGestureCancelCallCount { get; private set; } = 0;
 
-        public override void OnGestureCancelled(
+        public override void OnGestureCancel(
             StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> stateN)
         {
-            if (EnableGestureCancelledCallback)
+            if (EnableGestureCancelCallback)
             {
-                OnGestureCancelledCallCount += 1;
+                OnGestureCancelCallCount += 1;
                 OnGestureCancelledCDE.Signal();
-                base.OnGestureCancelled(stateN);
+                base.OnGestureCancel(stateN);
             }
         }
 
@@ -132,6 +138,32 @@ namespace CreviceLibTests
                 OnMachineResetCallCount += 1;
                 OnMachineResetCDE.Signal();
                 base.OnMachineReset(state);
+            }
+        }
+
+        public readonly System.Threading.CountdownEvent OnMachineStartCDE = new System.Threading.CountdownEvent(1);
+        public int OnMachineStartCallCount { get; private set; } = 0;
+
+        public override void OnMachineStart()
+        {
+            if (EnableMachineStartCallback)
+            {
+                OnMachineStartCallCount += 1;
+                OnMachineStartCDE.Signal();
+                base.OnMachineStart();
+            }
+        }
+
+        public readonly System.Threading.CountdownEvent OnMachineStopCDE = new System.Threading.CountdownEvent(1);
+        public int OnMachineStopCallCount { get; private set; } = 0;
+
+        public override void OnMachineStop()
+        {
+            if (EnableMachineStopCallback)
+            {
+                OnMachineStopCallCount += 1;
+                OnMachineStopCDE.Signal();
+                base.OnMachineStop();
             }
         }
     }
