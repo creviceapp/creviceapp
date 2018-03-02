@@ -54,7 +54,7 @@ namespace Crevice.Config
         public string UserScriptCacheFile
             => UserScriptFile + ".cache";
 
-        private string DisableIDESupportLoadDirectives(string userScriptString)
+        internal static string DisableIDESupportLoadDirectives(string userScriptString)
             => userScriptString.Replace("#load \"IDESupport", "//#load \"IDESupport");
 
         private string ReadUserScriptFile()

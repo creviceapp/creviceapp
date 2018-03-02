@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
-
 namespace Crevice4Tests
 {
     using System.Reflection;
+    using Crevice.Logging;
     using Crevice.Config;
     using Crevice.UserScript;
     using Crevice.GestureMachine;
@@ -83,11 +83,12 @@ namespace Crevice4Tests
             var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
             var userScriptFile = Path.Combine(tempDir, "default.csx");
             var userScriptString = File.ReadAllText(Path.Combine(binaryDir.FullName, "Scripts", "DefaultUserScript.csx"), Encoding.UTF8);
+            var escapedUserScriptString = GlobalConfig.DisableIDESupportLoadDirectives(userScriptString);
 
             Setup(binaryDir, tempDir);
 
             var cacheFile = Path.Combine(tempDir, "default.csx.cache");
-            var candidate = new GestureMachineCandidate(tempDir, userScriptString, cacheFile, false);
+            var candidate = new GestureMachineCandidate(tempDir, escapedUserScriptString, cacheFile, false);
             
             string[] args = { "--script", userScriptFile };
             var cliOption = CLIOption.Parse(args);
@@ -96,33 +97,7 @@ namespace Crevice4Tests
             Assert.AreEqual(candidate.Errors.Count(), 0);
             UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
             var gmcluster = candidate.Create(ctx);
-            Assert.AreEqual(gmcluster == null, false);
-            // Todo: why this test not passing...??
-            //Assert.AreEqual(ctx.Profiles.Any(), true);
-            //Assert.AreEqual(gmcluster.Profiles.Any(), true);
-        }
-
-        [TestMethod()]
-        public void CreateIgnoreExceptionTest()
-        {
-            var tempDir = TestHelpers.GetTestDirectory();
-            var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
-            var userScriptFile = Path.Combine(tempDir, "default.csx");
-            var userScriptString =
-                "var Never = When(ctx => { return false; });" +
-                "Never.On(Keys.RButton);" +
-                "Never.OnDecomposed(Keys.RButton);";
-
-            Setup(binaryDir, tempDir);
-
-            var cacheFile = Path.Combine(tempDir, "default.csx.cache");
-            var candidate = new GestureMachineCandidate(tempDir, userScriptString, cacheFile, false);
-
-            var globalConfig = new GlobalConfig();
-            var ctx = new UserScriptExecutionContext(globalConfig);
-            Assert.AreEqual(candidate.Errors.Count(), 0);
-            var gmcluster = candidate.Create(ctx);
-            Assert.AreEqual(gmcluster == null, false);
+            Assert.AreEqual(gmcluster.Profiles.Any(), true);
         }
     }
 }

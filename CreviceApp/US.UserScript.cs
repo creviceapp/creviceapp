@@ -160,14 +160,13 @@ namespace Crevice.UserScript
             }
         }
 
-        private static async Task EvaluateAsyncUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
+        internal static async Task EvaluateAsyncUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
         {
             var type = userScriptAssembly.GetType("Submission#0");
-            var methodInfo = type.GetMethod("<Factory>");
+            var methodInfo = type.GetMethod("<Factory>", BindingFlags.Static | BindingFlags.Public);
             var parameters = new object[] { new object[] { ctx, null } };
             var result = methodInfo.Invoke(null, parameters);
-            var task = result as Task<object>;
-            await task;
+            await Task.WhenAny(result as Task<object>).ConfigureAwait(false);
         }
 
         public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
