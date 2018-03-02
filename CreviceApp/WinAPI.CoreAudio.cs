@@ -240,17 +240,22 @@ namespace Crevice.WinAPI.CoreAudio
                 return 0;
             }
             return value;
-    }
+        }
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            Marshal.ReleaseComObject(enumerator);
         }
 
-        ~VolumeControl()
+        protected virtual void Dispose(bool disposing)
         {
-            Dispose();
+            if (disposing)
+            {
+                Marshal.ReleaseComObject(enumerator);
+            }
         }
+
+        ~VolumeControl() => Dispose(false);
     }
 }

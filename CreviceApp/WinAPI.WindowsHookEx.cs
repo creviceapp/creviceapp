@@ -136,17 +136,22 @@ namespace Crevice.WinAPI.WindowsHookEx
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            if (IsActivated)
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                Unhook();
+                if (IsActivated)
+                {
+                    Unhook();
+                }
             }
         }
 
-        ~WindowsHook()
-        {
-            Dispose();
-        }
+        ~WindowsHook() => Dispose(false);
     }
 
     public class LowLevelMouseHook : WindowsHook

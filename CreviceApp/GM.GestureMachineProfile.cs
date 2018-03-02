@@ -32,11 +32,19 @@ namespace Crevice.GestureMachine
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            GestureMachine?.Dispose();
         }
 
-        ~GestureMachineProfile() => Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                GestureMachine.Dispose();
+            }
+        }
+
+        ~GestureMachineProfile() => Dispose(false);
     }
     
     public class GestureMachineProfileManager

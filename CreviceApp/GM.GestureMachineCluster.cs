@@ -18,6 +18,7 @@ namespace Crevice.GestureMachine
         public GestureMachineCluster(IReadOnlyList<GestureMachineProfile> profiles)
         {
             Profiles = profiles;
+            Console.WriteLine($"{profiles.Count}");
         }
 
         public void Run()
@@ -54,13 +55,21 @@ namespace Crevice.GestureMachine
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            foreach (var profile in Profiles)
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                profile.Dispose();
+                foreach (var profile in Profiles)
+                {
+                    profile.Dispose();
+                }
             }
         }
 
-        ~GestureMachineCluster() => Dispose();
+        ~GestureMachineCluster() => Dispose(false);
     }
 }

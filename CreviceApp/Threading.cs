@@ -60,12 +60,19 @@ namespace Crevice.Threading
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            _tasks.CompleteAdding();
         }
 
-        ~LowLatencyScheduler()
-            => Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _tasks.CompleteAdding();
+            }
+        }
+
+        ~LowLatencyScheduler() => Dispose(false);
 
         public static TaskFactory CreateTaskFactory(string name, ThreadPriority priority, int poolSize)
             => new TaskFactory(new LowLatencyScheduler(name, priority, poolSize));

@@ -204,21 +204,31 @@ namespace Crevice.GestureMachine
             {
                 return;
             }
-            _semaphore.Wait();
-            try
+            _disposed = true;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                GC.SuppressFinalize(this);
-                _reloadRequest = false;
-                _disposed = true;
-                Instance = null;
-            }
-            finally
-            {
-                _semaphore.Release();
-                _semaphore.Dispose();
+                _semaphore.Wait();
+                try
+                {
+                    GC.SuppressFinalize(this);
+                    _reloadRequest = false;
+                    _disposed = true;
+                    Instance = null;
+                }
+                finally
+                {
+                    _semaphore.Release();
+                    _semaphore.Dispose();
+                }
             }
         }
 
-        ~ReloadableGestureMachine() => Dispose();
+        ~ReloadableGestureMachine() => Dispose(false);
     }
 }

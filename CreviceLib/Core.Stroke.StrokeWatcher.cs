@@ -101,11 +101,19 @@ namespace Crevice.Core.Stroke
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
             _disposed = true;
-            queue.CompleteAdding();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        ~StrokeWatcher() => Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                queue.CompleteAdding();
+            }
+        }
+
+        ~StrokeWatcher() => Dispose(false);
     }
 }

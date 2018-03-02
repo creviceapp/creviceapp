@@ -37,13 +37,18 @@ namespace Crevice.UI
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            tooltip.Dispose();
         }
 
-        ~TooltipNotifier()
+        protected virtual void Dispose(bool disposing)
         {
-            Dispose();
+            if (disposing)
+            {
+                tooltip.Dispose();
+            }
         }
+
+        ~TooltipNotifier() => Dispose(false);
     }
 }

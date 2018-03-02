@@ -46,5 +46,14 @@ namespace Crevice.GestureMachine
                 return base.Input(evnt, point);
             }
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ContextManager.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

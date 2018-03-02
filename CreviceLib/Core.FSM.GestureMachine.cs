@@ -224,18 +224,20 @@ namespace Crevice.Core.FSM
 
         public void Dispose()
         {
-            lock (lockObject)
+            _disposed = true;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                GC.SuppressFinalize(this);
-                _disposed = true;
                 ReleaseGestureTimeoutTimer();
                 ReleaseStrokeWatcher();
             }
         }
 
-        ~GestureMachine()
-        {
-            Dispose();
-        }
+        ~GestureMachine() => Dispose(false);
     }
 }
