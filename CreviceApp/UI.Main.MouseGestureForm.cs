@@ -47,8 +47,8 @@ namespace Crevice.UI
         }
 
         private readonly Core.Events.NullEvent NullEvent = new Core.Events.NullEvent();
-
-        public virtual IGestureMachine GestureMachine { get; } = new NullGestureMachine();
+        
+        public virtual IGestureMachine GestureMachine { get; }
 
         private readonly LowLevelKeyboardHook KeyboardHook;
         private readonly LowLevelMouseHook MouseHook;

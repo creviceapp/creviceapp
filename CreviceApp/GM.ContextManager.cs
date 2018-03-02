@@ -27,18 +27,24 @@ namespace Crevice.GestureMachine
         public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
             => new ExecutionContext(evaluationContext, CursorPosition, _cancellationTokenSource.Token);
 
-        private readonly TaskFactory _evaluationTaskFactory
-            = LowLatencyScheduler.CreateTaskFactory(
-                "EvaluationTaskScheduler", 
-                ThreadPriority.AboveNormal, 
+        private readonly LowLatencyScheduler _evaluationScheduler =
+            new LowLatencyScheduler(
+                "EvaluationTaskScheduler",
+                ThreadPriority.AboveNormal,
                 Math.Max(2, Environment.ProcessorCount / 2));
 
-        private readonly TaskFactory _executionTaskFactory
-            = LowLatencyScheduler.CreateTaskFactory(
-                "ExecutionTaskScheduler", 
-                ThreadPriority.AboveNormal, 
+        private readonly LowLatencyScheduler _executionScheduler = 
+            new LowLatencyScheduler(
+                "ExecutionTaskScheduler",
+                ThreadPriority.AboveNormal,
                 Math.Max(2, Environment.ProcessorCount / 2));
-        
+
+        private TaskFactory _evaluationTaskFactory
+            => new TaskFactory(_evaluationScheduler);
+
+        private TaskFactory _executionTaskFactory
+            => new TaskFactory(_executionScheduler);
+
         private async Task<bool> EvaluateAsync(
             EvaluationContext evalContext,
             IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
@@ -98,6 +104,8 @@ namespace Crevice.GestureMachine
             {
                 _cancellationTokenSource.Cancel();
                 _cancellationTokenSource.Dispose();
+                _evaluationScheduler.Dispose();
+                _executionScheduler.Dispose();
             }
         }
 

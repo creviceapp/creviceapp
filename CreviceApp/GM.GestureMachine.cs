@@ -21,19 +21,18 @@ namespace Crevice.GestureMachine
 
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
+
         public GestureMachine(
             GestureMachineConfig gestureMachineConfig,
             CallbackManager callbackManager)
             : base(gestureMachineConfig, callbackManager, new ContextManager())
         { }
+
+        private readonly LowLatencyScheduler _strokeWatcherScheduler = 
+            new LowLatencyScheduler( "StrokeWatcherTaskScheduler", ThreadPriority.AboveNormal, 1);
         
-        private readonly TaskFactory _strokeWatcherTaskFactory
-            = LowLatencyScheduler.CreateTaskFactory(
-                "StrokeWatcherTaskScheduler", 
-                ThreadPriority.AboveNormal, 
-                1);
         protected override TaskFactory StrokeWatcherTaskFactory 
-            => _strokeWatcherTaskFactory;
+            => new TaskFactory(_strokeWatcherScheduler);
 
         public override bool Input(IPhysicalEvent evnt, Point? point)
         {
@@ -52,6 +51,7 @@ namespace Crevice.GestureMachine
             if (disposing)
             {
                 ContextManager.Dispose();
+                _strokeWatcherScheduler.Dispose();
             }
             base.Dispose(disposing);
         }

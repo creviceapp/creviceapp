@@ -70,7 +70,6 @@ namespace Crevice.Core.FSM
         }
 
         protected internal virtual TaskFactory StrokeWatcherTaskFactory => Task.Factory;
-        protected internal virtual TaskFactory LowPriorityTaskFactory => Task.Factory;
 
         public GestureMachine(
             TConfig config,
@@ -149,34 +148,20 @@ namespace Crevice.Core.FSM
             }
         }
 
-        private void ReleaseGestureTimeoutTimer() => LazyRelease(gestureTimeoutTimer);
-
         private StrokeWatcher CreateStrokeWatcher()
             => new StrokeWatcher(
-                this.CallbackManager,
+                CallbackManager,
                 StrokeWatcherTaskFactory,
                 Config.StrokeStartThreshold,
                 Config.StrokeDirectionChangeThreshold,
                 Config.StrokeExtensionThreshold,
                 Config.StrokeWatchInterval);
 
-        private void ReleaseStrokeWatcher() => LazyRelease(StrokeWatcher);
-
-        private void LazyRelease(IDisposable disposable)
-        {
-            if (disposable != null)
-            {
-                LowPriorityTaskFactory.StartNew(() => {
-                    disposable.Dispose();
-                });
-            }
-        }
-
         private void ResetStrokeWatcher()
         {
-            var strokeWatcher = StrokeWatcher;
+            var old = StrokeWatcher;
             StrokeWatcher = CreateStrokeWatcher();
-            LazyRelease(strokeWatcher);
+            old?.Dispose();
         }
 
         private void TryTimeout(object sender, System.Timers.ElapsedEventArgs args)
@@ -244,8 +229,8 @@ namespace Crevice.Core.FSM
         {
             if (disposing)
             {
-                ReleaseGestureTimeoutTimer();
-                ReleaseStrokeWatcher();
+                gestureTimeoutTimer.Dispose();
+                StrokeWatcher.Dispose();
             }
         }
 

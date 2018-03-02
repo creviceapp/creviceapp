@@ -8,6 +8,7 @@ namespace Crevice.Threading
 {
     using System.Threading;
     using System.Collections.Concurrent;
+    using Crevice.Logging;
     
     public class LowLatencyScheduler
         : TaskScheduler, IDisposable
@@ -32,15 +33,17 @@ namespace Crevice.Threading
             var threads = new Thread[PoolSize];
             for (int i = 0; i < PoolSize; i++)
             {
+                var name = $"{Name}(Priority={Priority}, PoolSize={PoolSize}): [{i}/{PoolSize - 1}]";
                 var thread = new Thread(() =>
                 {
+                    Verbose.Print($"Start {name}");
                     foreach (Task task in _tasks.GetConsumingEnumerable())
                     {
                         TryExecuteTask(task);
                     }
-
+                    Verbose.Print($"End {name}");
                 });
-                thread.Name = $"{Name}(Priority={Priority}, PoolSize={PoolSize}): {i}";
+                thread.Name = name;
                 thread.Priority = Priority;
                 thread.SetApartmentState(ApartmentState.STA);
                 thread.Start();
@@ -73,8 +76,5 @@ namespace Crevice.Threading
         }
 
         ~LowLatencyScheduler() => Dispose(false);
-
-        public static TaskFactory CreateTaskFactory(string name, ThreadPriority priority, int poolSize)
-            => new TaskFactory(new LowLatencyScheduler(name, priority, poolSize));
     }
 }
