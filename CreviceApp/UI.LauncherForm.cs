@@ -56,21 +56,24 @@ namespace Crevice.UI
                 else
                 {
                     var registry = AutorunRegistry();
-                    try
+                    if (registry.GetValue(Application.ProductName) != null)
                     {
-                        registry.DeleteValue(Application.ProductName);
-                        Verbose.Print("Autorun was set to false");
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Verbose.Error("An exception was thrown while writing registory value: {0}", ex.ToString());
+                        try
+                        {
+                            registry.DeleteValue(Application.ProductName);
+                            Verbose.Print("Autorun was set to false");
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            Verbose.Error("An exception was thrown while writing registory value: {0}", ex.ToString());
+                        }
                     }
                     registry.Close();
                 }
             }
         }
 
-        private void saveSettings()
+        private void SaveSettings()
         {
             AutoRun = checkBox1.Checked;
         }
@@ -103,7 +106,7 @@ namespace Crevice.UI
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            saveSettings();
+            SaveSettings();
             base.OnClosing(e);
         }
 
