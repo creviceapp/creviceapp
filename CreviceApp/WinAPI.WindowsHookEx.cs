@@ -14,19 +14,22 @@ namespace Crevice.WinAPI.WindowsHookEx
 
     public class WindowsHook : IDisposable
     {
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, SystemCallback callback, IntPtr hInstance, int threadId);
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hook);
-        [DllImport("user32.dll")]
-        private static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr GetModuleHandle(string name);
+        static class NativeMethods
+        {
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern IntPtr SetWindowsHookEx(int idHook, SystemCallback callback, IntPtr hInstance, int threadId);
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern bool UnhookWindowsHookEx(IntPtr hook);
+            [DllImport("user32.dll")]
+            public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
+            [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+            public static extern IntPtr GetModuleHandle(string name);
+        }
 
         private delegate IntPtr SystemCallback(int nCode, IntPtr wParam, IntPtr lParam);
         protected delegate Result UserCallback(IntPtr wParam, IntPtr lParam);
-        
-        private const int HC_ACTION = 0;
+
+        public const int HC_ACTION = 0;
         
         public enum HookType
         {
@@ -82,10 +85,10 @@ namespace Crevice.WinAPI.WindowsHookEx
             }
             var log = new WinAPILogger("SetWindowsHookEx");
             log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
-            var hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
+            var hInstance = NativeMethods.GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
 
             log.Add("hInstance: 0x{0:X}", hInstance.ToInt64());
-            _hHook = SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
+            _hHook = NativeMethods.SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
             if (IsActivated)
             {
                 log.Add("_hHook: 0x{0:X}", _hHook.ToInt64());
@@ -106,7 +109,7 @@ namespace Crevice.WinAPI.WindowsHookEx
             var log = new WinAPILogger("UnhookWindowsHookEx");
             log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
             log.Add("_hHook: 0x{0:X}", _hHook);
-            if (UnhookWindowsHookEx(_hHook))
+            if (NativeMethods.UnhookWindowsHookEx(_hHook))
             {
                 log.Success();
             }
@@ -124,14 +127,14 @@ namespace Crevice.WinAPI.WindowsHookEx
                 switch (_userCallback(wParam, lParam))
                 {
                     case Result.Transfer:
-                        return CallNextHookEx(_hHook, nCode, wParam, lParam);
+                        return NativeMethods.CallNextHookEx(_hHook, nCode, wParam, lParam);
                     case Result.Cancel:
                         return LRESULTCancel;
                     case Result.Determine:
                         return IntPtr.Zero;
                 }
             }
-            return CallNextHookEx(_hHook, nCode, wParam, lParam);
+            return NativeMethods.CallNextHookEx(_hHook, nCode, wParam, lParam);
         }
 
         public void Dispose()
@@ -236,10 +239,10 @@ namespace Crevice.WinAPI.WindowsHookEx
             public bool FromTablet
                 => ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET;
         }
-        
-        private const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFF00;
-        private const uint MOUSEEVENTF_TMASK       = 0xFFFFFF00;
-        private const uint MOUSEEVENTF_FROMTABLET  = 0xFF515700;
+
+        public const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFF00;
+        public const uint MOUSEEVENTF_TMASK       = 0xFFFFFF00;
+        public const uint MOUSEEVENTF_FROMTABLET  = 0xFF515700;
         
         public LowLevelMouseHook(Func<Event, MSLLHOOKSTRUCT, Result> userCallback) : 
             base
@@ -289,8 +292,8 @@ namespace Crevice.WinAPI.WindowsHookEx
             LLKHF_UP       = 0x80,
         }
 
-        private const uint KEYBOARDEVENTF_CREVICE_APP = 0xFFFFFF00;
-        private const uint KEYBOARDEVENTF_TMASK = 0xFFFFFF00;
+        public const uint KEYBOARDEVENTF_CREVICE_APP = 0xFFFFFF00;
+        public const uint KEYBOARDEVENTF_TMASK = 0xFFFFFF00;
 
         public LowLevelKeyboardHook(Func<Event, KBDLLHOOKSTRUCT, Result> userCallback) :
             base

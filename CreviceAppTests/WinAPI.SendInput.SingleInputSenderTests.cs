@@ -183,9 +183,13 @@ namespace Crevice4Tests
             Assert.AreEqual(mouseEvents[1].Item1, LowLevelMouseHook.Event.WM_RBUTTONUP);
         }
 
-        // https://stackoverflow.com/questions/5977445/how-to-get-windows-display-settings
-        [DllImport("gdi32.dll")]
-        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        static class NativeMethods
+        {
+            // https://stackoverflow.com/questions/5977445/how-to-get-windows-display-settings
+            [DllImport("gdi32.dll")]
+            public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        }
+
         public enum DeviceCap
         {
             VERTRES = 10,
@@ -196,8 +200,8 @@ namespace Crevice4Tests
         {
             Graphics g = Graphics.FromHwnd(IntPtr.Zero);
             IntPtr desktop = g.GetHdc();
-            int LogicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
-            int PhysicalScreenHeight = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
+            int LogicalScreenHeight = NativeMethods.GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
+            int PhysicalScreenHeight = NativeMethods.GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
 
             float ScreenScalingFactor = (float)PhysicalScreenHeight / (float)LogicalScreenHeight;
             return ScreenScalingFactor; 

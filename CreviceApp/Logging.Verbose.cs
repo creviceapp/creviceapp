@@ -34,9 +34,20 @@ namespace Crevice.Logging
 
             public void Dispose()
             {
-                _stopwatch.Stop();
-                PrintFinishMessage();
+                Dispose(true);
+                GC.SuppressFinalize(this);
             }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    _stopwatch.Stop();
+                    PrintFinishMessage();
+                }
+            }
+
+            ~ElapsedTimePrinter() => Dispose(false);
         }
 
         public static bool Enabled { get; private set; }

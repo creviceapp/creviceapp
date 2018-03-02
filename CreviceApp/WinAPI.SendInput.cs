@@ -15,11 +15,13 @@ namespace Crevice.WinAPI.SendInput
 
     public class InputSender
     {
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+        static class NativeMethods {
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
-        [DllImport("user32.dll")]
-        static extern uint MapVirtualKey(uint uCode, uint uMapType);
+            [DllImport("user32.dll")]
+            public static extern uint MapVirtualKey(uint uCode, uint uMapType);
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         protected struct INPUT
@@ -175,7 +177,7 @@ namespace Crevice.WinAPI.SendInput
                     log.Add("dwExtraInfo: {0}", ToHexString(data.dwExtraInfo.ToUInt64()));
                 }
             }
-            if (SendInput((uint)input.Length, input, Marshal.SizeOf(input[0])) > 0)
+            if (NativeMethods.SendInput((uint)input.Length, input, Marshal.SizeOf(input[0])) > 0)
             {
                 log.Success();
             }
@@ -389,7 +391,7 @@ namespace Crevice.WinAPI.SendInput
         private KEYBDINPUT KeyWithScanCodeEvent(ushort keyCode)
         {
             var keyboardInput = KeyEvent(keyCode);
-            keyboardInput.wScan = (ushort)MapVirtualKey(keyCode, 0);
+            keyboardInput.wScan = (ushort)NativeMethods.MapVirtualKey(keyCode, 0);
             keyboardInput.dwFlags = keyboardInput.dwFlags | (int)KeyboardEventType.KEYEVENTF_SCANCODE;
             return keyboardInput;
         }
@@ -397,7 +399,7 @@ namespace Crevice.WinAPI.SendInput
         private KEYBDINPUT ExtendedKeyWithScanCodeEvent(ushort keyCode)
         {
             var keyboardInput = ExtendedKeyEvent(keyCode);
-            keyboardInput.wScan = (ushort)MapVirtualKey(keyCode, 0);
+            keyboardInput.wScan = (ushort)NativeMethods.MapVirtualKey(keyCode, 0);
             keyboardInput.dwFlags = keyboardInput.dwFlags | (int)KeyboardEventType.KEYEVENTF_SCANCODE;
             return keyboardInput;
         }

@@ -18,7 +18,7 @@ namespace Crevice.WinAPI.Window
     {
         public class WindowInfo
         {
-            public static class NativeMethods
+            protected static class NativeMethods
             {
                 [DllImport("user32.dll")]
                 public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
@@ -26,10 +26,10 @@ namespace Crevice.WinAPI.Window
                 [DllImport("user32.dll")]
                 public static extern IntPtr GetWindowLong(IntPtr hWnd, WindowLongParam nIndex);
 
-                [DllImport("user32.dll")]
+                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
                 public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
-                [DllImport("user32.dll")]
+                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
                 public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
                 [DllImport("user32.dll")]
@@ -41,7 +41,7 @@ namespace Crevice.WinAPI.Window
                 [DllImport("kernel32.dll")]
                 public static extern bool CloseHandle(IntPtr hHandle);
 
-                [DllImport("kernel32.dll")]
+                [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
                 public static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, out int lpdwSize);
 
                 [DllImport("user32.dll", SetLastError = true)]
@@ -53,7 +53,7 @@ namespace Crevice.WinAPI.Window
                 [DllImport("user32.dll", SetLastError = true)]
                 public extern static bool PostMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
                 public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
                 [DllImport("user32.dll")]
@@ -61,10 +61,16 @@ namespace Crevice.WinAPI.Window
                 public extern static bool SetForegroundWindow(IntPtr hWnd);
 
                 [DllImport("user32.dll")]
+                public static extern IntPtr GetForegroundWindow();
+
+                [DllImport("user32.dll")]
                 public extern static bool AttachThreadInput(int idAttach, int idAttachTo, bool fAttach);
 
                 [DllImport("user32.dll", ExactSpelling = true)]
                 public extern static IntPtr GetAncestor(IntPtr hwnd, int flags);
+                
+                [DllImport("user32.dll")]
+                public static extern IntPtr WindowFromPhysicalPoint(Point point);
             }
 
             public const int MaxPathSize = 1024;
@@ -238,7 +244,7 @@ namespace Crevice.WinAPI.Window
             public bool Activate()
             {
                 var hwndTarget = NativeMethods.GetAncestor(WindowHandle, 2);
-                var hwndActive = ForegroundWindowInfo.NativeMethods.GetForegroundWindow();
+                var hwndActive = NativeMethods.GetForegroundWindow();
                 if (hwndTarget == hwndActive)
                 {
                     return true;
@@ -309,23 +315,11 @@ namespace Crevice.WinAPI.Window
 
         public class ForegroundWindowInfo : WindowInfo
         {
-            public static new class NativeMethods
-            {
-                [DllImport("user32.dll")]
-                public static extern IntPtr GetForegroundWindow();
-            }
-
             public ForegroundWindowInfo() : base(NativeMethods.GetForegroundWindow()) { }
         }
 
         public class PointedWindowInfo : WindowInfo
         {
-            public static new class NativeMethods
-            {
-                [DllImport("user32.dll")]
-                public static extern IntPtr WindowFromPhysicalPoint(Point point);
-            }
-
             public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point)) { }
         }
 
@@ -356,7 +350,7 @@ namespace Crevice.WinAPI.Window
 
             public sealed class TopLevelWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
                     public static extern bool EnumWindows(EnumWindowsProcDelegate lpEnumFunc, IntPtr lParam);
@@ -370,7 +364,7 @@ namespace Crevice.WinAPI.Window
 
             public sealed class ChildWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
                     public static extern bool EnumChildWindows(IntPtr hwndParent, EnumWindowsProcDelegate lpEnumFunc, IntPtr lParam);
@@ -388,7 +382,7 @@ namespace Crevice.WinAPI.Window
 
             public sealed class PointedDescendantWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll")]
                     public static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
@@ -426,7 +420,7 @@ namespace Crevice.WinAPI.Window
 
             public sealed class ThreadWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
                     public static extern bool EnumThreadWindows(int dwThreadId, EnumWindowsProcDelegate lpfn, IntPtr lParam);
@@ -445,7 +439,7 @@ namespace Crevice.WinAPI.Window
 
     public static class Window
     {
-        public static class NativeMethods
+        static class NativeMethods
         {
             [DllImport("user32.dll")]
             public static extern bool GetCursorPos(out Point lpPoint);
@@ -453,7 +447,7 @@ namespace Crevice.WinAPI.Window
             [DllImport("user32.dll")]
             public static extern bool GetPhysicalCursorPos(out Point lpPoint);
 
-            [DllImport("user32.dll", SetLastError = true)]
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
             public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         }
 

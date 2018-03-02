@@ -13,8 +13,11 @@ namespace Crevice.WinAPI.Device
 {
     public static class Device
     {
-        [DllImport("gdi32.dll")]
-        public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        static class NativeMethods
+        {
+            [DllImport("gdi32.dll")]
+            public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        }
 
         // http://www.pinvoke.net/default.aspx/gdi32.getdevicecaps
         public enum DeviceCap
@@ -187,8 +190,8 @@ namespace Crevice.WinAPI.Device
             using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
             {
                 IntPtr desktop = g.GetHdc();
-                var x = GetDeviceCaps(desktop, (int)DeviceCap.HORZRES);
-                var y = GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
+                var x = NativeMethods.GetDeviceCaps(desktop, (int)DeviceCap.HORZRES);
+                var y = NativeMethods.GetDeviceCaps(desktop, (int)DeviceCap.VERTRES);
                 return new Point(x, y);
             }
         }
@@ -198,8 +201,8 @@ namespace Crevice.WinAPI.Device
             using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
             {
                 IntPtr desktop = g.GetHdc();
-                var x = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPHORZRES);
-                var y = GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
+                var x = NativeMethods.GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPHORZRES);
+                var y = NativeMethods.GetDeviceCaps(desktop, (int)DeviceCap.DESKTOPVERTRES);
                 return new Point(x, y);
             }
         }
