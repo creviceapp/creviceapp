@@ -13,17 +13,19 @@ namespace Crevice.GestureMachine
     using Crevice.Core.DSL;
     using Crevice.Threading;
 
-    public class ContextManager : ContextManager<EvaluationContext, ExecutionContext>
+    public class ContextManager : ContextManager<EvaluationContext, ExecutionContext>, IDisposable
     {
         public Point CursorPosition { get; set; }
         
         public int EvaluationLimitTime { get; } = 1000; // ms
 
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
         public override EvaluationContext CreateEvaluateContext()
             => new EvaluationContext(CursorPosition);
 
         public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
-            => new ExecutionContext(evaluationContext, CursorPosition);
+            => new ExecutionContext(evaluationContext, CursorPosition, _cancellationTokenSource.Token);
 
         private readonly TaskFactory _evaluationTaskFactory
             = LowLatencyScheduler.CreateTaskFactory(
@@ -47,7 +49,7 @@ namespace Crevice.GestureMachine
             });
             try
             {
-                if (await Task.WhenAny(task, Task.Delay(EvaluationLimitTime)) == task)
+                if (await Task.WhenAny(task, Task.Delay(EvaluationLimitTime)).ConfigureAwait(false) == task)
                 {
                     return task.Result;
                 }
@@ -66,24 +68,39 @@ namespace Crevice.GestureMachine
             }
             return false;
         }
-
-        public override bool Evaluate(
+        
+        public override IReadOnlyList<IReadOnlyWhenElement<EvaluationContext, ExecutionContext>> Evaluate(
             EvaluationContext evalContext,
-            IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
-        {
-            var task = EvaluateAsync(evalContext, whenElement);
-            task.Wait();
-            return task.Result;
-        }
+            IEnumerable<IReadOnlyWhenElement<EvaluationContext, ExecutionContext>> whenElements)
+            => whenElements.AsParallel()
+                .WithDegreeOfParallelism(Math.Max(2, Environment.ProcessorCount / 2))
+                .Where(w => w.WhenEvaluator(evalContext)).ToList();
 
         public override void Execute(
             ExecutionContext execContext,
             ExecuteAction<ExecutionContext> executeAction)
         {
-            _executionTaskFactory.StartNew(() =>
+            var task = _executionTaskFactory.StartNew(() =>
             {
                 executeAction(execContext);
             });
         }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+            }
+        }
+
+        ~ContextManager() => Dispose(false);
     }
 }

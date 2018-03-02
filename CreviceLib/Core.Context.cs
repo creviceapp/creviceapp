@@ -23,113 +23,112 @@ namespace Crevice.Core.Context
         public virtual TExecContext CreateExecutionContext(TEvalContext evaluationContext)
             => throw new NotImplementedException();
 
-        public virtual bool Evaluate(TEvalContext evalContext, IReadOnlyWhenElement<TEvalContext, TExecContext> whenElement)
-            => whenElement.WhenEvaluator(evalContext);
+        public virtual IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> Evaluate(
+            TEvalContext evalContext, 
+            IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements)
+            => whenElements.Where(w => w.WhenEvaluator(evalContext)).ToList();
 
         public virtual void Execute(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
             => executeAction(execContext);
 
-        public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+        private void Execute(
+            TEvalContext evalContext,
+            IEnumerable<ExecuteAction<TExecContext>> executeActions)
+        {
+            var execContext = CreateExecutionContext(evalContext);
+            foreach (var executor in executeActions)
+            {
+                Execute(execContext, executor);
+            }
+        }
+
+        public void ExecutePressExecutors(
+            TEvalContext evalContext,
+            IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
                 foreach (var element in doubleThrowElements)
                 {
-                    foreach (var executor in element.PressExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.PressExecutors);
                 }
             }
         }
 
-        public void ExecutePressExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDecomposedElement<TExecContext>> doubleThrowElements)
+        public void ExecutePressExecutors(
+            TEvalContext evalContext,
+            IEnumerable<IReadOnlyDecomposedElement<TExecContext>> decomposedElements)
         {
-            if (doubleThrowElements.Any())
+            if (decomposedElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
-                foreach (var element in doubleThrowElements)
+                foreach (var element in decomposedElements)
                 {
-                    foreach (var executor in element.PressExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.PressExecutors);
                 }
             }
         }
 
-        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteDoExecutors(
+            TEvalContext evalContext, 
+            IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
                 foreach (var element in doubleThrowElements)
                 {
-                    foreach (var executor in element.DoExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.DoExecutors);
                 }
             }
         }
 
-        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlySingleThrowElement<TExecContext>> singleThrowElements)
+        public void ExecuteDoExecutors(
+            TEvalContext evalContext, 
+            IEnumerable<IReadOnlySingleThrowElement<TExecContext>> singleThrowElements)
         {
             if (singleThrowElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
                 foreach (var element in singleThrowElements)
                 {
-                    foreach (var executor in element.DoExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.DoExecutors);
                 }
             }
         }
 
-        public void ExecuteDoExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyStrokeElement<TExecContext>> strokeElements)
+        public void ExecuteDoExecutors(
+            TEvalContext evalContext, 
+            IEnumerable<IReadOnlyStrokeElement<TExecContext>> strokeElements)
         {
             if (strokeElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
                 foreach (var element in strokeElements)
                 {
-                    foreach (var executor in element.DoExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.DoExecutors);
                 }
             }
         }
 
-        public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
+        public void ExecuteReleaseExecutors(
+            TEvalContext evalContext, 
+            IEnumerable<IReadOnlyDoubleThrowElement<TExecContext>> doubleThrowElements)
         {
             if (doubleThrowElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
                 foreach (var element in doubleThrowElements)
                 {
-                    foreach (var executor in element.ReleaseExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.ReleaseExecutors);
                 }
             }
         }
 
-        public void ExecuteReleaseExecutors(TEvalContext evalContext, IEnumerable<IReadOnlyDecomposedElement<TExecContext>> doubleThrowElements)
+        public void ExecuteReleaseExecutors(
+            TEvalContext evalContext, 
+            IEnumerable<IReadOnlyDecomposedElement<TExecContext>> decomposedElements)
         {
-            if (doubleThrowElements.Any())
+            if (decomposedElements.Any())
             {
-                var execContext = CreateExecutionContext(evalContext);
-                foreach (var element in doubleThrowElements)
+                foreach (var element in decomposedElements)
                 {
-                    foreach (var executor in element.ReleaseExecutors)
-                    {
-                        Execute(execContext, executor);
-                    }
+                    Execute(evalContext, element.ReleaseExecutors);
                 }
             }
         }

@@ -45,7 +45,7 @@ namespace Crevice.Core.FSM
             if (evnt is PhysicalFireEvent fireEvent && IsSingleThrowTrigger(fireEvent))
             {
                 var ctx = Machine.ContextManager.CreateEvaluateContext();
-                var whenElements = FilterActiveWhenElements(GetWhenElementsBySingleThrowTrigger(fireEvent), ctx);
+                var whenElements = FilterActiveWhenElements(ctx, GetWhenElementsBySingleThrowTrigger(fireEvent));
                 var singleThrowElements = GetSingleThrowElements(whenElements, fireEvent);
                 if (singleThrowElements.Any())
                 {
@@ -59,7 +59,7 @@ namespace Crevice.Core.FSM
                 if (IsDoubleThrowTrigger(pressEvent))
                 {
                     var ctx = Machine.ContextManager.CreateEvaluateContext();
-                    var whenElements = FilterActiveWhenElements(GetWhenElementsByDoubleThrowTrigger(pressEvent), ctx);
+                    var whenElements = FilterActiveWhenElements(ctx, GetWhenElementsByDoubleThrowTrigger(pressEvent));
                     var doubleThrowElements = GetDoubleThrowElements(whenElements, pressEvent);
                     if (doubleThrowElements.Any())
                     {
@@ -77,7 +77,7 @@ namespace Crevice.Core.FSM
                 else if (IsDecomposedTrigger(pressEvent))
                 {
                     var ctx = Machine.ContextManager.CreateEvaluateContext();
-                    var whenElements = FilterActiveWhenElements(GetWhenElementsByDecomposedTrigger(pressEvent), ctx);
+                    var whenElements = FilterActiveWhenElements(ctx, GetWhenElementsByDecomposedTrigger(pressEvent));
                     var decomposedElements = GetDecomposedElements(whenElements, pressEvent);
                     if (decomposedElements.Any())
                     {
@@ -93,7 +93,7 @@ namespace Crevice.Core.FSM
                 if (IsDoubleThrowTrigger(oppositeEvent) || IsDecomposedTrigger(oppositeEvent))
                 {
                     var ctx = Machine.ContextManager.CreateEvaluateContext();
-                    var whenElements = FilterActiveWhenElements(GetWhenElementsByDecomposedTrigger(oppositeEvent), ctx);
+                    var whenElements = FilterActiveWhenElements(ctx, GetWhenElementsByDecomposedTrigger(oppositeEvent));
                     var decomposedElements = GetDecomposedElements(whenElements, oppositeEvent);
                     if (decomposedElements.Any())
                     {
@@ -117,13 +117,21 @@ namespace Crevice.Core.FSM
             => InversedDecomposedTrigger.Keys.Contains(pressEvent) ||
                InversedDecomposedTrigger.Keys.Contains(pressEvent.LogicalNormalized);
 
-        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> FilterActiveWhenElements(
-                IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements,
-                TEvalContext ctx)
-            => whenElements.AsParallel().WithDegreeOfParallelism(Math.Max(2, Environment.ProcessorCount / 2))
-                .Where(w => Machine.ContextManager.Evaluate(ctx, w)).ToList();
+        // todo: ContextManagerに移譲
+        // CtxがCancellarationTokenを持つように
+        // これは仕様には含まず、Appの拡張でいい
+        //
+        // ConfigureAwait(false)
+        //
+        // CancellarationTOkenをWhenのタイムアウトとDoの全体に
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>>
+            FilterActiveWhenElements(
+                TEvalContext ctx,
+                IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements)
+            => Machine.ContextManager.Evaluate(ctx, whenElements);
         
-        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsBySingleThrowTrigger(PhysicalFireEvent fireEvent)
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> 
+            GetWhenElementsBySingleThrowTrigger(PhysicalFireEvent fireEvent)
         {
             if (InversedSingleThrowTrigger.TryGetValue(fireEvent, out var a))
             {
@@ -136,7 +144,8 @@ namespace Crevice.Core.FSM
             return new List<IReadOnlyWhenElement<TEvalContext, TExecContext>>();
         }
 
-        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsByDoubleThrowTrigger(PhysicalPressEvent pressEvent)
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> 
+            GetWhenElementsByDoubleThrowTrigger(PhysicalPressEvent pressEvent)
         {
             if (InversedDoubleThrowTrigger.TryGetValue(pressEvent, out var a))
             {
@@ -149,7 +158,8 @@ namespace Crevice.Core.FSM
             return new List<IReadOnlyWhenElement<TEvalContext, TExecContext>>();
         }
 
-        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> GetWhenElementsByDecomposedTrigger(PhysicalPressEvent pressEvent)
+        public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> 
+            GetWhenElementsByDecomposedTrigger(PhysicalPressEvent pressEvent)
         {
             if (InversedDecomposedTrigger.TryGetValue(pressEvent, out var a))
             {
@@ -173,7 +183,7 @@ namespace Crevice.Core.FSM
                         select d))
                 .Aggregate(new List<IReadOnlyDoubleThrowElement<TExecContext>>(), (a, b) => { a.AddRange(b); return a; });
 
-        protected internal IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>>
+        protected internal IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>> 
             GetDecomposedElements(
                 IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements,
                 PhysicalPressEvent triggerEvent)
