@@ -12,16 +12,8 @@ namespace Crevice.GestureMachine
     using Crevice.Core.Events;
     using Crevice.Threading;
 
-    public class NullGestureMachine : GestureMachine
-    {
-        public NullGestureMachine()
-            : base(new GestureMachineConfig(), new CallbackManager())
-        { }
-    }
-
     public class GestureMachine : GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext>
     {
-
         public GestureMachine(
             GestureMachineConfig gestureMachineConfig,
             CallbackManager callbackManager)
