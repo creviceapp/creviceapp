@@ -485,13 +485,13 @@ Whenever = When(ctx => { return true });
 This declaration always is active, returns true, but has one big problem. This can be shadowed by the other gesture. To make this problem solved, you need to add some lines:
 
 ```cs
-DeclareProfile("First"); 
+DeclareProfile("Whenever"); 
 
 Whenever = When(ctx => { return true });
 
 // ...
 
-DeclareProfile("Second"); 
+DeclareProfile("Other"); 
 
 // ...
 ```
@@ -500,7 +500,7 @@ See [Profile](#profile) for more details.
 
 ## Change the state of window
 
-### Maximize window
+### Maximize window {ignore=true}
 
 ```cs
 Do(ctx =>
@@ -510,7 +510,7 @@ Do(ctx =>
 });
 ```
 
-### Minimize window
+### Minimize window {ignore=true}
 
 ```cs
 Do(ctx =>
@@ -520,7 +520,7 @@ Do(ctx =>
 });
 ```
 
-### Restore window
+### Restore window {ignore=true}
 
 ```cs
 Do(ctx =>
@@ -530,7 +530,7 @@ Do(ctx =>
 });
 ```
 
-### Activate window
+### Activate window {ignore=true}
 
 ```cs
 Do(ctx =>
@@ -540,7 +540,7 @@ Do(ctx =>
 });
 ```
 
-### Close window
+### Close window {ignore=true}
 
 ```cs
 Do(ctx =>
@@ -551,6 +551,50 @@ Do(ctx =>
 ```
 
 There are more a lot of numbers of parameters can be used for operate the window. See [WM\_SYSCOMMAND message](https://msdn.microsoft.com/library/windows/desktop/ms646360%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396) for more details.
+
+## Change gesture behavior by modifier key
+
+In this case, you can use keyboard's modifier key for declaring the gesture definition, but there is one problem. Gesture definition can only be declared with **ordered** `On` clauses. For example, for a gesture definition takes two modifier keys as it's modifier, you should declare the gesture definition with all pattern of the combination of modifier keys.
+
+```cs
+// Pattern 1/2.
+On(Keys.ControlKey).
+On(Keys.ShiftKey).
+On(Keys.RButton).
+Do(ctx => {
+
+});
+```
+
+```cs
+// Pattern 2/2.
+On(Keys.ShiftKey).
+On(Keys.ControlKey).
+On(Keys.RButton).
+Do(ctx => {
+
+});
+```
+
+By using win32 API `GetKeyState()` instead of the above way, you can easily declare gesture declaration which supports modifier keys.
+
+```cs
+[System.Runtime.InteropServices.DllImport("user32.dll")]
+static extern short GetKeyState(int nVirtKey);
+```
+
+```cs
+On(Keys.RButton).
+Do((tx =>
+{
+    // When shift and control modifier key is pressed
+    if (GetKeyState(Keys.ShiftKey) < 0 && 
+        GetKeyState(Keys.ControlKey) < 0) 
+    {
+        // this code will be executed.
+    }
+});
+```
 
 ## Shortcut for fixed phrase 
 
@@ -739,50 +783,6 @@ Press(ctx =>
 {
     Tooltip("");
     keyCommandManager.Reset();
-});
-```
-
-## Change gesture behavior by modifier key
-
-In this case, you can use keyboard's modifier key for declaring the gesture definition, but there is one problem. Gesture definition can only be declared with **ordered** `On` clauses. For example, for a gesture definition takes two modifier keys as it's modifier, you should declare the gesture definition with all pattern of the combination of modifier keys.
-
-```cs
-// Pattern 1/2.
-On(Keys.ControlKey).
-On(Keys.ShiftKey).
-On(Keys.RButton).
-Do(ctx => {
-
-});
-```
-
-```cs
-// Pattern 2/2.
-On(Keys.ShiftKey).
-On(Keys.ControlKey).
-On(Keys.RButton).
-Do(ctx => {
-
-});
-```
-
-By using win32 API `GetKeyState()` instead of the above way, you can easily declare gesture declaration which supports modifier keys.
-
-```cs
-[System.Runtime.InteropServices.DllImport("user32.dll")]
-static extern short GetKeyState(int nVirtKey);
-```
-
-```cs
-On(Keys.RButton).
-Do((tx =>
-{
-    // When shift and control modifier key is pressed
-    if (GetKeyState(Keys.ShiftKey) < 0 && 
-        GetKeyState(Keys.ControlKey) < 0) 
-    {
-        // this code will be executed.
-    }
 });
 ```
 
