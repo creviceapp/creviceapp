@@ -408,6 +408,19 @@ _Note : This directive should be placed on the top of your C# Scripting code exc
 
 # Practical example
 
+## Input text message
+
+The following code input the message to the foreground application.
+
+```cs
+Do(ctx =>
+{
+    SendInput.UnicodeKeyStroke("This text will be input.");
+});
+```
+
+But `UnicodeKeyStroke` method is slow. So if there is no need to use it, you should better to do it with `Clipboard` and Ctrl+V method. See [Paste text message](#paste-text-message).
+
 ## Paste text message
 
 ```cs
