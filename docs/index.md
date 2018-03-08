@@ -65,7 +65,7 @@ If the evaluation is falied, warning message will be shown. You can see the deta
 
 //todo movie
 
-The userscript file is just a C# Scripting file. You can do anything you want by writing your own script in it, or else **by just copying codes** from [Stack Overflow](https://stackoverflow.com/). See [Overview of C# Scripting](#overview-of-c-scripting) for more details.
+The userscript file is just a C# Scripting file. You can do anything you want by writing your own script in it, or else by just copying codes from [Stack Overflow](https://stackoverflow.com/). See [Overview of C# Scripting](#overview-of-c-scripting) for more details.
 
 # Gesture DSL
 
@@ -107,7 +107,7 @@ On(Keys.RButton). // If you press mouse's right button,
 On(Keys.MoveUp, Keys.MoveDown). // and draw stroke to up and to down by the pointer,
 ```
 
-Apart from itself, this clause takes `Press`, `Do`, and `Release` clauses as the next clause. 
+Other than itself, this clause takes `Press`, `Do`, and `Release` clauses as the next clause. 
 
 ```cs
 Chrome.
@@ -135,6 +135,9 @@ Do(ctx => {}).
 Release(ctx => {});
 ```
 
+##### Grammatical limitations: { ignore=true }
+* `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context. See [OnDecomposed](#ondecomposed) for more details.
+
 ## OnDecomposed
 
 `OnDecomposed` clause takes a button as It's argument. Like `On`, `OnDecomposedOn` clause is the second or later context of a gesture, too. But, in contrast to `On` clause, this clause **can not** be declared successively, and **can not** take `Do` clause as the next clause. This clause exists for the cases that you want to simply hook the press and release events to an action. This clause takes `Press` and `Release` clauses as the next clause. These clauses will directly be connected to the action, and if a button pressed, each of all the events published while it will invoke it.
@@ -149,16 +152,24 @@ Press(ctx =>
 Release(ctx => {});
 ```
 
+```cs
+// This clause CAN NOT be declared successively.
+Chrome.
+OnDecomposed(Keys.RButton). 
+OnDecomposed(Keys.MButton). // Compilation error.
+```
+
+```cs
+// This clause CAN NOT be declared on the same context with `On` clause given the same button.
+Chrome.
+On(Keys.RButton).
+OnDecomposed(Keys.RButton). // Runtime error will be thrown and warning messsage will be shown.
+```
+
 
 ##### Grammatical limitations: { ignore=true }
 * `OnDecomposed` clause does not have `Do()` functions.
 * `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context.
-
-   ```cs
-   Chrome.
-   On(Keys.RButton).
-   OnDecomposed(Keys.RButton). // Runtime error will be thrown and warning messsage will be shown.
-   ```
 
 ## Do
 
@@ -207,7 +218,7 @@ As you may know, mouse gestures with it's buttons are called "rocker gesture" in
 
 ```cs
 // Button gesture.
-Browser.
+Chrome.
 On(Keys.RButton). // If you press mouse's right button,
 Do(ctx => // and release mouse's right button,
 {
@@ -217,7 +228,7 @@ Do(ctx => // and release mouse's right button,
 
 ```cs
 // Button gesture with two buttons.
-Browser.
+Chrome.
 On(Keys.RButton). // If you press mouse's right button,
 On(Keys.LButton). // and press mouse's left button,
 Do(ctx => // and release mouse's left or right button,
@@ -229,7 +240,7 @@ Do(ctx => // and release mouse's left or right button,
 Even if after pressing a button which means the start of a gesture, you can cancel it by holding the button pressing until it to be timeout.
 
 ```cs
-Browser.
+Chrome.
 On(Keys.RButton). // If you WRONGLY pressed mouse's right button,
 Do(ctx => // you hold the button until it to be timeout and release it,
 {
@@ -242,15 +253,12 @@ This means actions declared in `Do` clause is not assured it's execution.
 Above three gestures are `Button gesture` by the standard buttons. `On` clause with standard buttons can be used for declare `Do` clause but also `Press` and `Release` clauses.
 
 ### Button gesture with Press/Release
+
 `Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to the press or release event of a button. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
 
 ```cs
-var Whenever = When(ctx => {
-    return true;
-});
-
 // Convert Keys.XButton1 to Keys.LWin.
-Whenever.
+Chrome.
 On(Keys.XButton1).
 Press(ctx =>
 {
@@ -260,15 +268,12 @@ Release(ctx =>
 {
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
-// But be careful that this conversion is incomplete. You should 
-// use `OnDecomposed` instead of `On` clause in case you need to 
-// support the repeat function which keyboard's keys possess.
 ```
- 
+
 For `Release` clause, it can be after `Do` clause.
 
 ```cs
-Whenever.
+Chrome.
 On(Keys.XButton2).
 Press(ctx =>
 {
@@ -288,24 +293,26 @@ Release(ctx =>
 
 Actions declared in `Press` and `Release` clauses are different from it of `Do` clause, the execution of these are assured.
 
+_Note: Be careful that this conversion is incomplete. See [Convert a button into an arbitrary button](#convert-a-button-into-an-arbitrary-button) for more details._
+
 ### Button gesture with single state button
 
 Few of the buttons in `Keys` are different from the standard buttons; these have only one state, and only one event. So, `On` clauses with these can not be used with `Press` and `Release` clauses.
 
 ```cs
-Browser.
+Chrome.
 On(Keys.WheelUp).
 Press(ctx => { }); // Compilation error
 ```
 
 ```cs
-Browser.
+Chrome.
 On(Keys.WheelUp).
 Do(ctx => { }); // OK
 ```
 
 ```cs
-Browser.
+Chrome.
 On(Keys.WheelUp).
 Release(ctx => { }); // Compilation error
 ```
@@ -323,7 +330,7 @@ Single state buttons are `Keys.WheelUp`,  `Keys.WheelDown`,  `Keys.WheelLeft`, a
 `On` clause takes arguments that consist of combination of `Keys.MoveUp`, `Keys.MoveDown`, `Keys.MoveLeft` and `Keys.MoveRight`. These are representing directions of movements of the mouse pointer.
 
 ```cs
-Browser.
+Chrome.
 On(Keys.RButton). // If you press right button,
 On(Keys.MoveDown, Keys.MoveRight). // and draw stroke to down and to right by the pointer,
 Do(ctx => // and release right button,
@@ -338,6 +345,29 @@ Do(ctx => // and release right button,
 ```
 
 `Stroke gesture` represents special case when a standard button is pressed, so it have the same grammatical limitation to `Button gesture with single state button`.
+
+
+```cs
+Chrome.
+On(Keys.RButton).
+On(Keys.MoveDown).
+Press(ctx => { }); // Compilation error
+```
+
+```cs
+Chrome.
+On(Keys.RButton).
+On(Keys.MoveDown).
+Do(ctx => { }); // OK
+```
+
+```cs
+Chrome.
+On(Keys.RButton).
+On(Keys.MoveDown).
+Release(ctx => { }); // Compilation error
+```
+
 
 ##### Grammatical limitations: { ignore=true }
 * `On` clause with `Keys.Move*` does not have `Press()` and `Release()` functions.
@@ -377,6 +407,83 @@ You can load the content in another C# Scripting file by `#load` directive.
 _Note : This directive should be placed on the top of your C# Scripting code except for `#r` directive._
 
 # Practical example
+
+## Paste text message
+
+```cs
+using System.Windows.Forms;
+```
+
+```cs
+Do(ctx =>
+{
+    Clipboard.SetText("This text will be pasted.");
+    SendInput.Multiple().
+    ExtendedKeyDown(Keys.ControlKey).
+    ExtendedKeyDown(Keys.V).
+    ExtendedKeyUp(Keys.V).
+    ExtendedKeyUp(Keys.ControlKey).
+    Send(); // Ctrl+V
+});
+```
+_Note: To use `Clipboard`, you should declare loading namespace `System.Windows.Forms` by **using** statement._
+
+## Convert a button into an arbitrary button
+
+You can use `Keys.XButton1` as `Keys.Lwin` by the following code.
+
+```cs
+// Convert Keys.XButton1 to Keys.LWin.
+On(Keys.XButton1).
+Press(ctx =>
+{
+    SendInput.ExtendedKeyDown(Keys.LWin);
+}).
+Release(ctx =>
+{
+    SendInput.ExtendedKeyUp(Keys.LWin);
+});
+```
+
+But be careful that this conversion is incomplete. You should use `OnDecomposed` instead of `On` clause in case you need to support the repeat function which keyboard's keys possess.
+
+The following code supports conversion of repeated press event of `Keys.XButton1` into it of `Keys.LWin`.
+
+```cs
+OnDecomposed(Keys.XButton1).
+Press(ctx =>
+{
+    SendInput.ExtendedKeyDown(Keys.LWin);
+}).
+Release(ctx =>
+{
+    SendInput.ExtendedKeyUp(Keys.LWin);
+});
+```
+
+## Create global gesture
+
+If you need to declare **global** gesture, you can do it by simply declare `When` clause which always returns true.
+
+```cs
+Whenever = When(ctx => { return true });
+```
+
+This declaration always is active, returns true, but has one big problem. This can be shadowed by the other gesture. To make this problem solved, you need to add some lines:
+
+```cs
+DeclareProfile("First"); 
+
+Whenever = When(ctx => { return true });
+
+// ...
+
+DeclareProfile("Second"); 
+
+// ...
+```
+
+See [Profile](#profile) for more details.
 
 ## Change the state of window
 
@@ -930,39 +1037,38 @@ Config.Callback.StrokeReset += (sender, e) { };
 This event activated when the state of mouse's stroke to be reset.
 `e` is `StrokeResetEventHandler`, and it does not have special properties.
 
-
-### StrokeUpdated {ignore=true}
+### StrokeUpdate {ignore=true}
 ```cs
-Config.Callback.StrokeUpdated += (sender, e) { };
+Config.Callback.StrokeUpdate += (sender, e) { };
 ```
 
 This event activated when the state of mouse's stroke to be changed.
 
-`e` is `StrokeUpdatedEventHandler `.
+`e` is `StrokeUpdateEventHandler `.
 Type | Property Name | Description |
 -----|-----|------
 IReadOnlyList\<Stroke\> | Strokes | 
 
-### StateChanged {ignore=true}
+### StateChange {ignore=true}
 ```cs
-Config.Callback.StateChanged += (sender, e) { };
+Config.Callback.StateChange += (sender, e) { };
 ```
 
 This event activated when the state of GestureMachine to be changed. 
-`e` is `StateChangedEventHandler`.
+`e` is `StateChangeEventHandler`.
 
 Type | Property Name | Description |
 -----|-----|------
 State | LastState | 
 State | CurrentState |
 
-### GestureChancelled {ignore=true}
+### GestureCancel {ignore=true}
 ```cs
-Config.Callback.GestureCancelled += (sender, e) { };
+Config.Callback.GestureCancel += (sender, e) { };
 ```
 
 This event activated when the gesture to be cancelled.
-`e` is `GestureCancelledEventHandler`.
+`e` is `GestureCancelEventHandler`.
 
 Type | Property Name | Description |
 -----|-----|------
@@ -981,6 +1087,14 @@ Type | Property Name | Description |
 -----|-----|------
 StateN | LastState | 
 
+### MachineStart {ignore=true}
+
+```cs
+Config.Callback.MachineStart += (sender, e) { };
+```
+This event activated when GestureMachine to be started.
+`e` is `MachineStartEventHandler`, and it does not have special properties.
+
 ### MachineReset {ignore=true}
 
 ```cs
@@ -993,6 +1107,14 @@ This event activated when GestureMachine to be reset for some reasons.
 Type | Property Name | Description |
 -----|-----|------
 State | LastState | 
+
+### MachineStop {ignore=true}
+
+```cs
+Config.Callback.MachineStop += (sender, e) { };
+```
+This event activated when GestureMachine to be stopped.
+`e` is `MachineStopEventHandler`, and it does not have special properties.
 
 # Crevice4 Core API
 
