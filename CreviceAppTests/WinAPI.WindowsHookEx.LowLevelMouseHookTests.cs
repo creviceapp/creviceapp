@@ -86,6 +86,7 @@ namespace Crevice4Tests
             }
         }
 
+#if DEBUG
         [TestMethod()]
         public void LowLevelMouseHookProcTest()
         {
@@ -107,6 +108,7 @@ namespace Crevice4Tests
                 }
             }
         }
+#endif
 
         [TestMethod()]
         public void DisposeWhenActivatedTest()
