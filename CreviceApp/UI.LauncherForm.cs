@@ -9,22 +9,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp
+namespace Crevice.UI
 {
+    using Crevice.Logging;
+    using Crevice.Config;
+
     public partial class LauncherForm : Form
     {
-        protected readonly AppGlobal Global;
+        private readonly MainFormBase _mainForm;
 
-        public LauncherForm(AppGlobal Global)
+        public LauncherForm(MainFormBase mainForm)
         {
-            this.Global = Global;
+            _mainForm = mainForm;
+            Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
         }
 
         private static Microsoft.Win32.RegistryKey AutorunRegistry()
-        {
-            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-        }
+            => Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+        
         private static bool AutoRun
         {
             get
@@ -53,18 +56,24 @@ namespace CreviceApp
                 else
                 {
                     var registry = AutorunRegistry();
-                    try
+                    if (registry.GetValue(Application.ProductName) != null)
                     {
-                        registry.DeleteValue(Application.ProductName);
-                        Verbose.Print("Autorun was set to false");
+                        try
+                        {
+                            registry.DeleteValue(Application.ProductName);
+                            Verbose.Print("Autorun was set to false");
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            Verbose.Error("An exception was thrown while writing registory value: {0}", ex.ToString());
+                        }
                     }
-                    catch (ArgumentException) { }
                     registry.Close();
                 }
             }
         }
 
-        private void saveSettings()
+        private void SaveSettings()
         {
             AutoRun = checkBox1.Checked;
         }
@@ -97,24 +106,20 @@ namespace CreviceApp
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            saveSettings();
+            SaveSettings();
             base.OnClosing(e);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
-            Global.MainForm.Close();
+            _mainForm.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
-        {
-            Global.MainForm.StartExternalProcess("explorer.exe", "/select, " + Global.MainForm.UserScript.UserScriptFile);
-        }
+            => _mainForm.OpenUserScriptWithNotepad();
 
         private void button3_Click(object sender, EventArgs e)
-        {
-            ShowProductInfoForm();
-        }
+            => ShowProductInfoForm();
     }
 }

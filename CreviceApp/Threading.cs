@@ -1,63 +1,80 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-
-namespace CreviceApp.Threading
+namespace Crevice.Threading
 {
-    // http://www.codeguru.com/csharp/article.php/c18931/Understanding-the-NET-Task-Parallel-Library-TaskScheduler.htm
-    public class SingleThreadScheduler : TaskScheduler, IDisposable
+    using System.Threading;
+    using System.Collections.Concurrent;
+    using Crevice.Logging;
+    
+    public class LowLatencyScheduler
+        : TaskScheduler, IDisposable
     {
-        private readonly BlockingCollection<Task> tasks = new BlockingCollection<Task>();
-        private readonly Thread thread;
+        private readonly BlockingCollection<Task> _tasks = new BlockingCollection<Task>();
+        private readonly Thread[] _threads;
 
-        public SingleThreadScheduler() : this(ThreadPriority.Normal) { }
-            
-        public SingleThreadScheduler(ThreadPriority priority)
+        public string Name { get; }
+        public ThreadPriority Priority { get; }
+        public int PoolSize { get; }
+
+        public LowLatencyScheduler(string name, ThreadPriority priority, int poolSize)
         {
-            this.thread = new Thread(new ThreadStart(Main));
-            this.thread.Priority = priority;
-            this.thread.Start();
+            Name = name;
+            Priority = priority;
+            PoolSize = poolSize;
+            _threads = InitializeThreadPool();
         }
 
-        private void Main()
+        private Thread[] InitializeThreadPool()
         {
-            Verbose.Print("SingleThreadScheduler was started; Thread ID: 0x{0:X}", Thread.CurrentThread.ManagedThreadId);
-            foreach (var t in tasks.GetConsumingEnumerable())
+            var threads = new Thread[PoolSize];
+            for (int i = 0; i < PoolSize; i++)
             {
-                TryExecuteTask(t);
+                var name = $"{Name}(Priority={Priority}, PoolSize={PoolSize}): [{i}/{PoolSize - 1}]";
+                var thread = new Thread(() =>
+                {
+                    Verbose.Print($"Start {name}");
+                    foreach (Task task in _tasks.GetConsumingEnumerable())
+                    {
+                        TryExecuteTask(task);
+                    }
+                    Verbose.Print($"End {name}");
+                });
+                thread.Name = name;
+                thread.Priority = Priority;
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                threads[i] = thread;
             }
+            return threads;
         }
 
         protected override IEnumerable<Task> GetScheduledTasks()
-        {
-            return tasks.ToArray();
-        }
+            => _tasks;
 
         protected override void QueueTask(Task task)
-        {
-            tasks.Add(task);
-        }
+            => _tasks.Add(task);
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-        {
-            return false;
-        }
+            => false;
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            tasks.CompleteAdding();
         }
 
-        ~SingleThreadScheduler()
+        protected virtual void Dispose(bool disposing)
         {
-            Dispose();
+            if (disposing)
+            {
+                _tasks.CompleteAdding();
+            }
         }
+
+        ~LowLatencyScheduler() => Dispose(false);
     }
 }

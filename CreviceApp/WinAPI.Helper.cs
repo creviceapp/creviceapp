@@ -8,9 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI
+namespace Crevice.WinAPI.Helper
 {
-    public static class Helper
+    using Crevice.Logging;
+
+    public static class ExceptionThrower
     {
         public static void ThrowLastWin32Error()
         {
@@ -18,10 +20,10 @@ namespace CreviceApp.WinAPI
         }
     }
     
-    public class CallLogger
+    public class WinAPILogger
     {
         private readonly StringBuilder buffer = new StringBuilder();
-        public CallLogger(string name)
+        public WinAPILogger(string name)
         {
             Add("Calling a native method: {0}", name);
         }

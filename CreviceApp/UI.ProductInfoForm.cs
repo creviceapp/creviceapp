@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 
-namespace CreviceApp
+namespace Crevice.UI
 {
+    using Crevice.Config;
+
     public partial class ProductInfoForm : Form
     {
         private CLIOption.Result cliOption;
@@ -20,6 +22,7 @@ namespace CreviceApp
         public ProductInfoForm(CLIOption.Result cliOption)
         {
             this.cliOption = cliOption;
+            this.Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
         }
 

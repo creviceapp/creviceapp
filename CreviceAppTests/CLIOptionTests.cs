@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CreviceApp
+namespace Crevice4Tests
 {
+    using Crevice.Config;
+
     [TestClass()]
     public class CLIOptionTests
     {
@@ -152,7 +154,7 @@ namespace CreviceApp
                 Assert.AreEqual(result.HelpMessage,
                     "\r\n" +
                     "Usage:\r\n" +
-                    "  CreviceApp.exe [--nogui] [--script path] [--help]\r\n" +
+                    "  crevice4.exe [--nogui] [--script path] [--help]\r\n" +
                     "\r\n" +
                     "  -g, --nogui       (Default: False) Disable GUI features. Set to true if you \r\n" +
                     "                    use Crevice as a CUI application.\r\n" +
@@ -166,7 +168,7 @@ namespace CreviceApp
                     "                    option if you need to change the default location of user \r\n" +
                     "                    script file. If given value is relative path, Crevice will \r\n" +
                     "                    resolve it to absolute path based on the default directory \r\n" +
-                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).\r\n" +
+                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice4).\r\n" +
                     "\r\n" +
                     "  -p, --priority    (Default: High) Process priority. Acceptable values are the\r\n" +
                     "                    following: AboveNormal, BelowNormal, High, Idle, Normal, \r\n" +
@@ -187,7 +189,7 @@ namespace CreviceApp
                 Assert.AreEqual(result.HelpMessage,
                     "\r\n" +
                     "Usage:\r\n" +
-                    "  CreviceApp.exe [--nogui] [--script path] [--help]\r\n" +
+                    "  crevice4.exe [--nogui] [--script path] [--help]\r\n" +
                     "\r\n" +
                     "  -g, --nogui       (Default: False) Disable GUI features. Set to true if you \r\n" +
                     "                    use Crevice as a CUI application.\r\n" +
@@ -201,7 +203,7 @@ namespace CreviceApp
                     "                    option if you need to change the default location of user \r\n" +
                     "                    script file. If given value is relative path, Crevice will \r\n" +
                     "                    resolve it to absolute path based on the default directory \r\n" +
-                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice\\CreviceApp).\r\n" +
+                    "                    (%USERPROFILE%\\AppData\\Roaming\\Crevice4).\r\n" +
                     "\r\n" +
                     "  -p, --priority    (Default: High) Process priority. Acceptable values are the\r\n" +
                     "                    following: AboveNormal, BelowNormal, High, Idle, Normal, \r\n" +

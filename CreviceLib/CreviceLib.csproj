@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net4.6;net4.6.1;netstandard2.0</TargetFrameworks>
+    <RootNamespace>Crevice.Core</RootNamespace>
+    <AssemblyName>Crevice.Core</AssemblyName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Description></Description>
+    <Product>CreviceLib</Product>
+    <Authors>rubyu</Authors>
+    <Company>rubyu</Company>
+    <Copyright></Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <PackageTags></PackageTags>
+    <PackageIconUrl></PackageIconUrl>
+  </PropertyGroup>
+
+</Project>

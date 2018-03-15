@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CreviceApp.WinAPI.CoreAudio
+namespace Crevice.WinAPI.CoreAudio
 {
     public class VolumeControl : IDisposable
     {
@@ -240,17 +240,22 @@ namespace CreviceApp.WinAPI.CoreAudio
                 return 0;
             }
             return value;
-    }
+        }
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            Marshal.ReleaseComObject(enumerator);
         }
 
-        ~VolumeControl()
+        protected virtual void Dispose(bool disposing)
         {
-            Dispose();
+            if (disposing)
+            {
+                Marshal.ReleaseComObject(enumerator);
+            }
         }
+
+        ~VolumeControl() => Dispose(false);
     }
 }

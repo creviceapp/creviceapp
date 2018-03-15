@@ -9,13 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace CreviceApp.WinAPI.Window
+namespace Crevice.WinAPI.Window
 {
+    using Crevice.WinAPI.Helper;
+    using Crevice.WinAPI.Device;
+
     namespace Impl
     {
         public class WindowInfo
         {
-            public static class NativeMethods
+            protected static class NativeMethods
             {
                 [DllImport("user32.dll")]
                 public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
@@ -23,10 +26,10 @@ namespace CreviceApp.WinAPI.Window
                 [DllImport("user32.dll")]
                 public static extern IntPtr GetWindowLong(IntPtr hWnd, WindowLongParam nIndex);
 
-                [DllImport("user32.dll")]
+                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
                 public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
-                [DllImport("user32.dll")]
+                [DllImport("user32.dll", CharSet = CharSet.Unicode)]
                 public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
                 [DllImport("user32.dll")]
@@ -38,19 +41,19 @@ namespace CreviceApp.WinAPI.Window
                 [DllImport("kernel32.dll")]
                 public static extern bool CloseHandle(IntPtr hHandle);
 
-                [DllImport("kernel32.dll")]
+                [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
                 public static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, out int lpdwSize);
 
                 [DllImport("user32.dll", SetLastError = true)]
                 public static extern bool BringWindowToTop(IntPtr hWnd);
 
                 [DllImport("user32.dll")]
-                public static extern long SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+                public static extern long SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
                 [DllImport("user32.dll", SetLastError = true)]
-                public extern static bool PostMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+                public extern static bool PostMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-                [DllImport("user32.dll", SetLastError = true)]
+                [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
                 public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
                 [DllImport("user32.dll")]
@@ -58,17 +61,23 @@ namespace CreviceApp.WinAPI.Window
                 public extern static bool SetForegroundWindow(IntPtr hWnd);
 
                 [DllImport("user32.dll")]
+                public static extern IntPtr GetForegroundWindow();
+
+                [DllImport("user32.dll")]
                 public extern static bool AttachThreadInput(int idAttach, int idAttachTo, bool fAttach);
 
                 [DllImport("user32.dll", ExactSpelling = true)]
-                public extern static IntPtr GetAncestor(IntPtr hwnd, uint flags);
+                public extern static IntPtr GetAncestor(IntPtr hwnd, int flags);
+                
+                [DllImport("user32.dll")]
+                public static extern IntPtr WindowFromPhysicalPoint(Point point);
             }
 
             public const int MaxPathSize = 1024;
 
             // http://www.pinvoke.net/default.aspx/kernel32/OpenProcess.html
             [Flags]
-            public enum ProcessAccessFlags : uint
+            public enum ProcessAccessFlags : int
             {
                 All = 0x001F0FFF,
                 Terminate = 0x00000001,
@@ -188,8 +197,7 @@ namespace CreviceApp.WinAPI.Window
 
             private static Tuple<int, int> GetThreadProcessId(IntPtr hWnd)
             {
-                int pid = 0;
-                int tid = NativeMethods.GetWindowThreadProcessId(hWnd, out pid);
+                int tid = NativeMethods.GetWindowThreadProcessId(hWnd, out int pid);
                 return Tuple.Create(tid, pid);
             }
 
@@ -236,23 +244,31 @@ namespace CreviceApp.WinAPI.Window
             public bool Activate()
             {
                 var hwndTarget = NativeMethods.GetAncestor(WindowHandle, 2);
-                var hwndActive = ForegroundWindowInfo.NativeMethods.GetForegroundWindow();
+                var hwndActive = NativeMethods.GetForegroundWindow();
                 if (hwndTarget == hwndActive)
+                {
                     return true;
-
-                var outTmp = 0;
-                var tidTarget = NativeMethods.GetWindowThreadProcessId(WindowHandle, out outTmp);
+                }
+                
+                var tidTarget = NativeMethods.GetWindowThreadProcessId(WindowHandle, out int outTmp);
                 var tidActive = NativeMethods.GetWindowThreadProcessId(hwndActive, out outTmp);
 
                 if (NativeMethods.SetForegroundWindow(WindowHandle))
-                    return true;
-                if (tidTarget == tidActive)
-                    return BringWindowToTop();
-                else
                 {
-                    NativeMethods.AttachThreadInput(tidTarget, tidActive, true);
-                    try { return BringWindowToTop(); }
-                    finally { NativeMethods.AttachThreadInput(tidTarget, tidActive, false); }
+                    return true;
+                }
+                if (tidTarget == tidActive)
+                {
+                    return BringWindowToTop();
+                }
+                NativeMethods.AttachThreadInput(tidTarget, tidActive, true);
+                try
+                {
+                    return BringWindowToTop();
+                }
+                finally
+                {
+                    NativeMethods.AttachThreadInput(tidTarget, tidActive, false);
                 }
             }
 
@@ -261,12 +277,12 @@ namespace CreviceApp.WinAPI.Window
                 return NativeMethods.BringWindowToTop(WindowHandle);
             }
 
-            public long SendMessage(uint Msg, uint wParam, uint lParam)
+            public long SendMessage(int Msg, int wParam, int lParam)
             {
                 return NativeMethods.SendMessage(WindowHandle, Msg, wParam, lParam);
             }
 
-            public bool PostMessage(uint Msg, uint wParam, uint lParam)
+            public bool PostMessage(int Msg, int wParam, int lParam)
             {
                 return NativeMethods.PostMessage(WindowHandle, Msg, wParam, lParam);
             }
@@ -281,68 +297,49 @@ namespace CreviceApp.WinAPI.Window
                 return new WindowInfo(NativeMethods.FindWindowEx(WindowHandle, IntPtr.Zero, lpszClass, lpszWindow));
             }
             
-            public IEnumerable<WindowInfo> GetChildWindows()
+            public IReadOnlyList<WindowInfo> GetChildWindows()
             {
-                return new Enumerables.ChildWindows(WindowHandle);
+                return new Enumerables.ChildWindows(WindowHandle).ToList();
             }
 
-            public IEnumerable<WindowInfo> GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
+            public IReadOnlyList<WindowInfo> GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags)
             {
-                return new Enumerables.PointedDescendantWindows(WindowHandle, point, flags);
+                return new Enumerables.PointedDescendantWindows(WindowHandle, point, flags).ToList();
             }
 
-            public IEnumerable<WindowInfo> GetPointedDescendantWindows(Point point)
+            public IReadOnlyList<WindowInfo> GetPointedDescendantWindows(Point point)
             {
-                return new Enumerables.PointedDescendantWindows(WindowHandle, point, Window.WindowFromPointFlags.CWP_ALL);
+                return new Enumerables.PointedDescendantWindows(WindowHandle, point, Window.WindowFromPointFlags.CWP_ALL).ToList();
             }
         }
 
         public class ForegroundWindowInfo : WindowInfo
         {
-            public static new class NativeMethods
-            {
-                [DllImport("user32.dll")]
-                public static extern IntPtr GetForegroundWindow();
-            }
-
             public ForegroundWindowInfo() : base(NativeMethods.GetForegroundWindow()) { }
         }
 
         public class PointedWindowInfo : WindowInfo
         {
-            public static new class NativeMethods
-            {
-                [DllImport("user32.dll")]
-                public static extern IntPtr WindowFromPhysicalPoint(Point point);
-            }
-
             public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point)) { }
         }
 
         namespace Enumerables
         {
+            using System.Collections;
+
             // http://qiita.com/katabamisan/items/081547f42512e93a31ab
 
             public abstract class WindowEnumerable : IEnumerable<WindowInfo>
             {
                 internal delegate bool EnumWindowsProcDelegate(IntPtr hWnd, IntPtr lParam);
 
-                internal List<IntPtr> handles;
-
-                public WindowEnumerable()
-                {
-                    handles = new List<IntPtr>();
-                }
+                internal readonly List<IntPtr> handles = new List<IntPtr>();
 
                 public IEnumerator<WindowInfo> GetEnumerator()
-                {
-                    return handles.Select(x => new WindowInfo(x)).GetEnumerator();
-                }
+                    => handles.Select(x => new WindowInfo(x)).GetEnumerator();
 
-                System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-                {
-                    return handles.Select(x => new WindowInfo(x)).GetEnumerator();
-                }
+                IEnumerator IEnumerable.GetEnumerator()
+                    => GetEnumerator();
 
                 internal bool EnumWindowProc(IntPtr handle, IntPtr lParam)
                 {
@@ -353,23 +350,21 @@ namespace CreviceApp.WinAPI.Window
 
             public sealed class TopLevelWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
                     public static extern bool EnumWindows(EnumWindowsProcDelegate lpEnumFunc, IntPtr lParam);
                 }
 
                 public TopLevelWindows()
-                    : base()
                 {
-                    handles = new List<IntPtr>();
                     NativeMethods.EnumWindows(EnumWindowProc, IntPtr.Zero);
                 }
             }
 
             public sealed class ChildWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
                     public static extern bool EnumChildWindows(IntPtr hwndParent, EnumWindowsProcDelegate lpEnumFunc, IntPtr lParam);
@@ -378,9 +373,8 @@ namespace CreviceApp.WinAPI.Window
                 public readonly IntPtr WindowHandle;
 
                 public ChildWindows(IntPtr hWnd)
-                    : base()
                 {
-                    this.WindowHandle = hWnd;
+                    WindowHandle = hWnd;
                     NativeMethods.EnumChildWindows(hWnd, EnumWindowProc, IntPtr.Zero);
                 }
 
@@ -388,7 +382,7 @@ namespace CreviceApp.WinAPI.Window
 
             public sealed class PointedDescendantWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll")]
                     public static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
@@ -401,10 +395,9 @@ namespace CreviceApp.WinAPI.Window
                 public readonly Point Point;
 
                 public PointedDescendantWindows(IntPtr hWnd, Point point, Window.WindowFromPointFlags flags)
-                    : base()
                 {
-                    this.WindowHandle = hWnd;
-                    this.Point = point;
+                    WindowHandle = hWnd;
+                    Point = point;
                     if (hWnd != IntPtr.Zero)
                     {
                         var res = ChildWindowFromPointEx(hWnd, point, flags);
@@ -427,18 +420,17 @@ namespace CreviceApp.WinAPI.Window
 
             public sealed class ThreadWindows : WindowEnumerable
             {
-                private static class NativeMethods
+                static class NativeMethods
                 {
                     [DllImport("user32.dll", SetLastError = true)]
-                    public static extern bool EnumThreadWindows(uint dwThreadId, EnumWindowsProcDelegate lpfn, IntPtr lParam);
+                    public static extern bool EnumThreadWindows(int dwThreadId, EnumWindowsProcDelegate lpfn, IntPtr lParam);
                 }
 
-                public readonly uint ThreadId;
+                public readonly int ThreadId;
 
-                public ThreadWindows(uint threadId)
-                    : base()
+                public ThreadWindows(int threadId)
                 {
-                    this.ThreadId = threadId;
+                    ThreadId = threadId;
                     NativeMethods.EnumThreadWindows(threadId, EnumWindowProc, IntPtr.Zero);
                 }
             }
@@ -447,7 +439,7 @@ namespace CreviceApp.WinAPI.Window
 
     public static class Window
     {
-        public static class NativeMethods
+        static class NativeMethods
         {
             [DllImport("user32.dll")]
             public static extern bool GetCursorPos(out Point lpPoint);
@@ -455,7 +447,7 @@ namespace CreviceApp.WinAPI.Window
             [DllImport("user32.dll")]
             public static extern bool GetPhysicalCursorPos(out Point lpPoint);
 
-            [DllImport("user32.dll", SetLastError = true)]
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
             public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         }
 
@@ -464,7 +456,7 @@ namespace CreviceApp.WinAPI.Window
         /// For use with ChildWindowFromPointEx 
         /// </summary>
         [Flags]
-        public enum WindowFromPointFlags : uint
+        public enum WindowFromPointFlags : int
         {
             /// <summary>
             /// Does not skip any child windows
@@ -544,14 +536,14 @@ namespace CreviceApp.WinAPI.Window
             return From(NativeMethods.FindWindow(lpClassName, lpWindowName));
         }
         
-        public static IEnumerable<Impl.WindowInfo> GetTopLevelWindows()
+        public static IReadOnlyList<Impl.WindowInfo> GetTopLevelWindows()
         {
-            return new Impl.Enumerables.TopLevelWindows();
+            return new Impl.Enumerables.TopLevelWindows().ToList();
         }
 
-        public static IEnumerable<Impl.WindowInfo> GetThreadWindows(uint threadId)
+        public static IReadOnlyList<Impl.WindowInfo> GetThreadWindows(int threadId)
         {
-            return new Impl.Enumerables.ThreadWindows(threadId);
+            return new Impl.Enumerables.ThreadWindows(threadId).ToList();
         }
     }
 }
