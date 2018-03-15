@@ -1,26 +1,25 @@
-
-[TOC]
-
-# Introduction
-
-Crevice4 is multi purpose utility which supports gestures with mouse and keyboard. You can use C# language in your customizable userscript file, so there is nothing that can not be done for you.
-
-
-You can get
-// todo link to microsoft app store.
-
-Extract zip file to any location, and click `crevice4.exe`.
-
-
-_Note: Crevice4 requires Windows 7 or later, and .Net Framework 4.6.1 or later._
-
+  
+  
+  
+## Installation
+  
+  
+  
+  
+  
+  
+  
+  
+  
 ## Quickstart
-
+  
+  
+  
 After the first execution of the application, you can find `default.csx` in the directory `%APPDATA%\Crevice4`. It's the userscript file. Please open it with a text editor and take a look through it.
-
-
+  
+  
 After several `using` declaring lines, you can see `Browser` definition as following (but here, a little bit shortened):
-
+  
 ```cs
 var Browser = When(ctx =>
 {
@@ -29,11 +28,11 @@ var Browser = When(ctx =>
            ctx.ForegroundWindow.ModuleName == "iexplore.exe");
 });
 ```
-
+  
 When the `ModuleName` of `ForegroundWindow` is one of follows, `chrome.exe`, `firefox.exe`, or `iexplore.exe`, then, `When` returns true; this is the declaration of initialization of a context which specialized to `Browser`. 
-
+  
 After that, the declaration of gestures follows. Let's see the first one:
-
+  
 ```cs
 Browser.
 On(Keys.RButton).
@@ -50,27 +49,27 @@ Do(ctx =>
     Send(); // Previous tab
 });
 ```
-
+  
 This is a mouse gesture definition; when you press and hold `Keys.RButton`, and then if you `Keys.WheelUp` it, the actions declared in `Do` will be executed.
-
+  
 As long as Crevice4 is executing, you can edit userscript file at any time. While reading the following sections, of course. Crevice4 supports **hotloading** feature. Whenever Crevice4 detects an update of user script file, it will be compiled and evaluated immediately, then the userscript updated will be loaded if the compilation is successful. 
-
-// todo movie
-
-If the compilation is failed, error message will be shown. You can see the details of it by clicking it.
-
-// todo movie
-
-If the evaluation is falied, warning message will be shown. You can see the details of it by clicking it.
-
-//todo movie
-
-The userscript file is just a C# Scripting file. You can do anything you want by writing your own script in it, or else by just copying codes from [Stack Overflow](https://stackoverflow.com/). See [Overview of C# Scripting](#overview-of-c-scripting) for more details.
-
+  
+  
+  
+  
+The userscript file is just a C# Scripting file. You can do anything you want by writing your own script in it, or else by just copying codes from [Stack Overflow](https://stackoverflow.com/ ). See [Overview of C# Scripting](#overview-of-c-scripting ) for more details.
+  
+  
+  
+  
 # Gesture DSL
-
+  
+  
+  
 ## When
-
+  
+  
+  
 All gesture definition starts from `When` clause, representing the condition for the activation of a gesture. And also `When` clause is the first context of a gesture.
 ```cs
 var Chrome = When(ctx =>
@@ -78,37 +77,39 @@ var Chrome = When(ctx =>
     return ctx.ForegroundWindow.ModuleName == "chrome.exe";
 });
 ```
-
-_Note: `ctx` is EvaluationContext, see [Crevice4 Core API/EvaluationContext](#evaluationcontext) for more details._
-
+  
+_Note: `ctx` is EvaluationContext, see [Crevice4 Core API/EvaluationContext](#evaluationcontext ) for more details._
+  
 The next to `When` are `On` and `OnDecomposed` clauses.
-
-## On 
-
+  
+## On
+  
+  
+  
 `On` clause takes a button or a sequence of stroke as it's argument. This clause can be declared successively if you needed. So, `On` clause is the second or later context of a gesture. 
-
+  
 ```cs
 // Button gesture.
 Chrome.
 On(Keys.RButton). // If you press mouse's right button,
 ```
-
+  
 ```cs
 // Button gesture with two buttons.
 Chrome.
 On(Keys.RButton). // If you press mouse's right button,
 On(Keys.LButton). // and press mouse's left button,
 ```
-
+  
 ```cs
 // Storke gesture.
 Chrome.
 On(Keys.RButton). // If you press mouse's right button,
 On(Keys.MoveUp, Keys.MoveDown). // and draw stroke to up and to down by the pointer,
 ```
-
+  
 Other than itself, this clause takes `Press`, `Do`, and `Release` clauses as the next clause. 
-
+  
 ```cs
 Chrome.
 On(Keys.RButton).
@@ -124,9 +125,9 @@ Chrome.
 On(Keys.RButton).
 Release(ctx => {});
 ```
-
+  
 And also, these clauses are can be declared at the same time.
-
+  
 ```cs
 Chrome.
 On(Keys.RButton).
@@ -134,14 +135,18 @@ Press(ctx => {}).
 Do(ctx => {}).
 Release(ctx => {});
 ```
-
-##### Grammatical limitations: { ignore=true }
-* `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context. See [OnDecomposed](#ondecomposed) for more details.
-
+  
+##### Grammatical limitations:
+  
+  
+* `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context. See [OnDecomposed](#ondecomposed ) for more details.
+  
 ## OnDecomposed
-
+  
+  
+  
 `OnDecomposed` clause takes a button as It's argument. Like `On`, `OnDecomposedOn` clause is the second or later context of a gesture, too. But, in contrast to `On` clause, this clause **can not** be declared successively, and **can not** take `Do` clause as the next clause. This clause exists for the cases that you want to simply hook the press and release events to an action. This clause takes `Press` and `Release` clauses as the next clause. These clauses will directly be connected to the action, and if a button pressed, each of all the events published while it will invoke it.
-
+  
 ```cs
 Chrome.
 OnDecomposed(Keys.RButton). // If you press and hold mouse's right button,
@@ -151,30 +156,34 @@ Press(ctx =>
 }). 
 Release(ctx => {});
 ```
-
+  
 ```cs
 // This clause CAN NOT be declared successively.
 Chrome.
 OnDecomposed(Keys.RButton). 
 OnDecomposed(Keys.MButton). // Compilation error.
 ```
-
+  
 ```cs
 // This clause CAN NOT be declared on the same context with `On` clause given the same button.
 Chrome.
 On(Keys.RButton).
 OnDecomposed(Keys.RButton). // Runtime error will be thrown and warning messsage will be shown.
 ```
-
-
-##### Grammatical limitations: { ignore=true }
+  
+  
+##### Grammatical limitations:
+  
+  
 * `OnDecomposed` clause does not have `Do()` functions.
 * `On` and `OnDecomposed` clauses given the same button **can not** be declared on the same context.
-
+  
 ## Do
-
+  
+  
+  
 `Do` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled. `Do` clause is the last context of a gesture. 
-
+  
 ```cs
 On(Keys.RButton). // If you press mouse's right button,
 Do(ctx => // and release mouse's right button,
@@ -182,13 +191,15 @@ Do(ctx => // and release mouse's right button,
     // then this code will be executed.
 });
 ```
-
-_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details._
-
+  
+_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext ) for more details._
+  
 ## Press
-
+  
+  
+  
 `Press` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled, except for the last clause's release event. `Press` clause is the last context of a gesture. 
-
+  
 ```cs
 On(Keys.RButton). // If you press mouse's right button,
 Press(ctx => // without waiting for release event,
@@ -196,13 +207,15 @@ Press(ctx => // without waiting for release event,
     // then this code will be executed.
 });
 ```
-
-_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details._
-
+  
+_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext ) for more details._
+  
 ## Release
-
+  
+  
+  
 `Release` clause declares an action which will be executed only when the conditions, given by the context it to be declared, are fully filled. `Release` clause is the last context of a gesture. 
-
+  
 ```cs
 On(Keys.RButton). // If you press mouse's right button,
 Release(ctx => // and release mouse's right button,
@@ -210,12 +223,14 @@ Release(ctx => // and release mouse's right button,
     // then this code will be executed.
 });
 ```
-
-_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext) for more details._
-
+  
+_Note: `ctx` is `ExecutionContext`, see [Crevice4 Core API/ExecutionContext](#executioncontext ) for more details._
+  
 ## Button gesture
+  
+  
 As you may know, mouse gestures with it's buttons are called "rocker gesture" in mouse gesture utility communities. But we call it, including it with keyboard's keys, simply `Button gesture` here. 
-
+  
 ```cs
 // Button gesture.
 Chrome.
@@ -225,7 +240,7 @@ Do(ctx => // and release mouse's right button,
     // then this code will be executed.
 });
 ```
-
+  
 ```cs
 // Button gesture with two buttons.
 Chrome.
@@ -236,9 +251,9 @@ Do(ctx => // and release mouse's left or right button,
     // then this code will be executed.
 });
 ```
-
+  
 Even if after pressing a button which means the start of a gesture, you can cancel it by holding the button pressing until it to be timeout.
-
+  
 ```cs
 Chrome.
 On(Keys.RButton). // If you WRONGLY pressed mouse's right button,
@@ -247,15 +262,17 @@ Do(ctx => // you hold the button until it to be timeout and release it,
     // then this code will NOT be executed.
 });
 ```
-
+  
 This means actions declared in `Do` clause is not assured it's execution.
-
+  
 Above three gestures are `Button gesture` by the standard buttons. `On` clause with standard buttons can be used for declare `Do` clause but also `Press` and `Release` clauses.
-
+  
 ### Button gesture with Press/Release
-
+  
+  
+  
 `Do` clause is just simple but there are cases do not fit to use it. For example, where there is need to hook to the press or release event of a button. `Press` and `Release` clauses fit to this case. These can be written just after `On` clause.
-
+  
 ```cs
 // Convert Keys.XButton1 to Keys.LWin.
 Chrome.
@@ -269,9 +286,9 @@ Release(ctx =>
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
 ```
-
+  
 For `Release` clause, it can be after `Do` clause.
-
+  
 ```cs
 Chrome.
 On(Keys.XButton2).
@@ -290,45 +307,51 @@ Release(ctx =>
     // Assured.
 });
 ```
-
+  
 Actions declared in `Press` and `Release` clauses are different from it of `Do` clause, the execution of these are assured.
-
-_Note: Be careful that this conversion is incomplete. See [Convert a button into an arbitrary button](#convert-a-button-into-an-arbitrary-button) for more details._
-
+  
+_Note: Be careful that this conversion is incomplete. See [Convert a button into an arbitrary button](#convert-a-button-into-an-arbitrary-button ) for more details._
+  
 ### Button gesture with single state button
-
+  
+  
+  
 Few of the buttons in `Keys` are different from the standard buttons; these have only one state, and only one event. So, `On` clauses with these can not be used with `Press` and `Release` clauses.
-
+  
 ```cs
 Chrome.
 On(Keys.WheelUp).
 Press(ctx => { }); // Compilation error
 ```
-
+  
 ```cs
 Chrome.
 On(Keys.WheelUp).
 Do(ctx => { }); // OK
 ```
-
+  
 ```cs
 Chrome.
 On(Keys.WheelUp).
 Release(ctx => { }); // Compilation error
 ```
-
-
-##### Grammatical limitations: { ignore=true }
+  
+  
+##### Grammatical limitations:
+  
+  
 * `On` clause with single state button does not have `Press()` and `Release()` functions.
-
+  
 Single state buttons are `Keys.WheelUp`,  `Keys.WheelDown`,  `Keys.WheelLeft`, and  `Keys.WheelRight`.
-
+  
 ## Stroke gesture
-
+  
+  
+  
 "Mouse gestures by strokes", namely `Stroke gesture` is the most important part in the functions of mouse gesture utilities.
-
+  
 `On` clause takes arguments that consist of combination of `Keys.MoveUp`, `Keys.MoveDown`, `Keys.MoveLeft` and `Keys.MoveRight`. These are representing directions of movements of the mouse pointer.
-
+  
 ```cs
 Chrome.
 On(Keys.RButton). // If you press right button,
@@ -343,90 +366,110 @@ Do(ctx => // and release right button,
     Send(); // then send Ctrl+W to Chrome.
 });
 ```
-
+  
 `Stroke gesture` represents special case when a standard button is pressed, so it have the same grammatical limitation to `Button gesture with single state button`.
-
-
+  
+  
 ```cs
 Chrome.
 On(Keys.RButton).
 On(Keys.MoveDown).
 Press(ctx => { }); // Compilation error
 ```
-
+  
 ```cs
 Chrome.
 On(Keys.RButton).
 On(Keys.MoveDown).
 Do(ctx => { }); // OK
 ```
-
+  
 ```cs
 Chrome.
 On(Keys.RButton).
 On(Keys.MoveDown).
 Release(ctx => { }); // Compilation error
 ```
-
-
-##### Grammatical limitations: { ignore=true }
+  
+  
+##### Grammatical limitations:
+  
+  
 * `On` clause with `Keys.Move*` does not have `Press()` and `Release()` functions.
 * `On` clause with `Keys.Move*` should have `Button gesture` by standard button as the previous context.
 * `On` clause with `Keys.Move*` should be the last element of the sequence of `On` clauses.
-
+  
+  
+  
+  
 # Overview of C# Scripting
-
-C# Scripting is a powerful and flexible scripting feature provided by [Microsoft Ryslyn](https://github.com/dotnet/roslyn). It designed to make scripts you cut and pasted from C# code work as-is. So, you can build your own gesture environment easily just only with a little of knowledge of C# language. But C# Scripting has only a few special feature C# language does not have. The following section is the introduction of the features very useful if you know it when you need to do it.
-
+  
+  
+  
+C# Scripting is a powerful and flexible scripting feature provided by [Microsoft Ryslyn](https://github.com/dotnet/roslyn ). It designed to make scripts you cut and pasted from C# code work as-is. So, you can build your own gesture environment easily just only with a little of knowledge of C# language. But C# Scripting has only a few special feature C# language does not have. The following section is the introduction of the features very useful if you know it when you need to do it.
+  
 ## #r directive
-
+  
+  
+  
 You can add reference to assemblies by `#r` directive. 
-
+  
 ```cs
 // Add a reference to dll file.
 #r "path_to/Assembly.dll"
-
+  
 // Add a reference to an assembly.
 #r "System.Speech"
-
+  
 // Error occurrs unless you have installed Visual Studio.
 #r "Microsoft.VisualStudio" 
 ```
-
+  
 _Note 1: This directive should be placed on the top of your C# Scripting code._
 _Note 2: This directive does not support to load NuGet package automatically. You can do it by download NuGet package by yourself, extract dll files, and add refereces to it by using `#r` directive._
-
+  
 ## #load directive
-
+  
+  
+  
 You can load the content in another C# Scripting file by `#load` directive.
-
+  
 ```cs
 #load "path_to/another.csx"
 ```
-
+  
 _Note : This directive should be placed on the top of your C# Scripting code except for `#r` directive._
-
+  
+  
+  
+  
 # Practical example
-
+  
+  
+  
 ## Input text message
-
+  
+  
+  
 The following code input the message to the foreground application.
-
+  
 ```cs
 Do(ctx =>
 {
     SendInput.UnicodeKeyStroke("This text will be input.");
 });
 ```
-
-But `UnicodeKeyStroke` method is slow. So if there is no need to use it, you should better to do it with `Clipboard` and Ctrl+V method. See [Paste text message](#paste-text-message).
-
+  
+But `UnicodeKeyStroke` method is slow. So if there is no need to use it, you should better to do it with `Clipboard` and Ctrl+V method. See [Paste text message](#paste-text-message ).
+  
 ## Paste text message
-
+  
+  
+  
 ```cs
 using System.Windows.Forms;
 ```
-
+  
 ```cs
 Do(ctx =>
 {
@@ -440,11 +483,13 @@ Do(ctx =>
 });
 ```
 _Note: To use `Clipboard`, you should declare loading namespace `System.Windows.Forms` by **using** statement._
-
+  
 ## Convert a button into an arbitrary button
-
+  
+  
+  
 You can use `Keys.XButton1` as `Keys.Lwin` by the following code.
-
+  
 ```cs
 // Convert Keys.XButton1 to Keys.LWin.
 On(Keys.XButton1).
@@ -457,11 +502,11 @@ Release(ctx =>
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
 ```
-
+  
 But be careful that this conversion is incomplete. You should use `OnDecomposed` instead of `On` clause in case you need to support the repeat function which keyboard's keys possess.
-
+  
 The following code supports conversion of repeated press event of `Keys.XButton1` into it of `Keys.LWin`.
-
+  
 ```cs
 OnDecomposed(Keys.XButton1).
 Press(ctx =>
@@ -473,35 +518,41 @@ Release(ctx =>
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
 ```
-
+  
 ## Create global gesture
-
+  
+  
+  
 If you need to declare **global** gesture, you can do it by simply declare `When` clause which always returns true.
-
+  
 ```cs
 Whenever = When(ctx => { return true });
 ```
-
+  
 This declaration always is active, returns true, but has one big problem. This can be shadowed by the other gesture. To make this problem solved, you need to add some lines:
-
+  
 ```cs
 DeclareProfile("Whenever"); 
-
+  
 Whenever = When(ctx => { return true });
-
+  
 // ...
-
+  
 DeclareProfile("Other"); 
-
+  
 // ...
 ```
-
-See [Profile](#profile) for more details.
-
+  
+See [Profile](#profile ) for more details.
+  
 ## Change the state of window
-
-### Maximize window {ignore=true}
-
+  
+  
+  
+### Maximize window
+  
+  
+  
 ```cs
 Do(ctx =>
 {
@@ -509,9 +560,11 @@ Do(ctx =>
     ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 });
 ```
-
-### Minimize window {ignore=true}
-
+  
+### Minimize window
+  
+  
+  
 ```cs
 Do(ctx =>
 {
@@ -519,9 +572,11 @@ Do(ctx =>
     ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0);
 });
 ```
-
-### Restore window {ignore=true}
-
+  
+### Restore window
+  
+  
+  
 ```cs
 Do(ctx =>
 {
@@ -529,9 +584,11 @@ Do(ctx =>
     ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_RESTORE, 0);
 });
 ```
-
-### Activate window {ignore=true}
-
+  
+### Activate window
+  
+  
+  
 ```cs
 Do(ctx =>
 {
@@ -539,9 +596,11 @@ Do(ctx =>
     ctx.ForegroundWindow.Activate();
 });
 ```
-
-### Close window {ignore=true}
-
+  
+### Close window
+  
+  
+  
 ```cs
 Do(ctx =>
 {
@@ -549,40 +608,42 @@ Do(ctx =>
     ctx.ForegroundWindow.PostMessage(WM_SYSCOMMAND, SC_CLOSE, 0);
 });
 ```
-
-There are more a lot of numbers of parameters can be used for operate the window. See [WM\_SYSCOMMAND message](https://msdn.microsoft.com/library/windows/desktop/ms646360%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396) for more details.
-
+  
+There are more a lot of numbers of parameters can be used for operate the window. See [WM\_SYSCOMMAND message](https://msdn.microsoft.com/library/windows/desktop/ms646360%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 ) for more details.
+  
 ## Change gesture behavior by modifier key
-
+  
+  
+  
 In this case, you can use keyboard's modifier key for declaring the gesture definition, but there is one problem. Gesture definition can only be declared with **ordered** `On` clauses. For example, for a gesture definition takes two modifier keys as it's modifier, you should declare the gesture definition with all pattern of the combination of modifier keys.
-
+  
 ```cs
 // Pattern 1/2.
 On(Keys.ControlKey).
 On(Keys.ShiftKey).
 On(Keys.RButton).
 Do(ctx => {
-
+  
 });
 ```
-
+  
 ```cs
 // Pattern 2/2.
 On(Keys.ShiftKey).
 On(Keys.ControlKey).
 On(Keys.RButton).
 Do(ctx => {
-
+  
 });
 ```
-
+  
 By using win32 API `GetKeyState()` instead of the above way, you can easily declare gesture declaration which supports modifier keys.
-
+  
 ```cs
 [System.Runtime.InteropServices.DllImport("user32.dll")]
 static extern short GetKeyState(int nVirtKey);
 ```
-
+  
 ```cs
 On(Keys.RButton).
 Do((tx =>
@@ -595,25 +656,27 @@ Do((tx =>
     }
 });
 ```
-
-## Shortcut for fixed phrase 
-
+  
+## Shortcut for fixed phrase
+  
+  
+  
 If you are typing boring boilerplate on your computer everyday, Crevice can automate it by assigning it as a gesture.
-
+  
 ```cs
 using System.Windows.Forms;
 using Crevice.Core.DSL;
 using Crevice.Core.Keys;
 using Crevice.GestureMachine;
-
+  
 class KeyCommandManager
 {
     private List<LogicalDoubleThrowKey> currentKeys 
         = new List<LogicalDoubleThrowKey>();
-
+  
     private List<(List<LogicalDoubleThrowKey>, Action)> key2Action 
         = new List<(List<LogicalDoubleThrowKey>, Action)>();
-
+  
     public void Setup(
         DoubleThrowElement<ExecutionContext> onElement)
     {
@@ -631,14 +694,14 @@ class KeyCommandManager
             });
         }
     }
-
+  
     public void Register(Action action, params LogicalDoubleThrowKey[] keyArr)
         => key2Action.Add((keyArr.ToList(), action));
-
+  
     public void Reset() => currentKeys.Clear();
-
+  
     public void AddKey(LogicalDoubleThrowKey key) => currentKeys.Add(key);
-
+  
     public void ExecuteCommand()
     {
         var actions = key2Action.
@@ -651,12 +714,12 @@ class KeyCommandManager
     }
 }
 ```
-
+  
 By the following setting, if you press `Keys.T` and `Keys.I` sequecially while press and holding `Keys.RControlKey`, then a registered text will be pasted from clipboard to foreground application.
-
+  
 ```cs
 var keyCommandManager = new KeyCommandManager();
-
+  
 // Register a pair of an action that sends fixed message to the foreground application 
 // and a sequence of keys, `Keys.T` - `Keys.I`.
 keyCommandManager.Register(() => 
@@ -669,32 +732,34 @@ keyCommandManager.Register(() =>
     ExtendedKeyUp(Keys.ControlKey).
     Send(); // Ctrl+V
 }, Keys.T, Keys.I);
-
+  
 var Whenever = When(ctx => { return true; });
 var WheneverOn = Whenever.On(Keys.RControlKey);
-
+  
 // Declare gesture definition generated automatically from registered data;
 // On(Keys.RControlKey).OnDecomposed(Keys.T).Press() and OnDecomposed(Keys.RControlKey).On(Keys.I).Press().
 keyCommandManager.Setup(WheneverOn);
-
+  
 WheneverOn.
 Release(ctx => {
     keyCommandManager.ExecuteCommand();
     keyCommandManager.Reset();
 });
 ```
-
+  
 ## Define C-x C-x command like Emacs
-
+  
+  
+  
 The following code is the example of Emacs like C-x C-x gesture definition. It seems like previous `KeyCommandManager`, but is more complicated in it's behavior. `EmacsLikeCommandManager` has a state that can be permanent. 
-
+  
 ```cs
-
+  
 using System.Windows.Forms;
 using Crevice.Core.DSL;
 using Crevice.Core.Keys;
 using Crevice.GestureMachine;
-
+  
 class EmacsLikeCommandManager
 {
     private readonly Action<string> showStatus;
@@ -702,7 +767,7 @@ class EmacsLikeCommandManager
         = new List<LogicalDoubleThrowKey>();
     private readonly List<(List<LogicalDoubleThrowKey>, Action)> key2Action 
         = new List<(List<LogicalDoubleThrowKey>, Action)>();
-
+  
     public EmacsLikeCommandManager(Action<string> showStatus)
     {
         this.showStatus = showStatus;
@@ -747,16 +812,16 @@ class EmacsLikeCommandManager
     }
 }
 ```
-
+  
 If you press `Keys.A` while pressing `Keys.RControlKey`, the first condition to be filled. After that, you can release `Keys.RControlKey`. If you press `Keys.P` while pressing `Keys.RControlKey` again, then all condition to be filled.  A registered text will be pasted from clipboard to foreground application. Like Emacs, you can use C-g to reset the manager's state.
-
+  
 ```cs
 var keyCommandManager = new EmacsLikeCommandManager(str => 
 {
     // You need to use Crevice API remotely, if a class uses it.
     Tooltip(str);
 });
-
+  
 // Register a pair of an action that sends fixed message to the foreground application 
 // and a sequence of keys, `Keys.A` - `Keys.P`.
 keyCommandManager.Register(() => 
@@ -769,14 +834,14 @@ keyCommandManager.Register(() =>
     ExtendedKeyUp(Keys.ControlKey).
     Send(); // Ctrl+V
 }, Keys.A, Keys.P); // Ctrl+A -> Ctrl+P
-
+  
 var Whenever = When(ctx => { return true; });
 var WheneverOn = Whenever.On(Keys.RControlKey);
-
+  
 // Declare gesture definition generated automatically from registered data;
 // On(Keys.RControlKey).OnDecomposed(Keys.A).Press() and On(Keys.RControlKey).OnDecomposed(Keys.P).Press().
 keyCommandManager.Setup(WheneverOn);
-
+  
 WheneverOn. // Ctrl+G to reset.
 OnDecomposed(Keys.G).
 Press(ctx => 
@@ -785,9 +850,11 @@ Press(ctx =>
     keyCommandManager.Reset();
 });
 ```
-
+  
 ## Fix super sensitive mouse scroll wheel
-
+  
+  
+  
 In recent years, mouse devides that can be purchased in the market include those specially designed for internet browsing. For example, there are major manufacturer product with very sensitive scroll wheel, Logitech M545/546. It is very convenient for the purpose, but it is a bit difficult to handle with other uses. Here we try to make the wheel scroll easier to use for other purposes by introducing a class that adjusts sensitivity.
 ```cs
 class VerticalWheelManager
@@ -803,7 +870,7 @@ class VerticalWheelManager
         this.Up = new VerticalWheel(this);
         this.Down = new VerticalWheel(this);
     }
-
+  
     public class VerticalWheel
     {
         private int count = 0;
@@ -844,13 +911,13 @@ class VerticalWheelManager
         }
     }
 }
-
+  
 var VWManager = new VerticalWheelManager(
     400, // Duration in milliseconds for suppression of wheel events.
     6    // Max number of the wheel events which will be suppressed in the duration for suppression.
 );
 ```
-
+  
 ```cs
 Do(ctx =>
 {
@@ -861,7 +928,7 @@ Do(ctx =>
     }
 });
 ```
-
+  
 ```cs
 Do(ctx =>
 {
@@ -872,18 +939,29 @@ Do(ctx =>
     }
 });
 ```
-
+  
 Also, it is difficult to only perform wheel click on these devices. You can solve this problem by assigning wheel click to an arbitrary gesture.
-
+  
+  
+  
+  
 # Edit user script by Visual Studio Code
-
-
+  
+  
+  
+  
+  
+  
 # Profile
-
+  
+  
+  
 `Profile` is the concept extends the specification of former gesture definition in parallel direction. 
-
+  
 ## Single context problem on Crevice3
-
+  
+  
+  
 Gesture definition on Crevice3 had a limitation. If you want to use `Keys.XButton1` as `Keys.LWin`, you can do it by using `Press` and `Release` clauses.
 ```cs
 // Simple conversion gesture.
@@ -898,9 +976,9 @@ Release(ctx =>
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
 ```
-
+  
 But at the same time, if your userscript file have another gesture definition which has it's own context, do you think above gesture defintion works properly always?
-
+  
 ```cs
 // Another gesture.
 When(ctx => 
@@ -917,16 +995,16 @@ Do(ctx =>
     Send(); // then send Home to Chrome.
 });
 ```
-
+  
 When you press `Keys.RButton` and hoding it, the convertion `Keys.XButton1` to `Keys.LWin` will not work. For coexisting both gesture definition, you should add redundant codes to the latter.
-
+  
 ```cs
 // Another gesture (redundant but correct).
 var Chrome = When(ctx => 
 { 
     return ctx.ForegroundWindow.ModuleName == "chrome.exe"; 
 });
-
+  
 Chrome.
 On(Keys.RButton).
 On(Keys.XButton1).
@@ -938,7 +1016,7 @@ Release(ctx =>
 {
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
-
+  
 Chrome.
 On(Keys.RButton).
 On(Keys.MoveDown).
@@ -950,22 +1028,24 @@ Do(ctx =>
     Send(); // then send Home to Chrome.
 });
 ```
-
+  
 ## Solving the problem with DeclareProfile
-
+  
+  
+  
 `DeclareProfile()` declares new profile which has completely new `Config` and empty gesture definition. Changes added to `Config` and gesture definition declared by gesture DSL starting with `When` before that point will be held as the before profile.
-
+  
 ```cs
 Config.Core.GestureTimeout = 5000; // Change 1000ms to 5000ms.
 DeclareProfile("NewProfile"); // Config and gesture definition was reset.
 ToolTip(Config.Core.GestureTimeout.ToString()); // 1000 will be shown.
 ```
-
+  
 Using this function, you can represent multiple gesture definition working in parallel.
-
+  
 ```cs
 DeclareProfile("Whenever");
-
+  
 When(ctx => { return true; }).
 On(Keys.XButton1).
 Press(ctx =>
@@ -976,9 +1056,9 @@ Release(ctx =>
 {
     SendInput.ExtendedKeyUp(Keys.LWin);
 });
-
+  
 DeclareProfile("Chrome");
-
+  
 When(ctx => 
 { 
     return ctx.ForegroundWindow.ModuleName == "chrome.exe"; 
@@ -993,45 +1073,54 @@ Do(ctx =>
     Send(); // then send Home to Chrome.
 });
 ```
-
+  
 Even when you press and holding `Keys.RButton`, the convertion `Keys.XButton1` to `Keys.LWin` will work perfectly.
-
+  
 Note: The input event will be passed sequencely from the head of the profiles to the bottom, but if the event to be consumed in the `GestureMachine` of each profile, then it will not to be passed to the next profile.
-
+  
+  
+  
+  
 # Config
-
+  
+  
+  
 The system default parameters can be configured by using `Config` as following:
-
+  
 ## Values
+  
+  
 ```cs
 // When moved distance of the cursor is exceeded this value, the first stroke 
 // will be established.
 Config.Core.StrokeStartThreshold = 10;
-
+  
 // When moved distance of the cursor is exceeded this value, and the direction is changed,
 // new stroke for new direction will be established.
 Config.Core.StrokeDirectionChangeThreshold = 20;
-
+  
 // When moved distance of the cursor is exceeded this value, and the direction is not changed, 
 // it will be extended.
 Config.Core.StrokeExtensionThreshold = 10;
-
+  
 // Interval time for updating strokes.
 Config.Core.WatchInterval = 10; // ms
-
+  
 // When stroke is not established and this period of time has passed, 
 // the gesture will be canceled and the original click event will be reproduced.
 Config.Core.GestureTimeout = 1000; // ms
-
+  
 // The period of time for showing a tooltip message.
 Config.UI.TooltipTimeout = 3000; // ms
-
+  
 // The period of time for showing a balloon message.
 Config.UI.BalloonTimeout = 10000; // ms
 ```
-
+  
 ## Bindings
-
+  
+  
+  
 ```cs
 // Binding for the position of tooltip messages.
 Config.UI.TooltipPositionBinding = (point) =>
@@ -1039,145 +1128,184 @@ Config.UI.TooltipPositionBinding = (point) =>
     return point;
 }
 ```
-
+  
 ## Events
-
-### StrokeReset {ignore=true}
-
+  
+  
+  
+### StrokeReset
+  
+  
+  
 ```cs
 Config.Callback.StrokeReset += (sender, e) { };
 ```
 This event activated when the state of mouse's stroke to be reset.
 `e` is `StrokeResetEventHandler`, and it does not have special properties.
-
-### StrokeUpdate {ignore=true}
+  
+### StrokeUpdate
+  
+  
 ```cs
 Config.Callback.StrokeUpdate += (sender, e) { };
 ```
-
+  
 This event activated when the state of mouse's stroke to be changed.
-
+  
 `e` is `StrokeUpdateEventHandler `.
 Type | Property Name | Description |
 -----|-----|------
 IReadOnlyList\<Stroke\> | Strokes | 
-
-### StateChange {ignore=true}
+  
+### StateChange
+  
+  
 ```cs
 Config.Callback.StateChange += (sender, e) { };
 ```
-
+  
 This event activated when the state of GestureMachine to be changed. 
 `e` is `StateChangeEventHandler`.
-
+  
 Type | Property Name | Description |
 -----|-----|------
 State | LastState | 
 State | CurrentState |
-
-### GestureCancel {ignore=true}
+  
+### GestureCancel
+  
+  
 ```cs
 Config.Callback.GestureCancel += (sender, e) { };
 ```
-
+  
 This event activated when the gesture to be cancelled.
 `e` is `GestureCancelEventHandler`.
-
+  
 Type | Property Name | Description |
 -----|-----|------
 StateN | LastState | 
-
-### GestureTimeout {ignore=true}
-
+  
+### GestureTimeout
+  
+  
+  
 ```cs
 Config.Callback.GestureTimeout += (sender, e) { };
 ```
-
+  
 This event activated when the gesture to be timeout.
 `e` is `GestureTimeoutEventHandler`.
-
+  
 Type | Property Name | Description |
 -----|-----|------
 StateN | LastState | 
-
-### MachineStart {ignore=true}
-
+  
+### MachineStart
+  
+  
+  
 ```cs
 Config.Callback.MachineStart += (sender, e) { };
 ```
 This event activated when GestureMachine to be started.
 `e` is `MachineStartEventHandler`, and it does not have special properties.
-
-### MachineReset {ignore=true}
-
+  
+### MachineReset
+  
+  
+  
 ```cs
 Config.Callback.MachineReset += (sender, e) { };
 ```
-
+  
 This event activated when GestureMachine to be reset for some reasons.
 `e` is `MachineResetEventHandler`.
-
+  
 Type | Property Name | Description |
 -----|-----|------
 State | LastState | 
-
-### MachineStop {ignore=true}
-
+  
+### MachineStop
+  
+  
+  
 ```cs
 Config.Callback.MachineStop += (sender, e) { };
 ```
 This event activated when GestureMachine to be stopped.
 `e` is `MachineStopEventHandler`, and it does not have special properties.
-
-# Crevice4 Core API
-
+  
+  
+  
+  
+# Core API
+  
+  
+  
 ## EvaluationContext
-
+  
+  
+  
 `Crevice.GestureMachine.EvaluationContext` have following properties:
-
-### Properties {ignore=true}
-
+  
+### Properties
+  
+  
+  
 Type | Property Name | Description |
 -----|-----|-----|
 System.Drawing.Point | GestureStartPosition
 ForegroundWindowInfo | ForegroundWindow | The window which was on the foreground when a gesture started. This is an instance of `WindowInfo`.
 PointedWindowInfo | PointedWindow | The window which was under the cursor when a gesture started. This is an instance of `WindowInfo`.
-
+  
 These values are guaranteed that same values are provided as `ExecutionContext`'s property in `Press`, `Do`, and `Release` clauses.
-
+  
 ## ExecutionContext
-
+  
+  
+  
 `Crevice.GestureMachine.ExecutionContext` have following properties:
-
-### Properties {ignore=true}
-
+  
+### Properties
+  
+  
+  
 Type | Property Name | Description |
 -----|-----|-----|
 System.Drawing.Point | GestureStartPosition
 System.Drawing.Point | GestureEndPosition
 WindowInfo | ForegroundWindow | The window which was on the foreground when a gesture started. This is an instance of `WindowInfo`.
 WindowInfo | PointedWindow | The window which was under the cursor when a gesture started. This is an instance of `WindowInfo`.
-
+  
 These values, except for `GestureEndPosition`, are guaranteed that same values are provided as `EvaluationContext`'s property in `When` clause. 
-
+  
 ## GestureMachineProfile
-
+  
+  
+  
 `Crevice.GestureMachine.GestureMachineProfile` have following properties:
-
-### Properties {ignore=true}
+  
+### Properties
+  
+  
 Type | Property Name | Description
 -----|-----|------
 RootElement | RootElement
 GestureMachine | GestureMachine
 UserConfig | UserConfig
 string | ProfileName
-
+  
 ## WindowInfo
-
+  
+  
+  
 `WindowInfo` is a thin wrapper of the handle of a window. This class provides properties and methods to use window handles more easily.
-
-### Properties {ignore=true}
-
+  
+### Properties
+  
+  
+  
 Type | Property Name | Description |
 -----|-----|-----|
 IntPtr | WindowHandle
@@ -1189,9 +1317,11 @@ string | ClassName
 WindowInfo | Parent
 string | ModulePath
 string | ModuleName
-
-### Methods {ignore=true}
-
+  
+### Methods
+  
+  
+  
 Return Value | Method Definition | Description |
 -----|-----|-----|
 long | SendMessage(int Msg, int wParam, int lParam) | A shortcut to win32 API `SendMessage(WindowHandle, Msg, wParam, lParam)`.
@@ -1203,31 +1333,37 @@ IReadOnlyList\<WindowInfo\> | GetChildWindows() | A shortcut to win32 API `EnumC
 IReadOnlyList\<WindowInfo\> |  GetPointedDescendantWindows(Point point, Window.WindowFromPointFlags flags) | A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, flags)`. This function recursively calls `ChildWindowFromPointEx` until reach to the last descendant window.
 IReadOnlyList\<WindowInfo\> | GetPointedDescendantWindows(Point point) | A shortcut to win32 API `ChildWindowFromPointEx(hWnd, point, Window.WindowFromPointFlags.CWP_ALL)`. This function recursively calls `ChildWindowFromPointEx` until reach to the last descendant window.
 void | Activate() | Brings window into the foreground and activates the window.
-
+  
 ## SendInput
-
+  
+  
+  
 Send mouse and keyboard input events to the foreground window. This API provides single and multiple sending method. The events sent by single sending method is guaranteed to arrive to the window in order, but this does not necessarily mean it will not be interrupted by the other events. Multiple sending method guarantees that the events sent by it will not be interrupted by the other events.Both methods support the same API for sending mouse and keyboard events except that multiple sending method is need to be called `Send()` at last.
-
+  
 ```cs
 SendInput.ExtendedKeyDown(Keys.LWin);
 // When D key interrupts here,
 // Win+D will be invoked unintentionally.
 SendInput.ExtendedKeyUp(Keys.LWin); 
 ```
-
+  
 ```cs
 SendInput.Multiple().
 ExtendedKeyDown(Keys.LWin).
 ExtendedKeyUp(Keys.LWin).
 Send(); // This won't be interrupted by any other input.
 ```
-
+  
 ### Mouse event
-
+  
+  
+  
 `Down`, `Up`, and `Click` events are supported for the standard push-release type buttons of mouse devices. For example, the provided API for mouse's left button is `LeftDown()`, `LeftUp()` and `LeftClick()`. For single state buttons, `WheelUp()`, `WheelDown()`, `WheelLeft()` and `WheelRight()` are provided. In addition to these, for move event of mouse cursor, `Move(int dx, int dy)` and `MoveTo(int x, int y)` are provided.
-
-##### Methods {ignore=true}
-
+  
+##### Methods
+  
+  
+  
 Button | Method Definition | Description
 -----|-----|-----
 Keys.LButton | LeftDown()
@@ -1253,42 +1389,46 @@ Keys.XButton1 | X1Click() | Shortcut to `X1Down()` and `X1Up()`.
 Keys.XButton2 | X2Down()
 Keys.XButton2 | X2Up()
 Keys.XButton2 | X2Click() | Shortcut to `X2Down()` and `X2Up()`.
-
+  
 ### Keyboard event
-
+  
+  
+  
 A keyboard event is synthesized from a key code and two logical flags, `ExtendedKey` and  `ScanCode`. For sending `Up` and `Down` events, `KeyDown(int keyCode)` and `KeyUp(int keyCode)` are provided. 
-
+  
 ```cs
 SendInput.KeyDown(Keys.A);
 SendInput.KeyUp(Keys.A); // Send `A` to the foreground application.
 ```
-
+  
 `ExetendedKeyDown(int keyCode)` and `ExtentedKeyUp(int keyCode)` are provided when `ExtendedKey` flag is needed to be set.
-
+  
 ```cs
 SendInput.ExetendedKeyDown(Keys.LWin);
 SendInput.ExtentedKeyUp(Keys.LWin); // Send `Win` to the foreground application.
 ```
-
+  
 For four API above mentioned, combined it with `ScanCode` flag,
 `KeyDownWithScanCode(int keyCode)`, `KeyUpWithScanCode(int keyCode)`, `ExtendedKeyDownWithScanCode(int keyCode)` and `ExtendedKeyUpWithScanCode(int keyCode)` are provided.
-
+  
 ```cs
 SendInput.ExtendedKeyDownWithScanCode(Keys.LControlKey);
 SendInput.KeyDownWithScanCode(Keys.S);
 SendInput.KeyUpWithScanCode(Keys.S);
 SendInput.ExtendedKeyUpWithScanCode(Keys.LControlKey); // Send `Ctrl+S` with scan code to the foreground application.
 ```
-
+  
 And finally, for to support `Unicode` flag, following functions are provided; `UnicodeKeyDown(char c)`, `UnicodeKeyUp(char c)`,  `UnicodeKeyStroke(string str)`.
-
+  
 ```cs
 SendInput.UnicodeKeyDown('🍣');
 SendInput.UnicodeKeyUp('🍣'); // Send `Sushi` to the foreground application.
 ```
-
-##### Methods {ignore=true}
-
+  
+##### Methods
+  
+  
+  
 Flag | Method Definition | Description
 -----|-----|-----
 - | KeyDown(int keyCode) |
@@ -1302,30 +1442,40 @@ Extended & ScanCode | ExtendedKeyUpWithScanCode(int keyCode)
 - | UnicodeKeyDown(char c)
 - | UnicodeKeyUp(char c)
 - | UnicodeKeyStroke(string str)
-
+  
 ## Notification
-
+  
+  
+  
 ### Tooltip
-
+  
+  
+  
 ```cs
 Tooltip("This is tooltip.");
 ```
-
-#### Methods {ignore=true}
-
+  
+#### Methods
+  
+  
+  
  Method Definition | Description
 -----|-----
-Tooltip(string text) | Show tooltip message at the right bottom corner of the display on the cursor, by default. You can configure the position by changing `Config.UI.TooltipPositionBinding`, see [Config/Bindings](#bindings).
+Tooltip(string text) | Show tooltip message at the right bottom corner of the display on the cursor, by default. You can configure the position by changing `Config.UI.TooltipPositionBinding`, see [Config/Bindings](#bindings ).
 Tooltip(string text, Point point) | Show a tooltip message at the specified position.
 Tooltip(string text, Point point, int duration) | Show a tooltip message at the specified position for a specified period.
-
+  
 ### Balloon
-
+  
+  
+  
 ```cs
 Balloon("This is balloon.");
 ```
-#### Methods {ignore=true}
-
+#### Methods
+  
+  
+  
  Method Definition | Description
 -----|-----
 Balloon(string text) | Show a balloon message.
@@ -1333,15 +1483,21 @@ Balloon(string text, string title) | Show a balloon message and a title.
 Balloon(string text, string title, int timeout) | Show a balloon message and a title for a specified period.
 Balloon(string text, string title, ToolTipIcon icon) | Show a balloon message, a title, and a icon.
 Balloon(string text, string title, ToolTipIcon icon, int timeout) | Show a balloon message, a title, and a icon for a specified period.
-
+  
 ## Keys
-
-`Keys` provides the definition of all buttons and keys of mouse and keyboard for it's property. This is almost all same as [System.Windows.Forms.Keys](https://msdn.microsoft.com/library/system.windows.forms.keys(v=vs.110).aspx) but for some extentions, wheel and stroke events.
-
-### Differences from System.Windows.Forms.Keys {ignore=true}
-
-#### Extended properties {ignore=true}
-
+  
+  
+  
+`Keys` provides the definition of all buttons and keys of mouse and keyboard for it's property. This is almost all same as [System.Windows.Forms.Keys](https://msdn.microsoft.com/library/system.windows.forms.keys(v=vs.110 ).aspx) but for some extentions, wheel and stroke events.
+  
+### Differences from System.Windows.Forms.Keys
+  
+  
+  
+#### Extended properties
+  
+  
+  
 Property Name | Description
 -----|-----
 WheelUp |
@@ -1352,43 +1508,54 @@ MoveUp |
 MoveDown | 
 MoveLeft |
 MoveRight |
-
+  
 These extended properties are differ than the other properties; these can not be treated as a int value.
-
+  
 ```cs
 var n = 1 + Keys.A; // n == 65
 ```
-
+  
 ```cs
 var n = 1 + Keys.WheelUp; // Compilation error.
 ```
-
-#### Indexer {ignore=true}
-
+  
+#### Indexer
+  
+  
+  
 `Keys` supports indexer for getting a key represents specified keyCode.
-
+  
 ```cs
 Assert.AreEquals(Keys[64], Keys.A);
 ```
-
+  
 This is useful for getting a key which is not assigned as a `Keys`'s property, but be careful to that the keyCode have the range, 0 to 255.
-
+  
 ```cs
 var key = Keys[256]; // This throws an IndexOutOfRangeException(); 
 ```
-
+  
+  
+  
+  
 # Extension API
-
+  
+  
+  
 ### Window
-
+  
+  
+  
 `Window` is a utility static class about Windows's window.
 To use this class, declare as following:
 ```cs
 using Crevice.WinAPI.Window;
 ```
-
-#### Methods {ignore=true}
-
+  
+#### Methods
+  
+  
+  
 Return Value | Method Definition | Description
 -----|-----|-----
 WindowInfo | Window.From(IntPtr hWnd) | This function wraps `IntPtr` and returns an instance of `WindowInfo`.
@@ -1399,83 +1566,105 @@ WindowInfo | WindowFromPoint(Point point) | Returns a window under the cursor.
 WindowInfo | FindWindow(string lpClassName, string lpWindowName) | Find a window matches given class name and window name.
 IReadOnlyList<WindowInfo> | GetTopLevelWindows() | Enumerates all windows.
 IReadOnlyList<WindowInfo> | GetThreadWindows(int threadId) | Enumerates all windows belonging specified thread.
-
+  
 ### VirtualKeys
-
+  
+  
+  
 This class provides the virtual key constants. 
-
+  
 Note: for `VK_0` to `VK_9` and `VK_A` to `VK_Z`, this is an extension for convenience limited in this application.
-
+  
 To use this class, declare as following:
 ```cs
 using static Crevice.WinAPI.Constants.VirtualKeys;
 ```
-
-For more details, see [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85).aspx).
-
+  
+For more details, see [Virtual-Key Codes (Windows)](https://msdn.microsoft.com/ja-jp/library/windows/desktop/dd375731(v=vs.85 ).aspx).
+  
 ### WindowsMessages
-
+  
+  
+  
 This class provides the windows message constants. 
 To use this class, declare as following:
 ```cs
 using static Crevice.WinAPI.Constants.WindowsMessages;
 ```
-
-For more details, see [Window Messages (Windows)](https://msdn.microsoft.com/en-us/library/windows/desktop/ff381405(v=vs.85).aspx).
-
+  
+For more details, see [Window Messages (Windows)](https://msdn.microsoft.com/en-us/library/windows/desktop/ff381405(v=vs.85 ).aspx).
+  
 ### VolumeControl
-
+  
+  
+  
 `VolumeControl` is a utility class about system audio volume.
 To use this class, declare as following:
 ```cs
 using Crevice.WinAPI.CoreAudio;
 var VolumeControl = new VolumeControl();
 ```
-
+  
 #### GetMasterVolume()
-
+  
+  
+  
 Returns window's current master mixer volume.
 This function returns a `float` value, within the range between 0 and 1.
-
+  
 #### SetMasterVolume(float value)
-
+  
+  
+  
 Sets window's current master mixer volume. The value should be within the range between 0 and 1.
-
+  
+  
+  
+  
 # Comamand line interface
-
+  
+  
+  
 ```
 Usage:
   crevice4.exe [--nogui] [--script path] [--help]
-
+  
   -g, --nogui       (Default: False) Disable GUI features. Set to true if you 
                     use Crevice as a CUI application.
-
+  
   -n, --nocache     (Default: False) Disable user script assembly caching. 
                     Strongly recommend this value to false because compiling 
                     task consumes CPU resources every startup of application if
                     true.
-
+  
   -s, --script      (Default: default.csx) Path to user script file. Use this 
                     option if you need to change the default location of user 
                     script. If given value is relative path, Crevice will 
                     resolve it to absolute path based on the default directory 
                     (%USERPROFILE%\AppData\Roaming\Crevice4).
-
+  
   -p, --priority    (Default: High) Process priority. Acceptable values are the
                     following: AboveNormal, BelowNormal, High, Idle, Normal, 
                     RealTime.
-
+  
   -V, --verbose     (Default: False) Show details about running application.
-
+  
   -v, --version     (Default: False) Display product version.
-
+  
   --help            Display this help screen.
 ```
-
+  
+  
+  
+  
 # Appendix 1. Complete list of some API
-
+  
+  
+  
 ## Complete list of Keys
-
+  
+  
+  
 | Property Name | Value | Description
 |-----|-----|-----
 WheelUp | -
@@ -1678,19 +1867,15 @@ Zoom | 0xFB
 NoName | 0xFC
 Pa1 | 0xFD
 OemClear | 0xFE
-
+  
 ## Complete list of Crevice.WinAPI.Constants.VirtualKeys
-
-<!--
-src: CreviceApp\WinAPI.Constants.VirtualKeys.cs
-\s+public const (.+?)(VK.+?)\s+=(.+); // (.+)
-\1| \2 |\3 | \4
-
-\s+?//\s+?-\s+?(0x.+?)\s+?// (.+)
-- | - | \1 | \2
--->
-
-
+  
+  
+  
+  
+  
+  
+  
 | Property Name | Value | Description
 |-----|-----|-----
  VK_LBUTTON | 0x01 | Left mouse button
@@ -1885,15 +2070,14 @@ src: CreviceApp\WinAPI.Constants.VirtualKeys.cs
  VK_NONAME | 0xFC | Reserved
  VK_PA1 | 0xFD | PA1 key
  VK_OEM_CLEAR | 0xFE | Clear Key
-
+  
 ## Crevice.WinAPI.Constants.WindowsMessages
-
-<!-- 
-src: CreviceApp\WinAPI.Constants.WindowsMessages.cs
-\s+public const (.+?)(WM.+?)=(.+);
-\1| \2|\3
--->
-
+  
+  
+  
+  
+  
+  
 | Property Name | Value 
 |-----|-----
  WM_NULL | 0x0000
@@ -2127,25 +2311,19 @@ src: CreviceApp\WinAPI.Constants.WindowsMessages.cs
  WM_CPL_LAUNCH | WM_USER + 0x1000
  WM_CPL_LAUNCHED | WM_USER + 0x1001
  WM_SYSTIMER | 0x118
-
-## 
-
+  
+  
+  
+  
 # Appendix 2. How to introduce gesture function to your application
-
+  
+  
+  
 ## Introduction to Crevice.Core library
-
-## 
-
-# License
-
-MIT Lisense
-
-# Author
-[Rubyu](https://twitter.com/ruby_U), [Yasuyuki Nishiseki](mailto:tukigase@gmail.com)
-
-# Latest releases (not recommended)
-
-| Branch | Status | Download |
-|--------|---------------|--------- |
-| master | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [crevice.zip](https://ci.appveyor.com/api/projects/rubyu/creviceapp/artifacts/crevice.zip?branch=master&job=Configuration%3A+Release) |
-| develop | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) | [crevice.zip](https://ci.appveyor.com/api/projects/rubyu/creviceapp/artifacts/crevice.zip?branch=develop&job=Configuration%3A+Release) |
+  
+  
+  
+  
+  
+  
+  

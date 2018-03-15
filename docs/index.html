@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown Preview Enhanced</title>
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
+</head>
+<body>
+  <div id="app"></div>
+</body>
+<script>
+  window.$docsify = {
+    name: 'Crevice4',
+    repo: 'https://github.com/creviceapp/creviceapp/',
+    homepage: 'README_.md',
+    maxLevel: 2,
+    coverpage: true,
+    mergeNavbar: true,
+    auto2top: true,
+    search: {
+      paths: 'auto',
+    },
+  }
+</script>
+<script src="//cdn.jsdelivr.net/npm/docsify@latest/lib/docsify.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/docsify@latest/lib/plugins/search.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/docsify@latest/lib/plugins/zoom-image.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-markdown.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-ruby.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-yaml.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-less.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-clike.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-csharp.min.js"></script>
+<script>
+  Prism.languages.cs = Prism.languages.csharp;
+</script>
+</html>
