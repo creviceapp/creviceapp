@@ -1,2 +1,2 @@
-del /Q win32\* 
+del /Q /S win32\* 
 exit 0

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CreviceApp.UI
+namespace Crevice.UI
 {
     public class TooltipNotifier : IDisposable
     {
@@ -37,13 +37,18 @@ namespace CreviceApp.UI
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            tooltip.Dispose();
         }
 
-        ~TooltipNotifier()
+        protected virtual void Dispose(bool disposing)
         {
-            Dispose();
+            if (disposing)
+            {
+                tooltip.Dispose();
+            }
         }
+
+        ~TooltipNotifier() => Dispose(false);
     }
 }

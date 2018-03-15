@@ -2,9 +2,9 @@
 skip_tags: false
 skip_non_tags: false
 
-image: Visual Studio 2015
+image: Visual Studio 2017
 
-version: 3.5.{build}
+version: 4.0.{build}
 
 assembly_info:
   patch: true
@@ -28,41 +28,48 @@ init:
 
 before_build:
   - cmd: |
-      cd "CreviceApp"
       nuget restore
-      cd ..
 
 build:
-  project: CreviceApp\CreviceApp.sln
+  project: Crevice.sln
   parallel: false
   verbosity: minimal
 
 after_test:
   - ps: |
-      cd "CreviceApp"
-      $tag     = $env:appveyor_repo_tag
-      $tagname = $env:appveyor_repo_tag_name
-      $artifact = "crevice"
-      Copy-Item -Path "bin" -Destination "dist\bin" -Recurse
-      cd "dist"
-      Get-ChildItem -Include *.xml -Recurse | foreach { $_.Delete() }
-      Get-ChildItem -Include *.pdb -Recurse | foreach { $_.Delete() }
-      Copy-Item -Path "bin\Release" -Destination "$artifact" -Recurse
-      7z a "$artifact.zip" "$artifact"
-      Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.zip" -DeploymentName "Latest"
+      nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:appveyor_build_version -Symbols
+      Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nupkg.Latest" }
       if ($tag -eq "true")
       {
-        Push-AppveyorArtifact "$artifact.zip" -FileName "$artifact.$tagname.zip" -DeploymentName "Tag"
+        Get-ChildItem *.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "nupkg.Tag" }
       }
-      cd ..
+      
+      $tag      = $env:appveyor_repo_tag
+      $tagname  = $env:appveyor_repo_tag_name
+      $artifact = "Crevice.$env:appveyor_build_version.zip"
+      
+      7z a "$artifact" ".\CreviceApp\bin\Release\*"
+      Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "zip.Latest"
+      if ($tag -eq "true")
+      {
+        Push-AppveyorArtifact "$artifact" -FileName "$artifact" -DeploymentName "zip.Tag"
+      }
 
 deploy:
+  - provider: NuGet
+    api_key:
+      secure: k0CqiR5hc0+1yWi6u40XhiHYr1Bd1pHPGc5yQj1NuPkDD8vIohYsIZUjLVSa87Ll
+    skip_symbols: false
+    artifact: /.*\.nupkg/
+    on:
+      appveyor_repo_tag: true
+
   - provider: GitHub
     tag: $(appveyor_repo_tag_name)
     release: $(appveyor_repo_tag_name).$(appveyor_build_number)
-    description: CreviceApp $(appveyor_repo_tag_name).$(appveyor_build_number)
+    description: Crevice $(appveyor_repo_tag_name).$(appveyor_build_number)
     auth_token:
       secure: rlXYSnSw5pklrVIjalmSFXQO/8RfjbDIpbTlSN2o068LNxFE4WqODJ6uBYjkpFZF
-    artifact: Tag
+    artifact: zip.Tag
     on:
       appveyor_repo_tag: true

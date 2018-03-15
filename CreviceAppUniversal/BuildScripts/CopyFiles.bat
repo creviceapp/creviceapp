@@ -1,3 +1,2 @@
-copy ..\CreviceApp\bin\Release\* win32\
-del /Q win32\*.xml
+xcopy /S /F /R ..\CreviceApp\bin\Release\* win32\
 exit 0
