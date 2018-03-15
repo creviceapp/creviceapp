@@ -51,8 +51,8 @@
     <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
-    <DefaultLanguage>ja-JP</DefaultLanguage>
-    <PackageCertificateKeyFile>CreviceAppUniversal_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <DefaultLanguage>en</DefaultLanguage>
+    <PackageCertificateKeyFile>CreviceAppUniversal_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
@@ -61,6 +61,7 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="CreviceAppUniversal_StoreKey.pfx" />
     <Content Include="images\NewStoreLogo.scale-100.png" />
     <Content Include="images\NewStoreLogo.scale-125.png" />
     <Content Include="images\NewStoreLogo.scale-150.png" />
@@ -231,5 +232,6 @@
   </Target>
   <PropertyGroup>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <PackageCertificateThumbprint>3991AC85741E474DD79E96D97F3F200F4254B40F</PackageCertificateThumbprint>
   </PropertyGroup>
 </Project>
