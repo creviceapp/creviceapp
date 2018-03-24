@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("4.0.323.0")]
-[assembly: AssemblyFileVersion("4.0.323.0")]
+[assembly: AssemblyFileVersion("4.0.328.0")]
 [assembly: NeutralResourcesLanguage("en")]
 
 [assembly: InternalsVisibleTo("Crevice4Tests")]
