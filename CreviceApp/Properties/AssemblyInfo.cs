@@ -33,8 +33,8 @@ using System.Runtime.InteropServices;
 // すべての値を指定するか、次を使用してビルド番号とリビジョン番号を既定に設定できます
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.0.329.0")]
-[assembly: AssemblyFileVersion("4.0.329.0")]
+[assembly: AssemblyVersion("4.0.330.0")]
+[assembly: AssemblyFileVersion("4.0.330.0")]
 [assembly: NeutralResourcesLanguage("en")]
 
 [assembly: InternalsVisibleTo("Crevice4Tests")]
