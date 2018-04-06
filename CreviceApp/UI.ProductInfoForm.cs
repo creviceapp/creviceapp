@@ -31,7 +31,7 @@ namespace Crevice.UI
         protected string GetInfoMessage()
         {
             return string.Format(Properties.Resources.ProductInfo,
-                Application.ProductName,
+                "Crevice",
                 Application.ProductVersion,
                 ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false)).Copyright,
                 url,

@@ -23,6 +23,7 @@ namespace Crevice.UI
             _mainForm = mainForm;
             Icon = Properties.Resources.CreviceIcon;
             InitializeComponent();
+            Text = $"Crevice {Application.ProductVersion}";
         }
 
         private static Microsoft.Win32.RegistryKey AutorunRegistry()
@@ -121,5 +122,8 @@ namespace Crevice.UI
 
         private void button3_Click(object sender, EventArgs e)
             => ShowProductInfoForm();
+
+        private void button4_Click(object sender, EventArgs e)
+            => _mainForm.StartExternalProcess("https://creviceapp.github.io");
     }
 }
