@@ -141,15 +141,17 @@
     <Compile Include="UI.LauncherForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.LauncherForm.Designer.cs" />
+    <Compile Include="UI.LauncherForm.Designer.cs">
+      <DependentUpon>UI.LauncherForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI.Main.ClusterMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Main.ClusterMainForm.Designer.cs">
-      <SubType>Form</SubType>
+      <DependentUpon>UI.Main.ClusterMainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI.Main.ReloadableMainForm.Designer.cs">
-      <SubType>Form</SubType>
+      <DependentUpon>UI.Main.ReloadableMainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI.Main.ReloadableMainForm.cs">
       <SubType>Form</SubType>
@@ -163,7 +165,9 @@
     <Compile Include="UI.ProductInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.ProductInfoForm.Designer.cs" />
+    <Compile Include="UI.ProductInfoForm.Designer.cs">
+      <DependentUpon>UI.ProductInfoForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI.TooltipNotifier.cs" />
     <Compile Include="GM.GestureMachine.cs" />
     <Compile Include="GM.CallbackManager.cs" />
