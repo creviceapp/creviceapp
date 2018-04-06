@@ -221,7 +221,14 @@ namespace Crevice.UserScript
         {
             using (Verbose.PrintElapsed("Save UserScriptAssemblyCache"))
             {
-                UserScriptAssembly.Save(cachePath, userScriptAssemblyCache);
+                try
+                {
+                    UserScriptAssembly.Save(cachePath, userScriptAssemblyCache);
+                }
+                catch (IOException)
+                {
+                    Verbose.Error("Unable to UserScriptAssemblyCache");
+                }
             }
         }
         
