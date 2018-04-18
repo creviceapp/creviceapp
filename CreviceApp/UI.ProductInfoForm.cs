@@ -26,7 +26,7 @@ namespace Crevice.UI
             InitializeComponent();
         }
 
-        private const string url = "https://github.com/rubyu/CreviceApp";
+        private const string url = "https://github.com/creviceapp/creviceapp";
 
         protected string GetInfoMessage()
         {
