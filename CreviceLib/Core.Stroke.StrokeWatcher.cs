@@ -72,6 +72,8 @@ namespace Crevice.Core.Stroke
                         else
                         {
                             var stroke = strokes.Last();
+                            var _strokePointsCount = stroke.Points.Count;
+
                             var res = stroke.Input(buffer);
                             if (stroke != res)
                             {
@@ -79,7 +81,7 @@ namespace Crevice.Core.Stroke
                                 buffer.Clear();
                                 Callbacks.OnStrokeUpdate(strokes);
                             }
-                            else if (res.Points.Count != stroke.Points.Count)
+                            else if (_strokePointsCount != stroke.Points.Count)
                             {
                                 buffer.Clear();
                                 Callbacks.OnStrokeUpdate(strokes);

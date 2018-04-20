@@ -53,6 +53,7 @@ namespace Crevice.Core.Stroke
                     return this;
                 }
                 var stroke = CreateNew(dir);
+                stroke.points.Add(this.Points.Last());
                 stroke.Absorb(input);
                 return stroke;
             }
