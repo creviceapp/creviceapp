@@ -158,8 +158,8 @@ namespace Crevice.GestureMachine
                         }
                         else
                         {
-                            gmCluster.Run();
                             Instance = gmCluster;
+                            gmCluster.Run();
                             if (runtimeError == null)
                             {
                                 _config.MainForm.ShowInfoBalloon(gmCluster);
