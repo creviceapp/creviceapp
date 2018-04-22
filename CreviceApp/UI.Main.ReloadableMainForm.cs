@@ -33,12 +33,9 @@ namespace Crevice.UI
             _userScriptWatcher = new UserScript.DirectoryWatcher(this, Config.UserDirectory, "*.csx");
             InitializeComponent();
         }
-        
+
         private void ReloadGestureMachine(object source, FileSystemEventArgs e)
-            => Task.Run(() => 
-            {
-                _reloadableGestureMachine.HotReload();
-            });
+            => BeginInvoke((MethodInvoker)(() => _reloadableGestureMachine.HotReload()));
 
         private void SetupUserScriptWatcher()
         {
