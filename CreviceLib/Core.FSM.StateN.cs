@@ -127,7 +127,7 @@ namespace Crevice.Core.FSM
                     }
                     else if (CanCancel)
                     {
-                        Machine.CallbackManager.OnGestureCancel(this);
+                        Machine.CallbackManager.OnGestureCancelled(this);
                     }
 
                     if (!CanCancel && LastState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)

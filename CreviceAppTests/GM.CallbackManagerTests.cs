@@ -71,17 +71,17 @@ namespace Crevice4Tests
                     {
                         hook.SetHook();
 
-                        callbackManager.OnGestureCancel(s1 as TStateN);
+                        callbackManager.OnGestureCancelled(s1 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
 
                         cde.Reset();
                         cde.AddCount(2);
-                        callbackManager.OnGestureCancel(s2 as TStateN);
+                        callbackManager.OnGestureCancelled(s2 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
 
                         cde.Reset();
                         cde.AddCount(4);
-                        callbackManager.OnGestureCancel(s3 as TStateN);
+                        callbackManager.OnGestureCancelled(s3 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
                     }
                 }

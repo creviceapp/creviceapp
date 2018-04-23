@@ -64,7 +64,7 @@ namespace Crevice.Core.FSM
                     }
                     var lastState = _currentState;
                     _currentState = value;
-                    CallbackManager.OnStateChange(lastState, _currentState);
+                    CallbackManager.OnStateChanged(lastState, _currentState);
                 }
             }
         }

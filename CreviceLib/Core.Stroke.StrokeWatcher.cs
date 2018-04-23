@@ -66,7 +66,7 @@ namespace Crevice.Core.Stroke
                                 var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
                                 strokes.Add(stroke);
                                 buffer.Clear();
-                                Callbacks.OnStrokeUpdate(strokes);
+                                Callbacks.OnStrokeUpdated(CallbackArgument);
                             }
                         }
                         else
@@ -79,12 +79,12 @@ namespace Crevice.Core.Stroke
                             {
                                 strokes.Add(res);
                                 buffer.Clear();
-                                Callbacks.OnStrokeUpdate(strokes);
+                                Callbacks.OnStrokeUpdated(CallbackArgument);
                             }
                             else if (_strokePointsCount != stroke.Points.Count)
                             {
                                 buffer.Clear();
-                                Callbacks.OnStrokeUpdate(strokes);
+                                Callbacks.OnStrokeUpdated(CallbackArgument);
                             }
                         }
                     }
@@ -92,6 +92,8 @@ namespace Crevice.Core.Stroke
                 catch (OperationCanceledException) { }
             });
         }
+
+        private IReadOnlyList<Stroke> CallbackArgument => strokes.Select(s => s.Freeze()).ToList();
 
         public IReadOnlyList<Stroke> GetStorkes()
             => strokes.ToList();

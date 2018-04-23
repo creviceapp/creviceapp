@@ -10,7 +10,7 @@ namespace Crevice.Core.Callback
 
     public interface IStrokeCallbackManager
     {
-        void OnStrokeUpdate(IReadOnlyList<Stroke> strokes);
+        void OnStrokeUpdated(IReadOnlyList<Stroke> strokes);
     }
 
     public class CallbackManager<TConfig, TContextManager, TEvalContext, TExecContext>
@@ -20,102 +20,85 @@ namespace Crevice.Core.Callback
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        public class CallbackReceiver
+        public class CallbackContainer
         {
-            private readonly object Key;
-
-            private delegate void EventInvoker();
-
-            public CallbackReceiver(object key)
-            {
-                Key = key;
-            }
-
-            private void CheckKeyAndInvoke(object key, EventInvoker invoker)
-            {
-                if (Key == key)
-                {
-                    invoker();
-                }
-            }
+            protected virtual void Invoke(Action action) => action();
 
             public event StrokeResetEventHandler StrokeReset;
-            public virtual void OnStrokeReset(object key, StrokeResetEventArgs e)
-                => CheckKeyAndInvoke(key, () => { StrokeReset?.Invoke(this, e); });
+            public virtual void OnStrokeReset(StrokeResetEventArgs e)
+                => Invoke(() => { StrokeReset?.Invoke(this, e); });
 
-            public event StrokeUpdateEventHandler StrokeUpdated;
-            public virtual void OnStrokeUpdate(object key, StrokeUpdateEventArgs e)
-                => CheckKeyAndInvoke(key, () => { StrokeUpdated?.Invoke(this, e); });
+            public event StrokeUpdatedEventHandler StrokeUpdated;
+            public virtual void OnStrokeUpdated(StrokeUpdatedEventArgs e)
+                => Invoke(() => { StrokeUpdated?.Invoke(this, e); });
 
-            public event StateChangeEventHandler StateChanged;
-            public virtual void OnStateChange(object key, StateChangeEventArgs e)
-                => CheckKeyAndInvoke(key, () => { StateChanged?.Invoke(this, e); });
+            public event StateChangedEventHandler StateChanged;
+            public virtual void OnStateChanged(StateChangedEventArgs e)
+                => Invoke(() => { StateChanged?.Invoke(this, e); });
 
-            public event GestureCancelEventHandler GestureCancelled;
-            public virtual void OnGestureCancel(object key, GestureCancelEventArgs e)
-                => CheckKeyAndInvoke(key, () => { GestureCancelled?.Invoke(this, e); });
+            public event GestureCancelledEventHandler GestureCancelled;
+            public virtual void OnGestureCancelled(GestureCancelledEventArgs e)
+                => Invoke(() => { GestureCancelled?.Invoke(this, e); });
 
             public event GestureTimeoutEventHandler GestureTimeout;
-            public virtual void OnGestureTimeout(object key, GestureTimeoutEventArgs e)
-                => CheckKeyAndInvoke(key, () => { GestureTimeout?.Invoke(this, e); });
+            public virtual void OnGestureTimeout(GestureTimeoutEventArgs e)
+                => Invoke(() => { GestureTimeout?.Invoke(this, e); });
 
             public event MachineResetEventHandler MachineReset;
-            public virtual void OnMachineReset(object key, MachineResetEventArgs e)
-                => CheckKeyAndInvoke(key, () => { MachineReset?.Invoke(this, e); });
+            public virtual void OnMachineReset(MachineResetEventArgs e)
+                => Invoke(() => { MachineReset?.Invoke(this, e); });
 
             public event MachineStartEventHandler MachineStart;
-            public virtual void OnMachineStart(object key, MachineStartEventArgs e)
-                => CheckKeyAndInvoke(key, () => { MachineStart?.Invoke(this, e); });
+            public virtual void OnMachineStart(MachineStartEventArgs e)
+                => Invoke(() => { MachineStart?.Invoke(this, e); });
 
             public event MachineStopEventHandler MachineStop;
-            public virtual void OnMachineStop(object key, MachineStopEventArgs e)
-                => CheckKeyAndInvoke(key, () => { MachineStop?.Invoke(this, e); });
+            public virtual void OnMachineStop(MachineStopEventArgs e)
+                => Invoke(() => { MachineStop?.Invoke(this, e); });
         }
 
-        private readonly object Key = new object();
-        public readonly CallbackReceiver Receiver;
+        public readonly CallbackContainer Callback;
 
-        public CallbackManager()
+        public CallbackManager() : this(new CallbackContainer()) {}
+        
+        public CallbackManager(CallbackContainer callback)
         {
-            Receiver = new CallbackReceiver(Key);
+            this.Callback = callback;
         }
 
         #region Event StrokeReset
-        public class StrokeResetEventArgs : EventArgs
-        {
-
-        }
+        public class StrokeResetEventArgs : EventArgs {}
 
         public delegate void StrokeResetEventHandler(object sender, StrokeResetEventArgs e);
 
         public virtual void OnStrokeReset() 
-            => Receiver.OnStrokeReset(Key, new StrokeResetEventArgs());
+            => Callback.OnStrokeReset(new StrokeResetEventArgs());
         #endregion
 
-        #region Event StrokeUpdate
-        public class StrokeUpdateEventArgs : EventArgs
+        #region Event StrokeUpdated
+        public class StrokeUpdatedEventArgs : EventArgs
         {
             public readonly IReadOnlyList<Stroke> Strokes;
 
-            public StrokeUpdateEventArgs(IReadOnlyList<Stroke> strokes)
+            public StrokeUpdatedEventArgs(IReadOnlyList<Stroke> strokes)
             {
                 Strokes = strokes;
             }
         }
 
-        public delegate void StrokeUpdateEventHandler(object sender, StrokeUpdateEventArgs e);
+        public delegate void StrokeUpdatedEventHandler(object sender, StrokeUpdatedEventArgs e);
 
-        public virtual void OnStrokeUpdate(IReadOnlyList<Stroke> strokes) 
-            => Receiver.OnStrokeUpdate(Key, new StrokeUpdateEventArgs(strokes));
+        public virtual void OnStrokeUpdated(IReadOnlyList<Stroke> strokes) 
+            => Callback.OnStrokeUpdated(new StrokeUpdatedEventArgs(strokes));
         #endregion
 
-        #region Event StateChange
-        public class StateChangeEventArgs : EventArgs
+        #region Event StateChanged
+        public class StateChangedEventArgs : EventArgs
         {
             public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
             public readonly State<TConfig, TContextManager, TEvalContext, TExecContext> CurrentState;
 
-            public StateChangeEventArgs(
+            public StateChangedEventArgs(
                 State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, 
                 State<TConfig, TContextManager, TEvalContext, TExecContext> currentState)
             {
@@ -124,29 +107,29 @@ namespace Crevice.Core.Callback
             }
         }
 
-        public delegate void StateChangeEventHandler(object sender, StateChangeEventArgs e);
+        public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
 
-        public virtual void OnStateChange(
+        public virtual void OnStateChanged(
             State<TConfig, TContextManager, TEvalContext, TExecContext> lastState, 
             State<TConfig, TContextManager, TEvalContext, TExecContext> currentState) 
-            => Receiver.OnStateChange(Key, new StateChangeEventArgs(lastState, currentState));
+            => Callback.OnStateChanged(new StateChangedEventArgs(lastState, currentState));
         #endregion
 
-        #region Event GestureCancel
-        public class GestureCancelEventArgs : EventArgs
+        #region Event GestureCancelled
+        public class GestureCancelledEventArgs : EventArgs
         {
             public readonly StateN<TConfig, TContextManager, TEvalContext, TExecContext> LastState;
 
-            public GestureCancelEventArgs(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+            public GestureCancelledEventArgs(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
             {
                 LastState = stateN;
             }
         }
 
-        public delegate void GestureCancelEventHandler(object sender, GestureCancelEventArgs e);
+        public delegate void GestureCancelledEventHandler(object sender, GestureCancelledEventArgs e);
 
-        public virtual void OnGestureCancel(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN) 
-            => Receiver.OnGestureCancel(Key, new GestureCancelEventArgs(stateN));
+        public virtual void OnGestureCancelled(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN) 
+            => Callback.OnGestureCancelled(new GestureCancelledEventArgs(stateN));
         #endregion
 
         #region Event GestureTimeout
@@ -163,7 +146,7 @@ namespace Crevice.Core.Callback
         public delegate void GestureTimeoutEventHandler(object sender, GestureTimeoutEventArgs e);
 
         public virtual void OnGestureTimeout(StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN) 
-            => Receiver.OnGestureTimeout(Key, new GestureTimeoutEventArgs(stateN));
+            => Callback.OnGestureTimeout(new GestureTimeoutEventArgs(stateN));
         #endregion
 
         #region Event MachineReset
@@ -180,7 +163,7 @@ namespace Crevice.Core.Callback
         public delegate void MachineResetEventHandler(object sender, MachineResetEventArgs e);
 
         public virtual void OnMachineReset(State<TConfig, TContextManager, TEvalContext, TExecContext> state)
-            => Receiver.OnMachineReset(Key, new MachineResetEventArgs(state));
+            => Callback.OnMachineReset(new MachineResetEventArgs(state));
         #endregion
             
         #region Event MachineStart
@@ -192,7 +175,7 @@ namespace Crevice.Core.Callback
         public delegate void MachineStartEventHandler(object sender, MachineStartEventArgs e);
 
         public virtual void OnMachineStart() 
-            => Receiver.OnMachineStart(Key, new MachineStartEventArgs());
+            => Callback.OnMachineStart(new MachineStartEventArgs());
         #endregion
             
         #region Event MachineStop
@@ -204,7 +187,7 @@ namespace Crevice.Core.Callback
         public delegate void MachineStopEventHandler(object sender, MachineStopEventArgs e);
 
         public virtual void OnMachineStop() 
-            => Receiver.OnMachineStop(Key, new MachineStopEventArgs());
+            => Callback.OnMachineStop(new MachineStopEventArgs());
         #endregion
     }
 }

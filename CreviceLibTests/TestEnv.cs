@@ -74,20 +74,20 @@ namespace CreviceLibTests
         public readonly System.Threading.CountdownEvent OnStrokeUpdatedCDE = new System.Threading.CountdownEvent(1);
         public int OnStrokeUpdatedCallCount { get; private set; } = 0;
 
-        public override void OnStrokeUpdate(IReadOnlyList<Stroke> strokes)
+        public override void OnStrokeUpdated(IReadOnlyList<Stroke> strokes)
         {
             if (EnableStrokeUpdateCallback)
             {
                 OnStrokeUpdatedCallCount += 1;
                 OnStrokeUpdatedCDE.Signal();
-                base.OnStrokeUpdate(strokes);
+                base.OnStrokeUpdated(strokes);
             }
         }
 
         public readonly System.Threading.CountdownEvent OnStateChangedCDE = new System.Threading.CountdownEvent(1);
         public int OnStateChangeCallCount { get; private set; } = 0;
 
-        public override void OnStateChange(
+        public override void OnStateChanged(
             State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> lastState, 
             State<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> currentState)
         {
@@ -95,7 +95,7 @@ namespace CreviceLibTests
             {
                 OnStateChangeCallCount += 1;
                 OnStateChangedCDE.Signal();
-                base.OnStateChange(lastState, currentState);
+                base.OnStateChanged(lastState, currentState);
             }
         }
 
@@ -116,14 +116,14 @@ namespace CreviceLibTests
         public readonly System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureCancelCallCount { get; private set; } = 0;
 
-        public override void OnGestureCancel(
+        public override void OnGestureCancelled(
             StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> stateN)
         {
             if (EnableGestureCancelCallback)
             {
                 OnGestureCancelCallCount += 1;
                 OnGestureCancelledCDE.Signal();
-                base.OnGestureCancel(stateN);
+                base.OnGestureCancelled(stateN);
             }
         }
 

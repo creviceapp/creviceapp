@@ -113,5 +113,12 @@ namespace Crevice.Core.Stroke
 
         private static double GetAngle(Point p0, Point p1)
             => Math.Atan2(p1.Y - p0.Y, p1.X - p0.X) * 180 / Math.PI;
+
+        public Stroke Freeze()
+        {
+            var stroke = new Stroke(StrokeDirectionChangeThreshold, StrokeExtensionThreshold, Direction);
+            stroke.Absorb(points);
+            return stroke;
+        }
     }
 }
