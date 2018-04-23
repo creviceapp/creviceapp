@@ -71,17 +71,17 @@ namespace Crevice4Tests
                     {
                         hook.SetHook();
 
-                        callbackManager.OnGestureCancelled(s1 as TStateN);
+                        callbackManager.OnGestureCancelled(gm, s1 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
 
                         cde.Reset();
                         cde.AddCount(2);
-                        callbackManager.OnGestureCancelled(s2 as TStateN);
+                        callbackManager.OnGestureCancelled(gm, s2 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
 
                         cde.Reset();
                         cde.AddCount(4);
-                        callbackManager.OnGestureCancelled(s3 as TStateN);
+                        callbackManager.OnGestureCancelled(gm, s3 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
                     }
                 }
@@ -121,17 +121,17 @@ namespace Crevice4Tests
                     {
                         hook.SetHook();
 
-                        callbackManager.OnGestureTimeout(s1 as TStateN);
+                        callbackManager.OnGestureTimeout(gm, s1 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
 
                         cde.Reset();
                         cde.AddCount(1);
-                        callbackManager.OnGestureTimeout(s2 as TStateN);
+                        callbackManager.OnGestureTimeout(gm, s2 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
 
                         cde.Reset();
                         cde.AddCount(2);
-                        callbackManager.OnGestureTimeout(s3 as TStateN);
+                        callbackManager.OnGestureTimeout(gm, s3 as TStateN);
                         Assert.AreEqual(cde.Wait(10000), true);
                     }
                 }

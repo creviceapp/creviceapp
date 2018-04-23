@@ -72,13 +72,17 @@ namespace Crevice.GestureMachine
             _systemKeyRestorationActionExecutor = SystemKeyRestorationActionExecutor;
         }
 
-        public override void OnStrokeReset()
+        public override void OnStrokeReset(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
+            StrokeWatcher lastStrokeWatcher,
+            StrokeWatcher currentStrokeWatcher)
         {
             Verbose.Print("Stroke was reset.");
-            base.OnStrokeReset();
+            base.OnStrokeReset(gestureMachine, lastStrokeWatcher, currentStrokeWatcher);
         }
 
         public override void OnStrokeUpdated(
+            StrokeWatcher strokeWatcher,
             IReadOnlyList<Stroke> strokes)
         {
             var strokeString = strokes
@@ -93,18 +97,20 @@ namespace Crevice.GestureMachine
                 .Select(s => s.Points.Count.ToString())
                 .Aggregate((a, b) => a + ", " + b);
             Verbose.Print("Stroke was updated; Directions={0}, Points={1}", strokeString, strokePoints);
-            base.OnStrokeUpdated(strokes);
+            base.OnStrokeUpdated(strokeWatcher, strokes);
         }
 
         public override void OnStateChanged(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> lastState, 
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> currentState)
         {
             Verbose.Print("State was changed; CurrentState={0}", currentState);
-            base.OnStateChanged(lastState, currentState);
+            base.OnStateChanged(gestureMachine, lastState, currentState);
         }
 
         public override void OnGestureCancelled(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
             Verbose.Print("Gesture was cancelled.");
@@ -114,10 +120,11 @@ namespace Crevice.GestureMachine
                 Verbose.Print($"Restoring press and release event: {string.Join(", ", systemKeys)}");
                 RestoreKeyPressAndReleaseEvents(systemKeys);
             });
-            base.OnGestureCancelled(stateN);
+            base.OnGestureCancelled(gestureMachine, stateN);
         }
 
         public override void OnGestureTimeout(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
             Verbose.Print("Gesture was timeout.");
@@ -127,26 +134,29 @@ namespace Crevice.GestureMachine
                 Verbose.Print($"Restoring press event: {string.Join(", ", systemKeys)}");
                 RestoreKeyPressEvents(systemKeys);
             });
-            base.OnGestureTimeout(stateN);
+            base.OnGestureTimeout(gestureMachine, stateN);
         }
 
         public override void OnMachineReset(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> state)
         {
             Verbose.Print("GestureMachine was reset; LastState={0}", state);
-            base.OnMachineReset(state);
+            base.OnMachineReset(gestureMachine, state);
         }
 
-        public override void OnMachineStart()
+        public override void OnMachineStart(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine)
         {
             Verbose.Print("GestureMachine was started.");
-            base.OnMachineStart();
+            base.OnMachineStart(gestureMachine);
         }
 
-        public override void OnMachineStop()
+        public override void OnMachineStop(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine)
         {
             Verbose.Print("GestureMachine was stopped.");
-            base.OnMachineStop();
+            base.OnMachineStop(gestureMachine);
         }
 
         internal void RestoreKeyPressEvents(IEnumerable<PhysicalSystemKey> systemKeys)

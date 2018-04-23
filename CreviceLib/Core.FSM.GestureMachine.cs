@@ -53,7 +53,6 @@ namespace Crevice.Core.FSM
                 if (_currentState != value)
                 {
                     ResetStrokeWatcher();
-                    CallbackManager.OnStrokeReset();
                     if (value is State0<TConfig, TContextManager, TEvalContext, TExecContext>)
                     {
                         StopGestureTimeoutTimer();
@@ -64,7 +63,7 @@ namespace Crevice.Core.FSM
                     }
                     var lastState = _currentState;
                     _currentState = value;
-                    CallbackManager.OnStateChanged(lastState, _currentState);
+                    CallbackManager.OnStateChanged(this, lastState, _currentState);
                 }
             }
         }
@@ -96,7 +95,7 @@ namespace Crevice.Core.FSM
                 CurrentState = new State0<TConfig, TContextManager, TEvalContext, TExecContext>(this, rootElement);
                 RootElement = rootElement;
                 IsRunning = true;
-                CallbackManager.OnMachineStart();
+                CallbackManager.OnMachineStart(this);
             }
         }
 
@@ -162,6 +161,7 @@ namespace Crevice.Core.FSM
             var old = StrokeWatcher;
             StrokeWatcher = CreateStrokeWatcher();
             old?.Dispose();
+            CallbackManager.OnStrokeReset(this, old, StrokeWatcher);
         }
 
         private void TryTimeout(object sender, System.Timers.ElapsedEventArgs args)
@@ -180,7 +180,7 @@ namespace Crevice.Core.FSM
                     if (CurrentState != state)
                     {
                         CurrentState = state;
-                        CallbackManager.OnGestureTimeout(lastState);
+                        CallbackManager.OnGestureTimeout(this, lastState);
                     }
                 }
             }
@@ -202,14 +202,14 @@ namespace Crevice.Core.FSM
                     }
                     CurrentState = state;
                 }
-                CallbackManager.OnMachineReset(lastState);
+                CallbackManager.OnMachineReset(this, lastState);
             }
         }
 
         public void Stop()
         {
             Reset();
-            CallbackManager.OnMachineStop();
+            CallbackManager.OnMachineStop(this);
         }
 
         internal bool _disposed { get; private set; } = false;
