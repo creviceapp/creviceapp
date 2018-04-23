@@ -58,10 +58,8 @@ namespace Crevice.GestureMachine
         }
 
         private static ActionExecutor CallbackActionExecutor => new ActionExecutor("CallbackActionExecutor", ThreadPriority.Highest, Math.Max(2, Environment.ProcessorCount / 2));
-        private static ActionExecutor SystemKeyRestorationActionExecutor => new ActionExecutor("SystemKeyRestorationActionExecutor", ThreadPriority.Highest, Math.Max(2, Environment.ProcessorCount / 2));
 
         private readonly ActionExecutor _callbackActionExecutor;
-        private readonly ActionExecutor _systemKeyRestorationActionExecutor;
 
         private readonly SingleInputSender SingleInputSender = new SingleInputSender();
         
@@ -69,7 +67,6 @@ namespace Crevice.GestureMachine
         public CallbackManager(ActionExecutor callbackActionExecutor) : base(new CustomCallbackContainer(callbackActionExecutor))
         {
             _callbackActionExecutor = callbackActionExecutor;
-            _systemKeyRestorationActionExecutor = SystemKeyRestorationActionExecutor;
         }
 
         public override void OnStrokeReset()
@@ -109,11 +106,8 @@ namespace Crevice.GestureMachine
         {
             Verbose.Print("Gesture was cancelled.");
             var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
-            _systemKeyRestorationActionExecutor.Execute(() => 
-            {
-                Verbose.Print($"Restoring press and release event: {string.Join(", ", systemKeys)}");
-                RestoreKeyPressAndReleaseEvents(systemKeys);
-            });
+            Verbose.Print($"Restoring press and release event: {string.Join(", ", systemKeys)}");
+            RestoreKeyPressAndReleaseEvents(systemKeys);
             base.OnGestureCancelled(stateN);
         }
 
@@ -122,11 +116,8 @@ namespace Crevice.GestureMachine
         {
             Verbose.Print("Gesture was timeout.");
             var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
-            _systemKeyRestorationActionExecutor.Execute(() =>
-            {
-                Verbose.Print($"Restoring press event: {string.Join(", ", systemKeys)}");
-                RestoreKeyPressEvents(systemKeys);
-            });
+            Verbose.Print($"Restoring press event: {string.Join(", ", systemKeys)}");
+            RestoreKeyPressEvents(systemKeys);
             base.OnGestureTimeout(stateN);
         }
 
