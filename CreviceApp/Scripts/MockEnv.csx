@@ -66,6 +66,9 @@ Crevice.WinAPI.SendInput.SingleInputSender SendInput
 IGestureMachine RootGestureMachine 
     => debugExecutionContext.RootGestureMachine;
 
+Crevice.UI.MainFormBase MainForm
+    => debugGlobalConfig.MainForm;
+
 UserConfig Config 
     => debugExecutionContext.Config;
 
