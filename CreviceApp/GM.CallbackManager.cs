@@ -224,7 +224,6 @@ namespace Crevice.GestureMachine
             if (disposing)
             {
                 _callbackActionExecutor.Dispose();
-                _systemKeyRestorationActionExecutor.Dispose();
             }
         }
     }
