@@ -11,6 +11,7 @@ namespace Crevice.UserScript
     using Crevice.Core.FSM;
     using Crevice.Config;
     using Crevice.GestureMachine;
+    using Crevice.UI;
     using Crevice.UserScript.Keys;
 
     public class UserScriptExecutionContext
@@ -66,6 +67,9 @@ namespace Crevice.UserScript
         {
             _config = config;
         }
+
+        public MainFormBase MainForm
+            => _config.MainForm;
 
         public IGestureMachine RootGestureMachine 
             => _config.MainForm.GestureMachine;
