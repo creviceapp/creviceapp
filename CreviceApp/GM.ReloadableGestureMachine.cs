@@ -151,24 +151,34 @@ namespace Crevice.GestureMachine
                     _reloadRequest = false;
                     using (Verbose.PrintElapsed("Hot-reload GestureMachine"))
                     {
-                        var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
-                        if (gmCluster == null)
+                        try
                         {
-                            _config.MainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
-                        }
-                        else
-                        {
-                            gmCluster.Run();
-                            Instance = gmCluster;
-                            if (runtimeError == null)
+                            var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
+                            if (gmCluster == null)
                             {
-                                _config.MainForm.ShowInfoBalloon(gmCluster);
+                                _config.MainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
                             }
                             else
                             {
-                                _config.MainForm.ShowWarningBalloon(gmCluster, runtimeError);
+                                gmCluster.Run();
+                                Instance = gmCluster;
+                                if (runtimeError == null)
+                                {
+                                    _config.MainForm.ShowInfoBalloon(gmCluster);
+                                }
+                                else
+                                {
+                                    _config.MainForm.ShowWarningBalloon(gmCluster, runtimeError);
+                                }
+                                _config.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
                             }
-                            _config.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
+                        }
+                        catch (System.IO.IOException)
+                        {
+                            Verbose.Print("User script cannot be read; the file may be in use by another process.");
+                            Verbose.Print("Waiting 1 sec ...");
+                            Thread.Sleep(1000);
+                            continue;
                         }
                     }
                     _loading = false;
