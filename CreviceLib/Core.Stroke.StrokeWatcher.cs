@@ -58,6 +58,8 @@ namespace Crevice.Core.Stroke
                     {
                         lock (_lockObject)
                         {
+                            if (_disposed) break;
+
                             buffer.Add(point);
                             if (buffer.Count < 2)
                             {
@@ -126,8 +128,11 @@ namespace Crevice.Core.Stroke
 
         public void Dispose()
         {
-            _disposed = true;
-            Dispose(true);
+            lock (_lockObject)
+            {
+                _disposed = true;
+                Dispose(true);
+            }
             GC.SuppressFinalize(this);
         }
 
