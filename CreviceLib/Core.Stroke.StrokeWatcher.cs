@@ -22,6 +22,8 @@ namespace Crevice.Core.Stroke
         internal readonly List<Point> buffer = new List<Point>();
         internal readonly Task task;
 
+        private readonly object _lockObject = new object();
+
         public StrokeWatcher(
             IStrokeCallbackManager callbacks,
             TaskFactory taskFactory,
@@ -54,37 +56,40 @@ namespace Crevice.Core.Stroke
                 {
                     foreach (var point in queue.GetConsumingEnumerable())
                     {
-                        buffer.Add(point);
-                        if (buffer.Count < 2)
+                        lock (_lockObject)
                         {
-                            continue;
-                        }
-                        if (strokes.Count == 0)
-                        {
-                            if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
+                            buffer.Add(point);
+                            if (buffer.Count < 2)
                             {
-                                var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
-                                strokes.Add(stroke);
-                                buffer.Clear();
-                                Callbacks.OnStrokeUpdated(CallbackArgument);
+                                continue;
                             }
-                        }
-                        else
-                        {
-                            var stroke = strokes.Last();
-                            var _strokePointsCount = stroke.Points.Count;
+                            if (strokes.Count == 0)
+                            {
+                                if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
+                                {
+                                    var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
+                                    strokes.Add(stroke);
+                                    buffer.Clear();
+                                    Callbacks.OnStrokeUpdated(GetStrokesDeepClone());
+                                }
+                            }
+                            else
+                            {
+                                var stroke = strokes.Last();
+                                var _strokePointsCount = stroke.Points.Count;
 
-                            var res = stroke.Input(buffer);
-                            if (stroke != res)
-                            {
-                                strokes.Add(res);
-                                buffer.Clear();
-                                Callbacks.OnStrokeUpdated(CallbackArgument);
-                            }
-                            else if (_strokePointsCount != stroke.Points.Count)
-                            {
-                                buffer.Clear();
-                                Callbacks.OnStrokeUpdated(CallbackArgument);
+                                var res = stroke.Input(buffer);
+                                if (stroke != res)
+                                {
+                                    strokes.Add(res);
+                                    buffer.Clear();
+                                    Callbacks.OnStrokeUpdated(GetStrokesDeepClone());
+                                }
+                                else if (_strokePointsCount != stroke.Points.Count)
+                                {
+                                    buffer.Clear();
+                                    Callbacks.OnStrokeUpdated(GetStrokesDeepClone());
+                                }
                             }
                         }
                     }
@@ -93,13 +98,29 @@ namespace Crevice.Core.Stroke
             });
         }
 
-        private IReadOnlyList<Stroke> CallbackArgument => strokes.Select(s => s.Freeze()).ToList();
+        private IReadOnlyList<Stroke> GetStrokesDeepClone()
+        {
+            lock(_lockObject)
+            {
+                return strokes.Select(s => s.Freeze()).ToList();
+            }
+        }
 
         public IReadOnlyList<Stroke> GetStorkes()
-            => strokes.ToList();
+        {
+            lock (_lockObject)
+            {
+                return strokes.ToList();
+            }
+        }
 
         public StrokeSequence GetStrokeSequence()
-            => new StrokeSequence(strokes.Select(x => x.Direction));
+        {
+            lock (_lockObject)
+            {
+                return new StrokeSequence(strokes.Select(x => x.Direction));
+            }
+        }
 
         internal bool _disposed { get; private set; } = false;
 
