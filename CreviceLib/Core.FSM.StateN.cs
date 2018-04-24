@@ -160,7 +160,7 @@ namespace Crevice.Core.FSM
         public override State<TConfig, TContextManager, TEvalContext, TExecContext> Timeout()
         {
             if (CanCancel && !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && 
-                !Machine.StrokeWatcher.GetStorkes().Any())
+                !Machine.StrokeWatcher.StrokeIsEstablished)
             {
                 return LastState;
             }

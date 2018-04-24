@@ -61,10 +61,9 @@ namespace Crevice.Core.Stroke
                             if (_disposed) break;
 
                             buffer.Add(point);
-                            if (buffer.Count < 2)
-                            {
-                                continue;
-                            }
+
+                            if (buffer.Count < 2) continue;
+
                             if (strokes.Count == 0)
                             {
                                 if (Stroke.CanCreate(initialStrokeThreshold, buffer.First(), buffer.Last()))
@@ -72,7 +71,6 @@ namespace Crevice.Core.Stroke
                                     var stroke = new Stroke(strokeDirectionChangeThreshold, strokeExtensionThreshold, buffer);
                                     strokes.Add(stroke);
                                     buffer.Clear();
-                                    Callbacks.OnStrokeUpdated(this, GetStorkes());
                                 }
                             }
                             else
@@ -85,19 +83,32 @@ namespace Crevice.Core.Stroke
                                 {
                                     strokes.Add(res);
                                     buffer.Clear();
-                                    Callbacks.OnStrokeUpdated(this, GetStorkes());
                                 }
                                 else if (_strokePointsCount != stroke.Points.Count)
                                 {
                                     buffer.Clear();
-                                    Callbacks.OnStrokeUpdated(this, GetStorkes());
                                 }
+                            }
+
+                            if (StrokeIsEstablished)
+                            {
+                                Callbacks.OnStrokeUpdated(this, GetStorkes());
                             }
                         }
                     }
                 }
                 catch (OperationCanceledException) { }
             });
+        }
+
+        public bool StrokeIsEstablished => strokes.Any();
+
+        public IReadOnlyList<Point> GetBufferedPoints()
+        {
+            lock (_lockObject)
+            {
+                return buffer.ToList();
+            }
         }
 
         public IReadOnlyList<Stroke> GetStorkes()
