@@ -107,7 +107,7 @@ namespace Crevice.Core.FSM
             {
                 if (point.HasValue && CurrentState is StateN<TConfig, TContextManager, TEvalContext, TExecContext>)
                 {
-                    StrokeWatcher.Queue(point.Value);
+                    StrokeWatcher.Process(point.Value);
                 }
                 
                 if (evnt is NullEvent)

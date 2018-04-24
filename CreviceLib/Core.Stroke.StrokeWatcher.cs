@@ -4,13 +4,14 @@ using System.Text;
 
 namespace Crevice.Core.Stroke
 {
+    using System.Collections.Concurrent;
     using System.Linq;
     using System.Drawing;
     using System.Threading.Tasks;
 
     using Crevice.Core.Callback;
 
-    public class StrokeWatcher : QueuedPointProcessor, IDisposable
+    public class StrokeWatcher : PointProcessor
     {
         internal readonly IStrokeCallbackManager Callbacks;
         internal readonly TaskFactory taskFactory;
@@ -20,7 +21,12 @@ namespace Crevice.Core.Stroke
 
         internal readonly List<Stroke> strokes = new List<Stroke>();
         internal readonly List<Point> buffer = new List<Point>();
-        internal readonly Task task;
+
+        internal readonly BlockingCollection<Point> queue
+            = new BlockingCollection<Point>();
+
+        internal override void OnProcess(Point point)
+            => queue.Add(point);
 
         private readonly object _lockObject = new object();
 
@@ -37,20 +43,11 @@ namespace Crevice.Core.Stroke
             this.initialStrokeThreshold = initialStrokeThreshold;
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
             this.strokeExtensionThreshold = strokeExtensionThreshold;
-            this.task = CreateTask();
+            StartBackgroundTask();
         }
 
-        public virtual void Queue(Point point)
-        {
-            if (!_disposed)
-            {
-                Process(point);
-            }
-        }
-
-        private Task CreateTask()
-        {
-            return taskFactory.StartNew(() =>
+        private void StartBackgroundTask() =>
+            taskFactory.StartNew(() =>
             {
                 try
                 {
@@ -99,7 +96,6 @@ namespace Crevice.Core.Stroke
                 }
                 catch (OperationCanceledException) { }
             });
-        }
 
         public bool StrokeIsEstablished => strokes.Any();
 
@@ -128,22 +124,17 @@ namespace Crevice.Core.Stroke
         }
 
         internal bool _disposed { get; private set; } = false;
-
-        public void Dispose()
-        {
-            lock (_lockObject)
-            {
-                _disposed = true;
-                Dispose(true);
-            }
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
+        
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                queue.CompleteAdding();
+                lock (_lockObject)
+                {
+                    _disposed = true;
+                    queue.CompleteAdding();
+                    base.Dispose(true);
+                }
             }
         }
 
