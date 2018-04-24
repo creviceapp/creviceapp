@@ -13,8 +13,7 @@ namespace Crevice.Core.Stroke
 
     public class StrokeWatcher : PointProcessor
     {
-        internal readonly IStrokeCallbackManager Callbacks;
-        internal readonly TaskFactory taskFactory;
+        internal readonly IStrokeCallbackManager callbacks;
         internal readonly int initialStrokeThreshold;
         internal readonly int strokeDirectionChangeThreshold;
         internal readonly int strokeExtensionThreshold;
@@ -36,10 +35,9 @@ namespace Crevice.Core.Stroke
             int initialStrokeThreshold,
             int strokeDirectionChangeThreshold,
             int strokeExtensionThreshold,
-            int watchInterval) : base(watchInterval)
+            int watchInterval) : base(taskFactory, watchInterval)
         {
-            this.Callbacks = callbacks;
-            this.taskFactory = taskFactory;
+            this.callbacks = callbacks;
             this.initialStrokeThreshold = initialStrokeThreshold;
             this.strokeDirectionChangeThreshold = strokeDirectionChangeThreshold;
             this.strokeExtensionThreshold = strokeExtensionThreshold;
@@ -89,7 +87,7 @@ namespace Crevice.Core.Stroke
 
                             if (StrokeIsEstablished)
                             {
-                                Callbacks.OnStrokeUpdated(this, GetStorkes());
+                                callbacks.OnStrokeUpdated(this, GetStorkes());
                             }
                         }
                     }

@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Crevice.Core.Stroke
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Drawing;
 
     public enum StrokeDirection
@@ -16,7 +18,9 @@ namespace Crevice.Core.Stroke
 
     public abstract class PointProcessor : IDisposable
     {
-        private readonly System.Timers.Timer timer;
+        protected internal readonly TaskFactory taskFactory;
+
+        private readonly CancellationTokenSource tokenSource;
 
         private readonly int watchInterval;
 
@@ -26,38 +30,45 @@ namespace Crevice.Core.Stroke
 
         private Point? skippedPoint = null;
 
-        public PointProcessor(int watchInterval)
+        public PointProcessor(TaskFactory taskFactory, int watchInterval)
         {
             this.watchInterval = watchInterval;
-            this.timer = new System.Timers.Timer(1);
-            this.timer.AutoReset = true;
-            this.timer.Elapsed += (sender, e) => 
-            {
-                lock (_lockObject)
-                {
-                    if (skippedPoint.HasValue)
-                    {
-                        OnProcess(skippedPoint.Value);
-                        skippedPoint = null;
-                    }
-                }
-            };
-            this.timer.Start();
+            this.taskFactory = taskFactory; 
+            this.tokenSource = new CancellationTokenSource();
+            StartBackgroundTask();
         }
 
-        private bool MustBeProcessed(int currentTickCount) =>
+        private void StartBackgroundTask() =>
+            taskFactory.StartNew(() =>
+            {
+                while (!tokenSource.Token.IsCancellationRequested)
+                {
+                    var currentTickCount = Environment.TickCount;
+                    lock (_lockObject)
+                    {
+                        if (skippedPoint.HasValue && MustBeProcessed(currentTickCount))
+                        {
+                            OnProcess(skippedPoint.Value);
+                            skippedPoint = null;
+                        }
+                    }
+                    Thread.Sleep(1);
+                }
+            });
+
+            private bool MustBeProcessed(int currentTickCount) =>
             watchInterval <= 0 ||
             currentTickCount < lastProcessedTickCount ||
             lastProcessedTickCount + watchInterval < currentTickCount;
 
         public virtual void Process(Point point)
         {
-            var current = Environment.TickCount;
+            var currentTickCount = Environment.TickCount;
             lock (_lockObject)
             {
-                if (MustBeProcessed(currentTickCount: current))
+                if (MustBeProcessed(currentTickCount))
                 {
-                    lastProcessedTickCount = current;
+                    lastProcessedTickCount = currentTickCount;
                     OnProcess(point);
                     skippedPoint = null;
                 }
@@ -80,8 +91,8 @@ namespace Crevice.Core.Stroke
         {
             if (disposing)
             {
-                timer.Stop();
-                timer.Dispose();
+                tokenSource.Cancel();
+                tokenSource.Dispose();
             }
         }
 
