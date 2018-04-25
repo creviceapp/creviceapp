@@ -58,7 +58,7 @@ namespace Crevice.GestureMachine
         }
 
         private static ActionExecutor CallbackActionExecutor => new ActionExecutor("CallbackActionExecutor", ThreadPriority.Highest, Math.Max(2, Environment.ProcessorCount / 2));
-        private static ActionExecutor SystemKeyRestorationActionExecutor => new ActionExecutor("SystemKeyRestorationActionExecutor", ThreadPriority.Highest, Math.Max(2, Environment.ProcessorCount / 2));
+        private static ActionExecutor SystemKeyRestorationActionExecutor => new ActionExecutor("SystemKeyRestorationActionExecutor", ThreadPriority.Highest, 1);
 
         private readonly ActionExecutor _callbackActionExecutor;
         private readonly ActionExecutor _systemKeyRestorationActionExecutor;
