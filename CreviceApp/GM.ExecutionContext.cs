@@ -16,18 +16,15 @@ namespace Crevice.GestureMachine
         public readonly Point GestureEndPosition;
         public readonly ForegroundWindowInfo ForegroundWindow;
         public readonly PointedWindowInfo PointedWindow;
-        public readonly CancellationToken CancellationToken;
 
         public ExecutionContext(
             EvaluationContext evaluationContext, 
-            Point gestureEndPosition, 
-            CancellationToken cancellationToken)
+            Point gestureEndPosition)
         {
             GestureStartPosition = evaluationContext.GestureStartPosition;
             GestureEndPosition = gestureEndPosition;
             ForegroundWindow = evaluationContext.ForegroundWindow;
             PointedWindow = evaluationContext.PointedWindow;
-            CancellationToken = cancellationToken;
         }
     }
 }

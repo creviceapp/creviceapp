@@ -13,19 +13,20 @@ namespace Crevice.GestureMachine
     using Crevice.Core.DSL;
     using Crevice.Threading;
 
+
+
+
     public class ContextManager : ContextManager<EvaluationContext, ExecutionContext>, IDisposable
     {
         public Point CursorPosition { get; set; }
         
         public int EvaluationLimitTime { get; } = 1000; // ms
 
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-
         public override EvaluationContext CreateEvaluateContext()
             => new EvaluationContext(CursorPosition);
 
         public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
-            => new ExecutionContext(evaluationContext, CursorPosition, _cancellationTokenSource.Token);
+            => new ExecutionContext(evaluationContext, CursorPosition);
 
         private readonly LowLatencyScheduler _evaluationScheduler =
             new LowLatencyScheduler(
@@ -102,8 +103,6 @@ namespace Crevice.GestureMachine
         {
             if (disposing)
             {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource.Dispose();
                 _evaluationScheduler.Dispose();
                 _executionScheduler.Dispose();
             }
