@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace Crevice.GestureMachine
 {
     using System.Threading;
     using Crevice.Core.FSM;
     using Crevice.Logging;
     using Crevice.Config;
-    using Crevice.UI;
     using Crevice.UserScript;
 
     using GetGestureMachineResult =
@@ -141,10 +139,7 @@ namespace Crevice.GestureMachine
             _semaphore.Wait();
             try
             {
-                if (_disposed)
-                {
-                    return;
-                }
+                if (_disposed) return;
                 while (true)
                 {
                     _loading = true;
@@ -211,26 +206,21 @@ namespace Crevice.GestureMachine
 
         public void Dispose()
         {
-            if (_disposed)
-            {
-                return;
-            }
-            _disposed = true;
+            if (_disposed) return;
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
         {
+            _disposed = true;
             if (disposing)
             {
                 _semaphore.Wait();
                 try
                 {
-                    GC.SuppressFinalize(this);
                     _reloadRequest = false;
                     _disposed = true;
-                    Instance = null;
                 }
                 finally
                 {
