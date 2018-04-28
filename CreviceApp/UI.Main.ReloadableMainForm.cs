@@ -56,12 +56,10 @@ namespace Crevice.UI
         
         protected override void OnClosed(EventArgs e)
         {
-            base.OnClosed(e);
             NotifyIcon1.Visible = false;
             _userScriptWatcher.EnableRaisingEvents = false;
-            _userScriptWatcher.Dispose();
-            _reloadableGestureMachine.Dispose();
             Verbose.Print("CreviceApp was ended.");
+            base.OnClosed(e);
         }
 
         public override void UpdateTasktrayMessage(string message)
