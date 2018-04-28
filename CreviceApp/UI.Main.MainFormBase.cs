@@ -99,9 +99,17 @@ namespace Crevice.UI
             {
                 ShowFatalErrorDialog("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.");
             }
-            base.OnClosed(e);
-            _tooltip.Dispose();
             WinAPI.Console.Console.FreeConsole();
+            base.OnClosed(e);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _tooltip.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         private void InvokeProperly(MethodInvoker invoker)
