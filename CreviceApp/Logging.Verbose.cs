@@ -62,7 +62,12 @@ namespace Crevice.Logging
             Debug.Print(message);
             if (Enabled)
             {
-                Console.WriteLine(message);
+                try
+                {
+                    Console.WriteLine(message);
+                }
+                catch (System.IO.IOException) {}
+                catch (UnauthorizedAccessException) {}
             }
         }
 

@@ -17,7 +17,6 @@ namespace Crevice.UI
     using Crevice.Core.FSM;
     using Crevice.Logging;
     using Crevice.UserScript.Keys;
-    using Crevice.GestureMachine;
     using WinAPI.WindowsHookEx;
 
     public class MouseGestureForm : Form
