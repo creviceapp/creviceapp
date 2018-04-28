@@ -54,6 +54,9 @@ namespace Crevice.Core.Stroke
                     }
                     Thread.Sleep(1);
                 }
+            }, tokenSource.Token).ContinueWith(t => 
+            {
+                tokenSource.Dispose();
             });
 
             private bool MustBeProcessed(int currentTickCount) =>
@@ -92,7 +95,6 @@ namespace Crevice.Core.Stroke
             if (disposing)
             {
                 tokenSource.Cancel();
-                tokenSource.Dispose();
             }
         }
 
