@@ -11,30 +11,32 @@ namespace Crevice.UI
 {
     using Crevice.Core.FSM;
     using Crevice.Logging;
-    using Crevice.Config;
     using Crevice.GestureMachine;
 
     public partial class ClusterMainForm : MainFormBase
     {
-        internal readonly GestureMachineCluster _gestureMachineCluster;
+        internal GestureMachineCluster _gestureMachineCluster = null;
         public override IGestureMachine GestureMachine => _gestureMachineCluster;
-
-        private readonly GlobalConfig _config;
-        protected internal override GlobalConfig Config => _config; 
-
-        public ClusterMainForm(CLIOption.Result cliOption, IReadOnlyList<GestureMachineProfile> gestureMachineProfiles)
-            : base()
+        
+        public ClusterMainForm(LauncherForm launcherForm)
+            : base(launcherForm)
         {
-            _config = new GlobalConfig(cliOption, this);
+            InitializeComponent();
+        }
+
+        public void Run(IReadOnlyList<GestureMachineProfile> gestureMachineProfiles)
+        {
+            if (_gestureMachineCluster != null)
+            {
+                throw new InvalidOperationException();
+            }
             _gestureMachineCluster = new GestureMachineCluster(gestureMachineProfiles);
             _gestureMachineCluster.Run();
-            InitializeComponent();
         }
 
         protected override void OnShown(EventArgs e)
         {
             Verbose.Print("CreviceApp was started.");
-            RegisterNotifyIcon(NotifyIcon1);
             UpdateTasktrayMessage(_gestureMachineCluster.Profiles);
             ShowInfoBalloon(_gestureMachineCluster);
             base.OnShown(e);
@@ -42,22 +44,9 @@ namespace Crevice.UI
         
         protected override void OnClosed(EventArgs e)
         {
-            NotifyIcon1.Visible = false;
             _gestureMachineCluster.Stop();
             Verbose.Print("CreviceApp was ended.");
             base.OnClosed(e);
         }
-        
-        public override void UpdateTasktrayMessage(string message)
-            => UpdateTasktrayMessage(NotifyIcon1, message);
-
-        public override void ShowBalloon(string text, string title, ToolTipIcon icon, int timeout)
-            => ShowBalloon(NotifyIcon1, text, title, icon, timeout);
-
-        private void NotifyIcon1_Click(object sender, EventArgs e)
-            => OpenLauncherForm();
-
-        private void NotifyIcon1_BalloonTipClicked(object sender, EventArgs e)
-            => OpenLastErrorMessageWithNotepad();
     }
 }

@@ -11,19 +11,43 @@ using System.Windows.Forms;
 
 namespace Crevice.UI
 {
+    using System.IO;
     using Crevice.Logging;
     using Crevice.Config;
 
     public partial class LauncherForm : Form
     {
-        private readonly MainFormBase _mainForm;
-
-        public LauncherForm(MainFormBase mainForm)
+        // Forcely make this application invisible from task switcher applications.
+        const int WS_EX_TOOLWINDOW = 0x00000080;
+        protected override CreateParams CreateParams
         {
-            _mainForm = mainForm;
-            Icon = Properties.Resources.CreviceIcon;
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle = cp.ExStyle | WS_EX_TOOLWINDOW;
+                return cp;
+            }
+        }
+
+        private string _lastErrorMessage = "";
+        public string LastErrorMessage
+        {
+            get { return _lastErrorMessage; }
+            set
+            {
+                Verbose.Print("LastErrorMessage: {0}", value);
+                _lastErrorMessage = value;
+            }
+        }
+
+        public MainFormBase MainForm { get; set; }
+
+        public readonly GlobalConfig Config;
+
+        public LauncherForm(GlobalConfig config)
+        {
+            this.Config = config;
             InitializeComponent();
-            Text = $"Crevice {Application.ProductVersion}";
         }
 
         private static Microsoft.Win32.RegistryKey AutorunRegistry()
@@ -74,9 +98,166 @@ namespace Crevice.UI
             }
         }
 
-        private void SaveSettings()
+        protected override void OnShown(EventArgs e)
         {
-            AutoRun = checkBox1.Checked;
+            RegisterNotifyIcon(notifyIcon1);
+            base.OnShown(e);
+            MainForm.Show();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            MainForm.Close();
+            notifyIcon1.Visible = false;
+            base.OnClosed(e);
+        }
+
+        protected void RegisterNotifyIcon(NotifyIcon notifyIcon)
+        {
+            if (!Config.CLIOption.NoGUI)
+            {
+                while (true)
+                {
+                    var stopwatch = Stopwatch.StartNew();
+                    notifyIcon.Visible = true;
+                    stopwatch.Stop();
+                    if (stopwatch.ElapsedMilliseconds < 4000)
+                    {
+                        break;
+                    }
+                    notifyIcon.Visible = false;
+                }
+            }
+        }
+
+        private void InvokeProperly(MethodInvoker invoker)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(invoker);
+            }
+            else
+            {
+                invoker.Invoke();
+            }
+        }
+
+        public void UpdateTasktrayMessage(string message)
+        {
+            var header = string.Format("Crevice {0}", Application.ProductVersion);
+            var text = header + "\r\n" + message;
+            InvokeProperly(delegate ()
+            {
+                if (!Config.CLIOption.NoGUI)
+                {
+                    notifyIcon1.Text = text.Length > 63 ? text.Substring(0, 60) + "..." : text;
+                }
+            });
+        }
+        
+        public void ShowFatalErrorDialog(string text)
+        {
+            InvokeProperly(delegate ()
+            {
+                Verbose.Error(text);
+                MessageBox.Show(text, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            });
+        }
+
+        public void ShowTooltip(string text, Point point, int duration)
+        {
+            InvokeProperly(delegate ()
+            {
+                Verbose.Print("ShowTooltip: {0}", text);
+                tooltip1.Show(text, point, duration);
+            });
+        }
+
+        public void ShowBalloon(string text, string title, ToolTipIcon icon, int timeout)
+        {
+            InvokeProperly(delegate ()
+            {
+                Verbose.Print("ShowBalloon: {0}", text);
+                if (!Config.CLIOption.NoGUI)
+                {
+                    notifyIcon1.BalloonTipText = text;
+                    notifyIcon1.BalloonTipTitle = title;
+                    notifyIcon1.BalloonTipIcon = icon;
+                    notifyIcon1.ShowBalloonTip(timeout);
+                }
+            });
+        }
+
+        public void StartExternalProcess(string fileName)
+        {
+            if (!Config.CLIOption.NoGUI)
+            {
+                InvokeProperly(delegate ()
+                {
+                    try
+                    {
+                        using (Verbose.PrintElapsed(
+                            "StartExternalProcess(filename={0})",
+                            fileName))
+                        {
+                            Process.Start(fileName);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Verbose.Error("An exception was thrown while executing an external process: {0}", ex.ToString());
+                    }
+                });
+            }
+        }
+
+        public void StartExternalProcess(string fileName, string arguments)
+        {
+            if (!Config.CLIOption.NoGUI)
+            {
+                InvokeProperly(delegate ()
+                {
+                    try
+                    {
+                        using (Verbose.PrintElapsed(
+                            "StartExternalProcess(filename={0}, arguments={1})",
+                            fileName,
+                            arguments))
+                        {
+                            Process.Start(fileName, arguments);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Verbose.Error("An exception was thrown while executing an external process: {0}", ex.ToString());
+                    }
+                });
+            }
+        }
+
+        private void OpenWithNotepad(string path, string text)
+        {
+            try
+            {
+                File.WriteAllText(path, text);
+                StartExternalProcess("notepad.exe", path);
+            }
+            catch (Exception ex)
+            {
+                Verbose.Error("An exception was thrown while writing a file: {0}", ex.ToString());
+            }
+        }
+
+        public void OpenUserScriptWithExplorer()
+            => StartExternalProcess("explorer.exe", "/select, " + Config.UserScriptFile);
+
+        public void OpenLastErrorMessageWithNotepad()
+        {
+            if (!String.IsNullOrEmpty(LastErrorMessage))
+            {
+                var tempPath = Path.Combine(Path.GetTempPath(), "Crevice4.ErrorInformation.txt");
+                OpenWithNotepad(tempPath, LastErrorMessage);
+            }
         }
 
         private void ShowProductInfoForm()
@@ -87,43 +268,75 @@ namespace Crevice.UI
             form.Show();
         }
 
-        protected override void OnLoad(EventArgs e)
+        private void NotifyIcon1_BalloonTipClick(object sender, EventArgs e)
         {
-            base.OnLoad(e);
-            checkBox1.Checked = AutoRun;
+            OpenLastErrorMessageWithNotepad();
         }
 
-        protected override void OnShown(EventArgs e)
+        private void NotifyIcon1_MouseUp(object sender, MouseEventArgs e)
         {
-            base.OnShown(e);
-            Opacity = 0;
-            Show();
-            var rect = Screen.PrimaryScreen.Bounds;
-            Left = (rect.Width - Width) / 2;
-            Top = (rect.Height - Height) / 2;
-            Opacity = 1;
-            Activate();
+            System.Reflection.MethodInfo method = typeof(NotifyIcon).GetMethod("ShowContextMenu", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            method.Invoke(notifyIcon1, null);
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        private void ContextMenu1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            SaveSettings();
-            base.OnClosing(e);
+            contextMenuStrip1.Items.Clear();
+            {
+                var item = new ToolStripMenuItem($"Crevice {Application.ProductVersion}");
+                item.Click += (_s, _e) => ShowProductInfoForm();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripSeparator();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripMenuItem("Run on Startup");
+                item.Checked = AutoRun;
+                item.Click += (_s, _e) =>
+                {
+                    item.Checked = !AutoRun;
+                    AutoRun = item.Checked;
+                };
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripSeparator();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                if (!String.IsNullOrEmpty(LastErrorMessage))
+                {
+                    var item = new ToolStripMenuItem("View ErrorMessage");
+                    item.Click += (_s, _e) => OpenLastErrorMessageWithNotepad();
+                    contextMenuStrip1.Items.Add(item);
+                }
+            }
+            {
+                var item = new ToolStripMenuItem("Open Documentation");
+                item.Click += (_s, _e) => StartExternalProcess("https://creviceapp.github.io");
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripMenuItem("Open UserScript");
+                item.Click += (_s, _e) => OpenUserScriptWithExplorer();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripSeparator();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripMenuItem("Exit");
+                item.Click += (_s, _e) => 
+                {
+                    Close();
+                    Application.ExitThread();
+                    Process.GetCurrentProcess().CloseMainWindow();
+                };
+                contextMenuStrip1.Items.Add(item);
+            }
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Close();
-            _mainForm.Close();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-            => _mainForm.OpenUserScriptWithNotepad();
-
-        private void button3_Click(object sender, EventArgs e)
-            => ShowProductInfoForm();
-
-        private void button4_Click(object sender, EventArgs e)
-            => _mainForm.StartExternalProcess("https://creviceapp.github.io");
     }
 }

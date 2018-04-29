@@ -47,10 +47,12 @@ namespace Crevice.GestureMachine
             => Instance.Reset();
 
         private readonly GlobalConfig _config;
+        private readonly UI.MainFormBase _mainForm;
 
-        public ReloadableGestureMachine(GlobalConfig config)
+        public ReloadableGestureMachine(GlobalConfig config, UI.MainFormBase mainForm)
         {
             _config = config;
+            _mainForm = mainForm;
         }
 
         public event EventHandler Reloaded;
@@ -75,7 +77,7 @@ namespace Crevice.GestureMachine
             
             if (candidate.IsRestorable)
             {
-                var ctx = new UserScriptExecutionContext(_config);
+                var ctx = new UserScriptExecutionContext(_config, _mainForm);
                 try
                 {
                     return new GetGestureMachineResult(candidate.Restore(ctx), null, null);
@@ -94,7 +96,7 @@ namespace Crevice.GestureMachine
 
             Verbose.Print("No error found in the UserScript on compilation phase.");
             {
-                var ctx = new UserScriptExecutionContext(_config);
+                var ctx = new UserScriptExecutionContext(_config, _mainForm);
                 try
                 {
                     UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
@@ -126,10 +128,7 @@ namespace Crevice.GestureMachine
 
         public void HotReload()
         {
-            if (_disposed)
-            {
-                new InvalidOperationException();
-            }
+            if (_disposed) return;
             if (_loading && !_disposed)
             {
                 Verbose.Print("Hot-reload request was queued.");
@@ -151,7 +150,7 @@ namespace Crevice.GestureMachine
                             var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
                             if (gmCluster == null)
                             {
-                                _config.MainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
+                                _mainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
                             }
                             else
                             {
@@ -159,13 +158,13 @@ namespace Crevice.GestureMachine
                                 Instance = gmCluster;
                                 if (runtimeError == null)
                                 {
-                                    _config.MainForm.ShowInfoBalloon(gmCluster);
+                                    _mainForm.ShowInfoBalloon(gmCluster);
                                 }
                                 else
                                 {
-                                    _config.MainForm.ShowWarningBalloon(gmCluster, runtimeError);
+                                    _mainForm.ShowWarningBalloon(gmCluster, runtimeError);
                                 }
-                                _config.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
+                                _mainForm.UpdateTasktrayMessage(gmCluster.Profiles);
                             }
                         }
                         catch (System.IO.IOException)
@@ -219,8 +218,7 @@ namespace Crevice.GestureMachine
                 _semaphore.Wait();
                 try
                 {
-                    _reloadRequest = false;
-                    _disposed = true;
+                    Instance = null;
                 }
                 finally
                 {

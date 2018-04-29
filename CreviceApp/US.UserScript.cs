@@ -112,6 +112,7 @@ namespace Crevice.UserScript
                 var peStream = new MemoryStream();
                 var pdbStream = new MemoryStream();
                 compilation.Emit(peStream, pdbStream);
+/*
 #if DEBUG
                 using (Verbose.PrintElapsed("Debug| Output UserScriptAssemblies"))
                 {
@@ -119,6 +120,7 @@ namespace Crevice.UserScript
                     File.WriteAllBytes((cachePath + ".debug.pdb"), pdbStream.GetBuffer());
                 }
 #endif
+*/
                 return UserScriptAssembly.CreateCache(GetHashSource(cachePath, userScriptString), peStream.GetBuffer(), pdbStream.GetBuffer());
             }
         }

@@ -230,7 +230,7 @@ namespace Crevice.Core.FSM
             if (disposing)
             {
                 gestureTimeoutTimer.Dispose();
-                StrokeWatcher.Dispose();
+                StrokeWatcher?.Dispose();
             }
         }
 

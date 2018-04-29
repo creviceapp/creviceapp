@@ -32,16 +32,7 @@ namespace Crevice.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReloadableMainForm));
-            this.NotifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
-            // 
-            // notifyIcon1
-            // 
-            this.NotifyIcon1.Icon = Properties.Resources.CreviceIcon;
-            this.NotifyIcon1.Text = "Crevice is loading";
-            this.NotifyIcon1.BalloonTipClicked += new System.EventHandler(this.NotifyIcon1_BalloonTipClicked);
-            this.NotifyIcon1.Click += new System.EventHandler(this.NotifyIcon1_Click);
             // 
             // MainForm
             // 
@@ -57,9 +48,6 @@ namespace Crevice.UI
             this.ResumeLayout(false);
 
         }
-
         #endregion
-
-        private System.Windows.Forms.NotifyIcon NotifyIcon1;
     }
 }

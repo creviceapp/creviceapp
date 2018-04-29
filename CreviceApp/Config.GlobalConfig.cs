@@ -16,16 +16,13 @@ namespace Crevice.Config
     {
         public readonly CLIOption.Result CLIOption;
 
-        public readonly MainFormBase MainForm;
-
         public GlobalConfig()
             : this(Config.CLIOption.ParseEnvironmentCommandLine())
         { }
 
-        public GlobalConfig(CLIOption.Result cliOption, MainFormBase mainForm = null)
+        public GlobalConfig(CLIOption.Result cliOption)
         {
             CLIOption = cliOption;
-            MainForm = mainForm;
             Directory.CreateDirectory(UserDirectory);
         }
         
