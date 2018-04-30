@@ -70,8 +70,8 @@ namespace Crevice.UserScript
             _mainForm = mainForm;
         }
 
-        public MainFormBase MainForm
-            => _mainForm;
+        public void InvokeOnMainThread(Action action)
+            => _mainForm.Invoke(action);
 
         public IGestureMachine RootGestureMachine 
             => _mainForm.GestureMachine;
