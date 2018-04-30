@@ -57,10 +57,20 @@ namespace Crevice
             SetProcessPriority(cliOption.ProcessPriority);
 
             var config = new GlobalConfig(cliOption);
+            PrepareUserScript(config);
+            
             var launcherForm = new UI.LauncherForm(config);
             var mainForm = new UI.ReloadableMainForm(launcherForm);
             launcherForm.MainForm = mainForm;
             Application.Run(launcherForm);
+        }
+
+        private static void PrepareUserScript(GlobalConfig config)
+        {
+            if (!System.IO.File.Exists(config.UserScriptFile))
+            {
+                config.WriteUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            }
         }
 
         private static void SetProcessPriority(ProcessPriorityClass priority)
