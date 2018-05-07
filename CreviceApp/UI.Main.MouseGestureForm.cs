@@ -65,9 +65,12 @@ namespace Crevice.UI
             switch (m.Msg)
             {
                 case WM_DISPLAYCHANGE:
-                    Verbose.Print("WndProc: WM_DISPLAYCHANGE");
-                    GestureMachine.Reset();
-                    Verbose.Print("GestureMachine was reset.");
+                    if (GestureMachine != null)
+                    {
+                        Verbose.Print("WndProc: WM_DISPLAYCHANGE");
+                        GestureMachine?.Reset();
+                        Verbose.Print("GestureMachine was reset.");
+                    }
                     break;
             }
             base.WndProc(ref m);

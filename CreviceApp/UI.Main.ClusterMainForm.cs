@@ -36,6 +36,10 @@ namespace Crevice.UI
 
         protected override void OnShown(EventArgs e)
         {
+            if (GestureMachine == null)
+            {
+                throw new InvalidOperationException();
+            }
             Verbose.Print("CreviceApp was started.");
             UpdateTasktrayMessage(_gestureMachineCluster.Profiles);
             ShowInfoBalloon(_gestureMachineCluster);
