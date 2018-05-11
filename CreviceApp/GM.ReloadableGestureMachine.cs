@@ -218,7 +218,19 @@ namespace Crevice.GestureMachine
                 _semaphore.Wait();
                 try
                 {
-                    Instance = null;
+                    var profiles = Instance.Profiles;
+                    using (var cde = new CountdownEvent(profiles.Count))
+                    {
+                        foreach (var profile in profiles)
+                        {
+                            profile.UserConfig.Callback.MachineStop += (_s, _e) =>
+                            {
+                                cde.Signal();
+                            };
+                        }
+                        Instance = null;
+                        cde.Wait(1000);
+                    }   
                 }
                 finally
                 {

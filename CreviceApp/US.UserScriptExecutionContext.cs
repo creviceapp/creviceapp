@@ -71,7 +71,7 @@ namespace Crevice.UserScript
         }
 
         public void InvokeOnMainThread(Action action)
-            => _mainForm.Invoke(action);
+            => _mainForm.BeginInvoke(action);
 
         public IGestureMachine RootGestureMachine 
             => _mainForm.GestureMachine;
