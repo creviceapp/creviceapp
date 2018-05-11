@@ -19,6 +19,7 @@ namespace Crevice.UI
     {
         // Forcely make this application invisible from task switcher applications.
         const int WS_EX_TOOLWINDOW = 0x00000080;
+
         protected override CreateParams CreateParams
         {
             get
@@ -40,8 +41,10 @@ namespace Crevice.UI
             }
         }
 
-        public MainFormBase MainForm { get; set; }
+        private readonly DesktopBridge.Helpers DesktopBridgeHelpers = new DesktopBridge.Helpers();
 
+        public MainFormBase MainForm { get; set; }
+        
         public readonly GlobalConfig Config;
 
         public LauncherForm(GlobalConfig config)
@@ -275,8 +278,11 @@ namespace Crevice.UI
 
         private void NotifyIcon1_MouseUp(object sender, MouseEventArgs e)
         {
-            System.Reflection.MethodInfo method = typeof(NotifyIcon).GetMethod("ShowContextMenu", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            method.Invoke(notifyIcon1, null);
+            if (e.Button == MouseButtons.Left)
+            {
+                System.Reflection.MethodInfo method = typeof(NotifyIcon).GetMethod("ShowContextMenu", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                method.Invoke(notifyIcon1, null);
+            }
         }
 
         private void ContextMenu1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -293,12 +299,60 @@ namespace Crevice.UI
             }
             {
                 var item = new ToolStripMenuItem("Run on Startup");
-                item.Checked = AutoRun;
-                item.Click += (_s, _e) =>
+                if (DesktopBridgeHelpers.IsRunningAsUwp())
                 {
-                    item.Checked = !AutoRun;
-                    AutoRun = item.Checked;
-                };
+                    {
+                        var task = Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask").AsTask();
+                        task.Wait();
+                        var startupTask = task.Result;
+                        switch (startupTask.State)
+                        {
+                            case Windows.ApplicationModel.StartupTaskState.Disabled:
+                                item.Checked = false;
+                                break;
+                            case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                                item.Checked = false;
+                                break;
+                            case Windows.ApplicationModel.StartupTaskState.Enabled:
+                                item.Checked = true;
+                                break;
+                        }
+                    }
+                    item.Click += async (_s, _e) =>
+                    {
+                        var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask");
+                        if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
+                        {
+                            Verbose.Print("CreviceStartupTask(UWP) has been disabled.");
+                            startupTask.Disable();
+                            item.Checked = false;
+                        }
+                        else
+                        {
+                            var state = await startupTask.RequestEnableAsync();
+                            switch (state)
+                            {
+                                case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                                    Verbose.Print("CreviceStartupTask(UWP) has been disabled by the user.");
+                                    item.Checked = false;
+                                    break;
+                                case Windows.ApplicationModel.StartupTaskState.Enabled:
+                                    Verbose.Print("CreviceStartupTask(UWP) has been enabled.");
+                                    item.Checked = true;
+                                    break;
+                            }
+                        }
+                    };
+                }
+                else
+                {
+                    item.Checked = AutoRun;
+                    item.Click += (_s, _e) =>
+                    {
+                        item.Checked = !AutoRun;
+                        AutoRun = item.Checked;
+                    };
+                }
                 contextMenuStrip1.Items.Add(item);
             }
             {
