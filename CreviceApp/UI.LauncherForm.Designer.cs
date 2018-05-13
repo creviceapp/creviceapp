@@ -47,7 +47,6 @@
             // contextMenu1
             //
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu1_Opening);
-            //this.contextMenuStrip1.AutoClose = true;
             // 
             // LauncherForm
             // 
@@ -57,6 +56,8 @@
             this.Text = "Crevice 4";
             this.Icon = Properties.Resources.CreviceIcon;
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.ShowInTaskbar = false;
+            this.Opacity = 0;
             this.ResumeLayout(false);
         }
         #endregion
