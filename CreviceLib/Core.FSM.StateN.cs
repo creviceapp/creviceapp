@@ -128,9 +128,10 @@ namespace Crevice.Core.FSM
                     else if (CanCancel)
                     {
                         Machine.CallbackManager.OnGestureCancelled(Machine, this);
+                        return Result.Create(eventIsConsumed: true, nextState: LastState);
                     }
 
-                    if (!CanCancel && LastState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+                    if (LastState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
                     {
                         return Result.Create(eventIsConsumed: true, nextState: stateN.ToNonCancellableClone());
                     }
