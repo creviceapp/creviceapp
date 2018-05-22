@@ -162,8 +162,7 @@ namespace Crevice.Core.FSM
         {
             if (CanCancel && 
                 !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && 
-                !Machine.StrokeWatcher.StrokeIsEstablished &&
-                TryCancel())
+                !Machine.StrokeWatcher.StrokeIsEstablished)
             {
                 return LastState;
             }
@@ -176,8 +175,6 @@ namespace Crevice.Core.FSM
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }
-
-        private bool TryCancel() => !Machine.CallbackManager.OnGestureCanceling(Machine, this);
 
         private StateN<TConfig, TContextManager, TEvalContext, TExecContext> ToNonCancellableClone()
             => new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(

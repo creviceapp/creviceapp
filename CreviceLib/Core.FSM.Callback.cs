@@ -129,13 +129,6 @@ namespace Crevice.Core.Callback
             => Callback.OnStateChanged(gestureMachine, new StateChangedEventArgs(lastState, currentState));
         #endregion
 
-        #region Event GestureCanceling
-        public virtual bool OnGestureCanceling(
-            GestureMachine<TConfig, TContextManager, TEvalContext, TExecContext> gestureMachine,
-            StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
-            => false;
-        #endregion
-
         #region Event GestureCanceled
         public class GestureCanceledEventArgs : EventArgs
         {
