@@ -99,7 +99,14 @@ namespace Crevice.GestureMachine
                 var ctx = new UserScriptExecutionContext(_config, _mainForm);
                 try
                 {
+                    if (candidate.UserScriptAssemblyCache.PE.Length == 0)
+                    {
+                        Verbose.Print("User script is empty.");
+                        return new GetGestureMachineResult(candidate.Create(ctx), null, null);
+                    }
+
                     UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
+
                     if (saveCache)
                     {
                         try
