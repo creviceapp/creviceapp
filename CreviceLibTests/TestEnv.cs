@@ -124,7 +124,7 @@ namespace CreviceLibTests
         public readonly System.Threading.CountdownEvent OnGestureCancelledCDE = new System.Threading.CountdownEvent(1);
         public int OnGestureCancelCallCount { get; private set; } = 0;
 
-        public override void OnGestureCancelled(
+        public override void OnGestureCanceled(
             GestureMachine<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> testGestureMachine,
             StateN<TestGestureMachineConfig, TestContextManager, EvaluationContext, ExecutionContext> stateN)
         {
@@ -132,7 +132,7 @@ namespace CreviceLibTests
             {
                 OnGestureCancelCallCount += 1;
                 OnGestureCancelledCDE.Signal();
-                base.OnGestureCancelled(testGestureMachine, stateN);
+                base.OnGestureCanceled(testGestureMachine, stateN);
             }
         }
 

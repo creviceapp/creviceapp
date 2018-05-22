@@ -109,18 +109,36 @@ namespace Crevice.GestureMachine
             base.OnStateChanged(gestureMachine, lastState, currentState);
         }
 
-        public override void OnGestureCancelled(
+        public override bool OnGestureCanceling(
+            GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
+            StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
+        {
+            Verbose.Print("Gesture is canceling.");
+            var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
+            var abort = systemKeys.Any(key =>
+                key.KeyId == 0 || // None
+                key.KeyId == 3 || // Cancel
+                key.KeyId > 6);   // Keyboard's keys
+            Verbose.Print($"Current keys: {string.Join(", ", systemKeys)}");
+            if (abort)
+            {
+                Verbose.Print("Gesture cancellation was aborted; Gestures defined with Keyboard's keys can not be cancelled.");
+            }
+            return abort;
+        }
+        
+        public override void OnGestureCanceled(
             GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
             StateN<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> stateN)
         {
             Verbose.Print("Gesture was cancelled.");
             var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
-            _systemKeyRestorationActionExecutor.Execute(() => 
+            Verbose.Print($"Current keys: {string.Join(", ", systemKeys)}");
+            _systemKeyRestorationActionExecutor.Execute(() =>
             {
-                Verbose.Print($"Restoring press and release event: {string.Join(", ", systemKeys)}");
                 RestoreKeyPressAndReleaseEvents(systemKeys);
             });
-            base.OnGestureCancelled(gestureMachine, stateN);
+            base.OnGestureCanceled(gestureMachine, stateN);
         }
 
         public override void OnGestureTimeout(
@@ -129,9 +147,9 @@ namespace Crevice.GestureMachine
         {
             Verbose.Print("Gesture was timeout.");
             var systemKeys = stateN.History.Records.Select(r => r.ReleaseEvent.PhysicalKey as PhysicalSystemKey);
+            Verbose.Print($"Current keys: {string.Join(", ", systemKeys)}");
             _systemKeyRestorationActionExecutor.Execute(() =>
             {
-                Verbose.Print($"Restoring press event: {string.Join(", ", systemKeys)}");
                 RestoreKeyPressEvents(systemKeys);
             });
             base.OnGestureTimeout(gestureMachine, stateN);
@@ -189,7 +207,7 @@ namespace Crevice.GestureMachine
                 }
                 else
                 {
-                    SingleInputSender.ExtendedKeyDownWithScanCode(systemKey.KeyId);
+                    SingleInputSender.KeyDownWithScanCode(systemKey.KeyId);
                 }
             }
         }
@@ -225,8 +243,8 @@ namespace Crevice.GestureMachine
                 else
                 {
                     SingleInputSender.Multiple()
-                        .ExtendedKeyDownWithScanCode(systemKey.KeyId)
-                        .ExtendedKeyUpWithScanCode(systemKey.KeyId)
+                        .KeyDownWithScanCode(systemKey.KeyId)
+                        .KeyUpWithScanCode(systemKey.KeyId)
                         .Send();
                 }
             }

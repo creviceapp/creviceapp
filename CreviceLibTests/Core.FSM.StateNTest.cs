@@ -76,8 +76,7 @@ namespace CreviceLibTests
                         // Repeated start trigger.
                         doCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                        Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                        Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                        Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true); 
                         Assert.AreEqual(doCalled, false);
                     }
@@ -193,8 +192,7 @@ namespace CreviceLibTests
                         // Repeated start trigger.
                         doCalled = false;
                         var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                        Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                        Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                        Assert.AreEqual(result.NextState, s1);
                         Assert.AreEqual(result.EventIsConsumed, true);
                         Assert.AreEqual(doCalled, false);
                     }
@@ -312,8 +310,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -432,8 +429,7 @@ namespace CreviceLibTests
                         {
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -572,8 +568,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -678,8 +673,7 @@ namespace CreviceLibTests
                         {
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -804,8 +798,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(doCalled, false);
                         }
@@ -922,8 +915,7 @@ namespace CreviceLibTests
                         {
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(doCalled, false);
                         }
@@ -1058,8 +1050,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(doCalled, false);
                         }
@@ -1164,8 +1155,7 @@ namespace CreviceLibTests
                         {
                             doCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(doCalled, false);
                         }
@@ -1288,8 +1278,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -1408,8 +1397,7 @@ namespace CreviceLibTests
                         {
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -1548,8 +1536,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -1654,8 +1641,7 @@ namespace CreviceLibTests
                         {
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -1780,8 +1766,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -1890,8 +1875,7 @@ namespace CreviceLibTests
                         {
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -2010,8 +1994,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -2116,8 +2099,7 @@ namespace CreviceLibTests
                         {
                             pressCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(pressCalled, false);
                         }
@@ -2232,8 +2214,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -2342,8 +2323,7 @@ namespace CreviceLibTests
                         {
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -2462,8 +2442,7 @@ namespace CreviceLibTests
                             // Repeated start trigger.
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -2568,8 +2547,7 @@ namespace CreviceLibTests
                         {
                             releaseCalled = false;
                             var result = s1.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                            Assert.AreEqual(result.NextState.Depth, s1.Depth);
-                            Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                            Assert.AreEqual(result.NextState, s1);
                             Assert.AreEqual(result.EventIsConsumed, true);
                             Assert.AreEqual(releaseCalled, false);
                         }
@@ -2667,14 +2645,12 @@ namespace CreviceLibTests
                 Assert.AreEqual(s2 == s1, false);
                 {
                     var result = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[0].PressEvent);
-                    Assert.AreEqual(result.NextState.Depth, s2.Depth);
-                    Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                    Assert.AreEqual(result.NextState, s2);
                     Assert.AreEqual(result.EventIsConsumed, true);
                 }
                 {
                     var result = s2.Input(TestEvents.PhysicalDoubleThrowKeys0[1].PressEvent);
-                    Assert.AreEqual(result.NextState.Depth, s2.Depth);
-                    Assert.AreEqual(result.NextState.AsStateN().CanCancel, false);
+                    Assert.AreEqual(result.NextState, s2);
                     Assert.AreEqual(result.EventIsConsumed, true);
                 }
             }

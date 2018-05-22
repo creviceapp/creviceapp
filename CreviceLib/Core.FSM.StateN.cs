@@ -77,7 +77,7 @@ namespace Crevice.Core.FSM
             {
                 if (IsRepeatedStartTrigger(pressEvent))
                 {
-                    return Result.Create(eventIsConsumed: true, nextState: ToNonCancellableClone());
+                    return Result.Create(eventIsConsumed: true, nextState: this);
                 }
                 else if (IsDoubleThrowTrigger(pressEvent))
                 {
@@ -127,7 +127,7 @@ namespace Crevice.Core.FSM
                     }
                     else if (CanCancel)
                     {
-                        Machine.CallbackManager.OnGestureCancelled(Machine, this);
+                        Machine.CallbackManager.OnGestureCanceled(Machine, this);
                         return Result.Create(eventIsConsumed: true, nextState: LastState);
                     }
 
@@ -160,8 +160,10 @@ namespace Crevice.Core.FSM
 
         public override State<TConfig, TContextManager, TEvalContext, TExecContext> Timeout()
         {
-            if (CanCancel && !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && 
-                !Machine.StrokeWatcher.StrokeIsEstablished)
+            if (CanCancel && 
+                !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && 
+                !Machine.StrokeWatcher.StrokeIsEstablished &&
+                TryCancel())
             {
                 return LastState;
             }
@@ -174,6 +176,8 @@ namespace Crevice.Core.FSM
             Machine.ContextManager.ExecuteReleaseExecutors(Ctx, DoubleThrowElements);
             return LastState;
         }
+
+        private bool TryCancel() => !Machine.CallbackManager.OnGestureCanceling(Machine, this);
 
         private StateN<TConfig, TContextManager, TEvalContext, TExecContext> ToNonCancellableClone()
             => new StateN<TConfig, TContextManager, TEvalContext, TExecContext>(
