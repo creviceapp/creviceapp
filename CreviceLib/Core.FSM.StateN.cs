@@ -77,7 +77,7 @@ namespace Crevice.Core.FSM
             {
                 if (IsRepeatedStartTrigger(pressEvent))
                 {
-                    return Result.Create(eventIsConsumed: true, nextState: this);
+                    return Result.Create(eventIsConsumed: true, nextState: ToNonCancellableClone());
                 }
                 else if (IsDoubleThrowTrigger(pressEvent))
                 {
