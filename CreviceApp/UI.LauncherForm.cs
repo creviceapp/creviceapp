@@ -455,7 +455,7 @@ namespace Crevice.UI
 
         private bool IsWin7OrLower =>
             Environment.OSVersion.Version.Major < 6 ||
-            (Environment.OSVersion.Version.Major == 6 || 
+            (Environment.OSVersion.Version.Major == 6 && 
              Environment.OSVersion.Version.Minor <= 1);
     }
 }
