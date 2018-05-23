@@ -46,7 +46,14 @@
             //
             // contextMenu1
             //
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu1_Opening);
+            if (IsWin7OrLower)
+            {
+                this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu1_Opening_Win61);
+            }
+            else
+            {
+                this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu1_Opening);
+            }
             // 
             // LauncherForm
             // 

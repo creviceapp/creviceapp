@@ -392,5 +392,70 @@ namespace Crevice.UI
                 contextMenuStrip1.Items.Add(item);
             }
         }
+
+        private void ContextMenu1_Opening_Win61(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            contextMenuStrip1.Items.Clear();
+            {
+                var item = new ToolStripMenuItem($"Crevice {Application.ProductVersion}");
+                item.Click += (_s, _e) => ShowProductInfoForm();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripSeparator();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripMenuItem("Run on Startup");
+                item.Checked = AutoRun;
+                item.Click += (_s, _e) =>
+                {
+                    item.Checked = !AutoRun;
+                    AutoRun = item.Checked;
+                };
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripSeparator();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                if (!String.IsNullOrEmpty(LastErrorMessage))
+                {
+                    var item = new ToolStripMenuItem("View ErrorMessage");
+                    item.Click += (_s, _e) => OpenLastErrorMessageWithNotepad();
+                    contextMenuStrip1.Items.Add(item);
+                }
+            }
+            {
+                var item = new ToolStripMenuItem("Open Documentation");
+                item.Click += (_s, _e) => StartExternalProcess("https://creviceapp.github.io");
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripMenuItem("Open UserScript");
+                item.Click += (_s, _e) => OpenUserScriptWithExplorer();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripSeparator();
+                contextMenuStrip1.Items.Add(item);
+            }
+            {
+                var item = new ToolStripMenuItem("Exit");
+                item.Click += (_s, _e) =>
+                {
+                    Close();
+                    Application.ExitThread();
+                    Process.GetCurrentProcess().CloseMainWindow();
+                };
+                contextMenuStrip1.Items.Add(item);
+            }
+        }
+
+        private bool IsWin7OrLower =>
+            Environment.OSVersion.Version.Major < 6 ||
+            (Environment.OSVersion.Version.Major == 6 || 
+             Environment.OSVersion.Version.Minor <= 1);
     }
 }
