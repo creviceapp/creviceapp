@@ -14,7 +14,6 @@ using System.Windows.Forms;
 
 namespace Crevice.UI
 {
-    using Crevice.Logging;
     using Crevice.GestureMachine;
     using Crevice.UserScript;
 
@@ -52,44 +51,8 @@ namespace Crevice.UI
                 ShowFatalErrorDialog("SetWindowsHookEX(WH_MOUSE_LL) was failed.");
                 Application.Exit();
             }
-
-            SetupPowerModeChangedHandler();
         }
-
-        private void SetupPowerModeChangedHandler()
-        {
-            using (Verbose.PrintElapsed("SetupPowerModeChangedHandler"))
-            {
-                Microsoft.Win32.SystemEvents.PowerModeChanged += (sender, e) =>
-                {
-                    if (e.Mode == Microsoft.Win32.PowerModes.Resume)
-                    {
-                        Verbose.Print("Resume event of the sytem was detected.");
-                        try
-                        {
-                            Verbose.Print("Trying to disable the hook...");
-                            HookEnabled = false;
-                            Verbose.Print("Success.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Error($"An error was ocurred: {ex.ToString()}");
-                        }
-                        try
-                        {
-                            Verbose.Print("Trying to enable the hook...");
-                            HookEnabled = true;
-                            Verbose.Print("Success.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Verbose.Error($"An error was ocurred: {ex.ToString()}");
-                        }
-                    }
-                };
-            }
-        }
-
+        
         protected override void OnClosed(EventArgs e)
         {
             try
