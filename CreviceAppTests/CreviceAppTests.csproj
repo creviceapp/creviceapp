@@ -130,6 +130,7 @@
   <ItemGroup>
     <Compile Include="Config.GlobalConfigTests.cs" />
     <Compile Include="GM.CallbackManagerTests.cs" />
+    <Compile Include="GM.GestureMachineTests.cs" />
     <Compile Include="GM.GestureMachineCandidateTests.cs" />
     <Compile Include="US.KeysTest.cs" />
     <Compile Include="TestHelpers.cs" />

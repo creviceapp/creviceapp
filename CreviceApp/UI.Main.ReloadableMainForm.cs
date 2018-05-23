@@ -30,7 +30,15 @@ namespace Crevice.UI
         }
 
         private void ReloadGestureMachine(object source, FileSystemEventArgs e)
-            => Invoke((MethodInvoker)(() => _reloadableGestureMachine.HotReload()));
+            => Invoke((MethodInvoker)(() => 
+            {
+                Verbose.Print($"UserScript.DirectoryWatcher called ReloadGestureMachine()");
+                Verbose.Print($"ChangeType={e.ChangeType}, Path={e.FullPath}");
+                Task.Factory.StartNew(() =>
+                {
+                    _reloadableGestureMachine.HotReload();
+                });
+            }));
 
         private void SetupUserScriptWatcher()
         {
@@ -43,9 +51,9 @@ namespace Crevice.UI
         protected override void OnShown(EventArgs e)
         {
             Verbose.Print("CreviceApp was started.");
-            SetupUserScriptWatcher();
             base.OnShown(e);
             _reloadableGestureMachine.HotReload();
+            SetupUserScriptWatcher();
         }
         
         protected override void OnClosed(EventArgs e)

@@ -167,8 +167,8 @@ namespace Crevice.UserScript
             var type = userScriptAssembly.GetType("Submission#0");
             var methodInfo = type.GetMethod("<Factory>", BindingFlags.Static | BindingFlags.Public);
             var parameters = new object[] { new object[] { ctx, null } };
-            var result = methodInfo.Invoke(null, parameters);
-            await Task.WhenAny(result as Task<object>).ConfigureAwait(false);
+            var task = methodInfo.Invoke(null, parameters) as Task<object>;
+            await task.ConfigureAwait(false);
         }
 
         public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)

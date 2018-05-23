@@ -121,6 +121,11 @@ namespace Crevice.GestureMachine
                     Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
                     return new GetGestureMachineResult(candidate.Create(ctx), null, null);
                 }
+                catch (UserScript.EvaluationAbortedException ex)
+                {
+                    Verbose.Print("UserScript evaluation was aborted. {0}", ex.InnerException.ToString());
+                    return new GetGestureMachineResult(candidate.Create(ctx), null, ex.InnerException);
+                }
                 catch (Exception ex)
                 {
                     Verbose.Error("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
@@ -155,6 +160,10 @@ namespace Crevice.GestureMachine
                         try
                         {
                             var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
+
+                            if (_reloadRequest) continue;
+                            _reloadRequest = false;
+
                             if (gmCluster == null)
                             {
                                 _mainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
