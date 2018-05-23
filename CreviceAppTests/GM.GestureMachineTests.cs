@@ -17,6 +17,35 @@ namespace Crevice4Tests
     [TestClass()]
     public class GestureMachineTests
     {
+
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext context)
+        {
+            TestHelpers.MouseMutex.WaitOne();
+            TestHelpers.KeyboardMutex.WaitOne();
+        }
+
+        [ClassCleanup()]
+        public static void ClassCleanup()
+        {
+            TestHelpers.MouseMutex.ReleaseMutex();
+            TestHelpers.KeyboardMutex.ReleaseMutex();
+        }
+
+        static readonly Mutex mutex = new Mutex(true);
+
+        [TestInitialize()]
+        public void TestInitialize()
+        {
+            mutex.WaitOne();
+        }
+
+        [TestCleanup()]
+        public void TestCleanup()
+        {
+            mutex.ReleaseMutex();
+        }
+
         [TestMethod()]
         public void MouseEventTimeoutTest()
         {
@@ -120,10 +149,11 @@ namespace Crevice4Tests
 
                     Task.Delay(uc.Core.GestureTimeout + 1000).Wait();
 
+                    // This behavior is the only different point to when keyboard event is held pressing across timeout span.
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                 }
             }
             {
@@ -184,9 +214,9 @@ namespace Crevice4Tests
                     Task.Delay(uc.Core.GestureTimeout + 1000).Wait();
 
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                 }
             }
             {
@@ -247,9 +277,9 @@ namespace Crevice4Tests
                     Task.Delay(uc.Core.GestureTimeout + 1000).Wait();
 
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                 }
             }
             {
@@ -363,9 +393,9 @@ namespace Crevice4Tests
                     Task.Delay(uc.Core.GestureTimeout + 1000).Wait();
 
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                 }
             }
             {
@@ -426,9 +456,9 @@ namespace Crevice4Tests
                     Task.Delay(uc.Core.GestureTimeout + 1000).Wait();
 
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                     res = gm.Input(SupportedKeys.PhysicalKeys.LButton.PressEvent);
-                    Assert.AreEqual(res, false);
+                    Assert.AreEqual(res, true);
                 }
             }
             {
