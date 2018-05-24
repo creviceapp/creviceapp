@@ -152,7 +152,7 @@ namespace Crevice.WinAPI.SendInput
                     var data = item.v.data.asMouseInput;
                     var eventType = (MouseEventType)data.dwFlags;
 
-                    log.Add($"MouseEvent ({item.i + 1} / {input.Length})");
+                    log.Add($"MouseEvent ({item.i + 1}/{input.Length})");
                     log.Add($"dx: {data.dx}");
                     log.Add($"dy: {data.dy}");
                     log.Add($"dwFlags: {eventType} | {ToHexString(data.dwFlags)}");
