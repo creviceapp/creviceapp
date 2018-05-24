@@ -285,172 +285,183 @@ namespace Crevice.UI
             }
         }
 
-        private void ContextMenu1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void ClearContextMenu()
         {
             contextMenuStrip1.Items.Clear();
+        }
+
+        private void RegisterContextMenuItems0()
+        {
+            var item = new ToolStripMenuItem($"Crevice {Application.ProductVersion}");
+            item.Click += (_s, _e) => ShowProductInfoForm();
+            contextMenuStrip1.Items.Add(item);
+        }
+        
+        private void RegisterContextMenuItems1()
+        {
+            var item = new ToolStripSeparator();
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems2()
+        {
+            var item = new ToolStripMenuItem("Run on Startup");
+            if (DesktopBridgeHelpers.IsRunningAsUwp())
             {
-                var item = new ToolStripMenuItem($"Crevice {Application.ProductVersion}");
-                item.Click += (_s, _e) => ShowProductInfoForm();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripSeparator();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripMenuItem("Run on Startup");
-                if (DesktopBridgeHelpers.IsRunningAsUwp())
                 {
+                    var task = Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask").AsTask();
+                    task.Wait();
+                    var startupTask = task.Result;
+                    switch (startupTask.State)
                     {
-                        var task = Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask").AsTask();
-                        task.Wait();
-                        var startupTask = task.Result;
-                        switch (startupTask.State)
+                        case Windows.ApplicationModel.StartupTaskState.Disabled:
+                            item.Checked = false;
+                            break;
+                        case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                            item.Checked = false;
+                            break;
+                        case Windows.ApplicationModel.StartupTaskState.Enabled:
+                            item.Checked = true;
+                            break;
+                    }
+                }
+                item.Click += async (_s, _e) =>
+                {
+                    var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask");
+                    if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
+                    {
+                        Verbose.Print("CreviceStartupTask(UWP) has been disabled.");
+                        startupTask.Disable();
+                        item.Checked = false;
+                    }
+                    else
+                    {
+                        var state = await startupTask.RequestEnableAsync();
+                        switch (state)
                         {
-                            case Windows.ApplicationModel.StartupTaskState.Disabled:
-                                item.Checked = false;
-                                break;
                             case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                                Verbose.Print("CreviceStartupTask(UWP) has been disabled by the user.");
                                 item.Checked = false;
                                 break;
                             case Windows.ApplicationModel.StartupTaskState.Enabled:
+                                Verbose.Print("CreviceStartupTask(UWP) has been enabled.");
                                 item.Checked = true;
                                 break;
                         }
                     }
-                    item.Click += async (_s, _e) =>
-                    {
-                        var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask");
-                        if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
-                        {
-                            Verbose.Print("CreviceStartupTask(UWP) has been disabled.");
-                            startupTask.Disable();
-                            item.Checked = false;
-                        }
-                        else
-                        {
-                            var state = await startupTask.RequestEnableAsync();
-                            switch (state)
-                            {
-                                case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                                    Verbose.Print("CreviceStartupTask(UWP) has been disabled by the user.");
-                                    item.Checked = false;
-                                    break;
-                                case Windows.ApplicationModel.StartupTaskState.Enabled:
-                                    Verbose.Print("CreviceStartupTask(UWP) has been enabled.");
-                                    item.Checked = true;
-                                    break;
-                            }
-                        }
-                    };
-                }
-                else
-                {
-                    item.Checked = AutoRun;
-                    item.Click += (_s, _e) =>
-                    {
-                        item.Checked = !AutoRun;
-                        AutoRun = item.Checked;
-                    };
-                }
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripSeparator();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                if (!String.IsNullOrEmpty(LastErrorMessage))
-                {
-                    var item = new ToolStripMenuItem("View ErrorMessage");
-                    item.Click += (_s, _e) => OpenLastErrorMessageWithNotepad();
-                    contextMenuStrip1.Items.Add(item);
-                }
-            }
-            {
-                var item = new ToolStripMenuItem("Open Documentation");
-                item.Click += (_s, _e) => StartExternalProcess("https://creviceapp.github.io");
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripMenuItem("Open UserScript");
-                item.Click += (_s, _e) => OpenUserScriptWithExplorer();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripSeparator();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripMenuItem("Exit");
-                item.Click += (_s, _e) => 
-                {
-                    Close();
-                    Application.ExitThread();
-                    Process.GetCurrentProcess().CloseMainWindow();
+                    contextMenuStrip1.Show();
                 };
-                contextMenuStrip1.Items.Add(item);
             }
-        }
-
-        private void ContextMenu1_Opening_Win61(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            contextMenuStrip1.Items.Clear();
+            else
             {
-                var item = new ToolStripMenuItem($"Crevice {Application.ProductVersion}");
-                item.Click += (_s, _e) => ShowProductInfoForm();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripSeparator();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripMenuItem("Run on Startup");
                 item.Checked = AutoRun;
                 item.Click += (_s, _e) =>
                 {
                     item.Checked = !AutoRun;
                     AutoRun = item.Checked;
+                    contextMenuStrip1.Show();
                 };
+            }
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems2_Win61()
+        {
+            var item = new ToolStripMenuItem("Run on Startup");
+            item.Checked = AutoRun;
+            item.Click += (_s, _e) =>
+            {
+                item.Checked = !AutoRun;
+                AutoRun = item.Checked;
+                contextMenuStrip1.Show();
+            };
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems3()
+        {
+            var item = new ToolStripSeparator();
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems4()
+        {
+            if (!String.IsNullOrEmpty(LastErrorMessage))
+            {
+                var item = new ToolStripMenuItem("View ErrorMessage");
+                item.Click += (_s, _e) => OpenLastErrorMessageWithNotepad();
                 contextMenuStrip1.Items.Add(item);
             }
+        }
+
+        private void RegisterContextMenuItems5()
+        {
+            var item = new ToolStripMenuItem("Open Documentation");
+            item.Click += (_s, _e) => StartExternalProcess("https://creviceapp.github.io");
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems6()
+        {
+            var item = new ToolStripMenuItem("Open UserScript");
+            item.Click += (_s, _e) => OpenUserScriptWithExplorer();
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems7()
+        {
+            var item = new ToolStripSeparator();
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void RegisterContextMenuItems8()
+        {
+            var item = new ToolStripMenuItem("Exit");
+            item.Click += (_s, _e) =>
             {
-                var item = new ToolStripSeparator();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                if (!String.IsNullOrEmpty(LastErrorMessage))
-                {
-                    var item = new ToolStripMenuItem("View ErrorMessage");
-                    item.Click += (_s, _e) => OpenLastErrorMessageWithNotepad();
-                    contextMenuStrip1.Items.Add(item);
-                }
-            }
-            {
-                var item = new ToolStripMenuItem("Open Documentation");
-                item.Click += (_s, _e) => StartExternalProcess("https://creviceapp.github.io");
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripMenuItem("Open UserScript");
-                item.Click += (_s, _e) => OpenUserScriptWithExplorer();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripSeparator();
-                contextMenuStrip1.Items.Add(item);
-            }
-            {
-                var item = new ToolStripMenuItem("Exit");
-                item.Click += (_s, _e) =>
-                {
-                    Close();
-                    Application.ExitThread();
-                    Process.GetCurrentProcess().CloseMainWindow();
-                };
-                contextMenuStrip1.Items.Add(item);
-            }
+                Close();
+                Application.ExitThread();
+                Process.GetCurrentProcess().CloseMainWindow();
+            };
+            contextMenuStrip1.Items.Add(item);
+        }
+
+        private void ResetContextMenu()
+        {
+            ClearContextMenu();
+            RegisterContextMenuItems0();
+            RegisterContextMenuItems1();
+            RegisterContextMenuItems2();
+            RegisterContextMenuItems3();
+            RegisterContextMenuItems4();
+            RegisterContextMenuItems5();
+            RegisterContextMenuItems6();
+            RegisterContextMenuItems7();
+            RegisterContextMenuItems8();
+        }
+        
+        private void ContextMenu1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ResetContextMenu();
+        }
+
+        private void ResetContextMenu_Win61()
+        {
+            ClearContextMenu();
+            RegisterContextMenuItems0();
+            RegisterContextMenuItems1();
+            RegisterContextMenuItems2_Win61();
+            RegisterContextMenuItems3();
+            RegisterContextMenuItems4();
+            RegisterContextMenuItems5();
+            RegisterContextMenuItems6();
+            RegisterContextMenuItems7();
+            RegisterContextMenuItems8();
+        }
+
+        private void ContextMenu1_Opening_Win61(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ResetContextMenu_Win61();
         }
 
         private bool IsWin7OrLower =>

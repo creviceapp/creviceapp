@@ -48,10 +48,12 @@
             //
             if (IsWin7OrLower)
             {
+                ResetContextMenu_Win61();
                 this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu1_Opening_Win61);
             }
             else
             {
+                ResetContextMenu();
                 this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu1_Opening);
             }
             // 
