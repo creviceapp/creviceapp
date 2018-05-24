@@ -71,9 +71,9 @@ namespace Crevice.GestureMachine
                 _config.UserScriptCacheFile,
                 allowRestore: restoreFromCache);
 
-            Verbose.Print("restoreFromCache: {0}", restoreFromCache);
-            Verbose.Print("saveCache: {0}", saveCache);
-            Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
+            Verbose.Print($"restoreFromCache: {restoreFromCache}");
+            Verbose.Print($"saveCache: {saveCache}");
+            Verbose.Print($"candidate.IsRestorable: {candidate.IsRestorable}");
             
             if (candidate.IsRestorable)
             {
@@ -84,7 +84,7 @@ namespace Crevice.GestureMachine
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Error("GestureMachine restoration was failed; fallback to normal compilation. {0}", ex.ToString());
+                    Verbose.Error($"GestureMachine restoration was failed; fallback to normal compilation. {ex.ToString()}");
                 }
             }
 
@@ -115,7 +115,7 @@ namespace Crevice.GestureMachine
                         }
                         catch (Exception ex)
                         {
-                            Verbose.Error("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
+                            Verbose.Error($"SaveUserScriptAssemblyCache was failed. {ex.ToString()}");
                         }
                     }
                     Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
@@ -123,12 +123,12 @@ namespace Crevice.GestureMachine
                 }
                 catch (UserScript.EvaluationAbortedException ex)
                 {
-                    Verbose.Print("UserScript evaluation was aborted. {0}", ex.InnerException.ToString());
+                    Verbose.Print($"UserScript evaluation was aborted. {ex.InnerException.ToString()}");
                     return new GetGestureMachineResult(candidate.Create(ctx), null, ex.InnerException);
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Error("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
+                    Verbose.Error($"Error ocurred in the UserScript on evaluation phase. {ex.ToString()}");
                     return new GetGestureMachineResult(candidate.Create(ctx), null, ex);
                 }
             }
@@ -211,9 +211,10 @@ namespace Crevice.GestureMachine
         {
             using (Verbose.PrintElapsed("Release unused memory"))
             {
-                var totalMemory = GC.GetTotalMemory(false);
+                var before = GC.GetTotalMemory(false);
                 GC.Collect(2);
-                Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
+                var after = GC.GetTotalMemory(false);
+                Verbose.Print($"GC.GetTotalMemory: {before} -> {after}");
             }
         }
         

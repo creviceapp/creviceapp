@@ -36,7 +36,7 @@ namespace Crevice.UI
             get { return _lastErrorMessage; }
             set
             {
-                Verbose.Print("LastErrorMessage: {0}", value);
+                Verbose.Print($"LastErrorMessage was set to \"{value}\"");
                 _lastErrorMessage = value;
             }
         }
@@ -93,7 +93,7 @@ namespace Crevice.UI
                         }
                         catch (ArgumentException ex)
                         {
-                            Verbose.Error("An exception was thrown while writing registory value: {0}", ex.ToString());
+                            Verbose.Error($"An exception was thrown while writing registory value: {ex.ToString()}");
                         }
                     }
                     registry.Close();
@@ -171,7 +171,7 @@ namespace Crevice.UI
         {
             InvokeProperly(delegate ()
             {
-                Verbose.Print("ShowTooltip: {0}", text);
+                Verbose.Print($"ShowTooltip: {text}");
                 tooltip1.Show(text, point, duration);
             });
         }
@@ -180,7 +180,7 @@ namespace Crevice.UI
         {
             InvokeProperly(delegate ()
             {
-                Verbose.Print("ShowBalloon: {0}", text);
+                Verbose.Print($"ShowBalloon: {text}");
                 if (!Config.CLIOption.NoGUI)
                 {
                     notifyIcon1.BalloonTipText = text;
@@ -199,16 +199,14 @@ namespace Crevice.UI
                 {
                     try
                     {
-                        using (Verbose.PrintElapsed(
-                            "StartExternalProcess(filename={0})",
-                            fileName))
+                        using (Verbose.PrintElapsed($"StartExternalProcess(filename={fileName})"))
                         {
                             Process.Start(fileName);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Verbose.Error("An exception was thrown while executing an external process: {0}", ex.ToString());
+                        Verbose.Error($"An exception was thrown while executing an external process: {ex.ToString()}");
                     }
                 });
             }
@@ -222,17 +220,14 @@ namespace Crevice.UI
                 {
                     try
                     {
-                        using (Verbose.PrintElapsed(
-                            "StartExternalProcess(filename={0}, arguments={1})",
-                            fileName,
-                            arguments))
+                        using (Verbose.PrintElapsed($"StartExternalProcess(filename={fileName}, arguments={arguments})"))
                         {
                             Process.Start(fileName, arguments);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Verbose.Error("An exception was thrown while executing an external process: {0}", ex.ToString());
+                        Verbose.Error($"An exception was thrown while executing an external process: {ex.ToString()}");
                     }
                 });
             }
@@ -247,7 +242,7 @@ namespace Crevice.UI
             }
             catch (Exception ex)
             {
-                Verbose.Error("An exception was thrown while writing a file: {0}", ex.ToString());
+                Verbose.Error($"An exception was thrown while writing a file: {ex.ToString()}");
             }
         }
 

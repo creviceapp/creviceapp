@@ -96,7 +96,7 @@ namespace Crevice.GestureMachine
                 strokes
                 .Select(s => s.Points.Count.ToString())
                 .Aggregate((a, b) => a + ", " + b);
-            Verbose.Print("Stroke was updated; Directions={0}, Points={1}", strokeString, strokePoints);
+            Verbose.Print($"Stroke was updated; Directions={strokeString}, Points={strokePoints}");
             base.OnStrokeUpdated(strokeWatcher, strokes);
         }
 
@@ -107,7 +107,7 @@ namespace Crevice.GestureMachine
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> lastState, 
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> currentState)
         {
-            Verbose.Print("State was changed; CurrentState={0}", currentState);
+            Verbose.Print($"State was changed; CurrentState={currentState}");
             if (lastState != null && lastState.IsState0 && currentState.IsStateN)
             {
                 Verbose.Print("TimeoutKeyboardKeys was cleared.");
@@ -156,7 +156,7 @@ namespace Crevice.GestureMachine
             GestureMachine<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> gestureMachine,
             State<GestureMachineConfig, ContextManager, EvaluationContext, ExecutionContext> state)
         {
-            Verbose.Print("GestureMachine was reset; LastState={0}", state);
+            Verbose.Print($"GestureMachine was reset; LastState={state}");
             base.OnMachineReset(gestureMachine, state);
         }
 

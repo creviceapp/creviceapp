@@ -25,36 +25,33 @@ namespace Crevice.WinAPI.Helper
         private readonly StringBuilder buffer = new StringBuilder();
         public WinAPILogger(string name)
         {
-            Add("Calling a native method: {0}", name);
+            Add($"Calling a Win32 native API: {name}");
         }
 
-        public void Add(string str)
+        public void Add(string str, bool omitNewline = false)
         {
             buffer.AppendFormat(str);
-            buffer.AppendLine();
+            if (!omitNewline)
+            {
+                buffer.AppendLine();
+            }
         }
         
-        public void Add(string str, params object[] objects)
-        {
-            buffer.AppendFormat(str, objects);
-            buffer.AppendLine();
-        }
-
         public void Success()
         {
-            Add("Success");
+            Add("Result: Success", omitNewline: true);
             Verbose.Print(buffer.ToString());
         }
 
         public void Fail()
         {
-            Add("Failed");
+            Add("Result: Fail", omitNewline: true);
             Verbose.Print(buffer.ToString());
         }
 
         public void FailWithErrorCode()
         {
-            Add("Failed; ErrorCode: {0}", Marshal.GetLastWin32Error());
+            Add($"Result: Fail (ErrorCode={Marshal.GetLastWin32Error()})", omitNewline: true);
             Verbose.Print(buffer.ToString());
         }
     }

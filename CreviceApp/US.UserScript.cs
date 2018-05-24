@@ -198,7 +198,7 @@ namespace Crevice.UserScript
             {
                 if (!File.Exists(cachePath))
                 {
-                    Verbose.Print("UserScriptCacheFile: '{0}' did not exist.", cachePath);
+                    Verbose.Print($"UserScriptCacheFile: \"{cachePath}\" did not exist.");
                     return null;
                 }
                 try
@@ -213,7 +213,7 @@ namespace Crevice.UserScript
                 }
                 catch (System.Runtime.Serialization.SerializationException ex)
                 {
-                    Verbose.Error("An exception was thrown: {0}", ex.ToString());
+                    Verbose.Error($"An exception was thrown: {ex.ToString()}");
                 }
                 return null;
             }

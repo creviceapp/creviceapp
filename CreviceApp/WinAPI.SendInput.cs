@@ -152,29 +152,29 @@ namespace Crevice.WinAPI.SendInput
                     var data = item.v.data.asMouseInput;
                     var eventType = (MouseEventType)data.dwFlags;
 
-                    log.Add("MouseEvent[{0}]:", item.i);
-                    log.Add("dx: {0}", data.dx);
-                    log.Add("dy: {0}", data.dy);
-                    log.Add("dwFlags: {0} | {1}", eventType, ToHexString(data.dwFlags));
+                    log.Add($"MouseEvent ({item.i + 1} / {input.Length})");
+                    log.Add($"dx: {data.dx}");
+                    log.Add($"dy: {data.dy}");
+                    log.Add($"dwFlags: {eventType} | {ToHexString(data.dwFlags)}");
                     if (eventType.HasFlag(MouseEventType.MOUSEEVENTF_XDOWN | MouseEventType.MOUSEEVENTF_XUP))
                     {
-                        log.Add("mouseData: {0} | {1}", (XButtonType)data.mouseData.asXButton.type, ToHexString((uint)data.mouseData.asXButton.type));
+                        log.Add($"mouseData: {(XButtonType)data.mouseData.asXButton.type} | {ToHexString((uint)data.mouseData.asXButton.type)}");
                     } 
                     else if (eventType.HasFlag(MouseEventType.MOUSEEVENTF_WHEEL | MouseEventType.MOUSEEVENTF_HWHEEL))
                     {
-                        log.Add("mouseData: {0} | {1}", data.mouseData.asWheelDelta.delta, ToHexString((uint)data.mouseData.asWheelDelta.delta));
+                        log.Add($"mouseData: {data.mouseData.asWheelDelta.delta} | {ToHexString((uint)data.mouseData.asWheelDelta.delta)}");
                     }
-                    log.Add("dwExtraInfo: {0}", ToHexString(data.dwExtraInfo.ToUInt64()));
+                    log.Add($"dwExtraInfo: {ToHexString(data.dwExtraInfo.ToUInt64())}");
                 }
                 else if (inputType.HasFlag(InputType.INPUT_KEYBOARD))
                 {
                     var data = item.v.data.asKeyboardInput;
                     var eventType = (KeyboardEventType)data.dwFlags;
-                    log.Add("KeyboardEvent[{0}]:", item.i);
-                    log.Add("wVk: {0}", data.wVk);
-                    log.Add("wScan: {0}", data.wScan);
-                    log.Add("dwFlags: {0} | {1}", eventType, ToHexString(data.dwFlags));
-                    log.Add("dwExtraInfo: {0}", ToHexString(data.dwExtraInfo.ToUInt64()));
+                    log.Add($"KeyboardEvent ({item.i + 1}/{input.Length})");
+                    log.Add($"wVk: {data.wVk}");
+                    log.Add($"wScan: {data.wScan}");
+                    log.Add($"dwFlags: {eventType} | {ToHexString(data.dwFlags)}");
+                    log.Add($"dwExtraInfo: {ToHexString(data.dwExtraInfo.ToUInt64())}");
                 }
             }
             if (NativeMethods.SendInput((uint)input.Length, input, Marshal.SizeOf(input[0])) > 0)

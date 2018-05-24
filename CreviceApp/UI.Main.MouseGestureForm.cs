@@ -80,11 +80,10 @@ namespace Crevice.UI
         {
             if (data.FromCreviceApp)
             {
-                Verbose.Print("KeyboardEvent(vkCode={0}, event={1}, dwExtraInfo={2}) " +
-                    "was passed to the next hook because this event has the signature of CreviceApp",
-                    data.vkCode,
-                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
+                Verbose.Print($"KeyboardEvent(vkCode={data.vkCode}, " +
+                    $"event={Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt)}, " +
+                    $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
+                    $"was passed to the next hook because this event has the signature of CreviceApp");
                 return WindowsHook.Result.Transfer;
             }
 
@@ -117,18 +116,16 @@ namespace Crevice.UI
         {
             if (data.FromCreviceApp)
             {
-                Verbose.Print("KeyboardEvent(event={0}, dwExtraInfo={1}) " +
-                    "was passed to the next hook because this event has the signature of CreviceApp",
-                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
+                Verbose.Print($"KeyboardEvent(event={Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt)}, " +
+                    $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
+                    "was passed to the next hook because this event has the signature of CreviceApp");
                 return WindowsHook.Result.Transfer;
             }
             else if (data.FromTablet)
             {
-                Verbose.Print("KeyboardEvent(event={0}, dwExtraInfo={1}) " +
-                   "was passed to the next hook because this event has the signature of Tablet",
-                   Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                   BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
+                Verbose.Print($"KeyboardEvent(event={Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt)}, " +
+                    $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
+                   "was passed to the next hook because this event has the signature of Tablet");
                 return WindowsHook.Result.Transfer;
             }
 

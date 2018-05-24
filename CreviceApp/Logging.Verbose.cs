@@ -11,25 +11,25 @@ namespace Crevice.Logging
     {
         public class ElapsedTimePrinter : IDisposable
         {
-            public string Message { get; private set; }
+            public readonly string Message;
 
             private readonly Stopwatch _stopwatch = new Stopwatch();
 
             public ElapsedTimePrinter(string message)
             {
-                Message = string.Format("[{0}]", message);
+                Message = $"[{message}]";
                 PrintStartMessage();
                 _stopwatch.Start();
             }
 
             private void PrintStartMessage()
             {
-                Print("{0} was started.", Message);
+                Print($"{Message} was started.");
             }
 
             private void PrintFinishMessage()
             {
-                Print("{0} was finished. ({1})", Message, _stopwatch.Elapsed);
+                Print($"{Message} was finished. ({_stopwatch.Elapsed})");
             }
 
             public void Dispose()
@@ -57,40 +57,45 @@ namespace Crevice.Logging
             Enabled = true;
         }
         
-        public static void Print(string message)
+        public static void Print(string message, bool omitNewline = false)
         {
             Debug.Print(message);
             if (Enabled)
             {
                 try
                 {
-                    Console.WriteLine(message);
+                    if (omitNewline)
+                    {
+                        Console.Write(message);
+                    }
+                    else
+                    {
+                        Console.WriteLine(message);
+                    }
                 }
                 catch (System.IO.IOException) {}
                 catch (UnauthorizedAccessException) {}
             }
         }
 
-        public static void Print(string template, params object[] objects)
-            => Print(string.Format(template, objects));
-
-        public static ElapsedTimePrinter PrintElapsed(string message)
-            => new ElapsedTimePrinter(message);
-
-        public static ElapsedTimePrinter PrintElapsed(string template, params object[] objects)
-            => new ElapsedTimePrinter(string.Format(template, objects));
-
-        public static void Error(string message)
+        public static void Error(string message, bool omitPrefix = false, bool omitNewline = false)
         {
-            var errorMessage = string.Format("[Error]{0}", message);
+            var errorMessage = omitPrefix ? message : $"[Error] {message}";
             Debug.Print(errorMessage);
             if (Enabled)
             {
-                Console.Error.WriteLine(errorMessage);
+                if (omitNewline)
+                {
+                    Console.Error.Write(errorMessage);
+                }
+                else
+                {
+                    Console.Error.WriteLine(errorMessage);
+                }
             }
         }
 
-        public static void Error(string template, params object[] objects)
-            => Error(string.Format(template, objects));
+        public static ElapsedTimePrinter PrintElapsed(string message)
+            => new ElapsedTimePrinter(message);
     }
 }
