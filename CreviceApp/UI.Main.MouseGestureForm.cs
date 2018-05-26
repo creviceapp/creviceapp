@@ -116,14 +116,14 @@ namespace Crevice.UI
         {
             if (data.FromCreviceApp)
             {
-                Verbose.Print($"KeyboardEvent(event={Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt)}, " +
+                Verbose.Print($"MouseEvent(event={Enum.GetName(typeof(LowLevelMouseHook.Event), evnt)}, " +
                     $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
                     "was passed to the next hook because this event has the signature of CreviceApp");
                 return WindowsHook.Result.Transfer;
             }
             else if (data.FromTablet)
             {
-                Verbose.Print($"KeyboardEvent(event={Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt)}, " +
+                Verbose.Print($"MouseEvent(event={Enum.GetName(typeof(LowLevelMouseHook.Event), evnt)}, " +
                     $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
                    "was passed to the next hook because this event has the signature of Tablet");
                 return WindowsHook.Result.Transfer;
