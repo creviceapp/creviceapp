@@ -320,7 +320,17 @@ namespace Crevice.WinAPI.Window
 
         public class PointedWindowInfo : WindowInfo
         {
-            public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point)) { }
+            private readonly Point point;
+
+            public IReadOnlyList<WindowInfo> GetPointedDescendantWindows()
+            {
+                return new Enumerables.PointedDescendantWindows(WindowHandle, point, Window.WindowFromPointFlags.CWP_ALL).ToList();
+            }
+
+            public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point))
+            {
+                this.point = point;
+            }
         }
 
         namespace Enumerables
