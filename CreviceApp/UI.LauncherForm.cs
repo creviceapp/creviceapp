@@ -278,6 +278,10 @@ namespace Crevice.UI
             OpenLastErrorMessageWithNotepad();
         }
 
+        /// <summary>
+        /// This function calcurate the preferred direction for showing <c>ContextMenuStrip</c> based on the position of the cursor.
+        /// </summary>
+        /// <returns>Preferred <c>ToolStripDropDownDirection</c>.</returns>
         private ToolStripDropDownDirection GetPreferredToolStripDropDownDirection()
         {
             var cursor = Cursor.Position;
@@ -296,6 +300,13 @@ namespace Crevice.UI
 
         private void NotifyIcon1_MouseUp(object sender, MouseEventArgs e)
         {
+            ShowContextMenu();
+        }
+
+        private void ShowContextMenu()
+        {
+            // `ContextMenuStrip` must be set as the foreground window before `Show()` is called, otherwise,
+            // it will be shown on the top most and never to be hidden even if other window or desktop is clicked until once it is clicked.
             NativeMethods.SetForegroundWindow(new HandleRef(contextMenuStrip1, contextMenuStrip1.Handle));
             contextMenuStrip1.Show(Cursor.Position, GetPreferredToolStripDropDownDirection());
         }
@@ -308,7 +319,7 @@ namespace Crevice.UI
         private void RegisterContextMenuItems0()
         {
             var item = new ToolStripMenuItem($"Crevice {Application.ProductVersion}");
-            item.Click += (_s, _e) => ShowProductInfoForm();
+            item.Click += (sender, e) => ShowProductInfoForm();
             contextMenuStrip1.Items.Add(item);
         }
         
@@ -317,79 +328,91 @@ namespace Crevice.UI
             var item = new ToolStripSeparator();
             contextMenuStrip1.Items.Add(item);
         }
+        
+        private void RegisterContextMenuUwpStartup(ToolStripMenuItem item)
+        {
+            {
+                var task = Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask").AsTask();
+                task.Wait();
+                var startupTask = task.Result;
+                switch (startupTask.State)
+                {
+                    case Windows.ApplicationModel.StartupTaskState.Disabled:
+                        item.Checked = false;
+                        break;
+                    case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                        item.Checked = false;
+                        break;
+                    case Windows.ApplicationModel.StartupTaskState.Enabled:
+                        item.Checked = true;
+                        break;
+                }
+            }
+            item.Click += async (sender, e) =>
+            {
+                var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask");
+                if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
+                {
+                    Verbose.Print("CreviceStartupTask(UWP) has been disabled.");
+                    startupTask.Disable();
+                    item.Checked = false;
+                }
+                else
+                {
+                    var state = await startupTask.RequestEnableAsync();
+                    switch (state)
+                    {
+                        case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                            Verbose.Print("CreviceStartupTask(UWP) has been disabled by the user.");
+                            item.Checked = false;
+                            break;
+                        case Windows.ApplicationModel.StartupTaskState.Enabled:
+                            Verbose.Print("CreviceStartupTask(UWP) has been enabled.");
+                            item.Checked = true;
+                            break;
+                    }
+                }
+            };
+        }
 
+        private void RegisterContextMenuRegistoryStartup(ToolStripMenuItem item)
+        {
+            item.Checked = AutoRun;
+            item.Click += (sender, e) =>
+            {
+                item.Checked = !AutoRun;
+                AutoRun = item.Checked;
+            };
+        }
+
+        /// <summary>
+        /// This is a function for Windows 8 or later. Under those environment, 
+        /// this function must be used instead of <c>RegisterContextMenuItems2()</c>. Otherwise, application 
+        /// will cause a runtime error.
+        /// </summary>
         private void RegisterContextMenuItems2()
         {
             var item = new ToolStripMenuItem("Run on Startup");
             if (DesktopBridgeHelpers.IsRunningAsUwp())
             {
-                {
-                    var task = Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask").AsTask();
-                    task.Wait();
-                    var startupTask = task.Result;
-                    switch (startupTask.State)
-                    {
-                        case Windows.ApplicationModel.StartupTaskState.Disabled:
-                            item.Checked = false;
-                            break;
-                        case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                            item.Checked = false;
-                            break;
-                        case Windows.ApplicationModel.StartupTaskState.Enabled:
-                            item.Checked = true;
-                            break;
-                    }
-                }
-                item.Click += async (_s, _e) =>
-                {
-                    var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync("CreviceStartupTask");
-                    if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
-                    {
-                        Verbose.Print("CreviceStartupTask(UWP) has been disabled.");
-                        startupTask.Disable();
-                        item.Checked = false;
-                    }
-                    else
-                    {
-                        var state = await startupTask.RequestEnableAsync();
-                        switch (state)
-                        {
-                            case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                                Verbose.Print("CreviceStartupTask(UWP) has been disabled by the user.");
-                                item.Checked = false;
-                                break;
-                            case Windows.ApplicationModel.StartupTaskState.Enabled:
-                                Verbose.Print("CreviceStartupTask(UWP) has been enabled.");
-                                item.Checked = true;
-                                break;
-                        }
-                    }
-                    contextMenuStrip1.Show();
-                };
+                RegisterContextMenuUwpStartup(item);
             }
             else
             {
-                item.Checked = AutoRun;
-                item.Click += (_s, _e) =>
-                {
-                    item.Checked = !AutoRun;
-                    AutoRun = item.Checked;
-                    contextMenuStrip1.Show();
-                };
+                RegisterContextMenuRegistoryStartup(item);
             }
             contextMenuStrip1.Items.Add(item);
         }
 
+        /// <summary>
+        /// This is a specialized function for Windows 7 or earlier. Under those environment, 
+        /// this function must be used instead of <c>RegisterContextMenuItems2()</c>. Otherwise, application 
+        /// will cause a runtime error.
+        /// </summary>
         private void RegisterContextMenuItems2_Win61()
         {
             var item = new ToolStripMenuItem("Run on Startup");
-            item.Checked = AutoRun;
-            item.Click += (_s, _e) =>
-            {
-                item.Checked = !AutoRun;
-                AutoRun = item.Checked;
-                contextMenuStrip1.Show();
-            };
+            RegisterContextMenuRegistoryStartup(item);
             contextMenuStrip1.Items.Add(item);
         }
 
@@ -404,7 +427,7 @@ namespace Crevice.UI
             if (!String.IsNullOrEmpty(LastErrorMessage))
             {
                 var item = new ToolStripMenuItem("View ErrorMessage");
-                item.Click += (_s, _e) => OpenLastErrorMessageWithNotepad();
+                item.Click += (sender, e) => OpenLastErrorMessageWithNotepad();
                 contextMenuStrip1.Items.Add(item);
             }
         }
@@ -412,14 +435,14 @@ namespace Crevice.UI
         private void RegisterContextMenuItems5()
         {
             var item = new ToolStripMenuItem("Open Documentation");
-            item.Click += (_s, _e) => StartExternalProcess("https://creviceapp.github.io");
+            item.Click += (sender, e) => StartExternalProcess("https://creviceapp.github.io");
             contextMenuStrip1.Items.Add(item);
         }
 
         private void RegisterContextMenuItems6()
         {
             var item = new ToolStripMenuItem("Open UserScript");
-            item.Click += (_s, _e) => OpenUserScriptWithExplorer();
+            item.Click += (sender, e) => OpenUserScriptWithExplorer();
             contextMenuStrip1.Items.Add(item);
         }
 
@@ -432,7 +455,7 @@ namespace Crevice.UI
         private void RegisterContextMenuItems8()
         {
             var item = new ToolStripMenuItem("Exit");
-            item.Click += (_s, _e) =>
+            item.Click += (sender, e) =>
             {
                 Close();
                 Application.ExitThread();
