@@ -166,6 +166,10 @@ var Taskbar = When(ctx =>
 {
     return ctx.PointedWindow.ModuleName == "explorer.exe" &&
               (ctx.PointedWindow.ClassName == "MSTaskListWClass" ||
+               ctx.PointedWindow.ClassName == "IMEModeButton" ||
+               ctx.PointedWindow.ClassName == "Button" ||
+               ctx.PointedWindow.ClassName == "ToolbarWindow32" ||
+               ctx.PointedWindow.ClassName == "InputIndicatorButton" ||
                ctx.PointedWindow.ClassName == "TrayShowDesktopButtonWClass" ||
                ctx.PointedWindow.ClassName == "TrayButton" ||
                ctx.PointedWindow.ClassName == "TrayClockWClass" ||
