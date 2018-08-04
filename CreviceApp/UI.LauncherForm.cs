@@ -12,11 +12,18 @@ using System.Windows.Forms;
 namespace Crevice.UI
 {
     using System.IO;
+    using System.Runtime.InteropServices;
     using Crevice.Logging;
     using Crevice.Config;
 
     public partial class LauncherForm : Form
     {
+        static class NativeMethods
+        {
+            [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+            public static extern bool SetForegroundWindow(HandleRef hWnd);
+        }
+        
         // Forcely make this application invisible from task switcher applications.
         const int WS_EX_TOOLWINDOW = 0x00000080;
 
@@ -271,13 +278,26 @@ namespace Crevice.UI
             OpenLastErrorMessageWithNotepad();
         }
 
+        private ToolStripDropDownDirection GetPreferredToolStripDropDownDirection()
+        {
+            var cursor = Cursor.Position;
+            var screen = Screen.FromPoint(cursor);
+            if (cursor.X < screen.Bounds.X + screen.Bounds.Width / 2)
+            {
+                if (cursor.Y < screen.Bounds.Y + screen.Bounds.Height / 2) return ToolStripDropDownDirection.BelowRight;
+                else return ToolStripDropDownDirection.AboveRight;
+            }
+            else
+            {
+                if (cursor.Y < screen.Bounds.Y + screen.Bounds.Height / 2) return ToolStripDropDownDirection.BelowLeft;
+                else return ToolStripDropDownDirection.AboveLeft;
+            }
+        }
+
         private void NotifyIcon1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                System.Reflection.MethodInfo method = typeof(NotifyIcon).GetMethod("ShowContextMenu", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                method.Invoke(notifyIcon1, null);
-            }
+            NativeMethods.SetForegroundWindow(new HandleRef(contextMenuStrip1, contextMenuStrip1.Handle));
+            contextMenuStrip1.Show(Cursor.Position, GetPreferredToolStripDropDownDirection());
         }
 
         private void ClearContextMenu()

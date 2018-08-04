@@ -42,7 +42,6 @@
             this.notifyIcon1.Text = "Crevice is loading";
             this.notifyIcon1.BalloonTipClicked += this.NotifyIcon1_BalloonTipClick;
             this.notifyIcon1.MouseUp += this.NotifyIcon1_MouseUp;
-            this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
             //
             // contextMenu1
             //

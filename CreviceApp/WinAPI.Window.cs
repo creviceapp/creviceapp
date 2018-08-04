@@ -241,6 +241,11 @@ namespace Crevice.WinAPI.Window
                 return path.Substring(path.LastIndexOf("\\") + 1);
             }
 
+            public bool SetForegroundWindow()
+            {
+                return NativeMethods.SetForegroundWindow(WindowHandle);
+            }
+
             public bool Activate()
             {
                 var hwndTarget = NativeMethods.GetAncestor(WindowHandle, 2);
