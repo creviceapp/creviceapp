@@ -26,12 +26,12 @@ namespace Crevice.UI
             InitializeComponent();
         }
 
-        private const string url = "https://github.com/rubyu/CreviceApp";
+        private const string url = "https://github.com/creviceapp/creviceapp";
 
         protected string GetInfoMessage()
         {
             return string.Format(Properties.Resources.ProductInfo,
-                Application.ProductName,
+                "Crevice",
                 Application.ProductVersion,
                 ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false)).Copyright,
                 url,

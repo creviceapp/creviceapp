@@ -69,7 +69,7 @@ namespace Crevice4Tests
                 Console.SetError(sw);
                 var testMessage = "test error message";
                 Verbose.Error(testMessage);
-                Assert.AreEqual("[Error]" + testMessage + "\r\n", sw.ToString());
+                Assert.AreEqual("[Error] " + testMessage + "\r\n", sw.ToString());
             }
         }
     }

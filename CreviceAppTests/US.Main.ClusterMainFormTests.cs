@@ -70,13 +70,38 @@ namespace Crevice4Tests
             string[] args = { "-s", userScriptFile };
             var cliOption = CLIOption.Parse(args);
             var config = new GlobalConfig(cliOption);
-            var ctx = new UserScriptExecutionContext(config);
-            ctx.When(x => { return true; })
-            .On(SupportedKeys.Keys.WheelUp)
-            .Do(x => { });
-            using (var form = new ClusterMainForm(cliOption, ctx.Profiles))
+            using (var launcherForm = new LauncherForm(config))
+            using (var form = new ClusterMainForm(launcherForm))
             {
-                Assert.AreEqual(form.Config.CLIOption, cliOption);
+                var ctx = new UserScriptExecutionContext(config, form);
+                ctx.When(x => { return true; })
+                .On(SupportedKeys.Keys.WheelUp)
+                .Do(x => { });
+                Assert.AreEqual(form.LauncherForm, launcherForm);
+            }
+        }
+
+        [TestMethod()]
+        public void RunTest()
+        {
+            var tempDir = TestHelpers.GetTestDirectory();
+            var binaryDir = (new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent);
+            var userScriptFile = Path.Combine(tempDir, "default.csx");
+            var userScriptString = File.ReadAllText(Path.Combine(binaryDir.FullName, "Scripts", "DefaultUserScript.csx"), Encoding.UTF8);
+
+            TestHelpers.SetupUserDirectory(binaryDir, tempDir);
+
+            string[] args = { "-s", userScriptFile };
+            var cliOption = CLIOption.Parse(args);
+            var config = new GlobalConfig(cliOption);
+            using (var launcherForm = new LauncherForm(config))
+            using (var form = new ClusterMainForm(launcherForm))
+            {
+                var ctx = new UserScriptExecutionContext(config, form);
+                ctx.When(x => { return true; })
+                .On(SupportedKeys.Keys.WheelUp)
+                .Do(x => { });
+                form.Run(ctx.Profiles);
                 Assert.AreEqual(form._gestureMachineCluster.Profiles, ctx.Profiles);
             }
         }
@@ -94,22 +119,28 @@ namespace Crevice4Tests
             string[] args = { "-s", userScriptFile };
             var cliOption = CLIOption.Parse(args);
             var config = new GlobalConfig(cliOption);
-            var ctx = new UserScriptExecutionContext(config);
-            using (var cde = new CountdownEvent(1))
+            using (var launcherForm = new LauncherForm(config))
+            using (var form = new ClusterMainForm(launcherForm))
             {
-                var when = ctx.When(x => { return true; });
-                when.On(SupportedKeys.Keys.WheelUp)
-                   .Do(x => { cde.Signal(); });
-                when.On(SupportedKeys.Keys.RButton)
-                   .Do(x => { cde.Signal(); });
-                using (var form = new ClusterMainForm(cliOption, ctx.Profiles))
+                var ctx = new UserScriptExecutionContext(config, form);
+                using (var cde = new CountdownEvent(1))
                 {
+                    var when = ctx.When(x => { return true; });
+                    when.On(SupportedKeys.Keys.WheelUp)
+                       .Do(x => { cde.Signal(); });
+                    when.On(SupportedKeys.Keys.RButton)
+                       .Do(x => { cde.Signal(); });
+
+                    form.Run(ctx.Profiles);
+
                     form.Shown += new EventHandler((sender, e) => {
                         cde.Signal();
                     });
-                    Task.Run(() => {
+
+                    var task = Task.Run(() => {
                         form.ShowDialog();
                     });
+
                     Assert.AreEqual(cde.Wait(10000), true);
                     cde.Reset();
 
@@ -121,7 +152,9 @@ namespace Crevice4Tests
                     Assert.AreEqual(form._gestureMachineCluster.Profiles[0].GestureMachine.CurrentState.Depth, 1);
                     Assert.AreEqual(form._gestureMachineCluster.Input(SupportedKeys.PhysicalKeys.RButton.ReleaseEvent), true);
                     Assert.AreEqual(cde.Wait(10000), true);
+
                     form.Close();
+                    task.Wait(10000);
                 }
             }
         }

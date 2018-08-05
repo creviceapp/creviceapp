@@ -89,11 +89,7 @@ namespace Crevice.GestureMachine
             UserScriptExecutionContext ctx,
             UserScriptAssembly.Cache userScriptAssembly)
         {
-            try
-            {
-                UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
-            }
-            catch (Exception) { }
+            UserScript.EvaluateUserScriptAssembly(ctx, userScriptAssembly);
             return new GestureMachineCluster(ctx.Profiles);
         }
 

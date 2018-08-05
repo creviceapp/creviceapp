@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace Crevice.GestureMachine
 {
     using System.Threading;
     using Crevice.Core.FSM;
     using Crevice.Logging;
     using Crevice.Config;
-    using Crevice.UI;
     using Crevice.UserScript;
 
     using GetGestureMachineResult =
@@ -49,10 +47,12 @@ namespace Crevice.GestureMachine
             => Instance.Reset();
 
         private readonly GlobalConfig _config;
+        private readonly UI.MainFormBase _mainForm;
 
-        public ReloadableGestureMachine(GlobalConfig config)
+        public ReloadableGestureMachine(GlobalConfig config, UI.MainFormBase mainForm)
         {
             _config = config;
+            _mainForm = mainForm;
         }
 
         public event EventHandler Reloaded;
@@ -71,20 +71,20 @@ namespace Crevice.GestureMachine
                 _config.UserScriptCacheFile,
                 allowRestore: restoreFromCache);
 
-            Verbose.Print("restoreFromCache: {0}", restoreFromCache);
-            Verbose.Print("saveCache: {0}", saveCache);
-            Verbose.Print("candidate.IsRestorable: {0}", candidate.IsRestorable);
+            Verbose.Print($"restoreFromCache: {restoreFromCache}");
+            Verbose.Print($"saveCache: {saveCache}");
+            Verbose.Print($"candidate.IsRestorable: {candidate.IsRestorable}");
             
             if (candidate.IsRestorable)
             {
-                var ctx = new UserScriptExecutionContext(_config);
+                var ctx = new UserScriptExecutionContext(_config, _mainForm);
                 try
                 {
                     return new GetGestureMachineResult(candidate.Restore(ctx), null, null);
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Error("GestureMachine restoration was failed; fallback to normal compilation. {0}", ex.ToString());
+                    Verbose.Error($"GestureMachine restoration was failed; fallback to normal compilation. {ex.ToString()}");
                 }
             }
 
@@ -96,10 +96,17 @@ namespace Crevice.GestureMachine
 
             Verbose.Print("No error found in the UserScript on compilation phase.");
             {
-                var ctx = new UserScriptExecutionContext(_config);
+                var ctx = new UserScriptExecutionContext(_config, _mainForm);
                 try
                 {
+                    if (candidate.UserScriptAssemblyCache.PE.Length == 0)
+                    {
+                        Verbose.Print("User script is empty.");
+                        return new GetGestureMachineResult(candidate.Create(ctx), null, null);
+                    }
+
                     UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
+
                     if (saveCache)
                     {
                         try
@@ -108,15 +115,20 @@ namespace Crevice.GestureMachine
                         }
                         catch (Exception ex)
                         {
-                            Verbose.Error("SaveUserScriptAssemblyCache was failed. {0}", ex.ToString());
+                            Verbose.Error($"SaveUserScriptAssemblyCache was failed. {ex.ToString()}");
                         }
                     }
                     Verbose.Print("No error ocurred in the UserScript on evaluation phase.");
                     return new GetGestureMachineResult(candidate.Create(ctx), null, null);
                 }
+                catch (UserScript.EvaluationAbortedException ex)
+                {
+                    Verbose.Print($"UserScript evaluation was aborted. {ex.InnerException.ToString()}");
+                    return new GetGestureMachineResult(candidate.Create(ctx), null, ex.InnerException);
+                }
                 catch (Exception ex)
                 {
-                    Verbose.Error("Error ocurred in the UserScript on evaluation phase. {0}", ex.ToString());
+                    Verbose.Error($"Error ocurred in the UserScript on evaluation phase. {ex.ToString()}");
                     return new GetGestureMachineResult(candidate.Create(ctx), null, ex);
                 }
             }
@@ -128,10 +140,7 @@ namespace Crevice.GestureMachine
 
         public void HotReload()
         {
-            if (_disposed)
-            {
-                new InvalidOperationException();
-            }
+            if (_disposed) return;
             if (_loading && !_disposed)
             {
                 Verbose.Print("Hot-reload request was queued.");
@@ -141,34 +150,45 @@ namespace Crevice.GestureMachine
             _semaphore.Wait();
             try
             {
-                if (_disposed)
-                {
-                    return;
-                }
+                if (_disposed) return;
                 while (true)
                 {
                     _loading = true;
                     _reloadRequest = false;
                     using (Verbose.PrintElapsed("Hot-reload GestureMachine"))
                     {
-                        var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
-                        if (gmCluster == null)
+                        try
                         {
-                            _config.MainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
-                        }
-                        else
-                        {
-                            gmCluster.Run();
-                            Instance = gmCluster;
-                            if (runtimeError == null)
+                            var (gmCluster, compilationErrors, runtimeError) = GetGestureMachine();
+
+                            if (_reloadRequest) continue;
+                            _reloadRequest = false;
+
+                            if (gmCluster == null)
                             {
-                                _config.MainForm.ShowInfoBalloon(gmCluster);
+                                _mainForm.ShowErrorBalloon(compilationErrors.GetValueOrDefault());
                             }
                             else
                             {
-                                _config.MainForm.ShowWarningBalloon(gmCluster, runtimeError);
+                                gmCluster.Run();
+                                Instance = gmCluster;
+                                if (runtimeError == null)
+                                {
+                                    _mainForm.ShowInfoBalloon(gmCluster);
+                                }
+                                else
+                                {
+                                    _mainForm.ShowWarningBalloon(gmCluster, runtimeError);
+                                }
+                                _mainForm.UpdateTasktrayMessage(gmCluster.Profiles);
                             }
-                            _config.MainForm.UpdateTasktrayMessage(gmCluster.Profiles);
+                        }
+                        catch (System.IO.IOException)
+                        {
+                            Verbose.Print("User script cannot be read; the file may be in use by another process.");
+                            Verbose.Print("Waiting 1 sec ...");
+                            Thread.Sleep(1000);
+                            continue;
                         }
                     }
                     _loading = false;
@@ -191,9 +211,10 @@ namespace Crevice.GestureMachine
         {
             using (Verbose.PrintElapsed("Release unused memory"))
             {
-                var totalMemory = GC.GetTotalMemory(false);
+                var before = GC.GetTotalMemory(false);
                 GC.Collect(2);
-                Verbose.Print("GC.GetTotalMemory: {0} -> {1}", totalMemory, GC.GetTotalMemory(false));
+                var after = GC.GetTotalMemory(false);
+                Verbose.Print($"GC.GetTotalMemory: {before} -> {after}");
             }
         }
         
@@ -201,26 +222,32 @@ namespace Crevice.GestureMachine
 
         public void Dispose()
         {
-            if (_disposed)
-            {
-                return;
-            }
-            _disposed = true;
+            if (_disposed) return;
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
         {
+            _disposed = true;
             if (disposing)
             {
                 _semaphore.Wait();
                 try
                 {
-                    GC.SuppressFinalize(this);
-                    _reloadRequest = false;
-                    _disposed = true;
-                    Instance = null;
+                    var profiles = Instance.Profiles;
+                    using (var cde = new CountdownEvent(profiles.Count))
+                    {
+                        foreach (var profile in profiles)
+                        {
+                            profile.UserConfig.Callback.MachineStop += (_s, _e) =>
+                            {
+                                cde.Signal();
+                            };
+                        }
+                        Instance = null;
+                        cde.Wait(1000);
+                    }   
                 }
                 finally
                 {

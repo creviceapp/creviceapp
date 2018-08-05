@@ -84,14 +84,14 @@ namespace Crevice.WinAPI.WindowsHookEx
                 throw new InvalidOperationException();
             }
             var log = new WinAPILogger("SetWindowsHookEx");
-            log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
+            log.Add($"hookType: {Enum.GetName(typeof(HookType), _hookType)}");
             var hInstance = NativeMethods.GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
 
-            log.Add("hInstance: 0x{0:X}", hInstance.ToInt64());
+            log.Add($"moduleHandle: 0x{hInstance.ToInt64():X}");
             _hHook = NativeMethods.SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
             if (IsActivated)
             {
-                log.Add("_hHook: 0x{0:X}", _hHook.ToInt64());
+                log.Add($"hookHandle: 0x{_hHook.ToInt64():X}");
                 log.Success();
             }
             else
@@ -107,8 +107,8 @@ namespace Crevice.WinAPI.WindowsHookEx
                 throw new InvalidOperationException();
             }
             var log = new WinAPILogger("UnhookWindowsHookEx");
-            log.Add("Hook type: {0}", Enum.GetName(typeof(HookType), _hookType));
-            log.Add("_hHook: 0x{0:X}", _hHook);
+            log.Add($"hookType: {Enum.GetName(typeof(HookType), _hookType)}");
+            log.Add($"hookHandle: 0x{_hHook.ToInt64():X}");
             if (NativeMethods.UnhookWindowsHookEx(_hHook))
             {
                 log.Success();

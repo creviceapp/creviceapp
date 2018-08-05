@@ -14,24 +14,11 @@ using System.Windows.Forms;
 
 namespace Crevice.UI
 {
-    using Crevice.Logging;
-    using Crevice.Config;
     using Crevice.GestureMachine;
     using Crevice.UserScript;
 
     public class MainFormBase : MouseGestureForm
     {
-        private string _lastErrorMessage = "";
-        public string LastErrorMessage
-        {
-            get { return _lastErrorMessage; }
-            set
-            {
-                Verbose.Print("LastErrorMessage: {0}", value);
-                _lastErrorMessage = value;
-            }
-        }
-
         // Forcely make this application invisible from task switcher applications.
         const int WS_EX_TOOLWINDOW = 0x00000080;
         protected override CreateParams CreateParams
@@ -44,16 +31,11 @@ namespace Crevice.UI
             }
         }
 
-        protected virtual internal GlobalConfig Config { get; }
+        public readonly LauncherForm LauncherForm;
 
-        private readonly TooltipNotifier _tooltip;
-
-        private LauncherForm _launcherForm = null;
-
-        public MainFormBase() 
-            : base()
+        public MainFormBase(LauncherForm launcherForm)
         {
-            _tooltip = new TooltipNotifier(this);
+            this.LauncherForm = launcherForm;
         }
 
         protected override void OnShown(EventArgs e)
@@ -71,24 +53,6 @@ namespace Crevice.UI
             }
         }
         
-        protected void RegisterNotifyIcon(NotifyIcon notifyIcon)
-        {
-            if (!Config.CLIOption.NoGUI)
-            {
-                while (true)
-                {
-                    var stopwatch = Stopwatch.StartNew();
-                    notifyIcon.Visible = true;
-                    stopwatch.Stop();
-                    if (stopwatch.ElapsedMilliseconds < 4000)
-                    {
-                        break;
-                    }
-                    notifyIcon.Visible = false;
-                }
-            }
-        }
-
         protected override void OnClosed(EventArgs e)
         {
             try
@@ -99,128 +63,25 @@ namespace Crevice.UI
             {
                 ShowFatalErrorDialog("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.");
             }
-            base.OnClosed(e);
-            _tooltip.Dispose();
             WinAPI.Console.Console.FreeConsole();
+            base.OnClosed(e);
         }
 
-        private void InvokeProperly(MethodInvoker invoker)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(invoker);
-            }
-            else
-            {
-                invoker.Invoke();
-            }
-        }
+        public void ShowTooltip(string text, Point point, int duration)
+            => LauncherForm.ShowTooltip(text, point, duration);
 
-        protected void UpdateTasktrayMessage(NotifyIcon notifyIcon, string message)
-        {
-            var header = string.Format("Crevice {0}", Application.ProductVersion);
-            var text = header + "\r\n" + message;
-            InvokeProperly(delegate ()
-            {
-                if (!Config.CLIOption.NoGUI)
-                {
-                    notifyIcon.Text = text.Length > 63 ? text.Substring(0, 60) + "..." : text;
-                }
-            });
-        }
-
-        public virtual void UpdateTasktrayMessage(string message) { }
+        public void UpdateTasktrayMessage(string message) 
+            => LauncherForm.UpdateTasktrayMessage(message);
 
         public void UpdateTasktrayMessage(string formattedtext, params object[] args)
             => UpdateTasktrayMessage(string.Format(formattedtext, args));
         
-        public void ShowFatalErrorDialog(string text)
-        {
-            InvokeProperly(delegate ()
-            {
-                Verbose.Error(text);
-                MessageBox.Show(text, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            });
-        }
-
         public void ShowFatalErrorDialog(string formattedtext, params object[] objects)
-            => ShowFatalErrorDialog(string.Format(formattedtext, objects));
-
-        public void ShowTooltip(string text, Point point, int duration)
-        {
-            InvokeProperly(delegate ()
-            {
-                Verbose.Print("ShowTooltip: {0}", text);
-                _tooltip.Show(text, point, duration);
-            });
-        }
-
-        public void ShowBalloon(NotifyIcon notifyIcon, string text, string title, ToolTipIcon icon, int timeout)
-        {
-            InvokeProperly(delegate ()
-            {
-                Verbose.Print("ShowBalloon: {0}", text);
-                if (!Config.CLIOption.NoGUI)
-                {
-                    notifyIcon.BalloonTipText = text;
-                    notifyIcon.BalloonTipTitle = title;
-                    notifyIcon.BalloonTipIcon = icon;
-                    notifyIcon.ShowBalloonTip(timeout);
-                }
-            });
-        }
-
-        public virtual void ShowBalloon(string text, string title, ToolTipIcon icon, int timeout) { }
-
-        public void StartExternalProcess(string fileName)
-        {
-            InvokeProperly(delegate ()
-            {
-                if (!Config.CLIOption.NoGUI)
-                {
-                    Process.Start(fileName);
-                }
-            });
-        }
+            => LauncherForm.ShowFatalErrorDialog(string.Format(formattedtext, objects));
         
-        public void StartExternalProcess(string fileName, string arguments)
-        {
-            InvokeProperly(delegate ()
-            {
-                if (!Config.CLIOption.NoGUI)
-                {
-                    try
-                    {
-                        using (Verbose.PrintElapsed(
-                            "StartExternalProcess(filename={0}, arguments={1})", 
-                            fileName,
-                            arguments))
-                        {
-                            Process.Start(fileName, arguments);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Verbose.Error("An exception was thrown while executing an external process: {0}", ex.ToString());
-                    }
-                }
-            });
-        }
-
-        protected void OpenLauncherForm()
-        {
-            if (_launcherForm == null || _launcherForm.IsDisposed)
-            {
-                _launcherForm = new LauncherForm(this);
-                _launcherForm.Opacity = 0;
-                _launcherForm.Show();
-            }
-            else
-            {
-                _launcherForm.Activate();
-            }
-        }
-
+        public void ShowBalloon(string text, string title, ToolTipIcon icon, int timeout)
+            => LauncherForm.ShowBalloon(text, title, icon, timeout);
+        
         public void UpdateTasktrayMessage(IReadOnlyList<GestureMachineProfile> profiles)
         {
             var header = $"Crevice {Application.ProductVersion}";
@@ -261,7 +122,7 @@ namespace Crevice.UI
         public void ShowInfoBalloon(
             GestureMachineCluster gmCluster)
         {
-            LastErrorMessage = "";
+            LauncherForm.LastErrorMessage = "";
             ShowBalloon(GetActivatedMessage(gmCluster), "", ToolTipIcon.Info, 10000);
         }
 
@@ -269,7 +130,7 @@ namespace Crevice.UI
             GestureMachineCluster gmCluster,
             Exception runtimeError)
         {
-            LastErrorMessage = runtimeError.ToString();
+            LauncherForm.LastErrorMessage = runtimeError.ToString();
             var text = "The configuration may be loaded incompletely due to an error on the UserScript evaluation.\r\n" +
                 "Click to view the detail.";
             ShowBalloon(text, GetActivatedMessage(gmCluster), ToolTipIcon.Warning, 10000);
@@ -279,40 +140,11 @@ namespace Crevice.UI
             System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> errors)
         {
             var errorMessage = UserScript.GetPrettyErrorMessage(errors);
-            LastErrorMessage = errorMessage;
+            LauncherForm.LastErrorMessage = errorMessage;
 
             var title = "UserScript Compilation Error";
             var text = $"{errors.Count()} error(s) found in the UserScript.\r\nClick to view the detail.";
             ShowBalloon(text, title, ToolTipIcon.Error, 10000);
-        }
-
-        private void OpenWithNotepad(string path, string text)
-        {
-            try
-            {
-                File.WriteAllText(path, text);
-                StartExternalProcess("notepad.exe", path);
-            } 
-            catch (Exception ex)
-            {
-                Verbose.Error("An exception was thrown while writing a file: {0}", ex.ToString());
-            }
-        }
-
-        public void OpenUserScriptWithNotepad()
-            => StartExternalProcess("explorer.exe", "/select, " + Config.UserScriptFile);
-
-        public void OpenLastErrorMessageWithNotepad()
-        {
-            if (String.IsNullOrEmpty(LastErrorMessage))
-            {
-                OpenLauncherForm();
-            }
-            else
-            {
-                var tempPath = Path.Combine(Path.GetTempPath(), "Crevice4.ErrorInformation.txt");
-                OpenWithNotepad(tempPath, LastErrorMessage);
-            }
         }
     }
 }

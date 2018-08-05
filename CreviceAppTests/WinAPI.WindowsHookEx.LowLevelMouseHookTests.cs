@@ -86,6 +86,7 @@ namespace Crevice4Tests
             }
         }
 
+#if DEBUG
         [TestMethod()]
         public void LowLevelMouseHookProcTest()
         {
@@ -100,13 +101,18 @@ namespace Crevice4Tests
                 }))
                 {
                     hook.SetHook();
-                    var sender = new SingleInputSender();
-                    sender.RightDown();
-                    sender.RightUp();
+                    var task = Task.Factory.StartNew(() => 
+                    {
+                        var sender = new SingleInputSender();
+                        sender.RightDown();
+                        sender.RightUp();
+                    });
+                    task.Wait();
                     Assert.AreEqual(cde.Wait(10000), true);
                 }
             }
         }
+#endif
 
         [TestMethod()]
         public void DisposeWhenActivatedTest()

@@ -34,14 +34,14 @@ namespace Crevice4Tests
         public void DefaultUserDirectoryTest()
         {
             var globalConfig = new GlobalConfig();
-            Assert.AreEqual(globalConfig.DefaultUserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"), true);
+            Assert.AreEqual(globalConfig.DefaultUserDirectory.EndsWith("\\Crevice4"), true);
         }
 
         [TestMethod()]
         public void UserScriptFile0Test()
         {
             var globalConfig = new GlobalConfig();
-            Assert.AreEqual(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx"), true);
+            Assert.AreEqual(globalConfig.UserScriptFile.EndsWith("\\Crevice4\\default.csx"), true);
         }
 
         [TestMethod()]
@@ -51,7 +51,7 @@ namespace Crevice4Tests
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.AreEqual(globalConfig.UserScriptFile.EndsWith("\\AppData\\Roaming\\Crevice4\\hoge.csx"), true);
+            Assert.AreEqual(globalConfig.UserScriptFile.EndsWith("\\Crevice4\\hoge.csx"), true);
         }
         
         [TestMethod()]
@@ -68,7 +68,7 @@ namespace Crevice4Tests
         public void UserDirectory0Test()
         {
             var globalConfig = new GlobalConfig();
-            Assert.AreEqual(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"), true);
+            Assert.AreEqual(globalConfig.UserDirectory.EndsWith("\\Crevice4"), true);
         }
 
         [TestMethod()]
@@ -78,7 +78,7 @@ namespace Crevice4Tests
             string[] args = { "--script", "hoge.csx" };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            Assert.AreEqual(globalConfig.UserDirectory.EndsWith("\\AppData\\Roaming\\Crevice4"), true);
+            Assert.AreEqual(globalConfig.UserDirectory.EndsWith("\\Crevice4"), true);
         }
 
         [TestMethod()]
@@ -137,7 +137,7 @@ namespace Crevice4Tests
         public void GetUserScriptCacheFileTest()
         {
             var globalConfig = new GlobalConfig();
-            Assert.AreEqual(globalConfig.UserScriptCacheFile.EndsWith("\\AppData\\Roaming\\Crevice4\\default.csx.cache"), true);
+            Assert.AreEqual(globalConfig.UserScriptCacheFile.EndsWith("Crevice4\\default.csx.cache"), true);
         }
     }
 }

@@ -15,11 +15,11 @@ namespace Crevice.Config
         public readonly Core.FSM.GestureMachineConfig Core = new Core.FSM.GestureMachineConfig();
         public readonly UserInterfaceConfig UI = new UserInterfaceConfig();
 
-        public readonly CallbackManager.CallbackReceiver Callback;
+        public readonly CallbackManager.CallbackContainer Callback;
 
-        public UserConfig(CallbackManager.CallbackReceiver callbackReceiver)
+        public UserConfig(CallbackManager.CallbackContainer callback)
         {
-            Callback = callbackReceiver;
+            Callback = callback;
         }
     }
 }

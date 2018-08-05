@@ -33,7 +33,7 @@ namespace Crevice.Threading
             var threads = new Thread[PoolSize];
             for (int i = 0; i < PoolSize; i++)
             {
-                var name = $"{Name}(Priority={Priority}, PoolSize={PoolSize}): [{i}/{PoolSize - 1}]";
+                var name = $"{Name}(Priority={Priority}, PoolSize={PoolSize}): ({i + 1}/{PoolSize})";
                 var thread = new Thread(() =>
                 {
                     Verbose.Print($"Start {name}");

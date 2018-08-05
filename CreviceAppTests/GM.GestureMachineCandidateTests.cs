@@ -93,7 +93,7 @@ namespace Crevice4Tests
             string[] args = { "--script", userScriptFile };
             var cliOption = CLIOption.Parse(args);
             var globalConfig = new GlobalConfig(cliOption);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             Assert.AreEqual(candidate.Errors.Count(), 0);
             UserScript.EvaluateUserScriptAssembly(ctx, candidate.UserScriptAssemblyCache);
             var gmcluster = candidate.Create(ctx);

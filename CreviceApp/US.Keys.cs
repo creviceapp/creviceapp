@@ -286,6 +286,11 @@ namespace Crevice.UserScript.Keys
         public static implicit operator int(PhysicalSystemKey key)
             => key.KeyId;
 
+        public bool IsKeyboardKey =>
+            KeyId == 0 || // None
+            KeyId == 3 || // Cancel
+            KeyId > 6;   // Keyboard's keys
+
         public override string ToString()
             => $"PhysicalKeys.{LogicalSystemKeySet.KeyIdToKeyName(KeyId)}";
     }

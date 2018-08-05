@@ -51,8 +51,8 @@
     <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
-    <DefaultLanguage>ja-JP</DefaultLanguage>
-    <PackageCertificateKeyFile>CreviceAppUniversal_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <DefaultLanguage>en</DefaultLanguage>
+    <PackageCertificateKeyFile>CreviceAppUniversal_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
@@ -61,11 +61,195 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="win32\Windows.ApplicationModel.Activation.ActivatedEventsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Activation.ActivationCameraSettingsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Activation.ContactActivatedEventsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Activation.WebUISearchActivatedEventsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Background.BackgroundAlarmApplicationContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Calls.Background.CallsBackgroundContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Calls.CallsVoipContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Calls.LockScreenCallContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.FullTrustAppContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Preview.Notes.PreviewNotesContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Resources.Management.ResourceIndexerContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Search.Core.SearchCoreContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Search.SearchContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.SocialInfo.SocialInfoContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.StartupTaskContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.ApplicationModel.Wallet.WalletContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.Custom.CustomDeviceContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.DevicesLowLevelContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.Portable.PortableDeviceContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.Printers.Extensions.ExtensionsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.Printers.PrintersContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.Scanners.ScannerDeviceContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Devices.Sms.LegacySmsApiContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Foundation.FoundationContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Foundation.UniversalApiContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Gaming.Preview.GamesEnumerationContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Globalization.GlobalizationJapanesePhoneticAnalyzerContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Graphics.Printing3D.Printing3DContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Management.Deployment.Preview.DeploymentPreviewContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Management.Orchestration.OrchestrationContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Management.Workplace.WorkplaceSettingsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Media.Capture.AppCaptureContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Media.Capture.CameraCaptureUIContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Media.Devices.CallControlContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Media.MediaControlContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Media.Playlists.PlaylistsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Media.Protection.ProtectionRenewalContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Networking.Connectivity.WwanContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Networking.NetworkOperators.LegacyNetworkOperatorsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Networking.Sockets.ControlChannelTriggerContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Perception.Automation.Core.PerceptionAutomationCoreContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Security.EnterpriseData.EnterpriseDataContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Security.ExchangeActiveSyncProvisioning.EasContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Services.Maps.GuidanceContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Services.Maps.LocalSearchContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Services.Store.StoreContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.System.Profile.ProfileHardwareTokenContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.System.Profile.ProfileRetailInfoContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.System.Profile.ProfileSharedModeContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.System.Profile.SystemManufacturers.SystemManufacturersContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.System.UserProfile.UserProfileContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.System.UserProfile.UserProfileLockScreenContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.UI.ApplicationSettings.ApplicationsSettingsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.UI.Core.AnimationMetrics.AnimationMetricsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.UI.Core.CoreWindowDialogsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.UI.ViewManagement.ViewManagementViewScalingContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.UI.Xaml.Hosting.HostingContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.Web.Http.Diagnostics.HttpDiagnosticsContract.winmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\Windows.WinMD">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="CreviceAppUniversal_StoreKey.pfx" />
+    <Content Include="images\CreviceIcon.orig.png" />
     <Content Include="images\NewStoreLogo.scale-100.png" />
     <Content Include="images\NewStoreLogo.scale-125.png" />
     <Content Include="images\NewStoreLogo.scale-150.png" />
     <Content Include="images\NewStoreLogo.scale-200.png" />
     <Content Include="images\NewStoreLogo.scale-400.png" />
+    <Content Include="images\SplashScreen.scale-100.png" />
+    <Content Include="images\SplashScreen.scale-125.png" />
+    <Content Include="images\SplashScreen.scale-150.png" />
+    <Content Include="images\SplashScreen.scale-200.png" />
+    <Content Include="images\SplashScreen.scale-400.png" />
     <Content Include="images\Square150x150Logo.scale-100.png" />
     <Content Include="images\Square150x150Logo.scale-125.png" />
     <Content Include="images\Square150x150Logo.scale-150.png" />
@@ -121,6 +305,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="win32\crevice4.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\DesktopBridge.Helpers.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="win32\Microsoft.CodeAnalysis.CSharp.dll">
@@ -186,6 +373,18 @@
     <Content Include="win32\System.Reflection.Metadata.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="win32\System.Runtime.WindowsRuntime.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.WindowsRuntime.UI.Xaml.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.WindowsRuntime.UI.Xaml.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="win32\System.Runtime.WindowsRuntime.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="win32\System.Security.Cryptography.Algorithms.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -231,5 +430,6 @@
   </Target>
   <PropertyGroup>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <PackageCertificateThumbprint>3991AC85741E474DD79E96D97F3F200F4254B40F</PackageCertificateThumbprint>
   </PropertyGroup>
 </Project>

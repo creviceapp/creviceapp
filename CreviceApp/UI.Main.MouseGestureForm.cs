@@ -17,7 +17,6 @@ namespace Crevice.UI
     using Crevice.Core.FSM;
     using Crevice.Logging;
     using Crevice.UserScript.Keys;
-    using Crevice.GestureMachine;
     using WinAPI.WindowsHookEx;
 
     public class MouseGestureForm : Form
@@ -66,9 +65,12 @@ namespace Crevice.UI
             switch (m.Msg)
             {
                 case WM_DISPLAYCHANGE:
-                    Verbose.Print("WndProc: WM_DISPLAYCHANGE");
-                    GestureMachine.Reset();
-                    Verbose.Print("GestureMachine was reset.");
+                    if (GestureMachine != null)
+                    {
+                        Verbose.Print("WndProc: WM_DISPLAYCHANGE");
+                        GestureMachine?.Reset();
+                        Verbose.Print("GestureMachine was reset.");
+                    }
                     break;
             }
             base.WndProc(ref m);
@@ -78,11 +80,10 @@ namespace Crevice.UI
         {
             if (data.FromCreviceApp)
             {
-                Verbose.Print("KeyboardEvent(vkCode={0}, event={1}, dwExtraInfo={2}) " +
-                    "was passed to the next hook because this event has the signature of CreviceApp",
-                    data.vkCode,
-                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
+                Verbose.Print($"KeyboardEvent(vkCode={data.vkCode}, " +
+                    $"event={Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt)}, " +
+                    $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
+                    $"was passed to the next hook because this event has the signature of CreviceApp");
                 return WindowsHook.Result.Transfer;
             }
 
@@ -115,18 +116,16 @@ namespace Crevice.UI
         {
             if (data.FromCreviceApp)
             {
-                Verbose.Print("KeyboardEvent(event={0}, dwExtraInfo={1}) " +
-                    "was passed to the next hook because this event has the signature of CreviceApp",
-                    Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                    BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
+                Verbose.Print($"MouseEvent(event={Enum.GetName(typeof(LowLevelMouseHook.Event), evnt)}, " +
+                    $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
+                    "was passed to the next hook because this event has the signature of CreviceApp");
                 return WindowsHook.Result.Transfer;
             }
             else if (data.FromTablet)
             {
-                Verbose.Print("KeyboardEvent(event={0}, dwExtraInfo={1}) " +
-                   "was passed to the next hook because this event has the signature of Tablet",
-                   Enum.GetName(typeof(LowLevelKeyboardHook.Event), evnt),
-                   BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo)));
+                Verbose.Print($"MouseEvent(event={Enum.GetName(typeof(LowLevelMouseHook.Event), evnt)}, " +
+                    $"dwExtraInfo={BitConverter.ToString(BitConverter.GetBytes((int)data.dwExtraInfo))}) " +
+                   "was passed to the next hook because this event has the signature of Tablet");
                 return WindowsHook.Result.Transfer;
             }
 

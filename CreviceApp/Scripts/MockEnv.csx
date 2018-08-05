@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using Crevice.Core.FSM;
 using Crevice.Config;
+using Crevice.UI;
 using Crevice.UserScript;
 using Crevice.UserScript.Keys;
 using Crevice.GestureMachine;
@@ -15,7 +16,12 @@ using Crevice.GestureMachine;
 string[] debugCliArgs = { };
 var debugCliOption = CLIOption.Parse(debugCliArgs);
 var debugGlobalConfig = new GlobalConfig(debugCliOption);
-var debugExecutionContext = new UserScriptExecutionContext(debugGlobalConfig);
+var debugLauncherForm = new LauncherForm(debugGlobalConfig);
+var debugMainForm = new MainFormBase(debugLauncherForm);
+var debugExecutionContext = new UserScriptExecutionContext(debugGlobalConfig, debugMainForm);
+
+GestureMachineProfile CurrentProfile
+    => debugExecutionContext.CurrentProfile;
 
 void DeclareProfile(string profileName) 
     => debugExecutionContext.DeclareProfile(profileName);
@@ -62,6 +68,9 @@ IReadOnlyList<SupportedKeys.PhysicalKeyDeclaration> PhysicalKeys
 
 Crevice.WinAPI.SendInput.SingleInputSender SendInput 
     => debugExecutionContext.SendInput;
+
+void InvokeOnMainThread(Action action)
+    => debugMainForm.Invoke(action);
 
 IGestureMachine RootGestureMachine 
     => debugExecutionContext.RootGestureMachine;

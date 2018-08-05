@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap mp rescap">
-  <Identity Name="24880rubyu.Crevice" Version="4.0.200.0" Publisher="CN=4A475315-607B-42C7-B194-4DB633BAC95D" />
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap mp rescap desktop">
+  <Identity Name="24880rubyu.Crevice" Version="4.14.403.0" Publisher="CN=4A475315-607B-42C7-B194-4DB633BAC95D" />
   <mp:PhoneIdentity PhoneProductId="5726c323-7977-4d2a-b3c7-0cb4ce9a2853" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Crevice</DisplayName>
+    <DisplayName>Crevice 4</DisplayName>
     <PublisherDisplayName>rubyu</PublisherDisplayName>
     <Logo>images\NewStoreLogo.png</Logo>
   </Properties>
@@ -14,16 +14,22 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="Crevice" Executable="win32\Crevice4.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Crevice" Description="Mouse gesture utility which developed to deliver outstanding performance and reliability." BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
-        <uap:DefaultTile ShortName="Crevice" Square71x71Logo="images\Square71x71Logo.png" Square310x310Logo="images\Square310x310Logo.png" Wide310x150Logo="images\Wide310x150Logo.png">
+    <Application Id="Crevice" Executable="win32\crevice4.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="Crevice 4" Description="Crevice 4 is multi purpose utility which supports gestures with mouse and keyboard. You can use C# language in your customizable userscript file, so there is nothing that can not be done for you." BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
+        <uap:DefaultTile Square71x71Logo="images\Square71x71Logo.png" Square310x310Logo="images\Square310x310Logo.png" Wide310x150Logo="images\Wide310x150Logo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="wide310x150Logo" />
             <uap:ShowOn Tile="square310x310Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
+        <uap:SplashScreen Image="images\SplashScreen.png" BackgroundColor="#252526" />
       </uap:VisualElements>
+      <Extensions>
+        <desktop:Extension Category="windows.startupTask" Executable="win32\crevice4.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="CreviceStartupTask" Enabled="true" DisplayName="Crevice 4 (UWP)" />
+        </desktop:Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

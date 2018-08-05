@@ -112,6 +112,7 @@ namespace Crevice.UserScript
                 var peStream = new MemoryStream();
                 var pdbStream = new MemoryStream();
                 compilation.Emit(peStream, pdbStream);
+/*
 #if DEBUG
                 using (Verbose.PrintElapsed("Debug| Output UserScriptAssemblies"))
                 {
@@ -119,6 +120,7 @@ namespace Crevice.UserScript
                     File.WriteAllBytes((cachePath + ".debug.pdb"), pdbStream.GetBuffer());
                 }
 #endif
+*/
                 return UserScriptAssembly.CreateCache(GetHashSource(cachePath, userScriptString), peStream.GetBuffer(), pdbStream.GetBuffer());
             }
         }
@@ -165,8 +167,8 @@ namespace Crevice.UserScript
             var type = userScriptAssembly.GetType("Submission#0");
             var methodInfo = type.GetMethod("<Factory>", BindingFlags.Static | BindingFlags.Public);
             var parameters = new object[] { new object[] { ctx, null } };
-            var result = methodInfo.Invoke(null, parameters);
-            await Task.WhenAny(result as Task<object>).ConfigureAwait(false);
+            var task = methodInfo.Invoke(null, parameters) as Task<object>;
+            await task.ConfigureAwait(false);
         }
 
         public static void EvaluateUserScriptAssembly(UserScriptExecutionContext ctx, Assembly userScriptAssembly)
@@ -196,7 +198,7 @@ namespace Crevice.UserScript
             {
                 if (!File.Exists(cachePath))
                 {
-                    Verbose.Print("UserScriptCacheFile: '{0}' did not exist.", cachePath);
+                    Verbose.Print($"UserScriptCacheFile: \"{cachePath}\" did not exist.");
                     return null;
                 }
                 try
@@ -211,7 +213,7 @@ namespace Crevice.UserScript
                 }
                 catch (System.Runtime.Serialization.SerializationException ex)
                 {
-                    Verbose.Error("An exception was thrown: {0}", ex.ToString());
+                    Verbose.Error($"An exception was thrown: {ex.ToString()}");
                 }
                 return null;
             }
@@ -221,7 +223,14 @@ namespace Crevice.UserScript
         {
             using (Verbose.PrintElapsed("Save UserScriptAssemblyCache"))
             {
-                UserScriptAssembly.Save(cachePath, userScriptAssemblyCache);
+                try
+                {
+                    UserScriptAssembly.Save(cachePath, userScriptAssemblyCache);
+                }
+                catch (IOException)
+                {
+                    Verbose.Error("Unable to UserScriptAssemblyCache");
+                }
             }
         }
         

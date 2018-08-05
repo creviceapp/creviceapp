@@ -127,10 +127,11 @@ namespace Crevice.Core.FSM
                     }
                     else if (CanCancel)
                     {
-                        Machine.CallbackManager.OnGestureCancel(this);
+                        Machine.CallbackManager.OnGestureCanceled(Machine, this);
+                        return Result.Create(eventIsConsumed: true, nextState: LastState);
                     }
 
-                    if (!CanCancel && LastState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
+                    if (LastState is StateN<TConfig, TContextManager, TEvalContext, TExecContext> stateN)
                     {
                         return Result.Create(eventIsConsumed: true, nextState: stateN.ToNonCancellableClone());
                     }
@@ -159,8 +160,9 @@ namespace Crevice.Core.FSM
 
         public override State<TConfig, TContextManager, TEvalContext, TExecContext> Timeout()
         {
-            if (CanCancel && !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && 
-                !Machine.StrokeWatcher.GetStorkes().Any())
+            if (CanCancel && 
+                !HasPressExecutors && !HasDoExecutors && !HasReleaseExecutors && 
+                !Machine.StrokeWatcher.StrokeIsEstablished)
             {
                 return LastState;
             }

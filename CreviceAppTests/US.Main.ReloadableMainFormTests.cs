@@ -64,9 +64,11 @@ namespace Crevice4Tests
 
             string[] args = { "-s", userScriptFile };
             var cliOption = CLIOption.Parse(args);
-            using(var form = new ReloadableMainForm(cliOption))
+            var config = new GlobalConfig(cliOption);
+            using (var launcherForm = new LauncherForm(config))
+            using (var form = new ReloadableMainForm(launcherForm))
             {
-                Assert.AreEqual(form.Config.CLIOption, cliOption);
+                Assert.AreEqual(form.LauncherForm, launcherForm);
             }
         }
         
@@ -80,27 +82,32 @@ namespace Crevice4Tests
 
             TestHelpers.SetupUserDirectory(binaryDir, tempDir);
 
-            string[] args = { "-s", userScriptFile };
-            var cliOption = CLIOption.Parse(args);
-            using (var cde = new CountdownEvent(1))
-            {
-                using (var form = new ReloadableMainForm(cliOption))
-                {
-                    form._reloadableGestureMachine.Reloaded += new EventHandler((sender, e) => {
-                        cde.Signal();
-                    });
-                    Task.Run(() => {
-                        form.ShowDialog();
-                    });
-                    Assert.AreEqual(cde.Wait(10000), true);
-                    cde.Reset();
+            // Prevent multiple loading.
+            File.WriteAllText(userScriptFile, userScriptString);
 
-                    Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles.Count > 0, true);
-                    Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles[0].RootElement.GestureCount > 0, true);
-                    Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), false);
-                    Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent), false);
-                    form.Close();
-                }
+            string[] args = { "-s", userScriptFile, "--nocache" };
+            var cliOption = CLIOption.Parse(args);
+            var config = new GlobalConfig(cliOption);
+            using (var cde = new CountdownEvent(1))
+            using (var launcherForm = new LauncherForm(config))
+            using (var form = new ReloadableMainForm(launcherForm))
+            {
+                launcherForm.MainForm = form;
+                form._reloadableGestureMachine.Reloaded += (sender, e) => {
+                    cde.Signal();
+                };
+                var task = Task.Run(() => {
+                    launcherForm.ShowDialog();
+                });
+                Assert.AreEqual(cde.Wait(10000), true);
+                cde.Reset();
+
+                Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles.Count > 0, true);
+                Assert.AreEqual(form._reloadableGestureMachine._instance.Profiles[0].RootElement.GestureCount > 0, true);
+                Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.WheelUp.FireEvent), false);
+                Assert.AreEqual(form._reloadableGestureMachine.Input(SupportedKeys.PhysicalKeys.RButton.PressEvent), false);
+                form.Close();
+                task.Wait(10000);
             }
         }
     }

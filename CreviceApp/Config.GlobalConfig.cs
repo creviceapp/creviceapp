@@ -16,22 +16,19 @@ namespace Crevice.Config
     {
         public readonly CLIOption.Result CLIOption;
 
-        public readonly MainFormBase MainForm;
-
         public GlobalConfig()
             : this(Config.CLIOption.ParseEnvironmentCommandLine())
         { }
 
-        public GlobalConfig(CLIOption.Result cliOption, MainFormBase mainForm = null)
+        public GlobalConfig(CLIOption.Result cliOption)
         {
             CLIOption = cliOption;
-            MainForm = mainForm;
             Directory.CreateDirectory(UserDirectory);
         }
         
-        // %USERPROFILE%\\AppData\\Roaming\\Crevice4
+        // %USERPROFILE%\\Crevice4
         public string DefaultUserDirectory
-            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Crevice4");
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Crevice4");
 
         // Parent directory of UserScriptFile.
         public string UserDirectory

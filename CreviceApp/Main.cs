@@ -46,18 +46,31 @@ namespace Crevice
                 Verbose.Enable();
             }
 
-            Verbose.Print("CLIOption.NoGUI: {0}", cliOption.NoGUI);
-            Verbose.Print("CLIOption.NoCache: {0}", cliOption.NoCache);
-            Verbose.Print("CLIOption.Verbose: {0}", cliOption.Verbose);
-            Verbose.Print("CLIOption.Version: {0}", cliOption.Version);
-            Verbose.Print("CLIOption.ProcessPriority: {0}", cliOption.ProcessPriority);
-            Verbose.Print("CLIOption.ScriptFile: {0}", cliOption.ScriptFile);
+            Verbose.Print($"CLIOption.NoGUI: {cliOption.NoGUI}");
+            Verbose.Print($"CLIOption.NoCache: {cliOption.NoCache}");
+            Verbose.Print($"CLIOption.Verbose: {cliOption.Verbose}");
+            Verbose.Print($"CLIOption.Version: {cliOption.Version}");
+            Verbose.Print($"CLIOption.ProcessPriority: {cliOption.ProcessPriority}");
+            Verbose.Print($"CLIOption.ScriptFile: {cliOption.ScriptFile}");
 
-            Verbose.Print("Setting ProcessPriority to {0}", cliOption.ProcessPriority);
+            Verbose.Print($"Setting ProcessPriority to {cliOption.ProcessPriority}");
             SetProcessPriority(cliOption.ProcessPriority);
 
-            var mainForm = new UI.ReloadableMainForm(cliOption);
-            Application.Run(mainForm);
+            var config = new GlobalConfig(cliOption);
+            PrepareUserScript(config);
+            
+            var launcherForm = new UI.LauncherForm(config);
+            var mainForm = new UI.ReloadableMainForm(launcherForm);
+            launcherForm.MainForm = mainForm;
+            Application.Run(launcherForm);
+        }
+
+        private static void PrepareUserScript(GlobalConfig config)
+        {
+            if (!System.IO.File.Exists(config.UserScriptFile))
+            {
+                config.WriteUserScriptFile(Encoding.UTF8.GetString(Properties.Resources.DefaultUserScript));
+            }
         }
 
         private static void SetProcessPriority(ProcessPriorityClass priority)

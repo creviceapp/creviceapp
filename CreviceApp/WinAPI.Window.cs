@@ -241,6 +241,11 @@ namespace Crevice.WinAPI.Window
                 return path.Substring(path.LastIndexOf("\\") + 1);
             }
 
+            public bool SetForegroundWindow()
+            {
+                return NativeMethods.SetForegroundWindow(WindowHandle);
+            }
+
             public bool Activate()
             {
                 var hwndTarget = NativeMethods.GetAncestor(WindowHandle, 2);
@@ -320,7 +325,17 @@ namespace Crevice.WinAPI.Window
 
         public class PointedWindowInfo : WindowInfo
         {
-            public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point)) { }
+            private readonly Point point;
+
+            public IReadOnlyList<WindowInfo> GetPointedDescendantWindows()
+            {
+                return new Enumerables.PointedDescendantWindows(WindowHandle, point, Window.WindowFromPointFlags.CWP_ALL).ToList();
+            }
+
+            public PointedWindowInfo(Point point) : base(NativeMethods.WindowFromPhysicalPoint(point))
+            {
+                this.point = point;
+            }
         }
 
         namespace Enumerables

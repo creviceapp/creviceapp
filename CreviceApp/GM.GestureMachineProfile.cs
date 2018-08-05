@@ -14,6 +14,8 @@ namespace Crevice.GestureMachine
     public class GestureMachineProfile
         : IDisposable
     {
+        private readonly CallbackManager callbackManager = new CallbackManager();
+
         public readonly RootElement RootElement = new RootElement();
 
         public readonly GestureMachine GestureMachine;
@@ -25,8 +27,7 @@ namespace Crevice.GestureMachine
         public GestureMachineProfile(string profileName)
         {
             ProfileName = profileName;
-            var callbackManager = new CallbackManager();
-            UserConfig = new UserConfig(callbackManager.Receiver);
+            UserConfig = new UserConfig(callbackManager.Callback);
             GestureMachine = new GestureMachine(UserConfig.Core, callbackManager);
         }
 
@@ -41,6 +42,7 @@ namespace Crevice.GestureMachine
             if (disposing)
             {
                 GestureMachine.Dispose();
+                callbackManager.Dispose();
             }
         }
 

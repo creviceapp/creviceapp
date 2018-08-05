@@ -57,7 +57,7 @@ namespace Crevice4Tests
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -70,7 +70,7 @@ namespace Crevice4Tests
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -83,7 +83,7 @@ namespace Crevice4Tests
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -96,7 +96,7 @@ namespace Crevice4Tests
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.IsTrue(errors.Count() == 0);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -118,7 +118,7 @@ namespace Crevice4Tests
             var userScriptString = "var hoge = 1;";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -130,7 +130,7 @@ namespace Crevice4Tests
             var userScriptString = "dynamic hoge = 1;";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -142,7 +142,7 @@ namespace Crevice4Tests
             var userScriptString = "var Whenever = When((ctx) => {return true;});";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -154,7 +154,7 @@ namespace Crevice4Tests
             var userScriptString = "using static Crevice.WinAPI.Constants.WindowsMessages;";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -167,7 +167,7 @@ namespace Crevice4Tests
             var userScriptString = "undefined_variable";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 
@@ -183,7 +183,7 @@ namespace Crevice4Tests
                 "Never.OnDecomposed(Keys.RButton);";
             var parsedScript = UserScript.ParseScript(userScriptString, globalConfig.UserDirectory, globalConfig.UserDirectory);
             var userScriptCache = UserScript.CompileUserScript(parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScript(ctx, parsedScript);
         }
 

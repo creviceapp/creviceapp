@@ -21,7 +21,7 @@ namespace CreviceLibTests
             public StrokeWatcherMock(TestGestureMachine gm) : base(gm.CallbackManager, Task.Factory, 0, 0, 0, 0) { }
 
             internal new readonly List<Point> queue = new List<Point>();
-            public override void Queue(Point point)
+            public override void Process(Point point)
             {
                 queue.Add(point);
             }

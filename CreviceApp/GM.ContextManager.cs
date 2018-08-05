@@ -13,19 +13,20 @@ namespace Crevice.GestureMachine
     using Crevice.Core.DSL;
     using Crevice.Threading;
 
+
+
+
     public class ContextManager : ContextManager<EvaluationContext, ExecutionContext>, IDisposable
     {
         public Point CursorPosition { get; set; }
         
         public int EvaluationLimitTime { get; } = 1000; // ms
 
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-
         public override EvaluationContext CreateEvaluateContext()
             => new EvaluationContext(CursorPosition);
 
         public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
-            => new ExecutionContext(evaluationContext, CursorPosition, _cancellationTokenSource.Token);
+            => new ExecutionContext(evaluationContext, CursorPosition);
 
         private readonly LowLatencyScheduler _evaluationScheduler =
             new LowLatencyScheduler(
@@ -61,16 +62,16 @@ namespace Crevice.GestureMachine
                 }
                 else
                 {
-                    Verbose.Error("Evaluation of WhenEvaluator was timeout; (EvaluationLimitTime: {0}ms)", EvaluationLimitTime);
+                    Verbose.Error($"Evaluation of WhenEvaluator was timeout; (EvaluationLimitTime: {EvaluationLimitTime} ms)");
                 }
             }
             catch (AggregateException ex)
             {
-                Verbose.Error("An exception was thrown while evaluating an evaluator: {0}", ex.InnerException.ToString());
+                Verbose.Error($"An exception was thrown while evaluating an evaluator: {ex.InnerException.ToString()}");
             }
             catch (Exception ex)
             {
-                Verbose.Error("An unexpected exception was thrown while evaluating an evaluator: {0}", ex.ToString());
+                Verbose.Error($"An unexpected exception was thrown while evaluating an evaluator: {ex.ToString()}");
             }
             return false;
         }
@@ -102,8 +103,6 @@ namespace Crevice.GestureMachine
         {
             if (disposing)
             {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource.Dispose();
                 _evaluationScheduler.Dispose();
                 _executionScheduler.Dispose();
             }

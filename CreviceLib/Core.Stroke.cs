@@ -4,9 +4,10 @@ using System.Text;
 
 namespace Crevice.Core.Stroke
 {
-    using System.Collections.Concurrent;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Drawing;
-    
+
     public enum StrokeDirection
     {
         Up,
@@ -15,52 +16,88 @@ namespace Crevice.Core.Stroke
         Right
     }
 
-    public abstract class PointProcessor
+    public abstract class PointProcessor : IDisposable
     {
-        public readonly int WatchInterval;
+        protected internal readonly TaskFactory taskFactory;
 
-        private int lastTickCount = 0;
+        private readonly CancellationTokenSource tokenSource;
 
-        public PointProcessor(int watchInterval)
+        private readonly int watchInterval;
+
+        private int lastProcessedTickCount = 0;
+
+        private object _lockObject = new object();
+
+        private Point? skippedPoint = null;
+
+        public PointProcessor(TaskFactory taskFactory, int watchInterval)
         {
-            this.WatchInterval = watchInterval;
+            this.watchInterval = watchInterval;
+            this.taskFactory = taskFactory; 
+            this.tokenSource = new CancellationTokenSource();
+            StartBackgroundTask();
         }
 
-        private bool MustBeProcessed(int currentTickCount)
-        {
-            if (WatchInterval <= 0)
+        private void StartBackgroundTask() =>
+            taskFactory.StartNew(() =>
             {
-                return true;
-            }
-            if (currentTickCount < lastTickCount || lastTickCount + WatchInterval < currentTickCount)
+                while (!tokenSource.Token.IsCancellationRequested)
+                {
+                    var currentTickCount = Environment.TickCount;
+                    lock (_lockObject)
+                    {
+                        if (skippedPoint.HasValue && MustBeProcessed(currentTickCount))
+                        {
+                            OnProcess(skippedPoint.Value);
+                            skippedPoint = null;
+                        }
+                    }
+                    Thread.Sleep(1);
+                }
+            }, tokenSource.Token).ContinueWith(t => 
             {
-                lastTickCount = currentTickCount;
-                return true;
-            }
-            return false;
-        }
+                tokenSource.Dispose();
+            });
 
-        public bool Process(Point point)
+            private bool MustBeProcessed(int currentTickCount) =>
+            watchInterval <= 0 ||
+            currentTickCount < lastProcessedTickCount ||
+            lastProcessedTickCount + watchInterval < currentTickCount;
+
+        public virtual void Process(Point point)
         {
-            if (!MustBeProcessed(currentTickCount: Environment.TickCount))
+            var currentTickCount = Environment.TickCount;
+            lock (_lockObject)
             {
-                return false;
+                if (MustBeProcessed(currentTickCount))
+                {
+                    lastProcessedTickCount = currentTickCount;
+                    OnProcess(point);
+                    skippedPoint = null;
+                }
+                else
+                {
+                    skippedPoint = point;
+                }
             }
-            OnProcess(point);
-            return true;
         }
 
         internal abstract void OnProcess(Point point);
-    }
 
-    public abstract class QueuedPointProcessor : PointProcessor
-    {
-        internal readonly BlockingCollection<Point> queue
-            = new BlockingCollection<Point>();
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-        public QueuedPointProcessor(int watchInterval) : base(watchInterval) { }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                tokenSource.Cancel();
+            }
+        }
 
-        internal override void OnProcess(Point point)
-            => queue.Add(point);
+        ~PointProcessor() => Dispose(false);
     }
 }

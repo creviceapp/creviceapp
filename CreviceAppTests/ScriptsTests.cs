@@ -50,7 +50,7 @@ namespace Crevice4Tests
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.AreEqual(errors.Count() == 0, true);
             var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptFile + ".cache", userScriptString, parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScriptAssembly(ctx, cache);
             Assert.AreEqual(ctx.Profiles[0].RootElement.GestureCount > 0, true);
         }
@@ -93,7 +93,7 @@ namespace Crevice4Tests
             var errors = UserScript.CompileUserScript(parsedScript);
             Assert.AreEqual(errors.Count() == 0, true);
             var cache = UserScript.GenerateUserScriptAssemblyCache(userScriptFile + ".cache", userScriptString, parsedScript);
-            var ctx = new UserScriptExecutionContext(globalConfig);
+            var ctx = new UserScriptExecutionContext(globalConfig, null);
             UserScript.EvaluateUserScriptAssembly(ctx, cache);
             Assert.AreEqual(ctx.Profiles.Count == 0, true);
         }
