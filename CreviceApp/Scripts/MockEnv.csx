@@ -20,6 +20,9 @@ var debugLauncherForm = new LauncherForm(debugGlobalConfig);
 var debugMainForm = new MainFormBase(debugLauncherForm);
 var debugExecutionContext = new UserScriptExecutionContext(debugGlobalConfig, debugMainForm);
 
+GestureMachineProfile CurrentProfile
+    => debugExecutionContext.CurrentProfile;
+
 void DeclareProfile(string profileName) 
     => debugExecutionContext.DeclareProfile(profileName);
 
@@ -66,11 +69,11 @@ IReadOnlyList<SupportedKeys.PhysicalKeyDeclaration> PhysicalKeys
 Crevice.WinAPI.SendInput.SingleInputSender SendInput 
     => debugExecutionContext.SendInput;
 
-IGestureMachine RootGestureMachine 
-    => debugExecutionContext.RootGestureMachine;
-
 void InvokeOnMainThread(Action action)
     => debugMainForm.Invoke(action);
+
+IGestureMachine RootGestureMachine 
+    => debugExecutionContext.RootGestureMachine;
 
 UserConfig Config 
     => debugExecutionContext.Config;
