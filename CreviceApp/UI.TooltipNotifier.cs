@@ -32,7 +32,7 @@ namespace Crevice.UI
 
         public void Show(string text, Point point, int duration)
         {
-            StopTimer.Invoke(tooltip, new object[] { win });
+            StopTimer.Invoke(tooltip, new object[] {});
             SetTrackPosition.Invoke(tooltip, new object[] { point.X, point.Y });
             SetTool.Invoke(tooltip, new object[] { win, text, Absolute, point });
             StartTimer.Invoke(tooltip, new object[] { win, duration });
