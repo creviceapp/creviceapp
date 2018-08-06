@@ -66,7 +66,7 @@ namespace Crevice.GestureMachine
                 }
                 catch (Exception ex)
                 {
-                    Verbose.Error($"An exception was thrown while executing an Executor(\"{executor.Description}\"): {ex.InnerException.ToString()}");
+                    Verbose.Error($"An exception was thrown while executing an Executor(\"{executor.Description}\"): {ex.ToString()}");
                 }
             });
         }

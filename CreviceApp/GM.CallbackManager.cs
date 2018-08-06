@@ -28,7 +28,17 @@ namespace Crevice.GestureMachine
                 _taskFactory = new TaskFactory(_scheduler);
             }
 
-            public void Execute(Action action) => _taskFactory.StartNew(action);
+            public void Execute(Action action) => _taskFactory.StartNew(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    Verbose.Error($"An exception was thrown while executing a callback action: {ex.ToString()}");
+                }
+            });
 
             public void Dispose()
             {
