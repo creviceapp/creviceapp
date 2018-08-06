@@ -7,8 +7,49 @@ using System.Threading.Tasks;
 
 namespace Crevice.Logging
 {
+    using System.Collections.Concurrent;
+
     public static class Verbose
     {
+        private enum MessageType
+        {
+            Standard,
+            Error
+        }
+
+        private static BlockingCollection<(MessageType, string)> printQueue = new BlockingCollection<(MessageType, string)>();
+
+        static Verbose()
+        {
+            Task.Run(() => 
+            {
+                foreach (var (type, message) in printQueue.GetConsumingEnumerable())
+                {
+                    switch(type)
+                    {
+                        case MessageType.Standard:
+                            try
+                            {
+                                Console.Write(message);
+                            }
+                            catch (System.IO.IOException) { }
+                            catch (UnauthorizedAccessException) { }
+                            break;
+                        case MessageType.Error:
+                            try
+                            {
+                                Console.Error.Write(message);
+                            }
+                            catch (System.IO.IOException) { }
+                            catch (UnauthorizedAccessException) { }
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            });
+        }
+
         public class ElapsedTimePrinter : IDisposable
         {
             public readonly string Message;
@@ -59,39 +100,21 @@ namespace Crevice.Logging
         
         public static void Print(string message, bool omitNewline = false)
         {
-            Debug.Print(message);
+            var standardMessage = message + (omitNewline ? "" : "\r\n");
+            Debug.Write(standardMessage);
             if (Enabled)
             {
-                try
-                {
-                    if (omitNewline)
-                    {
-                        Console.Write(message);
-                    }
-                    else
-                    {
-                        Console.WriteLine(message);
-                    }
-                }
-                catch (System.IO.IOException) {}
-                catch (UnauthorizedAccessException) {}
+                printQueue.Add((MessageType.Standard, standardMessage));
             }
         }
 
         public static void Error(string message, bool omitPrefix = false, bool omitNewline = false)
         {
-            var errorMessage = omitPrefix ? message : $"[Error] {message}";
-            Debug.Print(errorMessage);
+            var errorMessage = (omitPrefix ? "" : "[Error] ") + message + (omitNewline ? "" : "\r\n");
+            Debug.Write(errorMessage);
             if (Enabled)
             {
-                if (omitNewline)
-                {
-                    Console.Error.Write(errorMessage);
-                }
-                else
-                {
-                    Console.Error.WriteLine(errorMessage);
-                }
+                printQueue.Add((MessageType.Error, errorMessage));
             }
         }
 
