@@ -47,6 +47,15 @@ namespace Crevice4Tests
             mutex.ReleaseMutex();
         }
 
+        private void WaitForPrintCompletion()
+        {
+            while (Verbose.printQueue.Count > 0)
+            {
+                Thread.Sleep(1);
+            }
+            Thread.Sleep(100);
+        }
+
         [TestMethod()]
         public void PrintTest()
         {
@@ -56,6 +65,8 @@ namespace Crevice4Tests
                 Console.SetOut(sw);
                 var testMessage = "test message";
                 Verbose.Print(testMessage);
+                var queue = Verbose.printQueue;
+                WaitForPrintCompletion();
                 Assert.AreEqual(testMessage + "\r\n", sw.ToString());
             }
         }
@@ -69,6 +80,7 @@ namespace Crevice4Tests
                 Console.SetError(sw);
                 var testMessage = "test error message";
                 Verbose.Error(testMessage);
+                WaitForPrintCompletion();
                 Assert.AreEqual("[Error] " + testMessage + "\r\n", sw.ToString());
             }
         }
@@ -96,6 +108,15 @@ namespace Crevice4Tests
             Console.SetError(_consoleError);
         }
 
+        private void WaitForPrintCompletion()
+        {
+            while (Verbose.printQueue.Count > 0)
+            {
+                Thread.Sleep(1);
+            }
+            Thread.Sleep(100);
+        }
+
         [TestMethod()]
         public void ConstructorTest()
         {
@@ -105,8 +126,10 @@ namespace Crevice4Tests
                 Console.SetOut(sw);
                 var testMessage = "test message";
                 var elapsed = Verbose.PrintElapsed(testMessage);
+                WaitForPrintCompletion();
                 Assert.AreEqual(elapsed.Message, "[" + testMessage + "]"); 
                 elapsed.Dispose();
+                WaitForPrintCompletion();
             }
         }
 
@@ -120,12 +143,12 @@ namespace Crevice4Tests
                 var testMessage = "test message";
                 var elapsed = Verbose.PrintElapsed(testMessage);
                 elapsed.Dispose();
+                WaitForPrintCompletion();
                 var expect =
                     "[" + testMessage + "] was started.\r\n" +
                     "[" + testMessage + "] was finished.";
                 var result = sw.ToString();
                 Assert.AreEqual(result.Substring(0, expect.Length), expect);
-                elapsed.Dispose();
             }
         }
     }

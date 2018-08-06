@@ -11,13 +11,13 @@ namespace Crevice.Logging
 
     public static class Verbose
     {
-        private enum MessageType
+        internal enum MessageType
         {
             Standard,
             Error
         }
 
-        private static BlockingCollection<(MessageType, string)> printQueue = new BlockingCollection<(MessageType, string)>();
+        internal static BlockingCollection<(MessageType, string)> printQueue = new BlockingCollection<(MessageType, string)>();
 
         static Verbose()
         {
@@ -30,7 +30,7 @@ namespace Crevice.Logging
                         case MessageType.Standard:
                             try
                             {
-                                Console.Write(message);
+                                Console.Out.Write(message);
                             }
                             catch (System.IO.IOException) { }
                             catch (UnauthorizedAccessException) { }
