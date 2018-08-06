@@ -49,6 +49,8 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.DSL.ExecutorTest.cs" />
+    <Compile Include="Core.DSL.EvaluatorTest.cs" />
     <Compile Include="Core.ExampleTest.cs" />
     <Compile Include="Core.DSL.DSLSyntaxTest.cs" />
     <Compile Include="Core.EventsBenchmark.cs" />

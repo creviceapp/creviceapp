@@ -20,76 +20,54 @@ namespace Crevice.GestureMachine
     {
         public Point CursorPosition { get; set; }
         
-        public int EvaluationLimitTime { get; } = 1000; // ms
-
         public override EvaluationContext CreateEvaluateContext()
             => new EvaluationContext(CursorPosition);
 
         public override ExecutionContext CreateExecutionContext(EvaluationContext evaluationContext)
             => new ExecutionContext(evaluationContext, CursorPosition);
 
-        private readonly LowLatencyScheduler _evaluationScheduler =
-            new LowLatencyScheduler(
-                "EvaluationTaskScheduler",
-                ThreadPriority.AboveNormal,
-                Math.Max(2, Environment.ProcessorCount / 2));
-
         private readonly LowLatencyScheduler _executionScheduler = 
             new LowLatencyScheduler(
-                "ExecutionTaskScheduler",
+                "ExecutorExecutionTaskScheduler",
                 ThreadPriority.AboveNormal,
                 Math.Max(2, Environment.ProcessorCount / 2));
-
-        private TaskFactory _evaluationTaskFactory
-            => new TaskFactory(_evaluationScheduler);
 
         private TaskFactory _executionTaskFactory
             => new TaskFactory(_executionScheduler);
-
-        private async Task<bool> EvaluateAsync(
-            EvaluationContext evalContext,
-            IReadOnlyWhenElement<EvaluationContext, ExecutionContext> whenElement)
-        {
-            var task = _evaluationTaskFactory.StartNew(() =>
-            {
-                return whenElement.WhenEvaluator(evalContext);
-            });
-            try
-            {
-                if (await Task.WhenAny(task, Task.Delay(EvaluationLimitTime)).ConfigureAwait(false) == task)
-                {
-                    return task.Result;
-                }
-                else
-                {
-                    Verbose.Error($"Evaluation of WhenEvaluator was timeout; (EvaluationLimitTime: {EvaluationLimitTime} ms)");
-                }
-            }
-            catch (AggregateException ex)
-            {
-                Verbose.Error($"An exception was thrown while evaluating an evaluator: {ex.InnerException.ToString()}");
-            }
-            catch (Exception ex)
-            {
-                Verbose.Error($"An unexpected exception was thrown while evaluating an evaluator: {ex.ToString()}");
-            }
-            return false;
-        }
         
         public override IReadOnlyList<IReadOnlyWhenElement<EvaluationContext, ExecutionContext>> Evaluate(
             EvaluationContext evalContext,
             IEnumerable<IReadOnlyWhenElement<EvaluationContext, ExecutionContext>> whenElements)
             => whenElements.AsParallel()
                 .WithDegreeOfParallelism(Math.Max(2, Environment.ProcessorCount / 2))
-                .Where(w => w.WhenEvaluator(evalContext)).ToList();
+                .Where(w => 
+                {
+                    try
+                    {
+                        return w.WhenEvaluator.Evaluate(evalContext);
+                    }
+                    catch (Exception ex)
+                    {
+                        Verbose.Error($"An exception was thrown while evaluating a WhenEvaluator(\"{w.WhenEvaluator.Description}\"): {ex.ToString()}");
+                    }
+                    return false;
+                })
+                .ToList();
 
         public override void Execute(
             ExecutionContext execContext,
-            ExecuteAction<ExecutionContext> executeAction)
+            Executor<ExecutionContext> executor)
         {
             var task = _executionTaskFactory.StartNew(() =>
             {
-                executeAction(execContext);
+                try
+                {
+                    executor.Execute(execContext);
+                }
+                catch (Exception ex)
+                {
+                    Verbose.Error($"An exception was thrown while executing an Executor(\"{executor.Description}\"): {ex.InnerException.ToString()}");
+                }
             });
         }
 
@@ -103,7 +81,6 @@ namespace Crevice.GestureMachine
         {
             if (disposing)
             {
-                _evaluationScheduler.Dispose();
                 _executionScheduler.Dispose();
             }
         }

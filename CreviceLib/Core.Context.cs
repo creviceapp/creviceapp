@@ -8,10 +8,49 @@ namespace Crevice.Core.Context
     using Crevice.Core.DSL;
     
     public class EvaluationContext { }
-    public class ExecutionContext  { }
+    public class ExecutionContext { }
 
     public delegate bool EvaluateAction<in T>(T ctx);
     public delegate void ExecuteAction<in T>(T ctx);
+    
+    public class Evaluator<TEvalContext>
+        where TEvalContext : EvaluationContext
+    {
+        public readonly EvaluateAction<TEvalContext> Action;
+        public readonly string Description;
+
+        public Evaluator(EvaluateAction<TEvalContext> action, string description)
+        {
+            this.Action = action;
+            this.Description = description;
+        }
+
+        public bool Evaluate(TEvalContext ctx) => Action(ctx);
+    }
+
+    public enum ExecutorType
+    {
+        Press,
+        Do,
+        Release
+    }
+
+    public class Executor<TExecContext>
+        where TExecContext : ExecutionContext
+    {
+        public readonly ExecuteAction<TExecContext> Action;
+        public readonly ExecutorType Type;
+        public readonly string Description;
+
+        public Executor(ExecuteAction<TExecContext> action, ExecutorType type, string description)
+        {
+            this.Action = action;
+            this.Type = type;
+            this.Description = description;
+        }
+
+        public void Execute(TExecContext ctx) => Action(ctx);
+    }
 
     public abstract class ContextManager<TEvalContext, TExecContext>
         where TEvalContext : EvaluationContext
@@ -26,17 +65,17 @@ namespace Crevice.Core.Context
         public virtual IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> Evaluate(
             TEvalContext evalContext, 
             IEnumerable<IReadOnlyWhenElement<TEvalContext, TExecContext>> whenElements)
-            => whenElements.Where(w => w.WhenEvaluator(evalContext)).ToList();
+            => whenElements.Where(w => w.WhenEvaluator.Evaluate(evalContext)).ToList();
 
-        public virtual void Execute(TExecContext execContext, ExecuteAction<TExecContext> executeAction)
-            => executeAction(execContext);
+        public virtual void Execute(TExecContext execContext, Executor<TExecContext> executor)
+            => executor.Execute(execContext);
 
         private void Execute(
             TEvalContext evalContext,
-            IEnumerable<ExecuteAction<TExecContext>> executeActions)
+            IEnumerable<Executor<TExecContext>> executors)
         {
             var execContext = CreateExecutionContext(evalContext);
-            foreach (var executor in executeActions)
+            foreach (var executor in executors)
             {
                 Execute(execContext, executor);
             }

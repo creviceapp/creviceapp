@@ -40,8 +40,9 @@ namespace Crevice.Core.DSL
         private readonly List<WhenElement<TEvalContext, TExecContext>> whenElements = new List<WhenElement<TEvalContext, TExecContext>>();
         public IReadOnlyList<IReadOnlyWhenElement<TEvalContext, TExecContext>> WhenElements => whenElements;
 
-        public WhenElement<TEvalContext, TExecContext> When(EvaluateAction<TEvalContext> evaluator)
+        public WhenElement<TEvalContext, TExecContext> When(EvaluateAction<TEvalContext> evaluateAction, string description = "")
         {
+            var evaluator = new Evaluator<TEvalContext>(evaluateAction, description);
             var elm = new WhenElement<TEvalContext, TExecContext>(evaluator);
             whenElements.Add(elm);
             return elm;
@@ -52,7 +53,7 @@ namespace Crevice.Core.DSL
         where TEvalContext : EvaluationContext
         where TExecContext : ExecutionContext
     {
-        EvaluateAction<TEvalContext> WhenEvaluator { get; }
+        Evaluator<TEvalContext> WhenEvaluator { get; }
         IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> SingleThrowElements { get; }
         IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements { get; }
         IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>> DecomposedElements { get; }
@@ -73,7 +74,7 @@ namespace Crevice.Core.DSL
                DoubleThrowElements.Sum(e => e.GestureCount) +
                DecomposedElements.Sum(e => e.GestureCount);
 
-        public EvaluateAction<TEvalContext> WhenEvaluator { get; }
+        public Evaluator<TEvalContext> WhenEvaluator { get; }
 
         private readonly List<SingleThrowElement<TExecContext>> singleThrowElements = new List<SingleThrowElement<TExecContext>>();
         public IReadOnlyList<IReadOnlySingleThrowElement<TExecContext>> SingleThrowElements => singleThrowElements;
@@ -84,7 +85,7 @@ namespace Crevice.Core.DSL
         private readonly List<DecomposedElement<TExecContext>> decomposedElements = new List<DecomposedElement<TExecContext>>();
         public IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>> DecomposedElements => decomposedElements;
 
-        public WhenElement(EvaluateAction<TEvalContext> evaluator)
+        public WhenElement(Evaluator<TEvalContext> evaluator)
         {
             WhenEvaluator = evaluator;
         }
@@ -156,7 +157,7 @@ namespace Crevice.Core.DSL
         where TExecContext : ExecutionContext
     {
         FireEvent Trigger { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> DoExecutors { get; }
     }
 
     public class SingleThrowElement<TExecContext> : Element, IReadOnlySingleThrowElement<TExecContext>
@@ -168,16 +169,17 @@ namespace Crevice.Core.DSL
 
         public FireEvent Trigger { get; }
 
-        private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
+        private readonly List<Executor<TExecContext>> doExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> DoExecutors => doExecutors;
 
         public SingleThrowElement(FireEvent fireEvent)
         {
             Trigger = fireEvent;
         }
 
-        public SingleThrowElement<TExecContext> Do(ExecuteAction<TExecContext> executor)
+        public SingleThrowElement<TExecContext> Do(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Do, description);
             doExecutors.Add(executor);
             return this;
         }
@@ -191,9 +193,9 @@ namespace Crevice.Core.DSL
         IReadOnlyList<IReadOnlyDoubleThrowElement<TExecContext>> DoubleThrowElements { get; }
         IReadOnlyList<IReadOnlyDecomposedElement<TExecContext>> DecomposedElements { get; }
         IReadOnlyList<IReadOnlyStrokeElement<TExecContext>> StrokeElements { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> PressExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> DoExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> ReleaseExecutors { get; }
     }
 
     public class DoubleThrowElement<TExecContext> : Element, IReadOnlyDoubleThrowElement<TExecContext>
@@ -232,14 +234,14 @@ namespace Crevice.Core.DSL
         private readonly List<StrokeElement<TExecContext>> strokeElements = new List<StrokeElement<TExecContext>>();
         public IReadOnlyList<IReadOnlyStrokeElement<TExecContext>> StrokeElements => strokeElements;
 
-        private readonly List<ExecuteAction<TExecContext>> pressExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors => pressExecutors;
+        private readonly List<Executor<TExecContext>> pressExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> PressExecutors => pressExecutors;
 
-        private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
+        private readonly List<Executor<TExecContext>> doExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> DoExecutors => doExecutors;
 
-        private readonly List<ExecuteAction<TExecContext>> releaseExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors => releaseExecutors;
+        private readonly List<Executor<TExecContext>> releaseExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> ReleaseExecutors => releaseExecutors;
 
         public DoubleThrowElement(PressEvent pressEvent)
         {
@@ -315,20 +317,23 @@ namespace Crevice.Core.DSL
             return elm;
         }
 
-        public DoubleThrowElement<TExecContext> Press(ExecuteAction<TExecContext> executor)
+        public DoubleThrowElement<TExecContext> Press(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Press, description);
             pressExecutors.Add(executor);
             return this;
         }
 
-        public DoubleThrowElement<TExecContext> Do(ExecuteAction<TExecContext> executor)
+        public DoubleThrowElement<TExecContext> Do(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Do, description);
             doExecutors.Add(executor);
             return this;
         }
 
-        public DoubleThrowElement<TExecContext> Release(ExecuteAction<TExecContext> executor)
+        public DoubleThrowElement<TExecContext> Release(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Release, description);
             releaseExecutors.Add(executor);
             return this;
         }
@@ -338,8 +343,8 @@ namespace Crevice.Core.DSL
         where TExecContext : ExecutionContext
     {
         PressEvent Trigger { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> PressExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> ReleaseExecutors { get; }
     }
 
     public class DecomposedElement<TExecContext> : Element, IReadOnlyDecomposedElement<TExecContext>
@@ -355,25 +360,27 @@ namespace Crevice.Core.DSL
 
         public PressEvent Trigger { get; }
 
-        private readonly List<ExecuteAction<TExecContext>> pressExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> PressExecutors => pressExecutors;
+        private readonly List<Executor<TExecContext>> pressExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> PressExecutors => pressExecutors;
 
-        private readonly List<ExecuteAction<TExecContext>> releaseExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> ReleaseExecutors => releaseExecutors;
+        private readonly List<Executor<TExecContext>> releaseExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> ReleaseExecutors => releaseExecutors;
 
         public DecomposedElement(PressEvent pressEvent)
         {
             Trigger = pressEvent;
         }
 
-        public DecomposedElement<TExecContext> Press(ExecuteAction<TExecContext> executor)
+        public DecomposedElement<TExecContext> Press(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Press, description);
             pressExecutors.Add(executor);
             return this;
         }
 
-        public DecomposedElement<TExecContext> Release(ExecuteAction<TExecContext> executor)
+        public DecomposedElement<TExecContext> Release(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Release, description);
             releaseExecutors.Add(executor);
             return this;
         }
@@ -383,7 +390,7 @@ namespace Crevice.Core.DSL
         where TExecContext : ExecutionContext
     {
         StrokeSequence Strokes { get; }
-        IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors { get; }
+        IReadOnlyList<Executor<TExecContext>> DoExecutors { get; }
     }
 
     public class StrokeElement<TExecContext> : Element, IReadOnlyStrokeElement<TExecContext>
@@ -395,16 +402,17 @@ namespace Crevice.Core.DSL
 
         public StrokeSequence Strokes { get; }
 
-        private readonly List<ExecuteAction<TExecContext>> doExecutors = new List<ExecuteAction<TExecContext>>();
-        public IReadOnlyList<ExecuteAction<TExecContext>> DoExecutors => doExecutors;
+        private readonly List<Executor<TExecContext>> doExecutors = new List<Executor<TExecContext>>();
+        public IReadOnlyList<Executor<TExecContext>> DoExecutors => doExecutors;
 
         public StrokeElement(params StrokeDirection[] strokes)
         {
             Strokes = new StrokeSequence(strokes);
         }
 
-        public StrokeElement<TExecContext> Do(ExecuteAction<TExecContext> executor)
+        public StrokeElement<TExecContext> Do(ExecuteAction<TExecContext> executeAction, string description = "")
         {
+            var executor = new Executor<TExecContext>(executeAction, ExecutorType.Do, description);
             doExecutors.Add(executor);
             return this;
         }
