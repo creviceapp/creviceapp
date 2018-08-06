@@ -64,6 +64,7 @@ namespace Crevice.UI
                 ShowFatalErrorDialog("UnhookWindowsHookEx(WH_MOUSE_LL) was failed.");
             }
             WinAPI.Console.Console.FreeConsole();
+            Logging.Verbose.Enabled = false;
             base.OnClosed(e);
         }
 

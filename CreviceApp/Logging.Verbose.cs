@@ -17,39 +17,6 @@ namespace Crevice.Logging
             Error
         }
 
-        internal static BlockingCollection<(MessageType, string)> printQueue = new BlockingCollection<(MessageType, string)>();
-
-        static Verbose()
-        {
-            Task.Run(() => 
-            {
-                foreach (var (type, message) in printQueue.GetConsumingEnumerable())
-                {
-                    switch(type)
-                    {
-                        case MessageType.Standard:
-                            try
-                            {
-                                Console.Out.Write(message);
-                            }
-                            catch (System.IO.IOException) { }
-                            catch (UnauthorizedAccessException) { }
-                            break;
-                        case MessageType.Error:
-                            try
-                            {
-                                Console.Error.Write(message);
-                            }
-                            catch (System.IO.IOException) { }
-                            catch (UnauthorizedAccessException) { }
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-            });
-        }
-
         public class ElapsedTimePrinter : IDisposable
         {
             public readonly string Message;
@@ -91,20 +58,79 @@ namespace Crevice.Logging
             ~ElapsedTimePrinter() => Dispose(false);
         }
 
-        public static bool Enabled { get; private set; }
+        internal static BlockingCollection<(MessageType, string)> queue = null;
 
-        public static void Enable()
+        private static void SetupQueue()
         {
-            Enabled = true;
+            var bc = new BlockingCollection<(MessageType, string)>();
+            Task.Run(() =>
+            {
+                foreach (var (type, message) in bc.GetConsumingEnumerable())
+                {
+                    switch (type)
+                    {
+                        case MessageType.Standard:
+                            try
+                            {
+                                Console.Out.Write(message);
+                            }
+                            catch (System.IO.IOException) { }
+                            catch (UnauthorizedAccessException) { }
+                            break;
+                        case MessageType.Error:
+                            try
+                            {
+                                Console.Error.Write(message);
+                            }
+                            catch (System.IO.IOException) { }
+                            catch (UnauthorizedAccessException) { }
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            });
+            queue = bc;
+        }
+
+        private static readonly object _lockObject = new object();
+        private static bool _enabled = false;
+        public static bool Enabled
+        {
+            get => _enabled;
+            set
+            {
+                lock (_lockObject)
+                {
+                    if (value)
+                    {
+                        if (queue == null)
+                        {
+                            SetupQueue();
+                        }
+                        _enabled = true;
+                        return;
+                    }
+                    if (queue != null)
+                    {
+                        queue.CompleteAdding();
+                    }
+                    queue = null;
+                    _enabled = false;
+                }
+            }
         }
         
         public static void Print(string message, bool omitNewline = false)
         {
             var standardMessage = message + (omitNewline ? "" : "\r\n");
             Debug.Write(standardMessage);
-            if (Enabled)
+            lock (_lockObject)
             {
-                printQueue.Add((MessageType.Standard, standardMessage));
+                if (Enabled)
+                {
+                    queue.Add((MessageType.Standard, standardMessage));
+                }
             }
         }
 
@@ -112,9 +138,12 @@ namespace Crevice.Logging
         {
             var errorMessage = (omitPrefix ? "" : "[Error] ") + message + (omitNewline ? "" : "\r\n");
             Debug.Write(errorMessage);
-            if (Enabled)
+            lock (_lockObject)
             {
-                printQueue.Add((MessageType.Error, errorMessage));
+                if (Enabled)
+                {
+                    queue.Add((MessageType.Error, errorMessage));
+                }
             }
         }
 

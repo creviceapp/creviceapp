@@ -49,7 +49,7 @@ namespace Crevice4Tests
 
         private void WaitForPrintCompletion()
         {
-            while (Verbose.printQueue.Count > 0)
+            while (Verbose.queue.Count > 0)
             {
                 Thread.Sleep(1);
             }
@@ -59,22 +59,23 @@ namespace Crevice4Tests
         [TestMethod()]
         public void PrintTest()
         {
-            Verbose.Enable();
+            Verbose.Enabled = true;
             using (var sw = new StringWriter())
             {
                 Console.SetOut(sw);
                 var testMessage = "test message";
                 Verbose.Print(testMessage);
-                var queue = Verbose.printQueue;
+                var queue = Verbose.queue;
                 WaitForPrintCompletion();
                 Assert.AreEqual(testMessage + "\r\n", sw.ToString());
             }
+            Verbose.Enabled = false;
         }
 
         [TestMethod()]
         public void ErrorTest()
         {
-            Verbose.Enable();
+            Verbose.Enabled = true;
             using (var sw = new StringWriter())
             {
                 Console.SetError(sw);
@@ -83,6 +84,7 @@ namespace Crevice4Tests
                 WaitForPrintCompletion();
                 Assert.AreEqual("[Error] " + testMessage + "\r\n", sw.ToString());
             }
+            Verbose.Enabled = false;
         }
     }
 
@@ -110,7 +112,7 @@ namespace Crevice4Tests
 
         private void WaitForPrintCompletion()
         {
-            while (Verbose.printQueue.Count > 0)
+            while (Verbose.queue.Count > 0)
             {
                 Thread.Sleep(1);
             }
@@ -120,7 +122,7 @@ namespace Crevice4Tests
         [TestMethod()]
         public void ConstructorTest()
         {
-            Verbose.Enable();
+            Verbose.Enabled = true;
             using (var sw = new StringWriter())
             {
                 Console.SetOut(sw);
@@ -131,12 +133,13 @@ namespace Crevice4Tests
                 elapsed.Dispose();
                 WaitForPrintCompletion();
             }
+            Verbose.Enabled = false;
         }
 
         [TestMethod()]
         public void DisposeTest()
         {
-            Verbose.Enable();
+            Verbose.Enabled = true;
             using (var sw = new StringWriter())
             {
                 Console.SetOut(sw);
@@ -150,6 +153,7 @@ namespace Crevice4Tests
                 var result = sw.ToString();
                 Assert.AreEqual(result.Substring(0, expect.Length), expect);
             }
+            Verbose.Enabled = false;
         }
     }
 }
