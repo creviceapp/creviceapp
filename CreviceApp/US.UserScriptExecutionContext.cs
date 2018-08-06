@@ -80,8 +80,8 @@ namespace Crevice.UserScript
             => CurrentProfile.UserConfig;
 
         public Core.DSL.WhenElement<EvaluationContext, ExecutionContext> 
-            When(Core.Context.EvaluateAction<EvaluationContext> func)
-            => CurrentProfile.RootElement.When(func);
+            When(Core.Context.EvaluateAction<EvaluationContext> evaluateAction, string description = "")
+            => CurrentProfile.RootElement.When(evaluateAction, description);
 
         public void Tooltip(string text)
             => Tooltip(text, Config.UI.TooltipPositionBinding(WinAPI.Window.Window.GetPhysicalCursorPos()));

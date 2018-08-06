@@ -79,8 +79,8 @@ UserConfig Config
     => debugExecutionContext.Config;
 
 Crevice.Core.DSL.WhenElement<EvaluationContext, ExecutionContext> 
-    When(Crevice.Core.Context.EvaluateAction<EvaluationContext> func) 
-    => debugExecutionContext.When(func);
+    When(Crevice.Core.Context.EvaluateAction<EvaluationContext> evaluateAction, string description = "") 
+    => debugExecutionContext.When(evaluateAction, description);
 
 void Tooltip(string text)
     => debugExecutionContext.Tooltip(text);
