@@ -11,15 +11,12 @@ using System.Runtime.CompilerServices;
 
 namespace Crevice4Tests
 {
-    using System.Reflection;
-    using Crevice.Core.FSM;
     using Crevice.WinAPI.WindowsHookEx;
     using Crevice.UserScript.Keys;
     using Crevice.GestureMachine;
     using Crevice.DSL;
-    using Crevice.UserScript;
 
-    using TStateN = Crevice.Core.FSM.StateN<Crevice.Core.FSM.GestureMachineConfig, Crevice.GestureMachine.ContextManager, Crevice.GestureMachine.EvaluationContext, Crevice.GestureMachine.ExecutionContext>;
+    using TStateN = Crevice.Core.FSM.StateN<Crevice.GestureMachine.GestureMachineConfig, Crevice.GestureMachine.ContextManager, Crevice.GestureMachine.EvaluationContext, Crevice.GestureMachine.ExecutionContext>;
 
     [TestClass()]
     public class CallbackManagerTests

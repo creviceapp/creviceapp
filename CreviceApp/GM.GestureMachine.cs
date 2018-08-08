@@ -17,7 +17,6 @@ namespace Crevice.GestureMachine
     {
         private readonly CallbackManager customCallbackManager;
 
-
         public GestureMachine(
             GestureMachineConfig gestureMachineConfig,
             CallbackManager callbackManager)
