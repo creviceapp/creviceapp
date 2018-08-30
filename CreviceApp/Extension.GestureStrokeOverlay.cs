@@ -9,6 +9,7 @@ using System.Windows.Forms;
 namespace Crevice.Extension.GestureStrokeOverlay
 {
     using System.Drawing;
+    using System.Threading;
     using System.Collections.Concurrent;
     using Crevice.Logging;
 
@@ -84,24 +85,38 @@ namespace Crevice.Extension.GestureStrokeOverlay
 
         private int _maxRenderedStrokeId = 0;
 
-        private HashSet<Point> renderedPoints = new HashSet<Point>();
+        private HashSet<Point> _renderedPoints = new HashSet<Point>();
+
+        private CancellationTokenSource _tokenSource = null;
+
+        private void RequestCancel()
+        {
+            if (_tokenSource == null) return;
+            try
+            {
+                _tokenSource.Cancel();
+            }
+            catch { }
+        }
 
         public void Reset() =>
             InvokeProperly(() =>
             {
+                RequestCancel();
                 lock (_lockObject)
                 {
                     ClearTaintedArea();
                     this.TopMost = true;
                     this.TopLevel = true;
                     _maxRenderedStrokeId = 0;
-                    renderedPoints = new HashSet<Point>();
+                    _renderedPoints = new HashSet<Point>();
                 }
             });
 
         public void Draw(DrawMessage dm) =>
             InvokeProperly(() =>
             {
+                RequestCancel();
                 lock (_lockObject)
                 {
                     DrawStroke(dm);
@@ -110,12 +125,12 @@ namespace Crevice.Extension.GestureStrokeOverlay
 
         private void ClearTaintedArea()
         {
-            if (renderedPoints.Count <= 2) return;
+            if (_renderedPoints.Count <= 2) return;
             var margin = Math.Max(100, _lineWidth * 10);
-            var x = renderedPoints.Select(p => p.X).Min() - margin;
-            var y = renderedPoints.Select(p => p.Y).Min() - margin;
-            var w = renderedPoints.Select(p => p.X).Max() - x + margin * 2;
-            var h = renderedPoints.Select(p => p.Y).Max() - y + margin * 2;
+            var x = _renderedPoints.Select(p => p.X).Min() - margin;
+            var y = _renderedPoints.Select(p => p.Y).Min() - margin;
+            var w = _renderedPoints.Select(p => p.X).Max() - x + margin * 2;
+            var h = _renderedPoints.Select(p => p.Y).Max() - y + margin * 2;
             var rect = new Rectangle((int)x, (int)y, (int)w, (int)h);
             using (var g = CreateGraphics())
             using (var buffer = BufferedGraphicsManager.Current.Allocate(g, rect))
@@ -127,37 +142,49 @@ namespace Crevice.Extension.GestureStrokeOverlay
 
         private void DrawStroke(DrawMessage dm)
         {
-            using (var g = CreateGraphics())
+            _tokenSource = new CancellationTokenSource();
+            try
             {
-                var strokes = dm.Strokes;
-                var bufferedPoints = dm.BufferedPoints;
-                foreach (var (v, i) in dm.Strokes.Select((v, i) => (v, i)))
+                using (var g = CreateGraphics())
                 {
-                    // Previous last stroke should be re-rendered for the case it is undetermined stroke.
-                    if (i < _maxRenderedStrokeId)
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+
+                    var strokes = dm.Strokes;
+                    var bufferedPoints = dm.BufferedPoints;
+                    foreach (var (v, i) in strokes.Select((v, i) => (v, i)))
                     {
-                        Verbose.Print($"Stroke({i + 1}/{strokes.Count()}) was skipped.");
-                        continue;
+                        if (_tokenSource.IsCancellationRequested) return;
+
+                        // Previous last stroke should be re-rendered for the case it is undetermined stroke.
+                        if (i < _maxRenderedStrokeId) continue;
+
+                        var pen = v != strokes.Last() ? _normalLinePen : _newLinePen;
+                        var points = v.Points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
+                        DrawLines(g, pen, points);
+                        _maxRenderedStrokeId = i;
                     }
-                    var pen = v != strokes.Last() ? _normalLinePen : _newLinePen;
-                    var points = v.Points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
-                    Verbose.Print($"Drawing Stroke({i + 1}/{strokes.Count()}) of {points.Count()} points.");
-                    DrawLines(g, pen, points);
-                }
-                if (bufferedPoints.Any())
-                {
-                    var points = new List<Point>();
-                    if (strokes.Any() && strokes.Last().Points.Any())
+
+                    if (_tokenSource.IsCancellationRequested) return;
+
+                    if (bufferedPoints.Any())
                     {
-                        points.Add(strokes.Last().Points.Last());
+                        var points = new List<Point>();
+                        if (strokes.Any() && strokes.Last().Points.Any())
+                        {
+                            points.Add(strokes.Last().Points.Last());
+                        }
+                        points.AddRange(bufferedPoints);
+                        // Draw lines until the current cursor position. This works well almost of the times, 
+                        // but fails and results in incorrect drawing lines when the system is slow.
+                        points.Add(Cursor.Position);
+                        DrawLines(g, _undeterminedLinePen, points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray());
                     }
-                    points.AddRange(bufferedPoints);
-                    points.Add(Cursor.Position);
-                    
-                    Verbose.Print($"Drawing undetermined stroke of {points.Count()} points.");
-                    DrawLines(g, _undeterminedLinePen, points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray());
                 }
-                _maxRenderedStrokeId = strokes.Count() - 1;
+            }
+            finally
+            {
+                _tokenSource.Dispose();
+                _tokenSource = null;
             }
         }
 
@@ -166,7 +193,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
             g.DrawLines(pen, points);
             foreach (var p in points)
             {
-                renderedPoints.Add(p);
+                _renderedPoints.Add(p);
             }
         }
 
@@ -281,7 +308,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
                         }
                         catch (Exception ex)
                         {
-                            Verbose.Print($"Error on MessageProcessTask: {ex.ToString()}");
+                            Verbose.Error($"Error on MessageProcessTask: {ex.ToString()}");
                         }
                     }
                 }
