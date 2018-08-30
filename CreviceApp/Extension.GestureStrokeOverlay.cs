@@ -109,6 +109,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
 
         private void ClearTaintedArea()
         {
+            if (renderedPoints.Count <= 2) return;
             var margin = Math.Max(100, _lineWidth * 10);
             var x = renderedPoints.Select(p => p.X).Min() - margin;
             var y = renderedPoints.Select(p => p.Y).Min() - margin;
