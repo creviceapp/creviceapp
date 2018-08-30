@@ -72,15 +72,23 @@ namespace Crevice.Extension.GestureStrokeOverlay
             float lineWidth)
         {
             this._manager = manager;
-            this._normalLinePen = new Pen(normalLineColor, lineWidth);
-            this._newLinePen = new Pen(newLineColor, lineWidth);
-            this._undeterminedLinePen = new Pen(undeterminedLineColor, lineWidth);
+            this._normalLinePen = GetPrefferedPen(normalLineColor, lineWidth);
+            this._newLinePen = GetPrefferedPen(newLineColor, lineWidth);
+            this._undeterminedLinePen = GetPrefferedPen(undeterminedLineColor, lineWidth);
             this._lineWidth = lineWidth;
             this.MaximumSize = new Size(int.MaxValue, int.MaxValue);
             this.Size = size;
             this.Location = location;
             InitializeComponent();
         }
+
+        private Pen GetPrefferedPen(Color color, float width)
+            => new Pen(color, width)
+            {
+                StartCap = System.Drawing.Drawing2D.LineCap.Round,
+                EndCap = System.Drawing.Drawing2D.LineCap.Round,
+                LineJoin = System.Drawing.Drawing2D.LineJoin.Round
+            };
 
         private int _maxRenderedStrokeId = 0;
 
