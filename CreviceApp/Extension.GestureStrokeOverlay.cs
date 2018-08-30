@@ -17,9 +17,9 @@ namespace Crevice.Extension.GestureStrokeOverlay
     class ResetMessage : Message { }
     class DrawMessage : Message
     {
-        public readonly IEnumerable<Core.Stroke.Stroke> Strokes;
-        public readonly IEnumerable<Point> BufferedPoints;
-        public DrawMessage(IEnumerable<Core.Stroke.Stroke> strokes, IEnumerable<Point> bufferedPoints)
+        public readonly IReadOnlyList<Core.Stroke.Stroke> Strokes;
+        public readonly IReadOnlyList<Point> BufferedPoints;
+        public DrawMessage(IReadOnlyList<Core.Stroke.Stroke> strokes, IReadOnlyList<Point> bufferedPoints)
         {
             this.Strokes = strokes;
             this.BufferedPoints = bufferedPoints;
@@ -130,7 +130,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
         private Rectangle GetRectFromPoints(IEnumerable<Point> points)
         {
             if (points.Count() < 2) return new Rectangle(0, 0, 0, 0);
-            var margin = _lineWidth * 4;
+            var margin = _lineWidth * 10;
             var x = points.Select(p => p.X).Min() - margin;
             var y = points.Select(p => p.Y).Min() - margin;
             var w = points.Select(p => p.X).Max() - x + margin * 2;
@@ -164,14 +164,32 @@ namespace Crevice.Extension.GestureStrokeOverlay
                     {
                         if (_tokenSource.IsCancellationRequested) return;
 
-                        // Previous last stroke should be re-rendered for the case it is undetermined stroke.
-                        if (i < _maxRenderedStrokeId &&
-                            _strokeRectCache.ContainsKey(i) && Rectangle.Intersect(_undeterminedRect, _strokeRectCache[i]).IsEmpty) continue;
+                        if (!v.Points.Any() ||
+                            i < _maxRenderedStrokeId &&
+                            _strokeRectCache.ContainsKey(i) && 
+                            Rectangle.Intersect(_undeterminedRect, _strokeRectCache[i]).IsEmpty) continue;
+
+                        var points = new List<Point>();
+                        if (i > 0)
+                        {
+                            var prev = strokes[i - 1];
+                            if (prev.Points.Any())
+                            {
+                                points.Add(prev.Points.Last());
+                            }
+                        }
+                        points.AddRange(v.Points);
+
+                        if (v == strokes.Last())
+                        {
+                            DrawNewLines(g, b, points);
+                        }
+                        else
+                        {
+                            DrawNormalLines(g, b, points);
+                        }
                         
-                        if (v == strokes.Last()) DrawNewLines(g, b, v.Points);
-                        else DrawNormalLines(g, b, v.Points);
-                        
-                        _strokeRectCache[i] = GetRectFromPoints(v.Points);
+                        _strokeRectCache[i] = GetRectFromPoints(points);
                         _maxRenderedStrokeId = Math.Max(_maxRenderedStrokeId, i);
                     }
 
@@ -186,8 +204,6 @@ namespace Crevice.Extension.GestureStrokeOverlay
                             points.Add(strokes.Last().Points.Last());
                         }
                         points.AddRange(bufferedPoints);
-                        // Draw lines until the current cursor position. This works well almost of the times, 
-                        // but fails and results in incorrect drawing lines when the system is slow.
                         points.Add(Cursor.Position);
                         DrawUndeterminedLines(g, b, points);
                     }
@@ -202,10 +218,10 @@ namespace Crevice.Extension.GestureStrokeOverlay
             }
         }
 
-        private Point[] ToRelativePoint(IEnumerable<Point> points) 
+        private Point[] ToRelativePoint(IReadOnlyList<Point> points) 
             => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
 
-        private void DrawLines(Graphics g, BufferedGraphics b, Pen pen, IEnumerable<Point> points)
+        private void DrawLines(Graphics g, BufferedGraphics b, Pen pen, IReadOnlyList<Point> points)
         {
             var relativePoints = ToRelativePoint(points);
             g.DrawLines(pen, relativePoints);
@@ -216,13 +232,13 @@ namespace Crevice.Extension.GestureStrokeOverlay
             }
         }
 
-        private void DrawNormalLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) 
+        private void DrawNormalLines(Graphics g, BufferedGraphics b, IReadOnlyList<Point> points) 
             => DrawLines(g, b, _normalLinePen, points);
 
-        private void DrawNewLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) 
+        private void DrawNewLines(Graphics g, BufferedGraphics b, IReadOnlyList<Point> points) 
             => DrawLines(g, b, _newLinePen, points);
 
-        private void DrawUndeterminedLines(Graphics g, BufferedGraphics b, List<Point> points)
+        private void DrawUndeterminedLines(Graphics g, BufferedGraphics b, IReadOnlyList<Point> points)
         {
             DrawLines(g, b, _undeterminedLinePen, points);
             _undeterminedRect = GetRectFromPoints(points);
@@ -283,7 +299,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
             catch (InvalidOperationException) { }
         }
 
-        public void Draw(Core.Stroke.StrokeWatcher strokeWatcher, IEnumerable<Core.Stroke.Stroke> strokes, IEnumerable<Point> bufferedPoints)
+        public void Draw(Core.Stroke.StrokeWatcher strokeWatcher, IReadOnlyList<Core.Stroke.Stroke> strokes, IReadOnlyList<Point> bufferedPoints)
         {
             try
             {
