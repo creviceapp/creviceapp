@@ -203,28 +203,29 @@ namespace Crevice.Extension.GestureStrokeOverlay
             }
         }
 
-        private Point[] ToRelativePoint(IEnumerable<Point> points) => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
+        private Point[] ToRelativePoint(IEnumerable<Point> points) 
+            => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
 
         private void DrawLines(Graphics g, BufferedGraphics b, Pen pen, IEnumerable<Point> points)
         {
             var relativePoints = ToRelativePoint(points);
             g.DrawLines(pen, relativePoints);
             b.Graphics.DrawLines(pen, relativePoints);
-            foreach (var p in points)
+            foreach (var p in relativePoints)
             {
                 _renderedPoints.Add(p);
             }
         }
 
-        private void DrawNormalLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) => DrawLines(g, b, _normalLinePen, points);
+        private void DrawNormalLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) 
+            => DrawLines(g, b, _normalLinePen, points);
 
-        private void DrawNewLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) => DrawLines(g, b, _newLinePen, points);
+        private void DrawNewLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) 
+            => DrawLines(g, b, _newLinePen, points);
 
         private void DrawUndeterminedLines(Graphics g, BufferedGraphics b, List<Point> points)
         {
-            var relativePoints = ToRelativePoint(points);
-            g.DrawLines(_undeterminedLinePen, relativePoints);
-            b.Graphics.DrawLines(_undeterminedLinePen, relativePoints);
+            DrawLines(g, b, _undeterminedLinePen, points);
             _undeterminedRect = GetRectFromPoints(points);
         }
 
