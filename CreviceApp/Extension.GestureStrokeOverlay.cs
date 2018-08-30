@@ -75,6 +75,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
             this._newLinePen = new Pen(newLineColor, lineWidth);
             this._undeterminedLinePen = new Pen(undeterminedLineColor, lineWidth);
             this._lineWidth = lineWidth;
+            this.MaximumSize = size;
             this.ClientSize = size;
             this.Size = size;
             this.Location = location;
