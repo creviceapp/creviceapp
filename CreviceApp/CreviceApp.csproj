@@ -136,6 +136,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config.GestureStrokeOverlayConfig.cs" />
+    <Compile Include="Extension.GestureStrokeOverlay.cs" />
     <Compile Include="GM.GestureMachineConfig.cs" />
     <Compile Include="GM.GestureMachineProfile.cs" />
     <Compile Include="Config.GlobalConfig.cs" />

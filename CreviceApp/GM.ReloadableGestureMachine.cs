@@ -12,6 +12,7 @@ namespace Crevice.GestureMachine
     using Crevice.Logging;
     using Crevice.Config;
     using Crevice.UserScript;
+    using Crevice.Extension.GestureStrokeOverlay;
 
     using GetGestureMachineResult =
         Tuple<GestureMachineCluster,
@@ -170,6 +171,7 @@ namespace Crevice.GestureMachine
                             }
                             else
                             {
+                                SetupGestureStrokeOverlay(gmCluster);
                                 gmCluster.Run();
                                 Instance = gmCluster;
                                 if (runtimeError == null)
@@ -206,7 +208,45 @@ namespace Crevice.GestureMachine
                 _semaphore.Release();
             }
         }
-        
+
+        private void SetupGestureStrokeOverlay(GestureMachineCluster gmCluster)
+        {
+            foreach (var profile in gmCluster.Profiles)
+            {
+                if (!profile.UserConfig.GestureStrokeOverlay.Enabled) continue;
+
+                var config = profile.UserConfig.GestureStrokeOverlay;
+                var callback = profile.UserConfig.Callback;
+
+                GestureStrokeOverlay overlay = null;
+
+                callback.MachineStart += (sender, e) =>
+                {
+                    _mainForm.BeginInvoke((Action) delegate {
+                        overlay = new GestureStrokeOverlay(config.NormalLineColor, config.NewLineColor, config.UndeterminedLineColor, config.LineWidth);
+                    });
+                };
+
+                callback.MachineStop += (sender, e) =>
+                {
+                    _mainForm.BeginInvoke((Action)delegate {
+                        overlay?.Dispose();
+                    });
+                };
+
+                callback.StrokeUpdated += (sender, e) =>
+                {
+                    var strokeWatcher = sender as Core.Stroke.StrokeWatcher;
+                    overlay?.Draw(strokeWatcher, e.Strokes, strokeWatcher.GetBufferedPoints());
+                };
+
+                callback.StrokeReset += (sender, e) =>
+                {
+                    overlay?.Reset(e.CurrentStrokeWatcher);
+                };
+            }
+        }
+
         private void ReleaseUnusedMemory()
         {
             using (Verbose.PrintElapsed("Release unused memory"))

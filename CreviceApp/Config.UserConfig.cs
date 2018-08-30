@@ -14,6 +14,7 @@ namespace Crevice.Config
     {
         public readonly GestureMachineConfig Core = new GestureMachineConfig();
         public readonly UserInterfaceConfig UI = new UserInterfaceConfig();
+        public readonly GestureStrokeOverlayConfig GestureStrokeOverlay = new GestureStrokeOverlayConfig();
 
         public readonly CallbackManager.CallbackContainer Callback;
 
