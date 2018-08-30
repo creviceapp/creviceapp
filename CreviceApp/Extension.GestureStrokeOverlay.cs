@@ -86,6 +86,8 @@ namespace Crevice.Extension.GestureStrokeOverlay
         private int _maxRenderedStrokeId = 0;
 
         private HashSet<Point> _renderedPoints = new HashSet<Point>();
+        private Dictionary<int, Rectangle> _strokeRectCache = new Dictionary<int, Rectangle>();
+        private Rectangle _undeterminedRect = new Rectangle();
 
         private CancellationTokenSource _tokenSource = null;
 
@@ -105,11 +107,14 @@ namespace Crevice.Extension.GestureStrokeOverlay
                 RequestCancel();
                 lock (_lockObject)
                 {
-                    ClearTaintedArea();
+                    Clear(GetRectFromPoints(_renderedPoints));
+                    Clear(_undeterminedRect);
                     this.TopMost = true;
                     this.TopLevel = true;
                     _maxRenderedStrokeId = 0;
                     _renderedPoints = new HashSet<Point>();
+                    _strokeRectCache = new Dictionary<int, Rectangle>();
+                    _undeterminedRect = new Rectangle();
                 }
             });
 
@@ -123,15 +128,19 @@ namespace Crevice.Extension.GestureStrokeOverlay
                 }
             });
 
-        private void ClearTaintedArea()
+        private Rectangle GetRectFromPoints(IEnumerable<Point> points)
         {
-            if (_renderedPoints.Count <= 2) return;
-            var margin = Math.Max(100, _lineWidth * 10);
-            var x = _renderedPoints.Select(p => p.X).Min() - margin;
-            var y = _renderedPoints.Select(p => p.Y).Min() - margin;
-            var w = _renderedPoints.Select(p => p.X).Max() - x + margin * 2;
-            var h = _renderedPoints.Select(p => p.Y).Max() - y + margin * 2;
-            var rect = new Rectangle((int)x, (int)y, (int)w, (int)h);
+            if (points.Count() < 2) return new Rectangle(0, 0, 0, 0);
+            var margin = _lineWidth * 4;
+            var x = points.Select(p => p.X).Min() - margin;
+            var y = points.Select(p => p.Y).Min() - margin;
+            var w = points.Select(p => p.X).Max() - x + margin * 2;
+            var h = points.Select(p => p.Y).Max() - y + margin * 2;
+            return new Rectangle((int)x, (int)y, (int)w, (int)h);
+        }
+
+        private void Clear(Rectangle rect)
+        {
             using (var g = CreateGraphics())
             using (var buffer = BufferedGraphicsManager.Current.Allocate(g, rect))
             {
@@ -146,26 +155,30 @@ namespace Crevice.Extension.GestureStrokeOverlay
             try
             {
                 using (var g = CreateGraphics())
+                using (var b = BufferedGraphicsManager.Current.Allocate(g, _undeterminedRect))
                 {
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
-
+                    b.Graphics.Clear(Color.Transparent);
+                    
                     var strokes = dm.Strokes;
-                    var bufferedPoints = dm.BufferedPoints;
                     foreach (var (v, i) in strokes.Select((v, i) => (v, i)))
                     {
                         if (_tokenSource.IsCancellationRequested) return;
 
                         // Previous last stroke should be re-rendered for the case it is undetermined stroke.
-                        if (i < _maxRenderedStrokeId) continue;
-
-                        var pen = v != strokes.Last() ? _normalLinePen : _newLinePen;
-                        var points = v.Points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
-                        DrawLines(g, pen, points);
-                        _maxRenderedStrokeId = i;
+                        if (i < _maxRenderedStrokeId &&
+                            _strokeRectCache.ContainsKey(i) && Rectangle.Intersect(_undeterminedRect, _strokeRectCache[i]).IsEmpty) continue;
+                        
+                        if (v == strokes.Last()) DrawNewLines(g, b, v.Points);
+                        else DrawNormalLines(g, b, v.Points);
+                        
+                        _strokeRectCache[i] = GetRectFromPoints(v.Points);
+                        _maxRenderedStrokeId = Math.Max(_maxRenderedStrokeId, i);
                     }
 
                     if (_tokenSource.IsCancellationRequested) return;
 
+                    var bufferedPoints = dm.BufferedPoints;
                     if (bufferedPoints.Any())
                     {
                         var points = new List<Point>();
@@ -177,8 +190,10 @@ namespace Crevice.Extension.GestureStrokeOverlay
                         // Draw lines until the current cursor position. This works well almost of the times, 
                         // but fails and results in incorrect drawing lines when the system is slow.
                         points.Add(Cursor.Position);
-                        DrawLines(g, _undeterminedLinePen, points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray());
+                        DrawUndeterminedLines(g, b, points);
                     }
+
+                    b.Render();
                 }
             }
             finally
@@ -188,13 +203,29 @@ namespace Crevice.Extension.GestureStrokeOverlay
             }
         }
 
-        private void DrawLines(Graphics g, Pen pen, Point[] points)
+        private Point[] ToRelativePoint(IEnumerable<Point> points) => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
+
+        private void DrawLines(Graphics g, BufferedGraphics b, Pen pen, IEnumerable<Point> points)
         {
-            g.DrawLines(pen, points);
+            var relativePoints = ToRelativePoint(points);
+            g.DrawLines(pen, relativePoints);
+            b.Graphics.DrawLines(pen, relativePoints);
             foreach (var p in points)
             {
                 _renderedPoints.Add(p);
             }
+        }
+
+        private void DrawNormalLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) => DrawLines(g, b, _normalLinePen, points);
+
+        private void DrawNewLines(Graphics g, BufferedGraphics b, IEnumerable<Point> points) => DrawLines(g, b, _newLinePen, points);
+
+        private void DrawUndeterminedLines(Graphics g, BufferedGraphics b, List<Point> points)
+        {
+            var relativePoints = ToRelativePoint(points);
+            g.DrawLines(_undeterminedLinePen, relativePoints);
+            b.Graphics.DrawLines(_undeterminedLinePen, relativePoints);
+            _undeterminedRect = GetRectFromPoints(points);
         }
 
         private System.ComponentModel.IContainer components = null;
