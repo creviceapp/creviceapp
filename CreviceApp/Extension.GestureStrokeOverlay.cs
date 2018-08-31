@@ -146,6 +146,9 @@ namespace Crevice.Extension.GestureStrokeOverlay
             return new Rectangle((int)x, (int)y, (int)w, (int)h);
         }
 
+        private Rectangle GetRectFromLines(IEnumerable<IEnumerable<Point>> lines)
+            => lines.Select(x => GetRectFromPoints(x)).Aggregate((x, y) => Rectangle.Union(x, y));
+
         private void Clear(Rectangle rect)
         {
             using (var g = CreateGraphics())
@@ -166,38 +169,33 @@ namespace Crevice.Extension.GestureStrokeOverlay
                 {
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
                     b.Graphics.Clear(Color.Transparent);
-                    
+
+                    var gs0 = new Graphics[] { b.Graphics };
+                    var gs1 = new Graphics[] { g, b.Graphics };
+
                     var strokes = dm.Strokes;
                     foreach (var (v, i) in strokes.Select((v, i) => (v, i)))
                     {
                         if (_tokenSource.IsCancellationRequested) return;
 
+                        var isNormal = i < _maxRenderedStrokeId;
+                        var hasRectCache = _strokeRectCache.ContainsKey(i);
+
                         if (!v.Points.Any() ||
-                            i < _maxRenderedStrokeId &&
-                            _strokeRectCache.ContainsKey(i) && 
-                            Rectangle.Intersect(_undeterminedRect, _strokeRectCache[i]).IsEmpty) continue;
+                            isNormal && hasRectCache && 
+                            !_undeterminedRect.IntersectsWith(_strokeRectCache[i])) continue;
 
-                        var points = new List<Point>();
-                        if (i > 0)
+                        var lines = GetDeterminedLines(strokes, i).ToList();
+                        if (isNormal)
                         {
-                            var prev = strokes[i - 1];
-                            if (prev.Points.Any())
-                            {
-                                points.Add(prev.Points.Last());
-                            }
-                        }
-                        points.AddRange(v.Points);
-
-                        if (v == strokes.Last())
-                        {
-                            DrawNewLines(g, b, points);
+                            var gs = isNormal && hasRectCache ? gs0 : gs1;
+                            DrawNormalLines(lines, gs);
+                            _strokeRectCache[i] = GetRectFromLines(lines);
                         }
                         else
                         {
-                            DrawNormalLines(g, b, points);
+                            DrawNewLines(lines, gs1);
                         }
-                        
-                        _strokeRectCache[i] = GetRectFromPoints(points);
                         _maxRenderedStrokeId = Math.Max(_maxRenderedStrokeId, i);
                     }
 
@@ -206,14 +204,9 @@ namespace Crevice.Extension.GestureStrokeOverlay
                     var bufferedPoints = dm.BufferedPoints;
                     if (bufferedPoints.Any())
                     {
-                        var points = new List<Point>();
-                        if (strokes.Any() && strokes.Last().Points.Any())
-                        {
-                            points.Add(strokes.Last().Points.Last());
-                        }
-                        points.AddRange(bufferedPoints);
-                        points.Add(Cursor.Position);
-                        DrawUndeterminedLines(g, b, points);
+                        var lines = GetUndeterminedLines(strokes, bufferedPoints).ToList();
+                        DrawUndeterminedLines(lines, gs1);
+                        _undeterminedRect = GetRectFromLines(lines);
                     }
 
                     b.Render();
@@ -226,31 +219,73 @@ namespace Crevice.Extension.GestureStrokeOverlay
             }
         }
 
-        private Point[] ToRelativePoint(IReadOnlyList<Point> points) 
-            => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
-
-        private void DrawLines(Graphics g, BufferedGraphics b, Pen pen, IReadOnlyList<Point> points)
+        private IEnumerable<IEnumerable<Point>> GetDeterminedLines(IReadOnlyList<Core.Stroke.Stroke> strokes, int pos)
         {
-            var relativePoints = ToRelativePoint(points);
-            g.DrawLines(pen, relativePoints);
-            b.Graphics.DrawLines(pen, relativePoints);
-            foreach (var p in relativePoints)
+            var xs = strokes[pos].Points;
+            if (xs.Any())
             {
-                _renderedPoints.Add(p);
+                if (pos > 0)
+                {
+                    var prev = strokes[pos - 1].Points;
+                    if (prev.Any())
+                    {
+                        yield return new Point[] { prev.Last(), xs.First() };
+                    }
+                }
+                if (xs.Count > 1)
+                {
+                    yield return xs;
+                }
             }
         }
 
-        private void DrawNormalLines(Graphics g, BufferedGraphics b, IReadOnlyList<Point> points) 
-            => DrawLines(g, b, _normalLinePen, points);
-
-        private void DrawNewLines(Graphics g, BufferedGraphics b, IReadOnlyList<Point> points) 
-            => DrawLines(g, b, _newLinePen, points);
-
-        private void DrawUndeterminedLines(Graphics g, BufferedGraphics b, IReadOnlyList<Point> points)
+        private IEnumerable<IEnumerable<Point>> GetUndeterminedLines(IReadOnlyList<Core.Stroke.Stroke> strokes, IReadOnlyList<Point> buf)
         {
-            DrawLines(g, b, _undeterminedLinePen, points);
-            _undeterminedRect = GetRectFromPoints(points);
+            if (buf.Any())
+            {
+                if (strokes.Any())
+                {
+                    var last = strokes.Last().Points;
+                    if (last.Any())
+                    {
+                        yield return new Point[] { last.Last(), buf.First() };
+                    }
+                }
+                if (buf.Count > 1)
+                {
+                    yield return buf;
+                }
+                yield return new Point[] { buf.Last(), Cursor.Position };
+            }
         }
+
+        private Point[] ToRelativePoint(IEnumerable<Point> points) 
+            => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
+
+        private void DrawLines(Pen pen, IEnumerable<IEnumerable<Point>> lines, params Graphics[] gs)
+        {
+            foreach (var points in lines)
+            {
+                var relativePoints = ToRelativePoint(points);
+                foreach (var g in gs)
+                {
+                    g.DrawLines(pen, relativePoints);
+                }
+                foreach (var p in relativePoints)
+                {
+                    _renderedPoints.Add(p);
+                }
+            }
+        }
+
+        private void DrawNormalLines(IEnumerable<IEnumerable<Point>> lines, params Graphics[] gs)
+            =>  DrawLines(_normalLinePen, lines, gs);
+
+        private void DrawNewLines(IEnumerable<IEnumerable<Point>> lines, params Graphics[] gs) 
+            => DrawLines(_newLinePen, lines, gs);
+
+        private void DrawUndeterminedLines(IEnumerable<IEnumerable<Point>> lines, params Graphics[] gs)
+            => DrawLines(_undeterminedLinePen, lines, gs);
 
         private System.ComponentModel.IContainer components = null;
 
