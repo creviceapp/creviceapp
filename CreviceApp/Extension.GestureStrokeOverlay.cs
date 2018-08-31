@@ -165,7 +165,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
             try
             {
                 using (var g = CreateGraphics())
-                using (var b = BufferedGraphicsManager.Current.Allocate(g, _undeterminedRect))
+                using (var b = BufferedGraphicsManager.Current.Allocate(g, ToRelativeRect(_undeterminedRect)))
                 {
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
                     b.Graphics.Clear(Color.Transparent);
@@ -261,6 +261,9 @@ namespace Crevice.Extension.GestureStrokeOverlay
 
         private Point[] ToRelativePoint(IEnumerable<Point> points) 
             => points.Select(p => new Point(p.X - Location.X, p.Y - Location.Y)).ToArray();
+
+        private Rectangle ToRelativeRect(Rectangle rect)
+            => new Rectangle(rect.X - Location.X, rect.Y - Location.Y, rect.Width, rect.Height);
 
         private void DrawLines(Pen pen, IEnumerable<IEnumerable<Point>> lines, params Graphics[] gs)
         {
