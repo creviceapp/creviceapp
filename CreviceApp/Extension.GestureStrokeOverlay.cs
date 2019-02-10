@@ -12,6 +12,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
     using System.Threading;
     using System.Collections.Concurrent;
     using Crevice.Logging;
+    using Crevice.WinAPI.Window;
 
     class Message { }
     class ResetMessage : Message { }
@@ -63,9 +64,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
         private readonly object _lockObject = new object();
 
         public OverlayForm(
-            GestureStrokeOverlay manager, 
-            Size size, 
-            Point location,
+            GestureStrokeOverlay manager,
             Color normalLineColor,
             Color newLineColor,
             Color undeterminedLineColor,
@@ -77,8 +76,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
             this._undeterminedLinePen = GetPrefferedPen(undeterminedLineColor, lineWidth);
             this._lineWidth = lineWidth;
             this.MaximumSize = new Size(int.MaxValue, int.MaxValue);
-            this.Size = size;
-            this.Location = location;
+            UpdateSizeAndLocation();
             InitializeComponent();
         }
 
@@ -131,9 +129,17 @@ namespace Crevice.Extension.GestureStrokeOverlay
                 RequestCancel();
                 lock (_lockObject)
                 {
+                    if (_maxRenderedStrokeId == 0) UpdateSizeAndLocation();
                     DrawStroke(dm);
                 }
             });
+
+        private void UpdateSizeAndLocation()
+        {
+            var workingArea = Screen.GetWorkingArea(Window.GetPhysicalCursorPos());
+            this.Size = workingArea.Size;
+            this.Location = workingArea.Location;
+        }
 
         private Rectangle GetRectFromPoints(IEnumerable<Point> points)
         {
@@ -366,15 +372,7 @@ namespace Crevice.Extension.GestureStrokeOverlay
 
         public GestureStrokeOverlay(Color normalLineColor, Color newLineColor, Color undeterminedLineColor, float lineWidth)
         {
-            var screens = Screen.AllScreens;
-            var overlayLocation = new Point(
-                screens.Select(s => s.Bounds.X).Min(), 
-                screens.Select(s => s.Bounds.Y).Min());
-            var overlaySize = new Size(
-                screens.Select(s => s.Bounds.X + s.Bounds.Width).Max() - overlayLocation.X, 
-                screens.Select(s => s.Bounds.Y + s.Bounds.Height).Max() - overlayLocation.Y);
-
-            _form = new OverlayForm(this, overlaySize, overlayLocation, normalLineColor, newLineColor, undeterminedLineColor, lineWidth);
+            _form = new OverlayForm(this, normalLineColor, newLineColor, undeterminedLineColor, lineWidth);
             _form.Show();
 
             RunMessageProcessTask();
