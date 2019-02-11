@@ -48,7 +48,6 @@ var Browser = When(ctx =>
           // Firefox's ModuleName may be different from normal one, it will start with 
           //`moz` and the extension is `tmp` ( e.g. `mozD4E5.tmp`).
           (ctx.ForegroundWindow.ModuleName.StartsWith("moz") &&
-               ctx.ForegroundWindow.ModuleName.EndsWith(".tmp") &&
                ctx.ForegroundWindow.ClassName == "MozillaWindowClass") ||
            ctx.ForegroundWindow.ModuleName == "opera.exe" ||
            ctx.ForegroundWindow.ModuleName == "iexplore.exe" ||
