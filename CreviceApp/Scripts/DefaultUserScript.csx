@@ -1,4 +1,4 @@
-﻿// crevice4 setting file.
+// crevice4 setting file.
 // You can use Visual Studio Code for editing this file. 
 
 #region #r direction section.
@@ -51,6 +51,7 @@ var Browser = When(ctx =>
                ctx.ForegroundWindow.ClassName == "MozillaWindowClass") ||
            ctx.ForegroundWindow.ModuleName == "opera.exe" ||
            ctx.ForegroundWindow.ModuleName == "iexplore.exe" ||
+           ctx.ForegroundWindow.ModuleName == "msedge.exe" ||
           (ctx.ForegroundWindow.ModuleName == "ApplicationFrameHost.exe" &&
                ctx.PointedWindow.Text == "Microsoft Edge") ||
           (ctx.ForegroundWindow.ModuleName == "explorer.exe" &&
