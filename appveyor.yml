@@ -2,7 +2,7 @@
 skip_tags: false
 skip_non_tags: false
 
-image: Visual Studio 2019
+image: Visual Studio 2017
 
 version: 4.18.{build}
 
@@ -27,7 +27,7 @@ init:
   - git config --global core.autocrlf false
 
 before_build:
-  - cmd: |
+  - ps: |
       Write-Host "Installing Windows SDK 1607 (10.0.14393)..." -ForegroundColor Cyan
       Write-Host "Downloading..."
       $exePath = "$env:temp\wdksetup.exe"
@@ -37,6 +37,7 @@ before_build:
       Remove-Item $exePath
       Write-Host "Installed" -ForegroundColor Green
 
+  - cmd: |
       nuget restore
 
 build:
