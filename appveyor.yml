@@ -28,8 +28,16 @@ init:
 
 before_build:
   - cmd: |
+      Write-Host "Installing Windows SDK 1607 (10.0.14393)..." -ForegroundColor Cyan
+      Write-Host "Downloading..."
+      $exePath = "$env:temp\wdksetup.exe"
+      (New-Object Net.WebClient).DownloadFile('https://go.microsoft.com/fwlink/p/?LinkId=838916', $exePath)
+      Write-Host "Installing..."
+      cmd /c start /wait $exePath /features + /quiet
+      Remove-Item $exePath
+      Write-Host "Installed" -ForegroundColor Green
+
       nuget restore
-      dotnet restore
 
 build:
   project: Crevice.sln
