@@ -28,6 +28,7 @@ init:
 
 install:
   - ps: (New-Object Net.WebClient).DownloadFile('https://go.microsoft.com/fwlink/p/?LinkId=838916', 'winsdksetup.exe')
+  - ps: cmd /c start /wait winsdksetup.exe /features + /quiet
 
 before_build:
   - cmd: nuget restore
