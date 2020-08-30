@@ -27,19 +27,10 @@ init:
   - git config --global core.autocrlf false
 
 install:
-  - ps: |
-      Write-Host "Installing Windows SDK 1607 (10.0.14393)..." -ForegroundColor Cyan
-      Write-Host "Downloading..."
-      $exePath = "$env:temp\wdksetup.exe"
-      (New-Object Net.WebClient).DownloadFile('https://go.microsoft.com/fwlink/p/?LinkId=838916', $exePath)
-      Write-Host "Installing..."
-      cmd /c start /wait $exePath /features + /quiet
-      Remove-Item $exePath
-      Write-Host "Installed" -ForegroundColor Green
+  - ps: (New-Object Net.WebClient).DownloadFile('https://go.microsoft.com/fwlink/p/?LinkId=838916', 'winsdksetup.exe')
 
 before_build:
-  - cmd: |
-      nuget restore
+  - cmd: nuget restore
 
 build:
   project: Crevice.sln
