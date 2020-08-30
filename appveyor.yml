@@ -26,7 +26,7 @@ configuration:
 init:
   - git config --global core.autocrlf false
 
-before_build:
+install:
   - ps: |
       Write-Host "Installing Windows SDK 1607 (10.0.14393)..." -ForegroundColor Cyan
       Write-Host "Downloading..."
@@ -37,6 +37,7 @@ before_build:
       Remove-Item $exePath
       Write-Host "Installed" -ForegroundColor Green
 
+before_build:
   - cmd: |
       nuget restore
 
