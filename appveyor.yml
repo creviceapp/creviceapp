@@ -29,6 +29,7 @@ init:
 before_build:
   - cmd: |
       nuget restore
+      dotnet restore
 
 build:
   project: Crevice.sln
