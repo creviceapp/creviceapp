@@ -2,7 +2,7 @@
 skip_tags: false
 skip_non_tags: false
 
-image: Visual Studio 2015
+image: Visual Studio 2017
 
 version: 4.18.{build}
 
@@ -25,12 +25,6 @@ configuration:
 
 init:
   - git config --global core.autocrlf false
-
-install:
-  - ps: (New-Object Net.WebClient).DownloadFile('https://go.microsoft.com/fwlink/p/?LinkId=838916', 'winsdksetup.exe')
-  - ps: cmd /c start /wait winsdksetup.exe /quiet /norestart
-  - ps: (New-Object Net.WebClient).DownloadFile('http://download.microsoft.com/download/6/3/B/63BADCE0-F2E6-44BD-B2F9-60F5F073038E/standalonesdk/sdksetup.exe', 'winsdksetup.exe')
-  - ps: cmd /c start /wait winsdksetup.exe /quiet /norestart
 
 before_build:
   - cmd: nuget restore
