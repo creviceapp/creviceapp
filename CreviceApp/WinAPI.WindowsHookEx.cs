@@ -240,7 +240,7 @@ namespace Crevice.WinAPI.WindowsHookEx
                 => ((uint)dwExtraInfo & MOUSEEVENTF_TMASK) == MOUSEEVENTF_FROMTABLET;
         }
 
-        public const uint MOUSEEVENTF_CREVICE_APP = 0xFFFFFF00;
+        public const uint MOUSEEVENTF_CREVICE_APP = 0xFF190700;
         public const uint MOUSEEVENTF_TMASK       = 0xFFFFFF00;
         public const uint MOUSEEVENTF_FROMTABLET  = 0xFF515700;
         
@@ -292,7 +292,7 @@ namespace Crevice.WinAPI.WindowsHookEx
             LLKHF_UP       = 0x80,
         }
 
-        public const uint KEYBOARDEVENTF_CREVICE_APP = 0xFFFFFF00;
+        public const uint KEYBOARDEVENTF_CREVICE_APP = 0xFF190700;
         public const uint KEYBOARDEVENTF_TMASK = 0xFFFFFF00;
 
         public LowLevelKeyboardHook(Func<Event, KBDLLHOOKSTRUCT, Result> userCallback) :

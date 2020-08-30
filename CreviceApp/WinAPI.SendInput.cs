@@ -138,8 +138,8 @@ namespace Crevice.WinAPI.SendInput
         
         private const int WHEEL_DELTA = 120;
 
-        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
-        private readonly UIntPtr KEYBOARDEVENTF_CREVICE_APP = new UIntPtr(0xFFFFFF00);
+        private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFF190700);
+        private readonly UIntPtr KEYBOARDEVENTF_CREVICE_APP = new UIntPtr(0xFF190700);
 
         protected void Send(INPUT[] input)
         {
