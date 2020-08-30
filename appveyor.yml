@@ -28,7 +28,7 @@ init:
 
 before_build:
   - cmd: |
-      nuget restore
+      nuget restore .\CreviceApp\CreviceApp.csproj
 
 build:
   project: Crevice.sln
