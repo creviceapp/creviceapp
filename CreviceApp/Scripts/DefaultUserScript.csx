@@ -1,4 +1,4 @@
-// crevice4 setting file.
+﻿// crevice4 setting file.
 // You can use Visual Studio Code for editing this file. 
 
 #region #r direction section.
@@ -40,13 +40,18 @@ using System.Threading.Tasks;
 //using static Crevice.WinAPI.Constants.VirtualKeys;
 #endregion
 
+#region Crevice Config section.
+// Comment out if you don't need the gesture visualization feature.
+// Config.GestureStrokeOverlay.Enabled = false;
+#endregion
+
 // Gestures for standard browsers.
 var Browser = When(ctx =>
 {
     return ctx.ForegroundWindow.ModuleName == "chrome.exe" ||
            ctx.ForegroundWindow.ModuleName == "firefox.exe" ||
-          // Firefox's ModuleName may be different from normal one, it will start with 
-          //`moz` and the extension is `tmp` ( e.g. `mozD4E5.tmp`).
+          // Firefox's ModuleName may be differ from normal ones in case waiting for restarting after it's upgrading.
+          // In that case, it's name starts with `moz` and has the class name "MozillaWindowClass".
           (ctx.ForegroundWindow.ModuleName.StartsWith("moz") &&
                ctx.ForegroundWindow.ClassName == "MozillaWindowClass") ||
            ctx.ForegroundWindow.ModuleName == "opera.exe" ||
