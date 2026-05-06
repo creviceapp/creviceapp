@@ -1,4 +1,4 @@
-name: Package Store MSIX
+name: Release ZIP
 
 on:
   workflow_dispatch:
@@ -11,10 +11,10 @@ on:
       - '*'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  package:
+  release-zip:
     runs-on: windows-2022
     env:
       Configuration: Release
@@ -53,23 +53,6 @@ jobs:
             throw ".NET Framework 4.6.2 targeting pack was not found at $targetingPack."
           }
 
-      - name: Check Windows SDK and packaging targets
-        shell: pwsh
-        run: |
-          $windowsSdk = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0"
-          if (-not (Test-Path -LiteralPath $windowsSdk)) {
-            throw "Windows SDK 10.0.22621.0 was not found at $windowsSdk."
-          }
-          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-          if (-not $vsPath) {
-            throw "Visual Studio with MSBuild was not found."
-          }
-          $desktopBridgeProps = Join-Path $vsPath 'MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props'
-          if (-not (Test-Path -LiteralPath $desktopBridgeProps)) {
-            throw "Windows Application Packaging Project targets were not found at $desktopBridgeProps. Install the MSIX Packaging Tools / UWP tooling for VS2022."
-          }
-
       - name: Restore NuGet packages
         shell: pwsh
         run: |
@@ -78,29 +61,41 @@ jobs:
           nuget restore CreviceLibTests\packages.config -PackagesDirectory packages
           dotnet restore CreviceLib\CreviceLib.csproj
 
-      - name: Build Store upload package
+      - name: Build desktop app
+        shell: cmd
+        run: msbuild CreviceApp\CreviceApp.csproj /p:Configuration=%Configuration% /verbosity:minimal
+
+      - name: Create unsigned ZIP
         shell: pwsh
         run: |
-          $packageDir = Join-Path $PWD 'artifacts\msix\'
-          $arguments = @(
-            'CreviceAppPackage\CreviceAppPackage.wapproj',
-            '/p:Configuration=Release',
-            '/p:Platform=x64',
-            "/p:AppxPackageDir=$packageDir",
-            '/p:GenerateAppxPackageOnBuild=true',
-            '/p:UapAppxPackageBuildMode=StoreUpload',
-            '/p:AppxBundle=Always',
-            '/p:AppxBundlePlatforms=x86|x64',
-            '/p:AppxPackageSigningEnabled=false',
-            '/verbosity:minimal'
-          )
-          & msbuild @arguments
+          $artifactDir = Join-Path $PWD 'artifacts\zip'
+          New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
+          $zipPath = Join-Path $artifactDir "Crevice-$env:CREVICE_VERSION-win32-unsigned.zip"
+          Compress-Archive -Path 'CreviceApp\bin\Release\*' -DestinationPath $zipPath -Force
+          $hash = Get-FileHash -Path $zipPath -Algorithm SHA256
+          "$($hash.Hash)  $(Split-Path -Leaf $zipPath)" | Set-Content -Path (Join-Path $artifactDir 'SHA256SUMS.txt') -Encoding ascii
 
-      - name: Upload Store package artifacts
+      - name: Upload ZIP artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: crevice-store-upload-${{ env.CREVICE_VERSION }}
-          path: |
-            artifacts/msix/**/*.msixupload
-            artifacts/msix/**/*.appxupload
+          name: crevice-unsigned-zip-${{ env.CREVICE_VERSION }}
+          path: artifacts/zip/**
           if-no-files-found: error
+
+      - name: Publish GitHub Release assets
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $assets = Get-ChildItem -Path artifacts\zip\*
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag @($assets.FullName) --clobber
+          } else {
+            gh release create $tag @($assets.FullName) --title $tag --notes "Crevice $tag"
+          }
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
