@@ -1,7 +1,5 @@
-| master | develop |
-|--------|---------|
-| [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/master?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/uuthd05870dkkj3w/branch/develop?svg=true)](https://ci.appveyor.com/project/rubyu/creviceapp/branch/develop) |
-
+[![CI](https://github.com/creviceapp/creviceapp/actions/workflows/ci.yml/badge.svg)](https://github.com/creviceapp/creviceapp/actions/workflows/ci.yml)
+[![Package MSIX](https://github.com/creviceapp/creviceapp/actions/workflows/package-msix.yml/badge.svg)](https://github.com/creviceapp/creviceapp/actions/workflows/package-msix.yml)
 
 **Crevice4** is multi purpose utility which supports gestures with **mouse** and **keyboard**.
 
