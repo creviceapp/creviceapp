@@ -1,0 +1,121 @@
+name: Package MSIX
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Optional package version, such as 4.14.500.0 or v4.14.500.
+        required: false
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: windows-2022
+    env:
+      Configuration: Release
+      MSIX_CERTIFICATE_BASE64: ${{ secrets.MSIX_CERTIFICATE_BASE64 }}
+      MSIX_CERTIFICATE_PASSWORD: ${{ secrets.MSIX_CERTIFICATE_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v3
+        with:
+          msbuild-architecture: x86
+
+      - name: Install legacy Windows SDK contracts
+        shell: pwsh
+        run: .\eng\Install-LegacyWindowsSdk.ps1
+
+      - name: Resolve package version
+        shell: pwsh
+        run: |
+          $version = '${{ inputs.version }}'
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            if ($env:GITHUB_REF_TYPE -eq 'tag') {
+              $version = $env:GITHUB_REF_NAME
+            } else {
+              $version = "4.14.$env:GITHUB_RUN_NUMBER.0"
+            }
+          }
+          .\eng\Set-Version.ps1 -Version $version
+
+      - name: Check .NET Framework 4.6.2 targeting pack
+        shell: pwsh
+        run: |
+          $targetingPack = "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2"
+          if (-not (Test-Path -LiteralPath $targetingPack)) {
+            throw ".NET Framework 4.6.2 targeting pack was not found at $targetingPack."
+          }
+
+      - name: Check Windows SDK and packaging targets
+        shell: pwsh
+        run: |
+          $windowsSdk = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0"
+          if (-not (Test-Path -LiteralPath $windowsSdk)) {
+            throw "Windows SDK 10.0.22621.0 was not found at $windowsSdk."
+          }
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $vsPath) {
+            throw "Visual Studio with MSBuild was not found."
+          }
+          $desktopBridgeProps = Join-Path $vsPath 'MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props'
+          if (-not (Test-Path -LiteralPath $desktopBridgeProps)) {
+            throw "Windows Application Packaging Project targets were not found at $desktopBridgeProps. Install the MSIX Packaging Tools / UWP tooling for VS2022."
+          }
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: |
+          nuget restore CreviceApp\packages.config -PackagesDirectory packages
+          nuget restore CreviceAppTests\packages.config -PackagesDirectory packages
+          nuget restore CreviceLibTests\packages.config -PackagesDirectory packages
+          dotnet restore CreviceLib\CreviceLib.csproj
+
+      - name: Decode signing certificate
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:MSIX_CERTIFICATE_BASE64)) {
+            throw "MSIX_CERTIFICATE_BASE64 secret is required to build a signed Store package."
+          }
+          if ([string]::IsNullOrWhiteSpace($env:MSIX_CERTIFICATE_PASSWORD)) {
+            throw "MSIX_CERTIFICATE_PASSWORD secret is required to build a signed Store package."
+          }
+          $certificatePath = Join-Path $env:RUNNER_TEMP 'CreviceAppPackage_StoreKey.pfx'
+          [System.IO.File]::WriteAllBytes($certificatePath, [System.Convert]::FromBase64String($env:MSIX_CERTIFICATE_BASE64))
+          "MSIX_CERTIFICATE_PATH=$certificatePath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build Store package
+        shell: pwsh
+        run: |
+          $packageDir = Join-Path $PWD 'artifacts\msix\'
+          $arguments = @(
+            'CreviceAppPackage\CreviceAppPackage.wapproj',
+            '/p:Configuration=Release',
+            '/p:Platform=x64',
+            "/p:AppxPackageDir=$packageDir",
+            '/p:GenerateAppxPackageOnBuild=true',
+            '/p:UapAppxPackageBuildMode=StoreUpload',
+            '/p:AppxBundle=Always',
+            '/p:AppxBundlePlatforms=x86|x64',
+            '/p:AppxPackageSigningEnabled=true',
+            "/p:PackageCertificateKeyFile=$env:MSIX_CERTIFICATE_PATH",
+            "/p:PackageCertificatePassword=$env:MSIX_CERTIFICATE_PASSWORD",
+            '/verbosity:minimal'
+          )
+          & msbuild @arguments
+
+      - name: Upload MSIX package artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: crevice-msix-${{ env.CREVICE_VERSION }}
+          path: artifacts/msix/**
+          if-no-files-found: error

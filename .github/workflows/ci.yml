@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: windows-2022
+    env:
+      Configuration: Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v3
+        with:
+          msbuild-architecture: x86
+
+      - name: Install legacy Windows SDK contracts
+        shell: pwsh
+        run: .\eng\Install-LegacyWindowsSdk.ps1
+
+      - name: Set build version
+        shell: pwsh
+        run: .\eng\Set-Version.ps1 -Version "4.14.${{ github.run_number }}.0"
+
+      - name: Check .NET Framework 4.6.2 targeting pack
+        shell: pwsh
+        run: |
+          $targetingPack = "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2"
+          if (-not (Test-Path -LiteralPath $targetingPack)) {
+            throw ".NET Framework 4.6.2 targeting pack was not found at $targetingPack."
+          }
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: |
+          nuget restore CreviceApp\packages.config -PackagesDirectory packages
+          nuget restore CreviceAppTests\packages.config -PackagesDirectory packages
+          nuget restore CreviceLibTests\packages.config -PackagesDirectory packages
+          dotnet restore CreviceLib\CreviceLib.csproj
+
+      - name: Build Crevice.Core package assets
+        shell: cmd
+        run: msbuild CreviceLib\CreviceLib.csproj /p:Configuration=%Configuration% /verbosity:minimal
+
+      - name: Build CreviceLibTests
+        shell: cmd
+        run: msbuild CreviceLibTests\CreviceLibTests.csproj /p:Configuration=%Configuration% /verbosity:minimal
+
+      - name: Build CreviceAppTests
+        shell: cmd
+        run: msbuild CreviceAppTests\CreviceAppTests.csproj /p:Configuration=%Configuration% /verbosity:minimal
+
+      - name: Run CreviceLibTests
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Workload.ManagedDesktop -property installationPath
+          if (-not $vsPath) {
+            $vsPath = & $vswhere -latest -products * -property installationPath
+          }
+          $vstest = Join-Path $vsPath 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe'
+          if (-not (Test-Path -LiteralPath $vstest)) {
+            throw "vstest.console.exe was not found at $vstest."
+          }
+          & $vstest CreviceLibTests\bin\Release\CreviceLibTests.dll /Logger:"trx;LogFileName=CreviceLibTests.trx"
+
+      - name: Pack Crevice.Core
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts\nuget | Out-Null
+          nuget pack CreviceLib\CreviceLib.csproj.nuspec -Version $env:CREVICE_VERSION -Symbols -OutputDirectory artifacts\nuget
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: TestResults/**/*.trx
+          if-no-files-found: ignore
+
+      - name: Upload desktop app
+        uses: actions/upload-artifact@v7
+        with:
+          name: crevice-desktop-release
+          path: CreviceApp/bin/Release/**
+          if-no-files-found: error
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: crevice-nuget
+          path: artifacts/nuget/*.nupkg
+          if-no-files-found: error
