@@ -28,11 +28,11 @@ jobs:
 
       - name: Install legacy Windows SDK contracts
         shell: pwsh
-        run: .\eng\Install-LegacyWindowsSdk.ps1
+        run: .\.github\scripts\Install-LegacyWindowsSdk.ps1
 
       - name: Set build version
         shell: pwsh
-        run: .\eng\Set-Version.ps1 -Version "4.14.${{ github.run_number }}.0"
+        run: .\.github\scripts\Set-Version.ps1 -Version "4.14.${{ github.run_number }}.0"
 
       - name: Check .NET Framework 4.6.2 targeting pack
         shell: pwsh

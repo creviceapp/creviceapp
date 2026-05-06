@@ -30,7 +30,7 @@ jobs:
 
       - name: Install legacy Windows SDK contracts
         shell: pwsh
-        run: .\eng\Install-LegacyWindowsSdk.ps1
+        run: .\.github\scripts\Install-LegacyWindowsSdk.ps1
 
       - name: Resolve package version
         shell: pwsh
@@ -43,7 +43,7 @@ jobs:
               $version = "4.14.$env:GITHUB_RUN_NUMBER.0"
             }
           }
-          .\eng\Set-Version.ps1 -Version $version
+          .\.github\scripts\Set-Version.ps1 -Version $version
 
       - name: Check .NET Framework 4.6.2 targeting pack
         shell: pwsh
