@@ -1,5 +1,6 @@
 [![CI](https://github.com/creviceapp/creviceapp/actions/workflows/ci.yml/badge.svg)](https://github.com/creviceapp/creviceapp/actions/workflows/ci.yml)
-[![Package MSIX](https://github.com/creviceapp/creviceapp/actions/workflows/package-msix.yml/badge.svg)](https://github.com/creviceapp/creviceapp/actions/workflows/package-msix.yml)
+[![Package Store MSIX](https://github.com/creviceapp/creviceapp/actions/workflows/package-msix.yml/badge.svg)](https://github.com/creviceapp/creviceapp/actions/workflows/package-msix.yml)
+[![Release ZIP](https://github.com/creviceapp/creviceapp/actions/workflows/release-zip.yml/badge.svg)](https://github.com/creviceapp/creviceapp/actions/workflows/release-zip.yml)
 
 **Crevice4** is multi purpose utility which supports gestures with **mouse** and **keyboard**.
 
