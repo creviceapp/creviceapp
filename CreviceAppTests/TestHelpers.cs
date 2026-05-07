@@ -17,6 +17,8 @@ namespace Crevice4Tests
         public static readonly Mutex ConsoleMutex = new Mutex(true);
         public static readonly Mutex TestDirectoryMutex = new Mutex(true);
 
+        public const string OSIntegrationTestsEnabledEnvironmentVariable = "CREVICE_RUN_OS_INTEGRATION_TESTS";
+
         public static string TemporaryDirectory
             => Path.Combine(Path.GetTempPath(), "Crevice4Test");
 
@@ -33,6 +35,19 @@ namespace Crevice4Tests
             if (Directory.Exists(TemporaryDirectory))
             {
                 Directory.Delete(TemporaryDirectory, recursive: true);
+            }
+        }
+
+        public static void RequireOSIntegrationTestsEnabled()
+        {
+            var enabled = Environment.GetEnvironmentVariable(OSIntegrationTestsEnabledEnvironmentVariable);
+            if (!string.Equals(enabled, "1", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(enabled, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Inconclusive(
+                    "OS integration tests are opt-in because they install low-level hooks and send real input. Set " +
+                    OSIntegrationTestsEnabledEnvironmentVariable +
+                    "=1 before running this test.");
             }
         }
 

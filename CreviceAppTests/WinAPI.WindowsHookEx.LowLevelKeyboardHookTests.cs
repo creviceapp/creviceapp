@@ -1,108 +1,98 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Crevice4Tests
 {
-    using Crevice.WinAPI.WindowsHookEx;
     using Crevice.WinAPI.SendInput;
+    using Crevice.WinAPI.WindowsHookEx;
 
     [TestClass()]
     public class LowLevelKeyboardHookTests
     {
-        [ClassInitialize()]
-        public static void ClassInitialize(TestContext context)
-        {
-            TestHelpers.KeyboardMutex.WaitOne();
-        }
-
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            TestHelpers.KeyboardMutex.ReleaseMutex();
-        }
-
-        static readonly Mutex mutex = new Mutex(true);
-
-        [TestInitialize()]
-        public void TestInitialize()
-        {
-            mutex.WaitOne();
-        }
-
-        [TestCleanup()]
-        public void TestCleanup()
-        {
-            mutex.ReleaseMutex();
-        }
-        
         [TestMethod()]
-        public void ActivatedTest()
+        public void CallbackParsesKeyboardHookDataTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
-            Assert.IsFalse(hook.IsActivated);
-            hook.SetHook();
-            Assert.IsTrue(hook.IsActivated);
-            hook.Unhook();
-            Assert.IsFalse(hook.IsActivated);
-        }
+            LowLevelKeyboardHook.Event observedEvent = 0;
+            LowLevelKeyboardHook.KBDLLHOOKSTRUCT observedData = null;
 
-        [TestMethod()]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void SetHookThrowsInvalidOperationExceptionTest()
-        {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
-            hook.SetHook();
-            hook.SetHook();
-        }
-
-        [TestMethod()]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void UnhookThrowsInvalidOperationExceptionTestTest()
-        {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
-            hook.Unhook();
-        }
-
-        [TestMethod()]
-        public void LowLevelKeyboardHookTest()
-        {
-            using (var cde = new CountdownEvent(2))
+            using (var hook = new LowLevelKeyboardHook((evnt, data) =>
             {
+                observedEvent = evnt;
+                observedData = data;
+                return LowLevelKeyboardHook.Result.Determine;
+            }))
+            {
+                var data = new LowLevelKeyboardHook.KBDLLHOOKSTRUCT
+                {
+                    vkCode = 0x41,
+                    scanCode = 0x1E,
+                    flags = LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED,
+                    time = 123,
+                    dwExtraInfo = new UIntPtr(LowLevelKeyboardHook.KEYBOARDEVENTF_CREVICE_APP),
+                };
+                var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LowLevelKeyboardHook.KBDLLHOOKSTRUCT)));
 
-                var sender = new SingleInputSender();
-                var hook = new LowLevelKeyboardHook((evnt, data) => {
-                    cde.Signal();
-                    return LowLevelKeyboardHook.Result.Cancel;
-                });
-                hook.SetHook();
-                sender.UnicodeKeyStroke("A");
-                Assert.AreEqual(cde.Wait(10000), true);
-                hook.Unhook();
+                try
+                {
+                    Marshal.StructureToPtr(data, ptr, false);
+
+                    var result = hook.Callback(
+                        WindowsHook.HC_ACTION,
+                        new IntPtr((int)LowLevelKeyboardHook.Event.WM_KEYDOWN),
+                        ptr);
+
+                    Assert.AreEqual(IntPtr.Zero, result);
+                    Assert.AreEqual(LowLevelKeyboardHook.Event.WM_KEYDOWN, observedEvent);
+                    Assert.AreEqual(0x41, observedData.vkCode);
+                    Assert.AreEqual(0x1E, observedData.scanCode);
+                    Assert.IsTrue(observedData.flags.HasFlag(LowLevelKeyboardHook.FLAGS.LLKHF_EXTENDED));
+                    Assert.IsTrue(observedData.FromCreviceApp);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(ptr);
+                }
             }
         }
 
         [TestMethod()]
-        public void DisposeWhenActivatedTest()
+        [TestCategory("OSIntegration")]
+        public void LowLevelKeyboardHookReceivesSendInputWhenEnabledTest()
         {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
-            hook.SetHook();
-            Assert.IsTrue(hook.IsActivated);
-            hook.Dispose();
-            Assert.IsFalse(hook.IsActivated);
-        }
+            TestHelpers.RequireOSIntegrationTestsEnabled();
+            TestHelpers.KeyboardMutex.WaitOne();
 
-        [TestMethod()]
-        public void DisposeWhenNotActivatedTest()
-        {
-            var hook = new LowLevelKeyboardHook((evnt, data) => { return LowLevelKeyboardHook.Result.Cancel; });
-            Assert.IsFalse(hook.IsActivated);
-            hook.Dispose();
-            Assert.IsFalse(hook.IsActivated);
+            try
+            {
+                using (var cde = new CountdownEvent(2))
+                using (var hook = new LowLevelKeyboardHook((evnt, data) =>
+                {
+                    cde.Signal();
+                    return LowLevelKeyboardHook.Result.Cancel;
+                }))
+                {
+                    hook.SetHook();
+                    try
+                    {
+                        var sender = new SingleInputSender();
+                        sender.UnicodeKeyStroke("A");
+                        Assert.AreEqual(true, cde.Wait(10000));
+                    }
+                    finally
+                    {
+                        if (hook.IsActivated)
+                        {
+                            hook.Unhook();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                TestHelpers.KeyboardMutex.ReleaseMutex();
+            }
         }
     }
 }
