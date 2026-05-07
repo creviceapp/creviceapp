@@ -441,9 +441,10 @@ namespace Crevice4Tests
                 ReplaySchedulerMode schedulerMode,
                 int strokeWatchIntervalMilliseconds,
                 string step,
-                string timingNote)
+                string timingNote,
+                IReadOnlyList<PerformanceScenario> scenarios = null)
             {
-                var scenarios = PerformanceScenarioFactory.CreateScenarios();
+                scenarios = scenarios ?? PerformanceScenarioFactory.CreateScenarios();
                 var startedUtc = DateTimeOffset.UtcNow;
                 var result = new AttributionRunResult
                 {
@@ -825,6 +826,7 @@ namespace Crevice4Tests
             {
                 var startedUtc = DateTimeOffset.UtcNow;
                 var modes = ReplayIntervalComparisonMode.CreateStep09Modes(ProductionStrokeWatchIntervalMilliseconds);
+                var scenarios = PerformanceScenarioFactory.CreateProductionIntervalScenarios();
                 var result = new SchedulerComparisonRunResult
                 {
                     Step = "09-production-interval-measurement",
@@ -837,7 +839,7 @@ namespace Crevice4Tests
                     RepeatRunsPerScheduler = repeatRunsPerMode,
                     TimingNote = "Step 09 interval comparison measurement; compares StrokeWatchInterval 0 and production default without hard pass/fail timing thresholds. Interval > 0 replay uses production-paced point delivery to preserve semantic validation.",
                     Environment = EnvironmentSnapshot.Capture(),
-                    ScenarioInventory = PerformanceScenarioFactory.CreateScenarios()
+                    ScenarioInventory = scenarios
                         .Select(ScenarioInventoryEntry.FromScenario)
                         .ToList(),
                 };
@@ -854,7 +856,8 @@ namespace Crevice4Tests
                             mode.SchedulerMode,
                             mode.StrokeWatchIntervalMilliseconds,
                             "09-production-interval-measurement",
-                            "Step 09 attribution run for interval/scheduler comparison; no hard pass/fail timing threshold is applied.");
+                            "Step 09 attribution run for interval/scheduler comparison; no hard pass/fail timing threshold is applied.",
+                            scenarios);
                         runs.Add(run);
                         slowSamples.AddRange(CreateSlowSamples(mode.Name, runIndex, run));
 
@@ -1052,6 +1055,17 @@ namespace Crevice4Tests
                 return scenarios;
             }
 
+            public static List<PerformanceScenario> CreateProductionIntervalScenarios()
+            {
+                var scenarios = new List<PerformanceScenario>();
+
+                scenarios.AddRange(ExpectedDefaultGestures.Wheel.Select(CreateWheelScenario));
+                scenarios.AddRange(ExpectedDefaultGestures.Stroke
+                    .Select(g => CreateStrokeScenario("production-interval-baseline", MotionPatternGenerator.Generate(g), g.Label)));
+
+                return scenarios;
+            }
+
             private static PerformanceScenario CreateWheelScenario(DefaultGesture gesture)
             {
                 return new PerformanceScenario
@@ -1159,6 +1173,22 @@ namespace Crevice4Tests
         private static double TicksToMilliseconds(long ticks)
             => ticks * 1000.0 / Stopwatch.Frequency;
 
+        private static bool WaitUntil(Func<bool> condition, TimeSpan timeout)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            while (stopwatch.Elapsed < timeout)
+            {
+                if (condition())
+                {
+                    return true;
+                }
+
+                Thread.Sleep(1);
+            }
+
+            return condition();
+        }
+
         private static class GestureReplayHarness
         {
             public static GestureReplayResult ReplayWheelGesture(
@@ -1193,13 +1223,13 @@ namespace Crevice4Tests
                 if (waitForStrokeBeforeRelease)
                 {
                     var expected = ParseStrokeSequence(scenario.ExpectedStroke);
-                    result.StrokeObservedBeforeRelease = SpinWait.SpinUntil(
+                    result.StrokeObservedBeforeRelease = WaitUntil(
                         () => gestureMachine.StrokeWatcher.GetStrokeSequence().Equals(expected),
                         StrokeProcessingTimeout);
                 }
                 else
                 {
-                    SpinWait.SpinUntil(
+                    WaitUntil(
                         () => gestureMachine.StrokeWatcher.GetBufferedPoints().Count >= Math.Max(0, scenario.Points.Count - 1),
                         StrokeProcessingTimeout);
                     result.StrokeObservedBeforeRelease = false;
@@ -1285,7 +1315,7 @@ namespace Crevice4Tests
                 if (waitForStrokeBeforeRelease)
                 {
                     var expected = ParseStrokeSequence(scenario.ExpectedStroke);
-                    result.StrokeObservedBeforeRelease = SpinWait.SpinUntil(
+                    result.StrokeObservedBeforeRelease = WaitUntil(
                         () => gestureMachine.StrokeWatcher.GetStrokeSequence().Equals(expected),
                         StrokeProcessingTimeout);
                 }
@@ -1293,13 +1323,13 @@ namespace Crevice4Tests
                 {
                     if (strokeWatchIntervalMilliseconds <= 0)
                     {
-                        SpinWait.SpinUntil(
+                        WaitUntil(
                             () => gestureMachine.StrokeWatcher.GetBufferedPoints().Count >= Math.Max(0, scenario.Points.Count - 1),
                             StrokeProcessingTimeout);
                     }
                     else
                     {
-                        SpinWait.SpinUntil(
+                        WaitUntil(
                             () => gestureMachine.StrokeWatcher.StrokeIsEstablished || gestureMachine.StrokeWatcher.GetBufferedPoints().Count > 0,
                             StrokeProcessingTimeout);
                     }
