@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +26,14 @@ namespace Crevice4Tests
             var directory = Path.Combine(TemporaryDirectory, randomString, memberName);
             Directory.CreateDirectory(directory);
             return directory;
+        }
+
+        public static void CleanupTemporaryDirectory()
+        {
+            if (Directory.Exists(TemporaryDirectory))
+            {
+                Directory.Delete(TemporaryDirectory, recursive: true);
+            }
         }
 
         public static void SetupUserDirectory(DirectoryInfo src, string dst)
