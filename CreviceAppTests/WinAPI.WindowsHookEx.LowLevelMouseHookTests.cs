@@ -136,5 +136,48 @@ namespace Crevice4Tests
                 Assert.IsFalse(hook.IsActivated);
             }
         }
+
+        [TestMethod()]
+        public void CallbackTransfersToNextHookWhenUserCallbackThrowsTest()
+        {
+            var hook = new ThrowingWindowsHook();
+
+            var result = hook.Callback(
+                WindowsHook.HC_ACTION,
+                IntPtr.Zero,
+                IntPtr.Zero);
+
+            Assert.AreEqual(ThrowingWindowsHook.NextHookResult, result);
+            Assert.IsTrue(hook.CallNextHookCalled);
+            Assert.IsTrue(hook.CallbackExceptionObserved);
+        }
+
+        private sealed class ThrowingWindowsHook : WindowsHook
+        {
+            public static readonly IntPtr NextHookResult = new IntPtr(42);
+
+            public bool CallNextHookCalled { get; private set; }
+
+            public bool CallbackExceptionObserved { get; private set; }
+
+            public ThrowingWindowsHook()
+                : base(HookType.WH_MOUSE_LL, (wParam, lParam) =>
+                {
+                    throw new InvalidOperationException("test callback failure");
+                })
+            {
+            }
+
+            protected override IntPtr CallNextHook(int nCode, IntPtr wParam, IntPtr lParam)
+            {
+                CallNextHookCalled = true;
+                return NextHookResult;
+            }
+
+            protected override void OnCallbackException(Exception exception)
+            {
+                CallbackExceptionObserved = true;
+            }
+        }
     }
 }

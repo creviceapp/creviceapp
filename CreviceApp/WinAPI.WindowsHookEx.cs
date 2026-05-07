@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Crevice.WinAPI.WindowsHookEx
 {
+    using Crevice.Logging;
     using System.Threading;
     using Crevice.WinAPI.Helper;
 
@@ -124,17 +125,43 @@ namespace Crevice.WinAPI.WindowsHookEx
         {
             if (nCode >= 0)
             {
-                switch (_userCallback(wParam, lParam))
+                Result result;
+                try
+                {
+                    result = _userCallback(wParam, lParam);
+                }
+                catch (Exception ex)
+                {
+                    OnCallbackException(ex);
+                    return CallNextHook(nCode, wParam, lParam);
+                }
+
+                switch (result)
                 {
                     case Result.Transfer:
-                        return NativeMethods.CallNextHookEx(_hHook, nCode, wParam, lParam);
+                        return CallNextHook(nCode, wParam, lParam);
                     case Result.Cancel:
                         return LRESULTCancel;
                     case Result.Determine:
                         return IntPtr.Zero;
                 }
             }
-            return NativeMethods.CallNextHookEx(_hHook, nCode, wParam, lParam);
+            return CallNextHook(nCode, wParam, lParam);
+        }
+
+        protected virtual IntPtr CallNextHook(int nCode, IntPtr wParam, IntPtr lParam)
+            => NativeMethods.CallNextHookEx(_hHook, nCode, wParam, lParam);
+
+        protected virtual void OnCallbackException(Exception exception)
+        {
+            try
+            {
+                Verbose.Error($"Windows hook callback failed; passing input to the next hook. {exception}");
+            }
+            catch
+            {
+                Debug.WriteLine(exception);
+            }
         }
 
         public void Dispose()
