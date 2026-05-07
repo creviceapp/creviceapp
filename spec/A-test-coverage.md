@@ -112,6 +112,9 @@ Status values:
 - `CREV-AWU-2` - `SendInput` wrapper emits ordered key down and key up sequences.
   - Status: `covered`.
   - Refs: Section 7.2.
+- `CREV-AWI-1` - Opt-in OS integration smoke tests validate low-level keyboard and mouse hooks with real input.
+  - Status: `covered`.
+  - Refs: Section 7.1, Section 11.5.
 - `CREV-AWU-3` - Window context helpers expose foreground and pointed window metadata.
   - Status: `planned`.
   - Refs: Section 7.3.
