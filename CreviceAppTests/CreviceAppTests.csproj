@@ -136,6 +136,10 @@
     <Compile Include="TestHelpers.cs" />
     <Compile Include="Logging.VerboseTest.cs" />
     <Compile Include="CLIOptionTests.cs" />
+    <Compile Include="DefaultGestureFixtures.cs" />
+    <Compile Include="GestureCoverageHarnessTests.cs" />
+    <Compile Include="GestureReplayTestHelpers.cs" />
+    <Compile Include="GesturePerformanceHarnessTests.cs" />
     <Compile Include="ScriptsTests.cs" />
     <Compile Include="US.Main.ReloadableMainFormTests.cs" />
     <Compile Include="US.Main.ClusterMainFormTests.cs" />

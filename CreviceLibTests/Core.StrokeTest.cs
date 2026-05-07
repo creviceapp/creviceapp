@@ -66,5 +66,70 @@ namespace CreviceLibTests
                 callback.OnStateChangedCDE.Reset();
             }
         }
+
+        [TestMethod]
+        public void ZeroIntervalPointProcessorDoesNotStartBackgroundTask()
+        {
+            var scheduler = new CountingTaskScheduler();
+            using (new RecordingPointProcessor(new TaskFactory(scheduler), 0))
+            {
+                Assert.AreEqual(0, scheduler.QueuedTaskCount);
+            }
+        }
+
+        [TestMethod]
+        public void ZeroIntervalPointProcessorProcessesPointsSynchronously()
+        {
+            using (var processor = new RecordingPointProcessor(Task.Factory, 0))
+            {
+                var point = new Point(12, 34);
+
+                processor.Process(point);
+
+                Assert.AreEqual(1, processor.ProcessedPoints.Count);
+                Assert.AreEqual(point, processor.ProcessedPoints[0]);
+            }
+        }
+
+        [TestMethod]
+        public void ZeroIntervalPointProcessorDisposeCanBeCalledRepeatedly()
+        {
+            var processor = new RecordingPointProcessor(Task.Factory, 0);
+
+            processor.Dispose();
+            processor.Dispose();
+        }
+
+        private sealed class RecordingPointProcessor : PointProcessor
+        {
+            public readonly List<Point> ProcessedPoints = new List<Point>();
+
+            public RecordingPointProcessor(TaskFactory taskFactory, int watchInterval)
+                : base(taskFactory, watchInterval)
+            { }
+
+            internal override void OnProcess(Point point)
+            {
+                ProcessedPoints.Add(point);
+            }
+        }
+
+        private sealed class CountingTaskScheduler : TaskScheduler
+        {
+            private int queuedTaskCount;
+
+            public int QueuedTaskCount => queuedTaskCount;
+
+            protected override IEnumerable<Task> GetScheduledTasks()
+                => Enumerable.Empty<Task>();
+
+            protected override void QueueTask(Task task)
+            {
+                System.Threading.Interlocked.Increment(ref queuedTaskCount);
+            }
+
+            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+                => false;
+        }
     }
 }
