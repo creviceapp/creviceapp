@@ -24,6 +24,8 @@ namespace Crevice.Core.Stroke
 
         private readonly int watchInterval;
 
+        private bool disposed = false;
+
         private int lastProcessedTickCount = 0;
 
         private object _lockObject = new object();
@@ -35,7 +37,10 @@ namespace Crevice.Core.Stroke
             this.watchInterval = watchInterval;
             this.taskFactory = taskFactory; 
             this.tokenSource = new CancellationTokenSource();
-            StartBackgroundTask();
+            if (watchInterval > 0)
+            {
+                StartBackgroundTask();
+            }
         }
 
         private void StartBackgroundTask() =>
@@ -92,9 +97,19 @@ namespace Crevice.Core.Stroke
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposing || disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            if (watchInterval > 0)
             {
                 tokenSource.Cancel();
+            }
+            else
+            {
+                tokenSource.Dispose();
             }
         }
 

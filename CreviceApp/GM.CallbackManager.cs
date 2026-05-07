@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,13 +73,26 @@ namespace Crevice.GestureMachine
         private readonly ActionExecutor _callbackActionExecutor;
         private readonly ActionExecutor _systemKeyRestorationActionExecutor;
 
-        private readonly SingleInputSender SingleInputSender = new SingleInputSender();
+        private readonly SingleInputSender SingleInputSender;
 
         public CallbackManager() : this(CallbackActionExecutor) {}
-        public CallbackManager(ActionExecutor callbackActionExecutor) : base(new CustomCallbackContainer(callbackActionExecutor))
+        public CallbackManager(ActionExecutor callbackActionExecutor)
+            : this(callbackActionExecutor, SystemKeyRestorationActionExecutor, new SingleInputSender())
+        { }
+
+        internal CallbackManager(
+            ActionExecutor callbackActionExecutor,
+            ActionExecutor systemKeyRestorationActionExecutor,
+            SingleInputSender singleInputSender)
+            : base(new CustomCallbackContainer(callbackActionExecutor))
         {
+            if (callbackActionExecutor == null) throw new ArgumentNullException(nameof(callbackActionExecutor));
+            if (systemKeyRestorationActionExecutor == null) throw new ArgumentNullException(nameof(systemKeyRestorationActionExecutor));
+            if (singleInputSender == null) throw new ArgumentNullException(nameof(singleInputSender));
+
             _callbackActionExecutor = callbackActionExecutor;
-            _systemKeyRestorationActionExecutor = SystemKeyRestorationActionExecutor;
+            _systemKeyRestorationActionExecutor = systemKeyRestorationActionExecutor;
+            SingleInputSender = singleInputSender;
         }
 
         public override void OnStrokeReset(

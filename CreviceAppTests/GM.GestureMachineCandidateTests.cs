@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,10 +29,7 @@ namespace Crevice4Tests
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            if (Directory.Exists(TestHelpers.TemporaryDirectory))
-            {
-                Directory.Delete(TestHelpers.TemporaryDirectory, recursive: true);
-            }
+            TestHelpers.CleanupTemporaryDirectory();
             TestHelpers.TestDirectoryMutex.ReleaseMutex();
         }
         

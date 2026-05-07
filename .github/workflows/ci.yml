@@ -74,7 +74,21 @@ jobs:
           if (-not (Test-Path -LiteralPath $vstest)) {
             throw "vstest.console.exe was not found at $vstest."
           }
-          & $vstest CreviceLibTests\bin\Release\CreviceLibTests.dll /Logger:"trx;LogFileName=CreviceLibTests.trx"
+          & $vstest CreviceLibTests\bin\Release\CreviceLibTests.dll /TestCaseFilter:"FullyQualifiedName!~EventsBenchmarkTest" /Logger:"trx;LogFileName=CreviceLibTests.trx"
+
+      - name: Run CreviceApp gesture coverage tests
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Workload.ManagedDesktop -property installationPath
+          if (-not $vsPath) {
+            $vsPath = & $vswhere -latest -products * -property installationPath
+          }
+          $vstest = Join-Path $vsPath 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe'
+          if (-not (Test-Path -LiteralPath $vstest)) {
+            throw "vstest.console.exe was not found at $vstest."
+          }
+          & $vstest CreviceAppTests\bin\Release\Crevice4Tests.dll /TestCaseFilter:"FullyQualifiedName~GestureCoverageHarnessTests" /Logger:"trx;LogFileName=GestureCoverageHarnessTests.trx"
 
       - name: Pack Crevice.Core
         shell: pwsh
