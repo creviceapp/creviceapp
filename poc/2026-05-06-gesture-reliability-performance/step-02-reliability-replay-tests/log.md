@@ -1,0 +1,13 @@
+# Log: Step 02 - Reliability Replay Tests
+
+- 2026-05-06: Supervisor created this mission after reviewing Step 01 baseline inventory. The phase is correctness-focused and explicitly excludes performance benchmarking.
+- 2026-05-06: Read Step 02 mission plus Step 01 report and structured inventory. Confirmed repository state already had an untracked `CreviceAppTests/GestureCoverageHarnessTests.cs`, a modified `CreviceAppTests/CreviceAppTests.csproj`, untracked `docs/`, and untracked `poc/`.
+- 2026-05-06: Inspected the existing gesture harness and project file. The harness already enumerated default-script gestures and replayed generated stroke motions, but it also contained `PerfHarnessMeasuresGeneratedMotionReplay` with stopwatch/p95/max thresholds, which belongs outside reliability replay tests.
+- 2026-05-06: Reworked `GestureCoverageHarnessTests.cs` into correctness-focused tests. The default script is still loaded and enumerated for source-of-truth coverage, while execution replays use a test-only mirror root with recording handlers so the default script's `SendInput` actions are never executed.
+- 2026-05-06: Added synthetic replay coverage for active browser defaults: `RButton+WheelUp`, `RButton+WheelDown`, and strokes `U`, `D`, `L`, `R`, `UD`, and `DR`. All input is through `GestureMachine.Input(...)` with explicit points.
+- 2026-05-06: Added negative/basic failure coverage for an unregistered `RL` stroke, false `When`, below-threshold movement, and wheel/stroke cross-trigger prevention. The only wait remaining is a generous fail-safe synchronization point that waits for the asynchronous `StrokeWatcher` to observe a synthetic stroke before release; it is not a performance threshold or benchmark.
+- 2026-05-06: First Visual Studio MSBuild attempt failed before compiling tests because the local process environment contained duplicate `Path`/`PATH` keys. Reran with `Env:PATH` removed for the MSBuild process, matching the known sanitized local build approach.
+- 2026-05-06: Fixed compile issues found by sanitized MSBuild: matched the `protected internal` access modifier on the test helper override and used physical wheel fire events for replay input.
+- 2026-05-06: Sanitized Visual Studio MSBuild passed for `CreviceAppTests\CreviceAppTests.csproj` Release/AnyCPU.
+- 2026-05-06: Ran only `GestureCoverageHarnessTests` with Visual Studio `vstest.console.exe`. Result: 5 total, 5 passed. TRX saved under Step 02 output test results.
+- 2026-05-06: Supervisor check-in acknowledged. No blocker is active; implementation and focused verification are complete, and the remaining work is writing the Step 02 report plus structured output artifacts.

@@ -1,0 +1,36 @@
+{
+  "step": "10-final-consolidation",
+  "date": "2026-05-07",
+  "repository": "C:\\Users\\seigl\\projects\\creviceapp",
+  "branch": "split-store-msix-release-zip",
+  "commit_or_push_performed": false,
+  "docs_touched": false,
+  "recommended_to_keep": [
+    "CreviceLib/Core.Stroke.cs zero-interval PointProcessor guard",
+    "CreviceAppTests/GestureCoverageHarnessTests.cs",
+    "CreviceAppTests/GesturePerformanceHarnessTests.cs",
+    "CreviceAppTests/CreviceAppTests.csproj includes",
+    "poc/2026-05-06-gesture-reliability-performance artifacts"
+  ],
+  "final_verification": {
+    "release_build_crevice_app_tests": "passed",
+    "release_build_crevice_lib_tests": "passed",
+    "gesture_coverage_harness_tests": { "total": 7, "passed": 7 },
+    "core_stroke_focused_tests": { "total": 2, "passed": 2 },
+    "git_diff_check": "passed with line-ending warnings only"
+  },
+  "ci_recommendation": {
+    "normal_ci": [
+      "GestureCoverageHarnessTests",
+      "existing deterministic CreviceLibTests excluding benchmark-style tests if needed"
+    ],
+    "manual_or_artifact_only": [
+      "Performance",
+      "PerformanceAttribution",
+      "PerformanceRepeatability",
+      "PerformanceSchedulerComparison",
+      "PerformanceStep08PointProcessorZeroInterval",
+      "PerformanceStep09ProductionIntervalComparison"
+    ]
+  }
+}
