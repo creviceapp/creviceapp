@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -86,10 +86,10 @@ namespace Crevice.WinAPI.WindowsHookEx
             }
             var log = new WinAPILogger("SetWindowsHookEx");
             log.Add($"hookType: {Enum.GetName(typeof(HookType), _hookType)}");
-            var hInstance = NativeMethods.GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
+            var hInstance = GetModuleHandle();
 
             log.Add($"moduleHandle: 0x{hInstance.ToInt64():X}");
-            _hHook = NativeMethods.SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
+            _hHook = SetHookCore(hInstance);
             if (IsActivated)
             {
                 log.Add($"hookHandle: 0x{_hHook.ToInt64():X}");
@@ -110,7 +110,7 @@ namespace Crevice.WinAPI.WindowsHookEx
             var log = new WinAPILogger("UnhookWindowsHookEx");
             log.Add($"hookType: {Enum.GetName(typeof(HookType), _hookType)}");
             log.Add($"hookHandle: 0x{_hHook.ToInt64():X}");
-            if (NativeMethods.UnhookWindowsHookEx(_hHook))
+            if (UnhookCore(_hHook))
             {
                 log.Success();
             }
@@ -148,6 +148,15 @@ namespace Crevice.WinAPI.WindowsHookEx
             }
             return CallNextHook(nCode, wParam, lParam);
         }
+
+        protected virtual IntPtr GetModuleHandle()
+            => NativeMethods.GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
+
+        protected virtual IntPtr SetHookCore(IntPtr hInstance)
+            => NativeMethods.SetWindowsHookEx((int)_hookType, _systemCallback, hInstance, 0);
+
+        protected virtual bool UnhookCore(IntPtr hook)
+            => NativeMethods.UnhookWindowsHookEx(hook);
 
         protected virtual IntPtr CallNextHook(int nCode, IntPtr wParam, IntPtr lParam)
             => NativeMethods.CallNextHookEx(_hHook, nCode, wParam, lParam);

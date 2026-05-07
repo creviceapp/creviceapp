@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -141,7 +141,7 @@ namespace Crevice.WinAPI.SendInput
         private readonly UIntPtr MOUSEEVENTF_CREVICE_APP = new UIntPtr(0xFF190700);
         private readonly UIntPtr KEYBOARDEVENTF_CREVICE_APP = new UIntPtr(0xFF190700);
 
-        protected void Send(INPUT[] input)
+        protected virtual void Send(INPUT[] input)
         {
             var log = new WinAPILogger("SendInput");
             foreach (var item in input.Select((v, i) => new { v, i}))
