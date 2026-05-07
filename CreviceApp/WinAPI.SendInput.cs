@@ -406,7 +406,7 @@ namespace Crevice.WinAPI.SendInput
 
         private KEYBDINPUT UnicodeKeyEvent(char c)
         {
-            var keyboardInput = new KEYBDINPUT();
+            var keyboardInput = GetCreviceKeyboardInput();
             keyboardInput.wScan = c;
             keyboardInput.dwFlags = (int)KeyboardEventType.KEYEVENTF_UNICODE;
             return keyboardInput;

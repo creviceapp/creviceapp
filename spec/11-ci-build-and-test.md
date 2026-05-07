@@ -32,7 +32,7 @@ CI runs gesture coverage tests from `CreviceAppTests` with the filter `FullyQual
 
 Default CI does not run diagnostic performance harness tests.
 
-Default CI does not install real low-level Windows hooks or send real integration input. OS integration smoke tests use the `OSIntegration` test category and run only when `CREVICE_RUN_OS_INTEGRATION_TESTS=1` is set.
+Default CI does not install real low-level Windows hooks or send real integration input. Manual input integration smoke tests use the `ManualInputIntegration` test category and run only when `CREVICE_RUN_MANUAL_INPUT_INTEGRATION_TESTS=1` is set.
 
 ### 11.6 Test Results and Build Artifacts
 

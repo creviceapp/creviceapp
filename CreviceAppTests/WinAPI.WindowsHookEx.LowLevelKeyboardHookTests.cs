@@ -5,6 +5,7 @@ using System.Threading;
 
 namespace Crevice4Tests
 {
+    using Crevice.WinAPI.Constants;
     using Crevice.WinAPI.SendInput;
     using Crevice.WinAPI.WindowsHookEx;
 
@@ -58,10 +59,10 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
-        [TestCategory("OSIntegration")]
-        public void LowLevelKeyboardHookReceivesSendInputWhenEnabledTest()
+        [TestCategory("ManualInputIntegration")]
+        public void LowLevelKeyboardHookReceivesSignedNonTextSendInputWhenEnabledTest()
         {
-            TestHelpers.RequireOSIntegrationTestsEnabled();
+            TestHelpers.RequireManualInputIntegrationTestsEnabled();
             TestHelpers.KeyboardMutex.WaitOne();
 
             try
@@ -69,15 +70,21 @@ namespace Crevice4Tests
                 using (var cde = new CountdownEvent(2))
                 using (var hook = new LowLevelKeyboardHook((evnt, data) =>
                 {
-                    cde.Signal();
-                    return LowLevelKeyboardHook.Result.Cancel;
+                    if (data.FromCreviceApp)
+                    {
+                        cde.Signal();
+                        return LowLevelKeyboardHook.Result.Cancel;
+                    }
+
+                    return LowLevelKeyboardHook.Result.Determine;
                 }))
                 {
                     hook.SetHook();
                     try
                     {
                         var sender = new SingleInputSender();
-                        sender.UnicodeKeyStroke("A");
+                        sender.KeyDown(VirtualKeys.VK_F24);
+                        sender.KeyUp(VirtualKeys.VK_F24);
                         Assert.AreEqual(true, cde.Wait(10000));
                     }
                     finally

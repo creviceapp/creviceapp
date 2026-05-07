@@ -9,6 +9,8 @@ namespace Crevice4Tests
     using System.Threading;
     using System.IO;
     using System.Runtime.CompilerServices;
+    using Crevice.GestureMachine;
+    using Crevice.WinAPI.SendInput;
 
     public static class TestHelpers
     {
@@ -17,7 +19,7 @@ namespace Crevice4Tests
         public static readonly Mutex ConsoleMutex = new Mutex(true);
         public static readonly Mutex TestDirectoryMutex = new Mutex(true);
 
-        public const string OSIntegrationTestsEnabledEnvironmentVariable = "CREVICE_RUN_OS_INTEGRATION_TESTS";
+        public const string ManualInputIntegrationTestsEnabledEnvironmentVariable = "CREVICE_RUN_MANUAL_INPUT_INTEGRATION_TESTS";
 
         public static string TemporaryDirectory
             => Path.Combine(Path.GetTempPath(), "Crevice4Test");
@@ -38,18 +40,24 @@ namespace Crevice4Tests
             }
         }
 
-        public static void RequireOSIntegrationTestsEnabled()
+        public static void RequireManualInputIntegrationTestsEnabled()
         {
-            var enabled = Environment.GetEnvironmentVariable(OSIntegrationTestsEnabledEnvironmentVariable);
+            var enabled = Environment.GetEnvironmentVariable(ManualInputIntegrationTestsEnabledEnvironmentVariable);
             if (!string.Equals(enabled, "1", StringComparison.OrdinalIgnoreCase) &&
                 !string.Equals(enabled, "true", StringComparison.OrdinalIgnoreCase))
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Inconclusive(
-                    "OS integration tests are opt-in because they install low-level hooks and send real input. Set " +
-                    OSIntegrationTestsEnabledEnvironmentVariable +
+                    "Manual input integration tests are opt-in because they install low-level hooks and send real input. Set " +
+                    ManualInputIntegrationTestsEnabledEnvironmentVariable +
                     "=1 before running this test.");
             }
         }
+
+        public static CallbackManager CreateCallbackManager()
+            => new CallbackManager(
+                new CallbackManager.ActionExecutor("TestCallbackActionExecutor", ThreadPriority.Highest, 1),
+                new CallbackManager.ActionExecutor("TestSystemKeyRestorationActionExecutor", ThreadPriority.Highest, 1),
+                new NoOpSingleInputSender());
 
         public static void SetupUserDirectory(DirectoryInfo src, string dst)
         {
@@ -70,6 +78,13 @@ namespace Crevice4Tests
                 {
                     File.Copy(file.FullName, Path.Combine(dst, "IDESupport", dir.Name, file.Name));
                 }
+            }
+        }
+
+        private sealed class NoOpSingleInputSender : SingleInputSender
+        {
+            protected override void Send(INPUT[] input)
+            {
             }
         }
 

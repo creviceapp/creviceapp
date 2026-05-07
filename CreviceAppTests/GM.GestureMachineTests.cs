@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,7 +50,7 @@ namespace Crevice4Tests
         public void MouseEventTimeoutTest()
         {
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -76,7 +76,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -102,7 +102,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -129,7 +129,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -157,7 +157,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -193,7 +193,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -220,7 +220,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -256,7 +256,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -283,7 +283,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -319,7 +319,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -345,7 +345,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -372,7 +372,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -399,7 +399,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -435,7 +435,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -462,7 +462,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -502,7 +502,7 @@ namespace Crevice4Tests
         public void KeyboardEventTimeoutTest()
         {
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -528,7 +528,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -554,7 +554,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -581,7 +581,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -608,7 +608,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -644,7 +644,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -671,7 +671,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -707,7 +707,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -734,7 +734,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -770,7 +770,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -796,7 +796,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -823,7 +823,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -850,7 +850,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -886,7 +886,7 @@ namespace Crevice4Tests
             }
 
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {
@@ -913,7 +913,7 @@ namespace Crevice4Tests
                 }
             }
             {
-                var cm = new CallbackManager();
+                var cm = TestHelpers.CreateCallbackManager();
                 var uc = new UserConfig(cm.Callback);
                 using (var gm = new GestureMachine(uc.Core, cm))
                 {

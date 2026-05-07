@@ -281,14 +281,14 @@ namespace Crevice4Tests
         public void UnicodeKeyDownTest()
         {
             sender.UnicodeKeyDown('A');
-            AssertSingleKeyboard(0, 'A', KeyboardUnicode, UIntPtr.Zero);
+            AssertSingleKeyboard(0, 'A', KeyboardUnicode);
         }
 
         [TestMethod()]
         public void UnicodeKeyUpTest()
         {
             sender.UnicodeKeyUp('A');
-            AssertSingleKeyboard(0, 'A', KeyboardUnicode | KeyboardKeyUp, UIntPtr.Zero);
+            AssertSingleKeyboard(0, 'A', KeyboardUnicode | KeyboardKeyUp);
         }
 
         [TestMethod()]
@@ -296,8 +296,8 @@ namespace Crevice4Tests
         {
             sender.UnicodeKeyStroke("A");
             AssertKeyboardSequence(
-                Tuple.Create(0, (int)'A', KeyboardUnicode, UIntPtr.Zero),
-                Tuple.Create(0, (int)'A', KeyboardUnicode | KeyboardKeyUp, UIntPtr.Zero));
+                Tuple.Create(0, (int)'A', KeyboardUnicode, CreviceSignature),
+                Tuple.Create(0, (int)'A', KeyboardUnicode | KeyboardKeyUp, CreviceSignature));
         }
 
         private void AssertSingleMouse(uint flags, int mouseData = 0)

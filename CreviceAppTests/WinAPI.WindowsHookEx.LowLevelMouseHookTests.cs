@@ -139,10 +139,23 @@ namespace Crevice4Tests
         }
 
         [TestMethod()]
-        [TestCategory("OSIntegration")]
-        public void LowLevelMouseHookReceivesSendInputWhenEnabledTest()
+        public void CallbackCancelReturnsNonZeroTest()
         {
-            TestHelpers.RequireOSIntegrationTestsEnabled();
+            var hook = new FakeWindowsHook();
+
+            var result = hook.Callback(
+                WindowsHook.HC_ACTION,
+                IntPtr.Zero,
+                IntPtr.Zero);
+
+            Assert.AreEqual(new IntPtr(1), result);
+        }
+
+        [TestMethod()]
+        [TestCategory("ManualInputIntegration")]
+        public void LowLevelMouseHookReceivesSignedSendInputWhenEnabledTest()
+        {
+            TestHelpers.RequireManualInputIntegrationTestsEnabled();
             TestHelpers.MouseMutex.WaitOne();
 
             try
@@ -153,8 +166,10 @@ namespace Crevice4Tests
                     if (data.FromCreviceApp)
                     {
                         cde.Signal();
+                        return LowLevelMouseHook.Result.Cancel;
                     }
-                    return LowLevelMouseHook.Result.Cancel;
+
+                    return LowLevelMouseHook.Result.Determine;
                 }))
                 {
                     hook.SetHook();
