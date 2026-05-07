@@ -1,0 +1,1910 @@
+{
+  "generated_at_utc": "2026-05-06T15:12:19.6188520+00:00",
+  "baseline_source": "poc/2026-05-06-gesture-reliability-performance/step-04-performance-baseline-measurement/output/gesture-performance-baseline.json",
+  "attribution_source": "poc/2026-05-06-gesture-reliability-performance/step-05-performance-attribution-analysis/output/gesture-performance-attribution.json",
+  "baseline": {
+    "scenario_count": 336,
+    "measured_iterations": 5,
+    "sample_count": 1680,
+    "total_measured_event_count": 13100,
+    "summaries": [
+      {
+        "scope": "overall",
+        "group": "all",
+        "scenario_id": "",
+        "scenario_count": 336,
+        "sample_count": 1680,
+        "event_count": 13100,
+        "min_ms": 0.0083,
+        "median_ms": 0.0236,
+        "p95_ms": 0.0593,
+        "max_ms": 14.7766,
+        "mean_ms": 0.20155339
+      },
+      {
+        "scope": "group",
+        "group": "generated-negative",
+        "scenario_id": "",
+        "scenario_count": 4,
+        "sample_count": 20,
+        "event_count": 250,
+        "min_ms": 0.015,
+        "median_ms": 0.028,
+        "p95_ms": 0.1259,
+        "max_ms": 13.0483,
+        "mean_ms": 0.688175
+      },
+      {
+        "scope": "group",
+        "group": "generated-positive",
+        "scenario_id": "",
+        "scenario_count": 324,
+        "sample_count": 1620,
+        "event_count": 12600,
+        "min_ms": 0.0083,
+        "median_ms": 0.0234,
+        "p95_ms": 0.059,
+        "max_ms": 14.7766,
+        "mean_ms": 0.1998137
+      },
+      {
+        "scope": "group",
+        "group": "multi-stroke",
+        "scenario_id": "",
+        "scenario_count": 2,
+        "sample_count": 10,
+        "event_count": 100,
+        "min_ms": 0.0157,
+        "median_ms": 0.0255,
+        "p95_ms": 0.0415,
+        "max_ms": 0.0415,
+        "mean_ms": 0.02661
+      },
+      {
+        "scope": "group",
+        "group": "single-stroke",
+        "scenario_id": "",
+        "scenario_count": 4,
+        "sample_count": 20,
+        "event_count": 120,
+        "min_ms": 0.0123,
+        "median_ms": 0.0257,
+        "p95_ms": 0.0475,
+        "max_ms": 0.0655,
+        "mean_ms": 0.028255
+      },
+      {
+        "scope": "group",
+        "group": "wheel",
+        "scenario_id": "",
+        "scenario_count": 2,
+        "sample_count": 10,
+        "event_count": 30,
+        "min_ms": 0.0203,
+        "median_ms": 0.0243,
+        "p95_ms": 0.0548,
+        "max_ms": 0.0548,
+        "mean_ms": 0.03168
+      }
+    ],
+    "elapsed_bands": [
+      {
+        "band": "lt_0_05_ms",
+        "count": 1548
+      },
+      {
+        "band": "0_05_to_lt_0_1_ms",
+        "count": 91
+      },
+      {
+        "band": "0_1_to_lt_1_ms",
+        "count": 14
+      },
+      {
+        "band": "gte_1_ms",
+        "count": 27
+      }
+    ],
+    "outlier_threshold_ms": 1.0,
+    "outlier_count": 27,
+    "outliers_by_iteration": [
+      {
+        "iteration": 0,
+        "count": 5
+      },
+      {
+        "iteration": 1,
+        "count": 6
+      },
+      {
+        "iteration": 2,
+        "count": 5
+      },
+      {
+        "iteration": 3,
+        "count": 5
+      },
+      {
+        "iteration": 4,
+        "count": 6
+      }
+    ],
+    "outliers_by_group": [
+      {
+        "group": "generated-negative",
+        "count": 1
+      },
+      {
+        "group": "generated-positive",
+        "count": 26
+      }
+    ],
+    "outliers_by_observed_stroke": [
+      {
+        "observed_stroke": "L",
+        "count": 6
+      },
+      {
+        "observed_stroke": "UD",
+        "count": 5
+      },
+      {
+        "observed_stroke": "D",
+        "count": 4
+      },
+      {
+        "observed_stroke": "DR",
+        "count": 4
+      },
+      {
+        "observed_stroke": "U",
+        "count": 4
+      },
+      {
+        "observed_stroke": "R",
+        "count": 3
+      },
+      {
+        "observed_stroke": "",
+        "count": 1
+      }
+    ],
+    "outlier_repeat_counts_by_scenario": [
+      {
+        "scenario_id": "baseline-below-threshold",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-UD-start-2600-540-distance-48-density-7-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-UD-start-2600-540-distance-48-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-U-start-400-400-distance-72-density-2-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-U-start-400-400-distance-48-density-2-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-U-start-2600-540-distance-48-density-4-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-U-start--800-360-distance-48-density-2-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-R-start-400-400-distance-32-density-7-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-R-start-2600-540-distance-48-density-2-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-R-start--800-360-distance-32-density-7-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-L-start-400-400-distance-72-density-4-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-UD-start-400-400-distance-32-density-7-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-L-start-2600-540-distance-72-density-7-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-L-start-2600-540-distance-32-density-7-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-L-start-2600-540-distance-32-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-DR-start-400-400-distance-72-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-DR-start-2600-540-distance-72-density-2-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-DR-start--800-360-distance-72-density-2-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-D-start-400-400-distance-72-density-2-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-D-start-400-400-distance-48-density-7-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-D-start--800-360-distance-72-density-7-jitter-3",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-L-start-2600-540-distance-72-density-4-jitter-0",
+        "count": 1
+      },
+      {
+        "scenario_id": "positive-UD-start-400-400-distance-48-density-7-jitter-0",
+        "count": 1
+      }
+    ],
+    "group_summaries_excluding_outliers": [
+      {
+        "group": "generated-negative",
+        "sample_count": 19,
+        "max_ms": 0.1259,
+        "mean_ms": 0.03764210526315789
+      },
+      {
+        "group": "generated-positive",
+        "sample_count": 1594,
+        "max_ms": 0.8464,
+        "mean_ms": 0.02802873274780424
+      },
+      {
+        "group": "multi-stroke",
+        "sample_count": 10,
+        "max_ms": 0.0415,
+        "mean_ms": 0.02661
+      },
+      {
+        "group": "single-stroke",
+        "sample_count": 20,
+        "max_ms": 0.0655,
+        "mean_ms": 0.028255000000000002
+      },
+      {
+        "group": "wheel",
+        "sample_count": 10,
+        "max_ms": 0.0548,
+        "mean_ms": 0.03168
+      }
+    ],
+    "slowest_samples": [
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-72-density-2-jitter-3",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 14.7766,
+        "observed_stroke": "DR",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-72-density-7-jitter-3",
+        "category": "positive",
+        "event_count": 9,
+        "point_count": 8,
+        "elapsed_ms": 13.9231,
+        "observed_stroke": "D",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+        "category": "positive",
+        "event_count": 10,
+        "point_count": 9,
+        "elapsed_ms": 13.7783,
+        "observed_stroke": "UD",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-400-400-distance-48-density-2-jitter-3",
+        "category": "positive",
+        "event_count": 4,
+        "point_count": 3,
+        "elapsed_ms": 13.7378,
+        "observed_stroke": "U",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-32-density-7-jitter-3",
+        "category": "positive",
+        "event_count": 9,
+        "point_count": 8,
+        "elapsed_ms": 13.6628,
+        "observed_stroke": "R",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-32-density-7-jitter-0",
+        "category": "positive",
+        "event_count": 9,
+        "point_count": 8,
+        "elapsed_ms": 13.6335,
+        "observed_stroke": "R",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-72-density-4-jitter-3",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 13.4283,
+        "observed_stroke": "L",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-4-jitter-0",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 13.3512,
+        "observed_stroke": "D",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 13.2617,
+        "observed_stroke": "DR",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-32-density-7-jitter-3",
+        "category": "positive",
+        "event_count": 16,
+        "point_count": 15,
+        "elapsed_ms": 13.2445,
+        "observed_stroke": "UD",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-72-density-2-jitter-3",
+        "category": "positive",
+        "event_count": 4,
+        "point_count": 3,
+        "elapsed_ms": 13.2156,
+        "observed_stroke": "D",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 3,
+        "group": "generated-negative",
+        "scenario_id": "baseline-below-threshold",
+        "category": "negative-below-threshold",
+        "event_count": 4,
+        "point_count": 3,
+        "elapsed_ms": 13.0483,
+        "observed_stroke": "",
+        "stroke_observed_before_release": false
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-2600-540-distance-48-density-7-jitter-3",
+        "category": "positive",
+        "event_count": 16,
+        "point_count": 15,
+        "elapsed_ms": 12.9978,
+        "observed_stroke": "UD",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-48-density-4-jitter-3",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 12.8065,
+        "observed_stroke": "U",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-48-density-7-jitter-0",
+        "category": "positive",
+        "event_count": 9,
+        "point_count": 8,
+        "elapsed_ms": 12.7921,
+        "observed_stroke": "D",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-2600-540-distance-48-density-2-jitter-3",
+        "category": "positive",
+        "event_count": 4,
+        "point_count": 3,
+        "elapsed_ms": 12.6118,
+        "observed_stroke": "R",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-48-density-7-jitter-0",
+        "category": "positive",
+        "event_count": 16,
+        "point_count": 15,
+        "elapsed_ms": 12.4293,
+        "observed_stroke": "UD",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-2600-540-distance-72-density-2-jitter-3",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 12.176,
+        "observed_stroke": "DR",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-48-density-2-jitter-3",
+        "category": "positive",
+        "event_count": 4,
+        "point_count": 3,
+        "elapsed_ms": 11.8249,
+        "observed_stroke": "U",
+        "stroke_observed_before_release": true
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+        "category": "positive",
+        "event_count": 6,
+        "point_count": 5,
+        "elapsed_ms": 11.4867,
+        "observed_stroke": "L",
+        "stroke_observed_before_release": true
+      }
+    ],
+    "top_scenarios_by_max": [
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 14.7766,
+        "max_ms": 14.7766,
+        "mean_ms": 2.97358
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-72-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.9231,
+        "max_ms": 13.9231,
+        "mean_ms": 2.8027
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.7783,
+        "max_ms": 13.7783,
+        "mean_ms": 2.7765
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-400-400-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.7378,
+        "max_ms": 13.7378,
+        "mean_ms": 2.76336
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-32-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.6628,
+        "max_ms": 13.6628,
+        "mean_ms": 2.7575
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-32-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.6335,
+        "max_ms": 13.6335,
+        "mean_ms": 2.75132
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-72-density-4-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.4283,
+        "max_ms": 13.4283,
+        "mean_ms": 2.70704
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.3512,
+        "max_ms": 13.3512,
+        "mean_ms": 2.68756
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.2617,
+        "max_ms": 13.2617,
+        "mean_ms": 2.67332
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-32-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.2445,
+        "max_ms": 13.2445,
+        "mean_ms": 2.67268
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.2156,
+        "max_ms": 13.2156,
+        "mean_ms": 2.66978
+      },
+      {
+        "group": "generated-negative",
+        "scenario_id": "baseline-below-threshold",
+        "sample_count": 5,
+        "p95_ms": 13.0483,
+        "max_ms": 13.0483,
+        "mean_ms": 2.62644
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-2600-540-distance-48-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.9978,
+        "max_ms": 12.9978,
+        "mean_ms": 2.62134
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-48-density-4-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.8065,
+        "max_ms": 12.8065,
+        "mean_ms": 2.58778
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-48-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 12.7921,
+        "max_ms": 12.7921,
+        "mean_ms": 2.5725
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-2600-540-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.6118,
+        "max_ms": 12.6118,
+        "mean_ms": 2.53866
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-48-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 12.4293,
+        "max_ms": 12.4293,
+        "mean_ms": 2.50694
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-2600-540-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.176,
+        "max_ms": 12.176,
+        "mean_ms": 2.45068
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 11.8249,
+        "max_ms": 11.8249,
+        "mean_ms": 2.3797
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 11.4867,
+        "max_ms": 11.4867,
+        "mean_ms": 2.31506
+      }
+    ],
+    "top_scenarios_by_p95": [
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 14.7766,
+        "max_ms": 14.7766,
+        "mean_ms": 2.97358
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-72-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.9231,
+        "max_ms": 13.9231,
+        "mean_ms": 2.8027
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.7783,
+        "max_ms": 13.7783,
+        "mean_ms": 2.7765
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-400-400-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.7378,
+        "max_ms": 13.7378,
+        "mean_ms": 2.76336
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-32-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.6628,
+        "max_ms": 13.6628,
+        "mean_ms": 2.7575
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-32-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.6335,
+        "max_ms": 13.6335,
+        "mean_ms": 2.75132
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-72-density-4-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.4283,
+        "max_ms": 13.4283,
+        "mean_ms": 2.70704
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.3512,
+        "max_ms": 13.3512,
+        "mean_ms": 2.68756
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.2617,
+        "max_ms": 13.2617,
+        "mean_ms": 2.67332
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-32-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.2445,
+        "max_ms": 13.2445,
+        "mean_ms": 2.67268
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.2156,
+        "max_ms": 13.2156,
+        "mean_ms": 2.66978
+      },
+      {
+        "group": "generated-negative",
+        "scenario_id": "baseline-below-threshold",
+        "sample_count": 5,
+        "p95_ms": 13.0483,
+        "max_ms": 13.0483,
+        "mean_ms": 2.62644
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-2600-540-distance-48-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.9978,
+        "max_ms": 12.9978,
+        "mean_ms": 2.62134
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-48-density-4-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.8065,
+        "max_ms": 12.8065,
+        "mean_ms": 2.58778
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-48-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 12.7921,
+        "max_ms": 12.7921,
+        "mean_ms": 2.5725
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-2600-540-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.6118,
+        "max_ms": 12.6118,
+        "mean_ms": 2.53866
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-48-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 12.4293,
+        "max_ms": 12.4293,
+        "mean_ms": 2.50694
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-2600-540-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.176,
+        "max_ms": 12.176,
+        "mean_ms": 2.45068
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 11.8249,
+        "max_ms": 11.8249,
+        "mean_ms": 2.3797
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 11.4867,
+        "max_ms": 11.4867,
+        "mean_ms": 2.31506
+      }
+    ],
+    "top_scenarios_by_mean": [
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 14.7766,
+        "max_ms": 14.7766,
+        "mean_ms": 2.97358
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-72-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.9231,
+        "max_ms": 13.9231,
+        "mean_ms": 2.8027
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.7783,
+        "max_ms": 13.7783,
+        "mean_ms": 2.7765
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-400-400-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.7378,
+        "max_ms": 13.7378,
+        "mean_ms": 2.76336
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-32-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.6628,
+        "max_ms": 13.6628,
+        "mean_ms": 2.7575
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-32-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.6335,
+        "max_ms": 13.6335,
+        "mean_ms": 2.75132
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-72-density-4-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.4283,
+        "max_ms": 13.4283,
+        "mean_ms": 2.70704
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.3512,
+        "max_ms": 13.3512,
+        "mean_ms": 2.68756
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 13.2617,
+        "max_ms": 13.2617,
+        "mean_ms": 2.67332
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-32-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.2445,
+        "max_ms": 13.2445,
+        "mean_ms": 2.67268
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 13.2156,
+        "max_ms": 13.2156,
+        "mean_ms": 2.66978
+      },
+      {
+        "group": "generated-negative",
+        "scenario_id": "baseline-below-threshold",
+        "sample_count": 5,
+        "p95_ms": 13.0483,
+        "max_ms": 13.0483,
+        "mean_ms": 2.62644
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-2600-540-distance-48-density-7-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.9978,
+        "max_ms": 12.9978,
+        "mean_ms": 2.62134
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-48-density-4-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.8065,
+        "max_ms": 12.8065,
+        "mean_ms": 2.58778
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-48-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 12.7921,
+        "max_ms": 12.7921,
+        "mean_ms": 2.5725
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-2600-540-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.6118,
+        "max_ms": 12.6118,
+        "mean_ms": 2.53866
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-48-density-7-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 12.4293,
+        "max_ms": 12.4293,
+        "mean_ms": 2.50694
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-2600-540-distance-72-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 12.176,
+        "max_ms": 12.176,
+        "mean_ms": 2.45068
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-48-density-2-jitter-3",
+        "sample_count": 5,
+        "p95_ms": 11.8249,
+        "max_ms": 11.8249,
+        "mean_ms": 2.3797
+      },
+      {
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+        "sample_count": 5,
+        "p95_ms": 11.4867,
+        "max_ms": 11.4867,
+        "mean_ms": 2.31506
+      }
+    ]
+  },
+  "attribution": {
+    "scenario_count": 336,
+    "measured_iterations": 5,
+    "sample_count": 1680,
+    "summaries": [
+      {
+        "scope": "overall",
+        "group": "all",
+        "scenario_id": "",
+        "scenario_count": 336,
+        "sample_count": 1680,
+        "event_count": 13100,
+        "total_median_ms": 0.023,
+        "total_p95_ms": 0.0623,
+        "total_max_ms": 14.0278,
+        "total_mean_ms": 0.19095,
+        "input_median_ms": 0.0127,
+        "input_p95_ms": 0.0371,
+        "input_max_ms": 1.9958,
+        "input_mean_ms": 0.02195643,
+        "wait_median_ms": 0.0075,
+        "wait_p95_ms": 0.0283,
+        "wait_max_ms": 13.9808,
+        "wait_mean_ms": 0.16822381,
+        "validation_median_ms": 0.0015,
+        "validation_p95_ms": 0.004,
+        "validation_max_ms": 0.0477,
+        "validation_mean_ms": 0.00187292
+      },
+      {
+        "scope": "group",
+        "group": "generated-negative",
+        "scenario_id": "",
+        "scenario_count": 4,
+        "sample_count": 20,
+        "event_count": 250,
+        "total_median_ms": 0.0266,
+        "total_p95_ms": 0.0511,
+        "total_max_ms": 0.9471,
+        "total_mean_ms": 0.07575,
+        "input_median_ms": 0.0151,
+        "input_p95_ms": 0.0349,
+        "input_max_ms": 0.9292,
+        "input_mean_ms": 0.063445,
+        "wait_median_ms": 0.0083,
+        "wait_p95_ms": 0.0202,
+        "wait_max_ms": 0.0343,
+        "wait_mean_ms": 0.011135,
+        "validation_median_ms": 0.0001,
+        "validation_p95_ms": 0.0021,
+        "validation_max_ms": 0.0034,
+        "validation_mean_ms": 0.000495
+      },
+      {
+        "scope": "group",
+        "group": "generated-positive",
+        "scenario_id": "",
+        "scenario_count": 324,
+        "sample_count": 1620,
+        "event_count": 12600,
+        "total_median_ms": 0.0228,
+        "total_p95_ms": 0.0623,
+        "total_max_ms": 14.0278,
+        "total_mean_ms": 0.18892833,
+        "input_median_ms": 0.0126,
+        "input_p95_ms": 0.0367,
+        "input_max_ms": 1.9958,
+        "input_mean_ms": 0.02143969,
+        "wait_median_ms": 0.0075,
+        "wait_p95_ms": 0.0272,
+        "wait_max_ms": 13.9808,
+        "wait_mean_ms": 0.16672154,
+        "validation_median_ms": 0.0016,
+        "validation_p95_ms": 0.0041,
+        "validation_max_ms": 0.0477,
+        "validation_mean_ms": 0.00192241
+      },
+      {
+        "scope": "group",
+        "group": "multi-stroke",
+        "scenario_id": "",
+        "scenario_count": 2,
+        "sample_count": 10,
+        "event_count": 100,
+        "total_median_ms": 0.0216,
+        "total_p95_ms": 11.9438,
+        "total_max_ms": 11.9438,
+        "total_mean_ms": 1.22024,
+        "input_median_ms": 0.0107,
+        "input_p95_ms": 0.044,
+        "input_max_ms": 0.044,
+        "input_mean_ms": 0.01518,
+        "wait_median_ms": 0.0117,
+        "wait_p95_ms": 11.9215,
+        "wait_max_ms": 11.9215,
+        "wait_mean_ms": 1.20424,
+        "validation_median_ms": 0.0002,
+        "validation_p95_ms": 0.0016,
+        "validation_max_ms": 0.0016,
+        "validation_mean_ms": 0.00053
+      },
+      {
+        "scope": "group",
+        "group": "single-stroke",
+        "scenario_id": "",
+        "scenario_count": 4,
+        "sample_count": 20,
+        "event_count": 120,
+        "total_median_ms": 0.0235,
+        "total_p95_ms": 0.0507,
+        "total_max_ms": 0.0585,
+        "total_mean_ms": 0.02826,
+        "input_median_ms": 0.0121,
+        "input_p95_ms": 0.0342,
+        "input_max_ms": 0.0403,
+        "input_mean_ms": 0.01434,
+        "wait_median_ms": 0.0127,
+        "wait_p95_ms": 0.0242,
+        "wait_max_ms": 0.047,
+        "wait_mean_ms": 0.0131,
+        "validation_median_ms": 0.0002,
+        "validation_p95_ms": 0.0008,
+        "validation_max_ms": 0.0018,
+        "validation_mean_ms": 0.00039
+      },
+      {
+        "scope": "group",
+        "group": "wheel",
+        "scenario_id": "",
+        "scenario_count": 2,
+        "sample_count": 10,
+        "event_count": 30,
+        "total_median_ms": 0.0279,
+        "total_p95_ms": 0.1727,
+        "total_max_ms": 0.1727,
+        "total_mean_ms": 0.04495,
+        "input_median_ms": 0.0279,
+        "input_p95_ms": 0.1717,
+        "input_max_ms": 0.1717,
+        "input_mean_ms": 0.0447,
+        "wait_median_ms": 0,
+        "wait_p95_ms": 0,
+        "wait_max_ms": 0,
+        "wait_mean_ms": 0,
+        "validation_median_ms": 0.0004,
+        "validation_p95_ms": 0.0053,
+        "validation_max_ms": 0.0053,
+        "validation_mean_ms": 0.00092
+      }
+    ],
+    "total_outlier_count_gte_1_ms": 28,
+    "input_outlier_count_gte_1_ms": 6,
+    "wait_outlier_count_gte_1_ms": 22,
+    "slowest_total_samples": [
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-72-density-2-jitter-0",
+        "event_count": 4,
+        "total_replay_ms": 14.0278,
+        "total_input_ms": 0.0429,
+        "observation_wait_ms": 13.9808,
+        "observation_read_ms": 0.0036,
+        "validation_ms": 0.0077,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 13.8756,
+        "total_input_ms": 0.0168,
+        "observation_wait_ms": 13.8572,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0034,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-72-density-2-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 13.7726,
+        "total_input_ms": 0.0181,
+        "observation_wait_ms": 13.7535,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0053,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-72-density-4-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 13.6596,
+        "total_input_ms": 0.0413,
+        "observation_wait_ms": 13.6173,
+        "observation_read_ms": 0.0006,
+        "validation_ms": 0.0025,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 13.5414,
+        "total_input_ms": 0.0198,
+        "observation_wait_ms": 13.5206,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0026,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 13.4499,
+        "total_input_ms": 0.0241,
+        "observation_wait_ms": 13.4247,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0034,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-2600-540-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 13.107,
+        "total_input_ms": 0.026,
+        "observation_wait_ms": 13.08,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0075,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-32-density-4-jitter-3",
+        "event_count": 10,
+        "total_replay_ms": 13.0563,
+        "total_input_ms": 0.031,
+        "observation_wait_ms": 13.0229,
+        "observation_read_ms": 0.0016,
+        "validation_ms": 0.0043,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-2600-540-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 12.8186,
+        "total_input_ms": 0.0168,
+        "observation_wait_ms": 12.8009,
+        "observation_read_ms": 0.0006,
+        "validation_ms": 0.0039,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-2600-540-distance-32-density-7-jitter-0",
+        "event_count": 9,
+        "total_replay_ms": 12.7013,
+        "total_input_ms": 0.023,
+        "observation_wait_ms": 12.6771,
+        "observation_read_ms": 0.0011,
+        "validation_ms": 0.0056,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-400-400-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 12.6383,
+        "total_input_ms": 0.0427,
+        "observation_wait_ms": 12.5941,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0042,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 12.6149,
+        "total_input_ms": 0.0423,
+        "observation_wait_ms": 12.5707,
+        "observation_read_ms": 0.0009,
+        "validation_ms": 0.0057,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-72-density-4-jitter-3",
+        "event_count": 6,
+        "total_replay_ms": 12.3292,
+        "total_input_ms": 0.0197,
+        "observation_wait_ms": 12.3081,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0021,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 4,
+        "group": "multi-stroke",
+        "scenario_id": "baseline-UD",
+        "event_count": 10,
+        "total_replay_ms": 11.9438,
+        "total_input_ms": 0.0212,
+        "observation_wait_ms": 11.9215,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0014,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 11.9343,
+        "total_input_ms": 0.0253,
+        "observation_wait_ms": 11.908,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0029,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-400-400-distance-72-density-4-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 11.8294,
+        "total_input_ms": 0.0373,
+        "observation_wait_ms": 11.7905,
+        "observation_read_ms": 0.0012,
+        "validation_ms": 0.0033,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-72-density-4-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 11.7488,
+        "total_input_ms": 0.0249,
+        "observation_wait_ms": 11.7221,
+        "observation_read_ms": 0.0011,
+        "validation_ms": 0.0022,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 11.5328,
+        "total_input_ms": 0.0259,
+        "observation_wait_ms": 11.5059,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0035,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-7-jitter-0",
+        "event_count": 9,
+        "total_replay_ms": 11.3057,
+        "total_input_ms": 0.0404,
+        "observation_wait_ms": 11.2624,
+        "observation_read_ms": 0.0023,
+        "validation_ms": 0.0088,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-48-density-4-jitter-3",
+        "event_count": 10,
+        "total_replay_ms": 11.1568,
+        "total_input_ms": 0.0247,
+        "observation_wait_ms": 11.1309,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.007,
+        "observed_stroke": "DR"
+      }
+    ],
+    "slowest_input_samples": [
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-32-density-4-jitter-3",
+        "event_count": 6,
+        "total_replay_ms": 2.0041,
+        "total_input_ms": 1.9958,
+        "observation_wait_ms": 0.0069,
+        "observation_read_ms": 0.0005,
+        "validation_ms": 0.0025,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-48-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 1.7955,
+        "total_input_ms": 1.7835,
+        "observation_wait_ms": 0.0101,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0052,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 1.6397,
+        "total_input_ms": 1.6321,
+        "observation_wait_ms": 0.0042,
+        "observation_read_ms": 0.0016,
+        "validation_ms": 0.0043,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-2-jitter-0",
+        "event_count": 4,
+        "total_replay_ms": 1.2926,
+        "total_input_ms": 1.2571,
+        "observation_wait_ms": 0.0284,
+        "observation_read_ms": 0.0029,
+        "validation_ms": 0.014,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-48-density-2-jitter-0",
+        "event_count": 4,
+        "total_replay_ms": 1.0248,
+        "total_input_ms": 1.0132,
+        "observation_wait_ms": 0.0096,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0045,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-48-density-7-jitter-0",
+        "event_count": 16,
+        "total_replay_ms": 1.0266,
+        "total_input_ms": 1.0116,
+        "observation_wait_ms": 0.0129,
+        "observation_read_ms": 0.0005,
+        "validation_ms": 0.0033,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-negative",
+        "scenario_id": "negative-noisy-URDL",
+        "event_count": 26,
+        "total_replay_ms": 0.9471,
+        "total_input_ms": 0.9292,
+        "observation_wait_ms": 0.0152,
+        "observation_read_ms": 0.0009,
+        "validation_ms": 0.0021,
+        "observed_stroke": "URDL"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 0.3257,
+        "total_input_ms": 0.3055,
+        "observation_wait_ms": 0.0145,
+        "observation_read_ms": 0.0015,
+        "validation_ms": 0.002,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 0.2719,
+        "total_input_ms": 0.2469,
+        "observation_wait_ms": 0.0247,
+        "observation_read_ms": 0.0002,
+        "validation_ms": 0.001,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 0.2186,
+        "total_input_ms": 0.1958,
+        "observation_wait_ms": 0.0171,
+        "observation_read_ms": 0.0033,
+        "validation_ms": 0.0477,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 2,
+        "group": "wheel",
+        "scenario_id": "wheel-WheelDown",
+        "event_count": 3,
+        "total_replay_ms": 0.1727,
+        "total_input_ms": 0.1717,
+        "observation_wait_ms": 0,
+        "observation_read_ms": 0,
+        "validation_ms": 0.0053,
+        "observed_stroke": ""
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 0.1669,
+        "total_input_ms": 0.1564,
+        "observation_wait_ms": 0.0072,
+        "observation_read_ms": 0.001,
+        "validation_ms": 0.0126,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-72-density-2-jitter-3",
+        "event_count": 6,
+        "total_replay_ms": 0.2304,
+        "total_input_ms": 0.1312,
+        "observation_wait_ms": 0.0903,
+        "observation_read_ms": 0.0083,
+        "validation_ms": 0.0209,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-48-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 0.107,
+        "total_input_ms": 0.0946,
+        "observation_wait_ms": 0.0097,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0019,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 0.1201,
+        "total_input_ms": 0.0908,
+        "observation_wait_ms": 0.0283,
+        "observation_read_ms": 0.0002,
+        "validation_ms": 0.0018,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-32-density-2-jitter-0",
+        "event_count": 4,
+        "total_replay_ms": 0.0992,
+        "total_input_ms": 0.0816,
+        "observation_wait_ms": 0.0133,
+        "observation_read_ms": 0.0009,
+        "validation_ms": 0.0014,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-7-jitter-3",
+        "event_count": 16,
+        "total_replay_ms": 0.1227,
+        "total_input_ms": 0.0796,
+        "observation_wait_ms": 0.0422,
+        "observation_read_ms": 0.0003,
+        "validation_ms": 0.0022,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-32-density-2-jitter-0",
+        "event_count": 4,
+        "total_replay_ms": 0.0877,
+        "total_input_ms": 0.0789,
+        "observation_wait_ms": 0.0071,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0038,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-72-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 0.0972,
+        "total_input_ms": 0.0771,
+        "observation_wait_ms": 0.0162,
+        "observation_read_ms": 0.001,
+        "validation_ms": 0.0088,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-400-400-distance-32-density-7-jitter-3",
+        "event_count": 16,
+        "total_replay_ms": 0.1027,
+        "total_input_ms": 0.0721,
+        "observation_wait_ms": 0.0269,
+        "observation_read_ms": 0.0011,
+        "validation_ms": 0.0081,
+        "observed_stroke": "DR"
+      }
+    ],
+    "slowest_wait_samples": [
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start--800-360-distance-72-density-2-jitter-0",
+        "event_count": 4,
+        "total_replay_ms": 14.0278,
+        "total_input_ms": 0.0429,
+        "observation_wait_ms": 13.9808,
+        "observation_read_ms": 0.0036,
+        "validation_ms": 0.0077,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-2600-540-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 13.8756,
+        "total_input_ms": 0.0168,
+        "observation_wait_ms": 13.8572,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0034,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-400-400-distance-72-density-2-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 13.7726,
+        "total_input_ms": 0.0181,
+        "observation_wait_ms": 13.7535,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0053,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start-400-400-distance-72-density-4-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 13.6596,
+        "total_input_ms": 0.0413,
+        "observation_wait_ms": 13.6173,
+        "observation_read_ms": 0.0006,
+        "validation_ms": 0.0025,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-D-start--800-360-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 13.5414,
+        "total_input_ms": 0.0198,
+        "observation_wait_ms": 13.5206,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0026,
+        "observed_stroke": "D"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-400-400-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 13.4499,
+        "total_input_ms": 0.0241,
+        "observation_wait_ms": 13.4247,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0034,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start-2600-540-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 13.107,
+        "total_input_ms": 0.026,
+        "observation_wait_ms": 13.08,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0075,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-UD-start--800-360-distance-32-density-4-jitter-3",
+        "event_count": 10,
+        "total_replay_ms": 13.0563,
+        "total_input_ms": 0.031,
+        "observation_wait_ms": 13.0229,
+        "observation_read_ms": 0.0016,
+        "validation_ms": 0.0043,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-R-start-2600-540-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 12.8186,
+        "total_input_ms": 0.0168,
+        "observation_wait_ms": 12.8009,
+        "observation_read_ms": 0.0006,
+        "validation_ms": 0.0039,
+        "observed_stroke": "R"
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-2600-540-distance-32-density-7-jitter-0",
+        "event_count": 9,
+        "total_replay_ms": 12.7013,
+        "total_input_ms": 0.023,
+        "observation_wait_ms": 12.6771,
+        "observation_read_ms": 0.0011,
+        "validation_ms": 0.0056,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start-400-400-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 12.6383,
+        "total_input_ms": 0.0427,
+        "observation_wait_ms": 12.5941,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0042,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-32-density-4-jitter-0",
+        "event_count": 10,
+        "total_replay_ms": 12.6149,
+        "total_input_ms": 0.0423,
+        "observation_wait_ms": 12.5707,
+        "observation_read_ms": 0.0009,
+        "validation_ms": 0.0057,
+        "observed_stroke": "DR"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-2600-540-distance-72-density-4-jitter-3",
+        "event_count": 6,
+        "total_replay_ms": 12.3292,
+        "total_input_ms": 0.0197,
+        "observation_wait_ms": 12.3081,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0021,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 4,
+        "group": "multi-stroke",
+        "scenario_id": "baseline-UD",
+        "event_count": 10,
+        "total_replay_ms": 11.9438,
+        "total_input_ms": 0.0212,
+        "observation_wait_ms": 11.9215,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0014,
+        "observed_stroke": "UD"
+      },
+      {
+        "iteration": 2,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start-400-400-distance-32-density-7-jitter-3",
+        "event_count": 9,
+        "total_replay_ms": 11.9343,
+        "total_input_ms": 0.0253,
+        "observation_wait_ms": 11.908,
+        "observation_read_ms": 0.0007,
+        "validation_ms": 0.0029,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 3,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start-400-400-distance-72-density-4-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 11.8294,
+        "total_input_ms": 0.0373,
+        "observation_wait_ms": 11.7905,
+        "observation_read_ms": 0.0012,
+        "validation_ms": 0.0033,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 1,
+        "group": "generated-positive",
+        "scenario_id": "positive-U-start--800-360-distance-72-density-4-jitter-0",
+        "event_count": 6,
+        "total_replay_ms": 11.7488,
+        "total_input_ms": 0.0249,
+        "observation_wait_ms": 11.7221,
+        "observation_read_ms": 0.0011,
+        "validation_ms": 0.0022,
+        "observed_stroke": "U"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-72-density-2-jitter-3",
+        "event_count": 4,
+        "total_replay_ms": 11.5328,
+        "total_input_ms": 0.0259,
+        "observation_wait_ms": 11.5059,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.0035,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 0,
+        "group": "generated-positive",
+        "scenario_id": "positive-L-start--800-360-distance-32-density-7-jitter-0",
+        "event_count": 9,
+        "total_replay_ms": 11.3057,
+        "total_input_ms": 0.0404,
+        "observation_wait_ms": 11.2624,
+        "observation_read_ms": 0.0023,
+        "validation_ms": 0.0088,
+        "observed_stroke": "L"
+      },
+      {
+        "iteration": 4,
+        "group": "generated-positive",
+        "scenario_id": "positive-DR-start--800-360-distance-48-density-4-jitter-3",
+        "event_count": 10,
+        "total_replay_ms": 11.1568,
+        "total_input_ms": 0.0247,
+        "observation_wait_ms": 11.1309,
+        "observation_read_ms": 0.0008,
+        "validation_ms": 0.007,
+        "observed_stroke": "DR"
+      }
+    ]
+  },
+  "conclusions": [
+    "Step 04 slow samples are isolated per scenario and spread across measured iterations, which argues against one deterministic slow scenario shape.",
+    "Step 04 replay timing includes GestureMachine.Input calls, SpinWait watcher synchronization, and the observed-stroke read; validation is outside that stopwatch.",
+    "Step 05 attribution shows the largest total outliers are dominated by observation wait time, not raw input time.",
+    "Raw input time is normally small, but a few press Input calls exceed 1 ms, likely reflecting state transition and watcher reset/start scheduling rather than motion path cost.",
+    "Validation overhead is effectively negligible relative to replay and watcher wait timings."
+  ]
+}

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="43fcdd54-4f18-4fb8-ad89-d3cd34a14368" name="seigl@9TH 2026-05-06 23:35:35" runUser="9TH\CodexSandboxOffline" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-05-06T23:35:35.3777634+09:00" queuing="2026-05-06T23:35:35.3777634+09:00" start="2026-05-06T23:35:32.2098958+09:00" finish="2026-05-06T23:35:35.5138056+09:00" />
+  <TestSettings name="default" id="b8587603-5b0b-4af9-97d1-f35a7521a2bc">
+    <Deployment runDeploymentRoot="seigl_9TH_2026-05-06_23_35_35" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="49aea801-3bec-4903-9905-c3528c8dd4e8" testId="79478c80-4568-4442-ccec-bf75211cbdee" testName="DefaultUserScriptGestureDefinitionsAreFullyEnumerated" computerName="9TH" duration="00:00:02.5224329" startTime="2026-05-06T23:35:32.6666416+09:00" endTime="2026-05-06T23:35:35.3627280+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="49aea801-3bec-4903-9905-c3528c8dd4e8" />
+    <UnitTestResult executionId="87b7e782-859a-4997-b7d8-0a40979d8465" testId="a595130b-e420-a69a-052b-765a05847a07" testName="NegativeGestureReplayCasesDoNotExecuteHandlers" computerName="9TH" duration="00:00:00.0040339" startTime="2026-05-06T23:35:35.4477628+09:00" endTime="2026-05-06T23:35:35.4517612+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="87b7e782-859a-4997-b7d8-0a40979d8465" />
+    <UnitTestResult executionId="a7b8e733-4b56-43d2-be10-9037910e18d5" testId="e6d524ac-e07a-b20c-b034-a19af040e1e3" testName="DefaultBrowserStrokeGesturesReplayThroughSyntheticInput" computerName="9TH" duration="00:00:00.0144894" startTime="2026-05-06T23:35:35.4327618+09:00" endTime="2026-05-06T23:35:35.4477628+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a7b8e733-4b56-43d2-be10-9037910e18d5" />
+    <UnitTestResult executionId="bd377e84-54c1-4140-9b9f-9bdc79046a91" testId="c23636de-895e-8a67-58ab-ea1a5ddbd254" testName="DefaultBrowserWheelGesturesReplayThroughSyntheticInput" computerName="9TH" duration="00:00:00.0635482" startTime="2026-05-06T23:35:35.3687274+09:00" endTime="2026-05-06T23:35:35.4327618+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bd377e84-54c1-4140-9b9f-9bdc79046a91" />
+    <UnitTestResult executionId="026dd79d-3663-4df0-938b-4407e53ada5a" testId="90a8e8b7-ef7a-67ee-2aaa-a2849bc4e48a" testName="WheelAndStrokeGesturesDoNotCrossTriggerEachOther" computerName="9TH" duration="00:00:00.0021853" startTime="2026-05-06T23:35:35.4517612+09:00" endTime="2026-05-06T23:35:35.4547641+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="026dd79d-3663-4df0-938b-4407e53ada5a" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="DefaultBrowserStrokeGesturesReplayThroughSyntheticInput" storage="c:\users\seigl\projects\creviceapp\creviceapptests\bin\release\crevice4tests.dll" id="e6d524ac-e07a-b20c-b034-a19af040e1e3">
+      <Execution id="a7b8e733-4b56-43d2-be10-9037910e18d5" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceAppTests\bin\Release\Crevice4Tests.dll" adapterTypeName="executor://mstestadapter/v2" className="Crevice4Tests.GestureCoverageHarnessTests" name="DefaultBrowserStrokeGesturesReplayThroughSyntheticInput" />
+    </UnitTest>
+    <UnitTest name="DefaultUserScriptGestureDefinitionsAreFullyEnumerated" storage="c:\users\seigl\projects\creviceapp\creviceapptests\bin\release\crevice4tests.dll" id="79478c80-4568-4442-ccec-bf75211cbdee">
+      <Execution id="49aea801-3bec-4903-9905-c3528c8dd4e8" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceAppTests\bin\Release\Crevice4Tests.dll" adapterTypeName="executor://mstestadapter/v2" className="Crevice4Tests.GestureCoverageHarnessTests" name="DefaultUserScriptGestureDefinitionsAreFullyEnumerated" />
+    </UnitTest>
+    <UnitTest name="DefaultBrowserWheelGesturesReplayThroughSyntheticInput" storage="c:\users\seigl\projects\creviceapp\creviceapptests\bin\release\crevice4tests.dll" id="c23636de-895e-8a67-58ab-ea1a5ddbd254">
+      <Execution id="bd377e84-54c1-4140-9b9f-9bdc79046a91" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceAppTests\bin\Release\Crevice4Tests.dll" adapterTypeName="executor://mstestadapter/v2" className="Crevice4Tests.GestureCoverageHarnessTests" name="DefaultBrowserWheelGesturesReplayThroughSyntheticInput" />
+    </UnitTest>
+    <UnitTest name="WheelAndStrokeGesturesDoNotCrossTriggerEachOther" storage="c:\users\seigl\projects\creviceapp\creviceapptests\bin\release\crevice4tests.dll" id="90a8e8b7-ef7a-67ee-2aaa-a2849bc4e48a">
+      <Execution id="026dd79d-3663-4df0-938b-4407e53ada5a" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceAppTests\bin\Release\Crevice4Tests.dll" adapterTypeName="executor://mstestadapter/v2" className="Crevice4Tests.GestureCoverageHarnessTests" name="WheelAndStrokeGesturesDoNotCrossTriggerEachOther" />
+    </UnitTest>
+    <UnitTest name="NegativeGestureReplayCasesDoNotExecuteHandlers" storage="c:\users\seigl\projects\creviceapp\creviceapptests\bin\release\crevice4tests.dll" id="a595130b-e420-a69a-052b-765a05847a07">
+      <Execution id="87b7e782-859a-4997-b7d8-0a40979d8465" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceAppTests\bin\Release\Crevice4Tests.dll" adapterTypeName="executor://mstestadapter/v2" className="Crevice4Tests.GestureCoverageHarnessTests" name="NegativeGestureReplayCasesDoNotExecuteHandlers" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="79478c80-4568-4442-ccec-bf75211cbdee" executionId="49aea801-3bec-4903-9905-c3528c8dd4e8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a595130b-e420-a69a-052b-765a05847a07" executionId="87b7e782-859a-4997-b7d8-0a40979d8465" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e6d524ac-e07a-b20c-b034-a19af040e1e3" executionId="a7b8e733-4b56-43d2-be10-9037910e18d5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c23636de-895e-8a67-58ab-ea1a5ddbd254" executionId="bd377e84-54c1-4140-9b9f-9bdc79046a91" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="90a8e8b7-ef7a-67ee-2aaa-a2849bc4e48a" executionId="026dd79d-3663-4df0-938b-4407e53ada5a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="5" executed="5" passed="5" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+</TestRun>

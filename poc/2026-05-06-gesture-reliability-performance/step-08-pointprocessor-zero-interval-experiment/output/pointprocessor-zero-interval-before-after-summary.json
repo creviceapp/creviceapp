@@ -1,0 +1,52 @@
+{
+  "step": "08-pointprocessor-zero-interval-experiment",
+  "hypothesis": "PointProcessor should not start its skipped-point polling task when watchInterval <= 0 because points are processed immediately and no skipped-point flush is needed.",
+  "production_change": {
+    "file": "CreviceLib/Core.Stroke.cs",
+    "summary": "Start the PointProcessor background skipped-point task only when watchInterval > 0; dispose the token source directly when no task was started."
+  },
+  "before_step_07": {
+    "source": "poc/2026-05-06-gesture-reliability-performance/step-07-strokewatcher-scheduler-tuning/output/gesture-performance-scheduler-comparison.json",
+    "repeat_runs_per_scheduler": 3,
+    "samples_per_scheduler": 5040,
+    "production_like_low_latency": {
+      "total_median_ms": 30.9644,
+      "total_p95_ms": 32.0629,
+      "wait_median_ms": 30.8126,
+      "wait_p95_ms": 31.9178,
+      "wait_at_or_above_1ms_count": 5005
+    },
+    "task_factory_default": {
+      "total_median_ms": 0.0238,
+      "total_p95_ms": 0.0592,
+      "wait_median_ms": 0.0077,
+      "wait_p95_ms": 0.0286,
+      "wait_at_or_above_1ms_count": 68
+    }
+  },
+  "after_step_08": {
+    "source": "poc/2026-05-06-gesture-reliability-performance/step-08-pointprocessor-zero-interval-experiment/output/gesture-performance-scheduler-comparison-after-zero-interval-guard.json",
+    "repeat_runs_per_scheduler": 1,
+    "samples_per_scheduler": 1680,
+    "production_like_low_latency": {
+      "total_median_ms": 0.0322,
+      "total_p95_ms": 0.0598,
+      "wait_median_ms": 0.0227,
+      "wait_p95_ms": 0.0497,
+      "wait_at_or_above_1ms_count": 22
+    },
+    "task_factory_default": {
+      "total_median_ms": 0.0117,
+      "total_p95_ms": 0.0256,
+      "wait_median_ms": 0.0017,
+      "wait_p95_ms": 0.0127,
+      "wait_at_or_above_1ms_count": 2
+    }
+  },
+  "correctness": {
+    "gesture_coverage_harness_tests": "passed 7/7",
+    "focused_core_stroke_tests": "passed 2/2",
+    "step_08_scheduler_comparison_test": "passed 1/1"
+  },
+  "recommendation": "keep change"
+}

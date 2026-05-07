@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="155ad914-97b1-44c6-985d-1bdfa5a7b7a2" name="seigl@9TH 2026-05-07 01:17:00" runUser="9TH\seigl" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-05-07T01:17:00.9834006+09:00" queuing="2026-05-07T01:17:00.9834006+09:00" start="2026-05-07T01:17:00.4947265+09:00" finish="2026-05-07T01:17:00.9994554+09:00" />
+  <TestSettings name="default" id="3609473e-8200-415c-b375-e15da208a249">
+    <Deployment runDeploymentRoot="seigl_9TH_2026-05-07_01_17_00" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="cf72df5e-ca1a-44f0-a42a-d95fd507b961" testId="6adac488-3b4c-953d-2c43-486df731b142" testName="PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN" computerName="9TH" duration="00:00:00.0420927" startTime="2026-05-07T01:17:00.8318653+09:00" endTime="2026-05-07T01:17:00.9138905+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cf72df5e-ca1a-44f0-a42a-d95fd507b961" />
+    <UnitTestResult executionId="1cf2110c-b874-4304-a352-e6f608a4f5d0" testId="001676fd-dee3-0bdf-6c0c-9f0cfa55574c" testName="StrokeResetTest" computerName="9TH" duration="00:00:00.0148096" startTime="2026-05-07T01:17:00.9183961+09:00" endTime="2026-05-07T01:17:00.9344020+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1cf2110c-b874-4304-a352-e6f608a4f5d0" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="StrokeResetTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="001676fd-dee3-0bdf-6c0c-9f0cfa55574c">
+      <Execution id="1cf2110c-b874-4304-a352-e6f608a4f5d0" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeTest" name="StrokeResetTest" />
+    </UnitTest>
+    <UnitTest name="PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="6adac488-3b4c-953d-2c43-486df731b142">
+      <Execution id="cf72df5e-ca1a-44f0-a42a-d95fd507b961" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="6adac488-3b4c-953d-2c43-486df731b142" executionId="cf72df5e-ca1a-44f0-a42a-d95fd507b961" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="001676fd-dee3-0bdf-6c0c-9f0cfa55574c" executionId="1cf2110c-b874-4304-a352-e6f608a4f5d0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="2" executed="2" passed="2" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+</TestRun>

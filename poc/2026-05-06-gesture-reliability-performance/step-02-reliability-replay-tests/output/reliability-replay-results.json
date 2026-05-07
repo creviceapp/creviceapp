@@ -1,0 +1,62 @@
+{
+  "step": "02-reliability-replay-tests",
+  "date": "2026-05-06",
+  "repository": "C:\\Users\\seigl\\projects\\creviceapp",
+  "branch": "split-store-msix-release-zip",
+  "changed_files": [
+    "CreviceAppTests/GestureCoverageHarnessTests.cs",
+    "poc/2026-05-06-gesture-reliability-performance/step-02-reliability-replay-tests/log.md",
+    "poc/2026-05-06-gesture-reliability-performance/step-02-reliability-replay-tests/report.md",
+    "poc/2026-05-06-gesture-reliability-performance/step-02-reliability-replay-tests/output/reliability-replay-results.json"
+  ],
+  "pre_existing_scope": {
+    "project_file": "CreviceAppTests/CreviceAppTests.csproj already had the Step 02 compile include in the working tree; this step left that include in place and only normalized the trailing newline.",
+    "docs_directory": "Untouched"
+  },
+  "covered_default_gestures": [
+    "RButton+WheelUp",
+    "RButton+WheelDown",
+    "RButton+U",
+    "RButton+D",
+    "RButton+L",
+    "RButton+R",
+    "RButton+UD",
+    "RButton+DR"
+  ],
+  "negative_coverage": [
+    "Unregistered RL stroke does not execute handlers",
+    "When condition returning false blocks execution",
+    "Below-threshold movement does not execute stroke handlers",
+    "Wheel replay does not execute stroke handlers",
+    "Stroke replay does not execute wheel handlers"
+  ],
+  "commands": [
+    {
+      "command": "& 'C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe' CreviceAppTests\\CreviceAppTests.csproj /p:Configuration=Release /p:Platform=AnyCPU /verbosity:minimal",
+      "result": "failed",
+      "reason": "Local process environment had duplicate Path/PATH keys, causing MSBuild/Roslyn to throw before test compilation."
+    },
+    {
+      "command": "$msbuild = 'C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; & $msbuild CreviceAppTests\\CreviceAppTests.csproj /p:Configuration=Release /p:Platform=AnyCPU /verbosity:minimal",
+      "result": "passed",
+      "outputs": [
+        "CreviceLib/bin/Release/net462/Crevice.Core.dll",
+        "CreviceApp/bin/Release/crevice4.exe",
+        "CreviceAppTests/bin/Release/Crevice4Tests.dll"
+      ]
+    },
+    {
+      "command": "$vstest = 'C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; & $vstest CreviceAppTests\\bin\\Release\\Crevice4Tests.dll /TestCaseFilter:\"FullyQualifiedName~GestureCoverageHarnessTests\" /Logger:\"trx;LogFileName=GestureCoverageHarnessTests.Step02.trx\" /ResultsDirectory:\"poc\\2026-05-06-gesture-reliability-performance\\step-02-reliability-replay-tests\\output\\test-results\"",
+      "result": "passed",
+      "total": 5,
+      "passed": 5,
+      "trx": "poc/2026-05-06-gesture-reliability-performance/step-02-reliability-replay-tests/output/test-results/GestureCoverageHarnessTests.Step02.trx"
+    }
+  ],
+  "notes": [
+    "No production code was changed.",
+    "No benchmark or performance pass/fail threshold remains in the reliability harness.",
+    "Synthetic replay uses GestureMachine.Input(...) only; no hooks, SendInput, cursor movement, foreground windows, display state, or overlay UI are used by replay tests.",
+    "The default script is loaded for gesture definition enumeration only; replay tests use a test-only mirror root with recording handlers to avoid executing DefaultUserScript SendInput actions."
+  ]
+}

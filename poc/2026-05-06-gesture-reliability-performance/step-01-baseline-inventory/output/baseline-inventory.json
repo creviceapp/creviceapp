@@ -1,0 +1,106 @@
+{
+  "step": "01-baseline-inventory",
+  "date": "2026-05-06",
+  "repository": "C:\\Users\\seigl\\projects\\creviceapp",
+  "branch": "split-store-msix-release-zip",
+  "initial_git_status": [
+    "## split-store-msix-release-zip...origin/split-store-msix-release-zip",
+    " M CreviceAppTests/CreviceAppTests.csproj",
+    "?? CreviceAppTests/GestureCoverageHarnessTests.cs",
+    "?? docs/",
+    "?? poc/"
+  ],
+  "solution_projects": [
+    "CreviceLib",
+    "CreviceLibTests",
+    "CreviceApp",
+    "CreviceAppPackage",
+    "CreviceAppTests"
+  ],
+  "test_projects": [
+    {
+      "path": "CreviceLibTests/CreviceLibTests.csproj",
+      "framework": "net462",
+      "runner": "MSTest",
+      "ci_role": "built and run",
+      "notes": "Contains deterministic DSL/FSM/stroke tests and a BenchmarkDotNet-backed EventsBenchmarkTest that should be filtered for reliability-only runs."
+    },
+    {
+      "path": "CreviceAppTests/CreviceAppTests.csproj",
+      "framework": "net462",
+      "runner": "MSTest",
+      "ci_role": "built only",
+      "notes": "Contains deterministic script/config/gesture-machine tests plus machine-dependent hook and SendInput tests. Current uncommitted change wires GestureCoverageHarnessTests.cs into this project."
+    }
+  ],
+  "core_paths": {
+    "hook_to_input": "CreviceApp/UI.Main.MouseGestureForm.cs",
+    "app_gesture_machine": "CreviceApp/GM.GestureMachine.cs",
+    "cluster_dispatch": "CreviceApp/GM.GestureMachineCluster.cs",
+    "core_fsm": [
+      "CreviceLib/Core.FSM.GestureMachine.cs",
+      "CreviceLib/Core.FSM.State0.cs",
+      "CreviceLib/Core.FSM.StateN.cs"
+    ],
+    "stroke": [
+      "CreviceLib/Core.Stroke.StrokeWatcher.cs",
+      "CreviceLib/Core.Stroke.StrokeSequence.cs",
+      "CreviceLib/Core.Stroke.Stroke.cs"
+    ],
+    "dsl": [
+      "CreviceLib/Core.DSL.cs",
+      "CreviceApp/DSL.RootElement.cs"
+    ],
+    "default_script_loading": [
+      "CreviceApp/GM.ReloadableGestureMachine.cs",
+      "CreviceApp/GM.GestureMachineCandidate.cs",
+      "CreviceApp/Config.GlobalConfig.cs",
+      "CreviceApp/US.UserScript.cs",
+      "CreviceApp/Scripts/DefaultUserScript.csx"
+    ]
+  },
+  "ci_safe_boundaries": [
+    "Core DSL/FSM event replay using synthetic physical events",
+    "StrokeSequence equality/hash/to-string behavior",
+    "StrokeWatcher-driven replay when thresholds and wait boundaries are controlled",
+    "DefaultUserScript parse/compile/evaluate into RootElement when user directory is temporary",
+    "Coverage enumeration over RootElement When/On/Stroke/Do structure"
+  ],
+  "diagnostic_or_manual_boundaries": [
+    "Low-level mouse/keyboard hook installation",
+    "SendInput event injection and hook capture",
+    "ForegroundWindow and PointedWindow matching",
+    "Cursor position and display scaling assertions",
+    "Gesture stroke overlay UI drawing",
+    "BenchmarkDotNet and timing-threshold performance assertions"
+  ],
+  "commands": [
+    {
+      "command": "dotnet msbuild CreviceLib\\CreviceLib.csproj /p:Configuration=Release /verbosity:minimal",
+      "result": "passed"
+    },
+    {
+      "command": "dotnet msbuild CreviceLibTests\\CreviceLibTests.csproj /p:Configuration=Release /verbosity:minimal",
+      "result": "passed"
+    },
+    {
+      "command": "dotnet msbuild CreviceAppTests\\CreviceAppTests.csproj /p:Configuration=Release /verbosity:minimal",
+      "result": "failed",
+      "reason": "Plain local dotnet msbuild could not resolve System.Runtime.WindowsRuntime and System.Runtime.WindowsRuntime.UI.Xaml; CI installs legacy Windows SDK contracts before this build."
+    },
+    {
+      "command": "vstest.console.exe CreviceLibTests\\bin\\Release\\CreviceLibTests.dll /TestCaseFilter:\"FullyQualifiedName!~EventsBenchmarkTest\" /Logger:\"trx;LogFileName=CreviceLibTests.Step01.trx\" /ResultsDirectory:\"poc\\2026-05-06-gesture-reliability-performance\\step-01-baseline-inventory\\output\\test-results\"",
+      "result": "passed",
+      "total": 157,
+      "passed": 157,
+      "trx": "poc/2026-05-06-gesture-reliability-performance/step-01-baseline-inventory/output/test-results/CreviceLibTests.Step01.trx"
+    }
+  ],
+  "step_02_recommendations": [
+    "Promote deterministic gesture replay helpers into non-benchmark app tests, or a shared helper file, with no Stopwatch pass/fail thresholds.",
+    "Add explicit default-script coverage assertions for wheel gestures and stroke gestures separately.",
+    "Use synthetic GestureMachine.Input sequences for RButton+WheelUp/WheelDown and RButton+stroke releases, not OS hooks or SendInput.",
+    "Keep hook, SendInput, cursor, foreground-window, and display-scaling checks out of CI reliability tests unless they are separately marked diagnostic/manual.",
+    "Use CI's sanitized Windows SDK setup for app-test builds, or document the local prerequisite before app-test build verification."
+  ]
+}

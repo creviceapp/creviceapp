@@ -1,0 +1,3553 @@
+﻿{
+  "step": "08-pointprocessor-zero-interval-experiment",
+  "repository": "C:\\Users\\seigl\\projects\\creviceapp",
+  "branch": "split-store-msix-release-zip",
+  "started_utc": "2026-05-06T15:50:52.1889637+00:00",
+  "started_jst": "2026-05-07T00:50:52.1889637+09:00",
+  "finished_utc": "2026-05-06T15:50:52.9039898+00:00",
+  "finished_jst": "2026-05-07T00:50:52.9039898+09:00",
+  "warmup_iterations": 2,
+  "measured_iterations": 5,
+  "repeat_runs_per_scheduler": 1,
+  "scenario_count": 336,
+  "event_count_per_measured_iteration": 2620,
+  "total_measured_event_count": 26200,
+  "timing_note": "Step 08 focused scheduler comparison after the PointProcessor zero-interval guard; no hard pass/fail timing threshold is applied.",
+  "environment": {
+    "machine_name": "9TH",
+    "user_name": "CodexSandboxOffline",
+    "os_version": "Microsoft Windows NT 10.0.26200.0",
+    "clr_version": "4.0.30319.42000",
+    "process_architecture": "x64",
+    "is_64_bit_operating_system": true,
+    "is_64_bit_process": true,
+    "build_configuration": "Release",
+    "test_assembly": "C:\\Users\\seigl\\projects\\creviceapp\\CreviceAppTests\\bin\\Release\\Crevice4Tests.dll",
+    "stopwatch_frequency": 10000000,
+    "stopwatch_is_high_resolution": true
+  },
+  "scenario_inventory": [
+    {
+      "group": "wheel",
+      "id": "wheel-WheelUp",
+      "category": "positive-wheel",
+      "expected_stroke": "",
+      "expected_handler": "WheelUp",
+      "event_count": 3,
+      "point_count": 1
+    },
+    {
+      "group": "wheel",
+      "id": "wheel-WheelDown",
+      "category": "positive-wheel",
+      "expected_stroke": "",
+      "expected_handler": "WheelDown",
+      "event_count": 3,
+      "point_count": 1
+    },
+    {
+      "group": "single-stroke",
+      "id": "baseline-U",
+      "category": "positive-baseline",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "single-stroke",
+      "id": "baseline-D",
+      "category": "positive-baseline",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "single-stroke",
+      "id": "baseline-L",
+      "category": "positive-baseline",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "single-stroke",
+      "id": "baseline-R",
+      "category": "positive-baseline",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "multi-stroke",
+      "id": "baseline-UD",
+      "category": "positive-baseline",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "multi-stroke",
+      "id": "baseline-DR",
+      "category": "positive-baseline",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-400-400-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-U-start--800-360-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "U",
+      "expected_handler": "U",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-400-400-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-D-start--800-360-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "D",
+      "expected_handler": "D",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-400-400-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-L-start--800-360-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "L",
+      "expected_handler": "L",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-400-400-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-R-start--800-360-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "R",
+      "expected_handler": "R",
+      "event_count": 9,
+      "point_count": 8
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-400-400-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-UD-start--800-360-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "UD",
+      "expected_handler": "UD",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-400-400-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-32-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-48-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-48-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-48-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-48-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 6,
+      "point_count": 5
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-72-density-4-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-positive",
+      "id": "positive-DR-start--800-360-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "expected_stroke": "DR",
+      "expected_handler": "DR",
+      "event_count": 16,
+      "point_count": 15
+    },
+    {
+      "group": "generated-negative",
+      "id": "baseline-below-threshold",
+      "category": "negative-below-threshold",
+      "expected_stroke": "",
+      "expected_handler": null,
+      "event_count": 4,
+      "point_count": 3
+    },
+    {
+      "group": "generated-negative",
+      "id": "negative-unknown-RL",
+      "category": "negative-unknown",
+      "expected_stroke": "RL",
+      "expected_handler": null,
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-negative",
+      "id": "negative-unknown-LR",
+      "category": "negative-unknown",
+      "expected_stroke": "LR",
+      "expected_handler": null,
+      "event_count": 10,
+      "point_count": 9
+    },
+    {
+      "group": "generated-negative",
+      "id": "negative-noisy-URDL",
+      "category": "negative-noisy",
+      "expected_stroke": "URDL",
+      "expected_handler": null,
+      "event_count": 26,
+      "point_count": 25
+    }
+  ],
+  "mode_summaries": [
+    {
+      "scheduler_mode": "task-factory-default",
+      "scheduler_description": "Current test replay scheduler: Task.Factory.",
+      "run_count": 1,
+      "sample_count": 1680,
+      "event_count": 13100,
+      "total_median_ms": 0.0117,
+      "total_p95_ms": 0.0256,
+      "total_max_ms": 14.3111,
+      "total_mean_ms": 0.02701399,
+      "input_median_ms": 0.0088,
+      "input_p95_ms": 0.0158,
+      "input_max_ms": 0.7711,
+      "input_mean_ms": 0.01150893,
+      "wait_median_ms": 0.0017,
+      "wait_p95_ms": 0.0127,
+      "wait_max_ms": 14.1048,
+      "wait_mean_ms": 0.01447083,
+      "total_at_or_above_1ms_count": 2,
+      "input_at_or_above_1ms_count": 0,
+      "wait_at_or_above_1ms_count": 2,
+      "run_summaries": [
+        {
+          "run_index": 0,
+          "started_utc": "2026-05-06T15:50:52.2039692+00:00",
+          "started_jst": "2026-05-07T00:50:52.2039692+09:00",
+          "finished_utc": "2026-05-06T15:50:52.3941254+00:00",
+          "finished_jst": "2026-05-07T00:50:52.3941254+09:00",
+          "sample_count": 1680,
+          "event_count": 13100,
+          "total_median_ms": 0.0117,
+          "total_p95_ms": 0.0256,
+          "total_max_ms": 14.3111,
+          "total_mean_ms": 0.02701399,
+          "input_median_ms": 0.0088,
+          "input_p95_ms": 0.0158,
+          "input_max_ms": 0.7711,
+          "input_mean_ms": 0.01150893,
+          "wait_median_ms": 0.0017,
+          "wait_p95_ms": 0.0127,
+          "wait_max_ms": 14.1048,
+          "wait_mean_ms": 0.01447083,
+          "validation_max_ms": 0.013,
+          "total_at_or_above_1ms_count": 2,
+          "input_at_or_above_1ms_count": 0,
+          "wait_at_or_above_1ms_count": 2
+        }
+      ]
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "scheduler_description": "Production-like replay scheduler: LowLatencyScheduler(\"Step07StrokeWatcherTaskScheduler\", ThreadPriority.Highest, 2).",
+      "run_count": 1,
+      "sample_count": 1680,
+      "event_count": 13100,
+      "total_median_ms": 0.0322,
+      "total_p95_ms": 0.0598,
+      "total_max_ms": 16.403,
+      "total_mean_ms": 0.19268006,
+      "input_median_ms": 0.006,
+      "input_p95_ms": 0.0166,
+      "input_max_ms": 1.3613,
+      "input_mean_ms": 0.01126762,
+      "wait_median_ms": 0.0227,
+      "wait_p95_ms": 0.0497,
+      "wait_max_ms": 16.3339,
+      "wait_mean_ms": 0.18086137,
+      "total_at_or_above_1ms_count": 22,
+      "input_at_or_above_1ms_count": 1,
+      "wait_at_or_above_1ms_count": 22,
+      "run_summaries": [
+        {
+          "run_index": 0,
+          "started_utc": "2026-05-06T15:50:52.4181379+00:00",
+          "started_jst": "2026-05-07T00:50:52.4181379+09:00",
+          "finished_utc": "2026-05-06T15:50:52.8989895+00:00",
+          "finished_jst": "2026-05-07T00:50:52.8989895+09:00",
+          "sample_count": 1680,
+          "event_count": 13100,
+          "total_median_ms": 0.0322,
+          "total_p95_ms": 0.0598,
+          "total_max_ms": 16.403,
+          "total_mean_ms": 0.19268006,
+          "input_median_ms": 0.006,
+          "input_p95_ms": 0.0166,
+          "input_max_ms": 1.3613,
+          "input_mean_ms": 0.01126762,
+          "wait_median_ms": 0.0227,
+          "wait_p95_ms": 0.0497,
+          "wait_max_ms": 16.3339,
+          "wait_mean_ms": 0.18086137,
+          "validation_max_ms": 0.0438,
+          "total_at_or_above_1ms_count": 22,
+          "input_at_or_above_1ms_count": 1,
+          "wait_at_or_above_1ms_count": 22
+        }
+      ]
+    }
+  ],
+  "component_comparisons": [
+    {
+      "component": "observation_wait",
+      "scheduler_mode": "production-like-low-latency",
+      "median_ms": 0.0227,
+      "p95_ms": 0.0497,
+      "max_ms": 16.3339,
+      "mean_ms": 0.18086137,
+      "at_or_above_1ms_count": 22
+    },
+    {
+      "component": "observation_wait",
+      "scheduler_mode": "task-factory-default",
+      "median_ms": 0.0017,
+      "p95_ms": 0.0127,
+      "max_ms": 14.1048,
+      "mean_ms": 0.01447083,
+      "at_or_above_1ms_count": 2
+    },
+    {
+      "component": "raw_input",
+      "scheduler_mode": "production-like-low-latency",
+      "median_ms": 0.006,
+      "p95_ms": 0.0166,
+      "max_ms": 1.3613,
+      "mean_ms": 0.01126762,
+      "at_or_above_1ms_count": 1
+    },
+    {
+      "component": "raw_input",
+      "scheduler_mode": "task-factory-default",
+      "median_ms": 0.0088,
+      "p95_ms": 0.0158,
+      "max_ms": 0.7711,
+      "mean_ms": 0.01150893,
+      "at_or_above_1ms_count": 0
+    },
+    {
+      "component": "total_replay",
+      "scheduler_mode": "production-like-low-latency",
+      "median_ms": 0.0322,
+      "p95_ms": 0.0598,
+      "max_ms": 16.403,
+      "mean_ms": 0.19268006,
+      "at_or_above_1ms_count": 22
+    },
+    {
+      "component": "total_replay",
+      "scheduler_mode": "task-factory-default",
+      "median_ms": 0.0117,
+      "p95_ms": 0.0256,
+      "max_ms": 14.3111,
+      "mean_ms": 0.02701399,
+      "at_or_above_1ms_count": 2
+    }
+  ],
+  "slowest_samples": [
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 16.3339,
+      "iteration": 2,
+      "group": "single-stroke",
+      "scenario_id": "baseline-D",
+      "category": "positive-baseline",
+      "total_replay_ms": 16.403,
+      "total_input_ms": 0.0658,
+      "observation_wait_ms": 16.3339,
+      "press_input_ms": 0.0251,
+      "move_input_ms": 0.0008,
+      "release_input_ms": 0.0399,
+      "observed_stroke": "D"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 16.0231,
+      "iteration": 4,
+      "group": "multi-stroke",
+      "scenario_id": "baseline-DR",
+      "category": "positive-baseline",
+      "total_replay_ms": 16.1686,
+      "total_input_ms": 0.1367,
+      "observation_wait_ms": 16.0231,
+      "press_input_ms": 0.0872,
+      "move_input_ms": 0.0034,
+      "release_input_ms": 0.0461,
+      "observed_stroke": "DR"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 15.8689,
+      "iteration": 4,
+      "group": "single-stroke",
+      "scenario_id": "baseline-L",
+      "category": "positive-baseline",
+      "total_replay_ms": 15.9194,
+      "total_input_ms": 0.0482,
+      "observation_wait_ms": 15.8689,
+      "press_input_ms": 0.0099,
+      "move_input_ms": 0.0005,
+      "release_input_ms": 0.0378,
+      "observed_stroke": "L"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 15.794,
+      "iteration": 2,
+      "group": "generated-positive",
+      "scenario_id": "positive-L-start--800-360-distance-72-density-2-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 15.8594,
+      "total_input_ms": 0.0624,
+      "observation_wait_ms": 15.794,
+      "press_input_ms": 0.0128,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.0489,
+      "observed_stroke": "L"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 15.7723,
+      "iteration": 3,
+      "group": "generated-positive",
+      "scenario_id": "positive-U-start-2600-540-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 15.8212,
+      "total_input_ms": 0.0463,
+      "observation_wait_ms": 15.7723,
+      "press_input_ms": 0.0094,
+      "move_input_ms": 0.0005,
+      "release_input_ms": 0.0364,
+      "observed_stroke": "U"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 1.3613,
+      "iteration": 3,
+      "group": "generated-positive",
+      "scenario_id": "positive-U-start-2600-540-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 14.8479,
+      "total_input_ms": 1.3613,
+      "observation_wait_ms": 13.4835,
+      "press_input_ms": 1.3189,
+      "move_input_ms": 0.0008,
+      "release_input_ms": 0.0416,
+      "observed_stroke": "U"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.6716,
+      "iteration": 4,
+      "group": "generated-positive",
+      "scenario_id": "positive-R-start-2600-540-distance-72-density-2-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 0.6814,
+      "total_input_ms": 0.6716,
+      "observation_wait_ms": 0.0086,
+      "press_input_ms": 0.6674,
+      "move_input_ms": 0.0006,
+      "release_input_ms": 0.0036,
+      "observed_stroke": "R"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.6176,
+      "iteration": 3,
+      "group": "generated-positive",
+      "scenario_id": "positive-DR-start-400-400-distance-32-density-7-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 0.6282,
+      "total_input_ms": 0.6176,
+      "observation_wait_ms": 0.0093,
+      "press_input_ms": 0.5959,
+      "move_input_ms": 0.018,
+      "release_input_ms": 0.0037,
+      "observed_stroke": "DR"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.6078,
+      "iteration": 2,
+      "group": "generated-positive",
+      "scenario_id": "positive-L-start-400-400-distance-32-density-2-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 0.6184,
+      "total_input_ms": 0.6078,
+      "observation_wait_ms": 0.0103,
+      "press_input_ms": 0.6058,
+      "move_input_ms": 0.0005,
+      "release_input_ms": 0.0015,
+      "observed_stroke": "L"
+    },
+    {
+      "scheduler_mode": "production-like-low-latency",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.5574,
+      "iteration": 0,
+      "group": "generated-positive",
+      "scenario_id": "positive-DR-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 0.601,
+      "total_input_ms": 0.5574,
+      "observation_wait_ms": 0.0433,
+      "press_input_ms": 0.0117,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.545,
+      "observed_stroke": "DR"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 14.1048,
+      "iteration": 0,
+      "group": "generated-positive",
+      "scenario_id": "positive-R-start-2600-540-distance-32-density-2-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 14.3111,
+      "total_input_ms": 0.2038,
+      "observation_wait_ms": 14.1048,
+      "press_input_ms": 0.1584,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.0447,
+      "observed_stroke": "R"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 3.6522,
+      "iteration": 0,
+      "group": "generated-positive",
+      "scenario_id": "positive-R-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 4.0207,
+      "total_input_ms": 0.3649,
+      "observation_wait_ms": 3.6522,
+      "press_input_ms": 0.3232,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.041,
+      "observed_stroke": "R"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 0.5756,
+      "iteration": 1,
+      "group": "generated-positive",
+      "scenario_id": "positive-L-start--800-360-distance-32-density-4-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 0.5868,
+      "total_input_ms": 0.0105,
+      "observation_wait_ms": 0.5756,
+      "press_input_ms": 0.0065,
+      "move_input_ms": 0.001,
+      "release_input_ms": 0.003,
+      "observed_stroke": "L"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 0.0571,
+      "iteration": 2,
+      "group": "generated-positive",
+      "scenario_id": "positive-UD-start-2600-540-distance-72-density-7-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 0.0739,
+      "total_input_ms": 0.0155,
+      "observation_wait_ms": 0.0571,
+      "press_input_ms": 0.0058,
+      "move_input_ms": 0.0015,
+      "release_input_ms": 0.0082,
+      "observed_stroke": "UD"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "observation_wait",
+      "component_ms": 0.0452,
+      "iteration": 2,
+      "group": "generated-positive",
+      "scenario_id": "positive-D-start-400-400-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 0.0657,
+      "total_input_ms": 0.0203,
+      "observation_wait_ms": 0.0452,
+      "press_input_ms": 0.0106,
+      "move_input_ms": 0.0008,
+      "release_input_ms": 0.0089,
+      "observed_stroke": "D"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.7711,
+      "iteration": 0,
+      "group": "generated-positive",
+      "scenario_id": "positive-U-start-2600-540-distance-72-density-7-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 0.7993,
+      "total_input_ms": 0.7711,
+      "observation_wait_ms": 0.0258,
+      "press_input_ms": 0.7535,
+      "move_input_ms": 0.0034,
+      "release_input_ms": 0.0142,
+      "observed_stroke": "U"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.4077,
+      "iteration": 2,
+      "group": "generated-positive",
+      "scenario_id": "positive-DR-start-2600-540-distance-32-density-4-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 0.4368,
+      "total_input_ms": 0.4077,
+      "observation_wait_ms": 0.0273,
+      "press_input_ms": 0.005,
+      "move_input_ms": 0.3914,
+      "release_input_ms": 0.0113,
+      "observed_stroke": "DR"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.3894,
+      "iteration": 4,
+      "group": "generated-positive",
+      "scenario_id": "positive-L-start--800-360-distance-72-density-4-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 0.398,
+      "total_input_ms": 0.3894,
+      "observation_wait_ms": 0.0079,
+      "press_input_ms": 0.3872,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.0015,
+      "observed_stroke": "L"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.3697,
+      "iteration": 3,
+      "group": "generated-positive",
+      "scenario_id": "positive-UD-start-2600-540-distance-48-density-2-jitter-0",
+      "category": "positive",
+      "total_replay_ms": 0.3942,
+      "total_input_ms": 0.3697,
+      "observation_wait_ms": 0.0237,
+      "press_input_ms": 0.3669,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.0021,
+      "observed_stroke": "UD"
+    },
+    {
+      "scheduler_mode": "task-factory-default",
+      "run_index": 0,
+      "component": "raw_input",
+      "component_ms": 0.3649,
+      "iteration": 0,
+      "group": "generated-positive",
+      "scenario_id": "positive-R-start-400-400-distance-48-density-2-jitter-3",
+      "category": "positive",
+      "total_replay_ms": 4.0207,
+      "total_input_ms": 0.3649,
+      "observation_wait_ms": 3.6522,
+      "press_input_ms": 0.3232,
+      "move_input_ms": 0.0007,
+      "release_input_ms": 0.041,
+      "observed_stroke": "R"
+    }
+  ]
+}

@@ -1,0 +1,962 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="2f058164-c36c-40b1-89a7-35c0e8ace742" name="seigl@9TH 2026-05-06 23:24:26" runUser="9TH\CodexSandboxOffline" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-05-06T23:24:26.6654105+09:00" queuing="2026-05-06T23:24:26.6654105+09:00" start="2026-05-06T23:24:26.2655015+09:00" finish="2026-05-06T23:24:32.1679557+09:00" />
+  <TestSettings name="default" id="49c5397a-4ca9-4900-98fd-c59cf401954b">
+    <Deployment runDeploymentRoot="seigl_9TH_2026-05-06_23_24_26" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="af56a83c-4b52-4201-bf8d-0230eb97602f" testId="2d476394-b382-5545-f9e2-17549e1a7858" testName="PressEventTest" computerName="9TH" duration="00:00:00.0002053" startTime="2026-05-06T23:24:26.6939671+09:00" endTime="2026-05-06T23:24:26.6939671+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="af56a83c-4b52-4201-bf8d-0230eb97602f" />
+    <UnitTestResult executionId="aa03a5de-376d-4435-92ad-6c2ad3c7f679" testId="6eaf3d17-73b0-015b-4591-a3ebc88b1ebc" testName="ConsumesNullEventAndReturnsFalse" computerName="9TH" duration="00:00:00.0002876" startTime="2026-05-06T23:24:26.7341122+09:00" endTime="2026-05-06T23:24:26.7341122+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aa03a5de-376d-4435-92ad-6c2ad3c7f679" />
+    <UnitTestResult executionId="60ae6876-b257-4eba-9900-c9efba8ba349" testId="5e45bd01-7eb2-feaf-8744-f7d1de95dc0a" testName="Do_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0007992" startTime="2026-05-06T23:24:31.9928857+09:00" endTime="2026-05-06T23:24:31.9938847+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60ae6876-b257-4eba-9900-c9efba8ba349" />
+    <UnitTestResult executionId="0f73c0ec-6bc7-4acc-a8f3-6acf43f98a4b" testId="151ac2a0-0282-b30c-67e3-2cc27cb2321f" testName="PhysicalFireEventTest" computerName="9TH" duration="00:00:00.0001033" startTime="2026-05-06T23:24:26.6939671+09:00" endTime="2026-05-06T23:24:26.6954745+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0f73c0ec-6bc7-4acc-a8f3-6acf43f98a4b" />
+    <UnitTestResult executionId="d9afba6f-fac3-4811-955b-b8457858e243" testId="5b2ac6f6-7cfe-039d-061b-49cdad82f4c2" testName="OnGestureCancelTest" computerName="9TH" duration="00:00:00.0017526" startTime="2026-05-06T23:24:26.8579311+09:00" endTime="2026-05-06T23:24:26.8599312+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d9afba6f-fac3-4811-955b-b8457858e243" />
+    <UnitTestResult executionId="ba9b6e73-0cc0-4d9f-9be0-6d8321696dfd" testId="3c8e6fd7-d437-91d6-b42c-580decf70173" testName="Do_Release_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0012053" startTime="2026-05-06T23:24:32.0079177+09:00" endTime="2026-05-06T23:24:32.0089193+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ba9b6e73-0cc0-4d9f-9be0-6d8321696dfd" />
+    <UnitTestResult executionId="adede85a-4ba9-4ab5-98a5-8d05c8d72676" testId="c5862cb9-db1f-2640-199b-9f0749f3a30a" testName="On_Do_PhysicalSingleThrow_Test" computerName="9TH" duration="00:00:00.0016111" startTime="2026-05-06T23:24:32.0309459+09:00" endTime="2026-05-06T23:24:32.0330166+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="adede85a-4ba9-4ab5-98a5-8d05c8d72676" />
+    <UnitTestResult executionId="0ffa669f-0f6a-4298-a9ef-b69a1ad43776" testId="b4825cc8-0daa-1f08-09f1-e93e90ac65ff" testName="DecomposedReleaseTest1" computerName="9TH" duration="00:00:00.0004057" startTime="2026-05-06T23:24:26.6619043+09:00" endTime="2026-05-06T23:24:26.6619043+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0ffa669f-0f6a-4298-a9ef-b69a1ad43776" />
+    <UnitTestResult executionId="312530ba-ccb7-4ab0-a137-2655babdd9c1" testId="0b636873-88de-4684-168e-7a8b9924462c" testName="ResetTest" computerName="9TH" duration="00:00:00.0075459" startTime="2026-05-06T23:24:26.8429009+09:00" endTime="2026-05-06T23:24:26.8509129+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="312530ba-ccb7-4ab0-a137-2655babdd9c1" />
+    <UnitTestResult executionId="b4c4add0-c1a5-4839-85a0-9cd41b2ec069" testId="c1182aea-28a0-3401-5610-5bbd25f42477" testName="HasReleaseExecutorsTest" computerName="9TH" duration="00:00:00.0038033" startTime="2026-05-06T23:24:32.0902392+09:00" endTime="2026-05-06T23:24:32.0934766+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b4c4add0-c1a5-4839-85a0-9cd41b2ec069" />
+    <UnitTestResult executionId="f657dded-4150-4103-82e3-4656d844fc55" testId="4e8da9d7-8d22-9a2b-9d0b-ffc31c7af526" testName="DoubleThrowSingleThrow0Test" computerName="9TH" duration="00:00:00.0006014" startTime="2026-05-06T23:24:26.6869642+09:00" endTime="2026-05-06T23:24:26.6879738+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f657dded-4150-4103-82e3-4656d844fc55" />
+    <UnitTestResult executionId="b4d622f6-c7b9-45a3-be1b-c43eb3132866" testId="f1e569fa-645b-f7a1-77cd-80517ba47f00" testName="DoubleThrowSingleThrow2Test" computerName="9TH" duration="00:00:00.0004352" startTime="2026-05-06T23:24:26.6889693+09:00" endTime="2026-05-06T23:24:26.6889693+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b4d622f6-c7b9-45a3-be1b-c43eb3132866" />
+    <UnitTestResult executionId="e456f35f-fd73-4a7e-8c03-6e248a249819" testId="23d602cd-2cc6-6609-1229-4cf2aa23a4be" testName="EqualsTest" computerName="9TH" duration="00:00:00.0021956" startTime="2026-05-06T23:24:32.1067730+09:00" endTime="2026-05-06T23:24:32.1088351+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e456f35f-fd73-4a7e-8c03-6e248a249819" />
+    <UnitTestResult executionId="dc3b2e87-18dc-4574-9edd-6e963aba8575" testId="09940e8a-b350-6658-6a21-54a4043c66ac" testName="WhenDescriptionTest1" computerName="9TH" duration="00:00:00.0002093" startTime="2026-05-06T23:24:26.6639043+09:00" endTime="2026-05-06T23:24:26.6654105+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc3b2e87-18dc-4574-9edd-6e963aba8575" />
+    <UnitTestResult executionId="983b4023-0d61-4dc2-aba0-00622a2109ef" testId="874a6043-5681-9df9-0382-d9582d7ba942" testName="HasPressExecutorsTest" computerName="9TH" duration="00:00:00.0031432" startTime="2026-05-06T23:24:32.0830319+09:00" endTime="2026-05-06T23:24:32.0863029+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="983b4023-0d61-4dc2-aba0-00622a2109ef" />
+    <UnitTestResult executionId="fbce675a-11ca-4fc0-ae40-16c0898f719c" testId="a8fd9f01-71b7-034f-da0d-2293dac859d5" testName="OnDecomposed_Press_LogicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0044443" startTime="2026-05-06T23:24:32.0570554+09:00" endTime="2026-05-06T23:24:32.0610650+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fbce675a-11ca-4fc0-ae40-16c0898f719c" />
+    <UnitTestResult executionId="bd9d0c7d-c7b3-40d8-aa79-14cb979a44a2" testId="a619916d-1b3a-3c5f-a311-d03ab9a412a8" testName="Release_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0006810" startTime="2026-05-06T23:24:31.9988990+09:00" endTime="2026-05-06T23:24:31.9999011+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bd9d0c7d-c7b3-40d8-aa79-14cb979a44a2" />
+    <UnitTestResult executionId="cfedde93-bf95-461e-98ac-978fc06e561d" testId="58682091-32e8-558f-f207-018202aef6c0" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0003346" startTime="2026-05-06T23:24:31.9788702+09:00" endTime="2026-05-06T23:24:31.9798671+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cfedde93-bf95-461e-98ac-978fc06e561d" />
+    <UnitTestResult executionId="bfcc7981-6fea-4791-afb3-f289b07ad6bd" testId="64db4608-cd5d-ec3d-8c3f-8dcaefc8f384" testName="Press_Do_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0009786" startTime="2026-05-06T23:24:31.9999011+09:00" endTime="2026-05-06T23:24:32.0009003+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bfcc7981-6fea-4791-afb3-f289b07ad6bd" />
+    <UnitTestResult executionId="fcea05e5-cfb8-49b3-89ea-c967ae255a97" testId="c154141f-4c5e-6fc9-4342-241b09cf328f" testName="Press_Do_Release_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0009676" startTime="2026-05-06T23:24:32.0139156+09:00" endTime="2026-05-06T23:24:32.0154225+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fcea05e5-cfb8-49b3-89ea-c967ae255a97" />
+    <UnitTestResult executionId="585baa2b-a279-4059-b565-539d947f4cad" testId="85899d3a-c015-6a2d-1e16-19fe2e92739e" testName="DoubleThrowPressTest1" computerName="9TH" duration="00:00:00.0005550" startTime="2026-05-06T23:24:26.6538927+09:00" endTime="2026-05-06T23:24:26.6538927+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="585baa2b-a279-4059-b565-539d947f4cad" />
+    <UnitTestResult executionId="f6da2feb-2028-457e-9ef4-34b6dfa83262" testId="49fa12d3-f5e9-a4ae-8457-7b5115f58982" testName="RunThrowsInvalidOperationExceptionWhenCalledTwiceTest" computerName="9TH" duration="00:00:00.0012288" startTime="2026-05-06T23:24:26.7129963+09:00" endTime="2026-05-06T23:24:26.7139976+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f6da2feb-2028-457e-9ef4-34b6dfa83262" />
+    <UnitTestResult executionId="b654ed4f-8c65-425a-afe9-e053a951a868" testId="66b81c1a-9d17-ed6e-1887-9689cdce013b" testName="GetInversedDecomposedTriggerDictionaryTest" computerName="9TH" duration="00:00:00.0031382" startTime="2026-05-06T23:24:32.0229314+09:00" endTime="2026-05-06T23:24:32.0269400+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b654ed4f-8c65-425a-afe9-e053a951a868" />
+    <UnitTestResult executionId="96d479e2-c1c4-4c67-ac95-a33fa064b80f" testId="602dd493-26f5-6f7c-76a3-7a9b3bb2e52e" testName="WhenSingleThrow1Test" computerName="9TH" duration="00:00:00.0007584" startTime="2026-05-06T23:24:26.6754415+09:00" endTime="2026-05-06T23:24:26.6754415+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="96d479e2-c1c4-4c67-ac95-a33fa064b80f" />
+    <UnitTestResult executionId="14ff8a52-139c-4d39-a06f-9c2aba327457" testId="bc6fdb1e-c947-c068-2ca9-8acccbaf17a9" testName="OnDecomposed_Release_PhysicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0040543" startTime="2026-05-06T23:24:32.0680731+09:00" endTime="2026-05-06T23:24:32.0730745+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="14ff8a52-139c-4d39-a06f-9c2aba327457" />
+    <UnitTestResult executionId="1aecad02-fb02-41b6-863c-e667399dbfaa" testId="697dbc41-86f3-9c7e-7558-983e4743cb6a" testName="DoubleThrowDoTest1" computerName="9TH" duration="00:00:00.0004827" startTime="2026-05-06T23:24:26.6553960+09:00" endTime="2026-05-06T23:24:26.6553960+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1aecad02-fb02-41b6-863c-e667399dbfaa" />
+    <UnitTestResult executionId="1f74ebff-c325-4ecc-ac07-a3bc6a436c00" testId="abdadf8c-e265-f874-84ae-9856fa590f76" testName="Press_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0010633" startTime="2026-05-06T23:24:31.9898862+09:00" endTime="2026-05-06T23:24:31.9908852+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f74ebff-c325-4ecc-ac07-a3bc6a436c00" />
+    <UnitTestResult executionId="363a878a-70ff-4c41-a31b-880358a6b9c7" testId="c2800f74-7b4f-3dd4-fa4b-06855e0c9763" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0015932" startTime="2026-05-06T23:24:26.6719254+09:00" endTime="2026-05-06T23:24:26.6739309+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="363a878a-70ff-4c41-a31b-880358a6b9c7" />
+    <UnitTestResult executionId="78e37193-77c8-4214-a34c-7e9aa42aff1b" testId="85907372-02e4-e7c9-fb40-2f806581a8ed" testName="WhenDoubleThrowDecomposedError0Test" computerName="9TH" duration="00:00:00.0008613" startTime="2026-05-06T23:24:26.6769443+09:00" endTime="2026-05-06T23:24:26.6779473+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78e37193-77c8-4214-a34c-7e9aa42aff1b" />
+    <UnitTestResult executionId="b9cccd00-4059-481a-81db-3d8911448ace" testId="42df7cdd-8155-bc2a-4b8a-56f2424cfa17" testName="DoubleThrowSingleThrow3Test" computerName="9TH" duration="00:00:00.0003984" startTime="2026-05-06T23:24:26.6889693+09:00" endTime="2026-05-06T23:24:26.6899677+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b9cccd00-4059-481a-81db-3d8911448ace" />
+    <UnitTestResult executionId="e666f7f5-18b1-47c1-a778-7b75a58f342a" testId="e79b7664-cd37-8be9-9941-2b164ba9e08b" testName="Press_Do_Release_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0010255" startTime="2026-05-06T23:24:32.0154225+09:00" endTime="2026-05-06T23:24:32.0172587+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e666f7f5-18b1-47c1-a778-7b75a58f342a" />
+    <UnitTestResult executionId="ed002b99-5599-4652-bb03-2f69e706a4c0" testId="9f335ce2-1aa9-6858-f137-1dece7f639a9" testName="CreateEvaluateContextTest" computerName="9TH" duration="00:00:00.0001337" startTime="2026-05-06T23:24:26.6709286+09:00" endTime="2026-05-06T23:24:26.6709286+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ed002b99-5599-4652-bb03-2f69e706a4c0" />
+    <UnitTestResult executionId="b9303108-8a61-4848-b1e5-043c7ceac3f1" testId="456d9a07-1dac-3717-46f6-bcfd3edb764d" testName="Release_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0007063" startTime="2026-05-06T23:24:31.9979012+09:00" endTime="2026-05-06T23:24:31.9988990+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b9303108-8a61-4848-b1e5-043c7ceac3f1" />
+    <UnitTestResult executionId="6d4c2599-7d8e-4312-a537-95c37748abee" testId="06e161ad-b7a7-4923-120d-97025ecd9d99" testName="Stroke1Test" computerName="9TH" duration="00:00:00.0001272" startTime="2026-05-06T23:24:32.1047689+09:00" endTime="2026-05-06T23:24:32.1047689+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6d4c2599-7d8e-4312-a537-95c37748abee" />
+    <UnitTestResult executionId="8f57c5cb-7c5f-484b-b358-5a7df41818b7" testId="78c93ea1-fa8a-bee5-3fe9-c8ab245a59e8" testName="Press_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0009197" startTime="2026-05-06T23:24:31.9908852+09:00" endTime="2026-05-06T23:24:31.9918868+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8f57c5cb-7c5f-484b-b358-5a7df41818b7" />
+    <UnitTestResult executionId="b088c39d-5165-4ea7-877f-edc26f707a75" testId="176c1c08-35fc-575b-67e6-d765198b88f8" testName="GetInversedDoubleThrowTriggerDictionaryTest" computerName="9TH" duration="00:00:00.0041968" startTime="2026-05-06T23:24:32.0189286+09:00" endTime="2026-05-06T23:24:32.0229314+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b088c39d-5165-4ea7-877f-edc26f707a75" />
+    <UnitTestResult executionId="56520946-4d5a-4f96-971b-ce6fb449bf28" testId="ac48a17f-1556-fdb9-67b2-268c70f1694d" testName="Press_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0022093" startTime="2026-05-06T23:24:31.9878828+09:00" endTime="2026-05-06T23:24:31.9898862+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="56520946-4d5a-4f96-971b-ce6fb449bf28" />
+    <UnitTestResult executionId="1ff7de64-b848-4767-92c0-02c326b01e17" testId="8fac7fa8-e85c-35a2-6361-7beb23b47fa4" testName="On_Do_PhysicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0029290" startTime="2026-05-06T23:24:32.0455371+09:00" endTime="2026-05-06T23:24:32.0490490+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ff7de64-b848-4767-92c0-02c326b01e17" />
+    <UnitTestResult executionId="5d6ad854-1f46-44e6-9c62-43c9b38cd298" testId="b2e67e73-501f-0b72-72d6-d12ea67a275c" testName="SingleThrowDoTest0" computerName="9TH" duration="00:00:00.0094311" startTime="2026-05-06T23:24:26.5991433+09:00" endTime="2026-05-06T23:24:26.6468896+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d6ad854-1f46-44e6-9c62-43c9b38cd298" />
+    <UnitTestResult executionId="dddde9a7-f5a2-47c3-a51e-284cfb349637" testId="8fe48d07-0f37-1738-30a5-fe0fa3f9a570" testName="NullEventTest" computerName="9TH" duration="00:00:00.0002284" startTime="2026-05-06T23:24:26.6939671+09:00" endTime="2026-05-06T23:24:26.6939671+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dddde9a7-f5a2-47c3-a51e-284cfb349637" />
+    <UnitTestResult executionId="9c25fc95-eecc-418f-9ec3-8091fce43096" testId="0089fa1f-3465-b887-dad1-155ec6d46799" testName="OnMachineResetTest" computerName="9TH" duration="00:00:00.0021990" startTime="2026-05-06T23:24:31.9728485+09:00" endTime="2026-05-06T23:24:31.9753593+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9c25fc95-eecc-418f-9ec3-8091fce43096" />
+    <UnitTestResult executionId="692532b5-b335-469a-add9-ac50877eb025" testId="831cfa47-6705-077a-87ae-cf6a1768ca38" testName="WhenDecomposedDoubleThrowError0Test" computerName="9TH" duration="00:00:00.0006035" startTime="2026-05-06T23:24:26.6819503+09:00" endTime="2026-05-06T23:24:26.6819503+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="692532b5-b335-469a-add9-ac50877eb025" />
+    <UnitTestResult executionId="ce9bcf33-b627-41b0-afbb-3d3c9c71840e" testId="43881e50-c036-ce8c-3061-3a2cc9472120" testName="Decomposed0Test" computerName="9TH" duration="00:00:00.0005753" startTime="2026-05-06T23:24:26.6854603+09:00" endTime="2026-05-06T23:24:26.6854603+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ce9bcf33-b627-41b0-afbb-3d3c9c71840e" />
+    <UnitTestResult executionId="ff460576-c6ec-4842-a807-213a810718bd" testId="faa60c60-8d54-cd6e-5882-4209d4fd9103" testName="GetDecomposedElementsTest" computerName="9TH" duration="00:00:00.0006680" startTime="2026-05-06T23:24:32.0942471+09:00" endTime="2026-05-06T23:24:32.0957619+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ff460576-c6ec-4842-a807-213a810718bd" />
+    <UnitTestResult executionId="a3bcbf1f-a634-4b28-95c8-05c8fb342425" testId="5aa3479c-2100-f7ff-2efe-a0490b2d7ec6" testName="WhenDoubleThrowDecomposedError1Test" computerName="9TH" duration="00:00:00.0008715" startTime="2026-05-06T23:24:26.6779473+09:00" endTime="2026-05-06T23:24:26.6789472+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a3bcbf1f-a634-4b28-95c8-05c8fb342425" />
+    <UnitTestResult executionId="4c14407d-0bc5-455d-a7af-d9d0f16a2b5c" testId="9482015f-a291-88fc-69ab-57c20f293e60" testName="DoubleThrowReleaseTest1" computerName="9TH" duration="00:00:00.0003902" startTime="2026-05-06T23:24:26.6553960+09:00" endTime="2026-05-06T23:24:26.6569019+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c14407d-0bc5-455d-a7af-d9d0f16a2b5c" />
+    <UnitTestResult executionId="8d5fb127-55f3-418d-a2ab-868bda2f674b" testId="1511c442-9ee1-2e9f-e4a8-e310dc592613" testName="Press_Release_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0010379" startTime="2026-05-06T23:24:32.0099129+09:00" endTime="2026-05-06T23:24:32.0109159+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8d5fb127-55f3-418d-a2ab-868bda2f674b" />
+    <UnitTestResult executionId="57d876f2-65ac-40e5-99c6-4d57d5ed147e" testId="1fa7a019-1d51-ef50-8b00-2a7a97b01d30" testName="DoubleThrowStroke0Test" computerName="9TH" duration="00:00:00.0004200" startTime="2026-05-06T23:24:26.6929704+09:00" endTime="2026-05-06T23:24:26.6929704+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="57d876f2-65ac-40e5-99c6-4d57d5ed147e" />
+    <UnitTestResult executionId="b873cec7-84e9-48cf-af3e-2ea1638bfcab" testId="d315faf1-870a-b600-5789-ca2ac76344f4" testName="On_Release_PhysicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0040192" startTime="2026-05-06T23:24:32.0530527+09:00" endTime="2026-05-06T23:24:32.0570554+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b873cec7-84e9-48cf-af3e-2ea1638bfcab" />
+    <UnitTestResult executionId="0833616d-e5bb-420e-809f-0353bb13e0fb" testId="9138f89b-48eb-08c1-8cfd-2b8b17f8965f" testName="CreateExecutionContextTest" computerName="9TH" duration="00:00:00.0001407" startTime="2026-05-06T23:24:26.6709286+09:00" endTime="2026-05-06T23:24:26.6709286+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0833616d-e5bb-420e-809f-0353bb13e0fb" />
+    <UnitTestResult executionId="55f0d722-389a-4041-9fde-1648ffe207fd" testId="131cedce-292f-b1e4-a55a-d63dc05f0aed" testName="OnDecomposed_Press_PhysicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0034648" startTime="2026-05-06T23:24:32.0610650+09:00" endTime="2026-05-06T23:24:32.0640630+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="55f0d722-389a-4041-9fde-1648ffe207fd" />
+    <UnitTestResult executionId="5b84a2e6-4969-4c10-84a3-c40d00902d37" testId="23d16121-ee73-abc3-f346-28003ef42dd9" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0007727" startTime="2026-05-06T23:24:26.6654105+09:00" endTime="2026-05-06T23:24:26.6654105+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5b84a2e6-4969-4c10-84a3-c40d00902d37" />
+    <UnitTestResult executionId="e9618dea-1fa9-47d5-ba1e-630ea708497f" testId="e370c3d7-4c91-969c-caa7-24b5d52af767" testName="On_Do_LogicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0049439" startTime="2026-05-06T23:24:32.0410312+09:00" endTime="2026-05-06T23:24:32.0455371+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e9618dea-1fa9-47d5-ba1e-630ea708497f" />
+    <UnitTestResult executionId="c3647413-1825-435b-bc1e-da46b8615680" testId="e1288129-b5b4-b8a9-d164-0dd825597fc8" testName="DecomposedReleaseTest0" computerName="9TH" duration="00:00:00.0004192" startTime="2026-05-06T23:24:26.6609077+09:00" endTime="2026-05-06T23:24:26.6619043+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c3647413-1825-435b-bc1e-da46b8615680" />
+    <UnitTestResult executionId="04097729-c9f2-4f09-982e-914211bcd19b" testId="2989cc7f-6264-98bd-247c-b5b31eb46e7e" testName="FindStateFromHistoryTest" computerName="9TH" duration="00:00:00.0030931" startTime="2026-05-06T23:24:32.0780903+09:00" endTime="2026-05-06T23:24:32.0814113+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="04097729-c9f2-4f09-982e-914211bcd19b" />
+    <UnitTestResult executionId="efde2506-5306-40a7-80fe-98a313e18909" testId="b555dba9-a5c4-6ece-2c1d-dd350c8eef40" testName="PhysicalReleaseEventTest" computerName="9TH" duration="00:00:00.0001701" startTime="2026-05-06T23:24:26.6954745+09:00" endTime="2026-05-06T23:24:26.6954745+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="efde2506-5306-40a7-80fe-98a313e18909" />
+    <UnitTestResult executionId="57746813-752c-49ab-99cc-3462d2f30e35" testId="0d2cc258-f851-f0a3-b925-0e5f271a1cf8" testName="ToState0Test" computerName="9TH" duration="00:00:00.0004391" startTime="2026-05-06T23:24:32.0987723+09:00" endTime="2026-05-06T23:24:32.0997716+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="57746813-752c-49ab-99cc-3462d2f30e35" />
+    <UnitTestResult executionId="2aad8410-daa4-476e-b65d-bc3fab53dd52" testId="d28479bd-576c-ed8f-22e9-a16405b558c8" testName="Press_Release_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0010859" startTime="2026-05-06T23:24:32.0109159+09:00" endTime="2026-05-06T23:24:32.0119127+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2aad8410-daa4-476e-b65d-bc3fab53dd52" />
+    <UnitTestResult executionId="98010b8e-3aeb-46d9-a705-61806b00c746" testId="84ff0fe5-993f-0b7c-d99a-ab41853e0f03" testName="OnDecomposed_Release_LogicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0033385" startTime="2026-05-06T23:24:32.0655655+09:00" endTime="2026-05-06T23:24:32.0680731+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="98010b8e-3aeb-46d9-a705-61806b00c746" />
+    <UnitTestResult executionId="2430e5bb-1160-4b1b-8271-b98bf68812fd" testId="96730515-8d56-5c3e-4b4c-76c0b5cf8447" testName="Release_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0007903" startTime="2026-05-06T23:24:31.9953929+09:00" endTime="2026-05-06T23:24:31.9968946+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2430e5bb-1160-4b1b-8271-b98bf68812fd" />
+    <UnitTestResult executionId="cfbe9eea-5a90-4097-a86e-82228591a7eb" testId="e175b2f0-1068-7e8d-b583-e71a25e63247" testName="OnMachineStartTest" computerName="9TH" duration="00:00:00.0016858" startTime="2026-05-06T23:24:31.9753593+09:00" endTime="2026-05-06T23:24:31.9778697+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cfbe9eea-5a90-4097-a86e-82228591a7eb" />
+    <UnitTestResult executionId="78ea6195-3522-4dce-80d5-c70d6da1293a" testId="d90cdddf-2b5d-5a91-88c6-d959110ef968" testName="Do_Release_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0020697" startTime="2026-05-06T23:24:32.0054058+09:00" endTime="2026-05-06T23:24:32.0079177+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78ea6195-3522-4dce-80d5-c70d6da1293a" />
+    <UnitTestResult executionId="5884f96c-63f7-4300-93e2-356e35b26429" testId="4f366701-2996-b25b-831a-061eabcff77a" testName="Do_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0008407" startTime="2026-05-06T23:24:31.9938847+09:00" endTime="2026-05-06T23:24:31.9938847+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5884f96c-63f7-4300-93e2-356e35b26429" />
+    <UnitTestResult executionId="cd078d59-b0d0-40e2-a782-e1ae15a4d029" testId="0f34524c-b005-e15e-779a-1afb7a76153d" testName="On_Press_LogicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0035375" startTime="2026-05-06T23:24:32.0330166+09:00" endTime="2026-05-06T23:24:32.0370261+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cd078d59-b0d0-40e2-a782-e1ae15a4d029" />
+    <UnitTestResult executionId="1ef9e7cd-5b78-4955-bf3a-2020119fe8f1" testId="3fb0a2f7-4f1e-971c-a80d-1e42d9e8c4c7" testName="Stroke2Test" computerName="9TH" duration="00:00:00.0009787" startTime="2026-05-06T23:24:32.1047689+09:00" endTime="2026-05-06T23:24:32.1057712+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ef9e7cd-5b78-4955-bf3a-2020119fe8f1" />
+    <UnitTestResult executionId="b1c541e7-be95-46eb-98db-2b4cec99b831" testId="9aae41ca-7ec0-7691-088b-156185c19639" testName="GetSingleThrowElementsTest" computerName="9TH" duration="00:00:00.0006661" startTime="2026-05-06T23:24:32.0957619+09:00" endTime="2026-05-06T23:24:32.0957619+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b1c541e7-be95-46eb-98db-2b4cec99b831" />
+    <UnitTestResult executionId="55d5b850-fb12-4d95-b250-94d2a751abfe" testId="3d5845ee-dddd-8df3-d88e-bec91751e41b" testName="CreateHistoryTest" computerName="9TH" duration="00:00:00.0021893" startTime="2026-05-06T23:24:32.0740713+09:00" endTime="2026-05-06T23:24:32.0755788+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="55d5b850-fb12-4d95-b250-94d2a751abfe" />
+    <UnitTestResult executionId="08adabe3-8fc1-4e76-9d58-4297d11a8ca6" testId="cf5ee9e0-1b22-27ab-e2e3-0e2deb017181" testName="ResetTest" computerName="9TH" duration="00:00:00.0038570" startTime="2026-05-06T23:24:32.0997716+09:00" endTime="2026-05-06T23:24:32.1037718+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="08adabe3-8fc1-4e76-9d58-4297d11a8ca6" />
+    <UnitTestResult executionId="ac2b4119-5185-4f3e-bfdd-7bfb11565b36" testId="c2c6b6a2-988a-b341-f78c-277c3e622b84" testName="DoubleThrow0Test" computerName="9TH" duration="00:00:00.0005537" startTime="2026-05-06T23:24:26.6839539+09:00" endTime="2026-05-06T23:24:26.6854603+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ac2b4119-5185-4f3e-bfdd-7bfb11565b36" />
+    <UnitTestResult executionId="cdee9be7-c3a2-4503-8359-a7228d0acec0" testId="735bfbcf-8816-2c90-8b3f-a8007bc5fa84" testName="WhenDecomposedDoubleThrowError2Test" computerName="9TH" duration="00:00:00.0005870" startTime="2026-05-06T23:24:26.6829524+09:00" endTime="2026-05-06T23:24:26.6839539+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cdee9be7-c3a2-4503-8359-a7228d0acec0" />
+    <UnitTestResult executionId="75648f42-7bc4-4e9f-8216-02067ccb7192" testId="c129126b-aeef-1e8f-abfe-229039b97194" testName="Press_Do_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0010560" startTime="2026-05-06T23:24:32.0009003+09:00" endTime="2026-05-06T23:24:32.0018973+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="75648f42-7bc4-4e9f-8216-02067ccb7192" />
+    <UnitTestResult executionId="f4759672-fa35-4e0f-a079-2b3b1339d55a" testId="997a6b0f-d8f8-cb4e-3f3e-891dc65343f8" testName="Stroke0Test" computerName="9TH" duration="00:00:00.0001283" startTime="2026-05-06T23:24:32.1037718+09:00" endTime="2026-05-06T23:24:32.1047689+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f4759672-fa35-4e0f-a079-2b3b1339d55a" />
+    <UnitTestResult executionId="0882e6ed-8ac2-4eea-a5a7-3a2b25f7d5a1" testId="115aeed0-4149-92cd-4934-e0f23b679375" testName="WhenDoubleThrowDecomposedError3Test" computerName="9TH" duration="00:00:00.0006238" startTime="2026-05-06T23:24:26.6799470+09:00" endTime="2026-05-06T23:24:26.6809505+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0882e6ed-8ac2-4eea-a5a7-3a2b25f7d5a1" />
+    <UnitTestResult executionId="8744f4a1-1ecb-43cd-b4b1-89e39808a392" testId="338d17db-cdb6-3f45-d4dd-9944b3b44bc4" testName="NoDefinitionTest" computerName="9TH" duration="00:00:00.0003878" startTime="2026-05-06T23:24:31.9808700+09:00" endTime="2026-05-06T23:24:31.9808700+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8744f4a1-1ecb-43cd-b4b1-89e39808a392" />
+    <UnitTestResult executionId="a7ce1127-42b1-48a3-a02d-a6373cde9256" testId="58f5d3e6-8093-d1ec-2157-d04b29c90a03" testName="Do_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0006534" startTime="2026-05-06T23:24:31.9938847+09:00" endTime="2026-05-06T23:24:31.9953929+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a7ce1127-42b1-48a3-a02d-a6373cde9256" />
+    <UnitTestResult executionId="07e5991f-385f-4d0c-8930-075313d0cba5" testId="3c64f79f-50bf-e5dc-6c56-7e98e44f9c64" testName="RootWhenTest" computerName="9TH" duration="00:00:00.0006764" startTime="2026-05-06T23:24:26.6739309+09:00" endTime="2026-05-06T23:24:26.6739309+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="07e5991f-385f-4d0c-8930-075313d0cba5" />
+    <UnitTestResult executionId="2fef9cc6-1f4e-42a3-8f62-a01151cdf792" testId="7da48fe0-7b90-b39c-1bf6-0c5eb9414953" testName="SingleThrowDoTest1" computerName="9TH" duration="00:00:00.0004169" startTime="2026-05-06T23:24:26.6508954+09:00" endTime="2026-05-06T23:24:26.6518965+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2fef9cc6-1f4e-42a3-8f62-a01151cdf792" />
+    <UnitTestResult executionId="78117346-cb7c-464a-af63-20356a265cef" testId="5ab05196-a403-338b-9e56-aa75f955f3d9" testName="GetStrokeElementsTest" computerName="9TH" duration="00:00:00.0024494" startTime="2026-05-06T23:24:32.0957619+09:00" endTime="2026-05-06T23:24:32.0987723+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78117346-cb7c-464a-af63-20356a265cef" />
+    <UnitTestResult executionId="1ab64d77-b65a-47f7-a9e6-cbf1e0697cff" testId="58fc7040-2ed0-7870-acdf-baa3d40a1a49" testName="StrokeDoTest0" computerName="9TH" duration="00:00:00.0013533" startTime="2026-05-06T23:24:26.6619043+09:00" endTime="2026-05-06T23:24:26.6639043+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ab64d77-b65a-47f7-a9e6-cbf1e0697cff" />
+    <UnitTestResult executionId="b0f7acf2-629d-4f00-bdbd-efee933da4fb" testId="625934f7-e111-9685-749b-f3b579737f74" testName="RunTest" computerName="9TH" duration="00:00:00.0004534" startTime="2026-05-06T23:24:26.7120000+09:00" endTime="2026-05-06T23:24:26.7129963+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0f7acf2-629d-4f00-bdbd-efee933da4fb" />
+    <UnitTestResult executionId="8c0535c7-ff2b-4827-897f-9e412f1b9ef6" testId="d51bf9ec-badd-b8c1-f012-2a37a8d5c6f6" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0004832" startTime="2026-05-06T23:24:26.6679300+09:00" endTime="2026-05-06T23:24:26.6689322+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c0535c7-ff2b-4827-897f-9e412f1b9ef6" />
+    <UnitTestResult executionId="3ead4d6e-3e62-4e02-b0e6-9d7f79509b6e" testId="d09381d0-ee89-9baa-f0c6-55e0debbed78" testName="ConsumesGivenPhysicalReleaseEventWhenItInIgnoreList" computerName="9TH" duration="00:00:00.0011735" startTime="2026-05-06T23:24:26.7321114+09:00" endTime="2026-05-06T23:24:26.7341122+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3ead4d6e-3e62-4e02-b0e6-9d7f79509b6e" />
+    <UnitTestResult executionId="e9d02372-9939-4e16-8e06-de8cd0bd48cc" testId="ab495a16-050d-af3c-fc08-0ece59f0f17a" testName="WhenDoubleThrow0Test" computerName="9TH" duration="00:00:00.0003160" startTime="2026-05-06T23:24:26.6769443+09:00" endTime="2026-05-06T23:24:26.6769443+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e9d02372-9939-4e16-8e06-de8cd0bd48cc" />
+    <UnitTestResult executionId="1c072566-76d2-4a9c-99b9-dcdef8cb14de" testId="57ac32da-2009-cd4a-322b-677c1fa60b05" testName="LastStateTest" computerName="9TH" duration="00:00:00.0006819" startTime="2026-05-06T23:24:32.0819549+09:00" endTime="2026-05-06T23:24:32.0830319+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1c072566-76d2-4a9c-99b9-dcdef8cb14de" />
+    <UnitTestResult executionId="70c23858-d4df-46c1-b80d-2debc9158038" testId="3c80d26a-aca8-d466-0dc8-7d48bdf81e73" testName="PhysicalPressEventTest" computerName="9TH" duration="00:00:00.0001632" startTime="2026-05-06T23:24:26.6954745+09:00" endTime="2026-05-06T23:24:26.6954745+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="70c23858-d4df-46c1-b80d-2debc9158038" />
+    <UnitTestResult executionId="3613dc63-7347-4ace-ad24-503ec1ae2a94" testId="aaf22940-0cc2-e92d-8340-f1bbf655606f" testName="Do_Release_LogicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0015824" startTime="2026-05-06T23:24:32.0038972+09:00" endTime="2026-05-06T23:24:32.0054058+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3613dc63-7347-4ace-ad24-503ec1ae2a94" />
+    <UnitTestResult executionId="fb502233-8453-43a9-abcb-30d5381676aa" testId="b83b3844-91a3-f34b-7db5-19ad53e9a3d5" testName="OnMachineStopTest" computerName="9TH" duration="00:00:00.0012403" startTime="2026-05-06T23:24:31.9778697+09:00" endTime="2026-05-06T23:24:31.9788702+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fb502233-8453-43a9-abcb-30d5381676aa" />
+    <UnitTestResult executionId="e571b9c3-b2da-40ec-86d3-7f1006250c76" testId="b6fafb9e-639a-6e9f-44af-a88b12783043" testName="WhenDoubleThrowDecomposedError2Test" computerName="9TH" duration="00:00:00.0006713" startTime="2026-05-06T23:24:26.6789472+09:00" endTime="2026-05-06T23:24:26.6799470+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e571b9c3-b2da-40ec-86d3-7f1006250c76" />
+    <UnitTestResult executionId="e1850ff4-632b-4a90-bb98-819edb39b894" testId="35d0c5ca-14bd-980b-12f0-d4aa2068921b" testName="ToStateNTest" computerName="9TH" duration="00:00:00.0002488" startTime="2026-05-06T23:24:32.0279480+09:00" endTime="2026-05-06T23:24:32.0279480+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e1850ff4-632b-4a90-bb98-819edb39b894" />
+    <UnitTestResult executionId="c363bc2a-902e-46cc-9ae5-a8cbde04f82b" testId="23c91618-3b71-5106-c421-53bc0f945170" testName="IgnoreRepeatedPressEvents" computerName="9TH" duration="00:00:00.0009081" startTime="2026-05-06T23:24:32.0730745+09:00" endTime="2026-05-06T23:24:32.0740713+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c363bc2a-902e-46cc-9ae5-a8cbde04f82b" />
+    <UnitTestResult executionId="b94f24b4-72b2-4e18-baee-4c3c216a9530" testId="0454cf38-abb0-b506-8b05-0d37eeef6acc" testName="EqualsTest1" computerName="9TH" duration="00:00:00.0001691" startTime="2026-05-06T23:24:32.1088351+09:00" endTime="2026-05-06T23:24:32.1088351+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b94f24b4-72b2-4e18-baee-4c3c216a9530" />
+    <UnitTestResult executionId="dc77eb74-8d93-4b91-8252-b63326961e12" testId="f653789a-43ac-0ca0-0c0a-68383d13d3de" testName="ToStateNTest" computerName="9TH" duration="00:00:00.0003998" startTime="2026-05-06T23:24:32.0997716+09:00" endTime="2026-05-06T23:24:32.0997716+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc77eb74-8d93-4b91-8252-b63326961e12" />
+    <UnitTestResult executionId="2417575a-efae-4c45-babf-6617009a5d85" testId="7f42c95f-6985-ed6c-4689-25dbd201237b" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0002931" startTime="2026-05-06T23:24:26.6699244+09:00" endTime="2026-05-06T23:24:26.6699244+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2417575a-efae-4c45-babf-6617009a5d85" />
+    <UnitTestResult executionId="c7c3d9f3-fdbf-40bd-9a3e-8e0c2dff0f5e" testId="5f1fbb21-0e9f-fbf2-e6ed-5d6f9196a1b0" testName="DoubleThrowPressTest0" computerName="9TH" duration="00:00:00.0015358" startTime="2026-05-06T23:24:26.6518965+09:00" endTime="2026-05-06T23:24:26.6538927+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c7c3d9f3-fdbf-40bd-9a3e-8e0c2dff0f5e" />
+    <UnitTestResult executionId="56fed9a4-efed-4f15-95e7-3f90feb3f5c8" testId="56bdc83d-e305-d4bb-8113-54b13b22e2cc" testName="ReleaseEventTest" computerName="9TH" duration="00:00:00.0001931" startTime="2026-05-06T23:24:26.6939671+09:00" endTime="2026-05-06T23:24:26.6939671+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="56fed9a4-efed-4f15-95e7-3f90feb3f5c8" />
+    <UnitTestResult executionId="a4936bdc-3e2e-40b5-93ad-a2798662d544" testId="69ae1362-6b03-0c8e-2374-9f2d03c5fd29" testName="GetDoubleThrowElementsTest" computerName="9TH" duration="00:00:00.0006953" startTime="2026-05-06T23:24:32.0934766+09:00" endTime="2026-05-06T23:24:32.0942471+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a4936bdc-3e2e-40b5-93ad-a2798662d544" />
+    <UnitTestResult executionId="f18464ce-a1bf-4671-a783-1870c0c00e72" testId="b83855da-2187-18df-271e-8f6cca2ad909" testName="Do_PhysicalSingleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0033654" startTime="2026-05-06T23:24:31.9838695+09:00" endTime="2026-05-06T23:24:31.9878828+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f18464ce-a1bf-4671-a783-1870c0c00e72" />
+    <UnitTestResult executionId="26c9b3a7-17e6-4485-ac02-77d2f12f66c9" testId="02dc88fa-f3bf-83c5-eed7-8f530bf65915" testName="WhenSingleThrow0Test" computerName="9TH" duration="00:00:00.0007375" startTime="2026-05-06T23:24:26.6739309+09:00" endTime="2026-05-06T23:24:26.6754415+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="26c9b3a7-17e6-4485-ac02-77d2f12f66c9" />
+    <UnitTestResult executionId="06cce5c9-fc0c-43d8-8236-7743fab7bd76" testId="afc88f11-7a71-367c-2fac-6049c534a4db" testName="InvalidIndexTest" computerName="9TH" duration="00:00:00.0008202" startTime="2026-05-06T23:24:26.6689322+09:00" endTime="2026-05-06T23:24:26.6699244+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="06cce5c9-fc0c-43d8-8236-7743fab7bd76" />
+    <UnitTestResult executionId="8adbb8ad-7d16-4139-bae0-9812e5ed8f69" testId="d4f4496f-a40e-7d75-246d-bfb0af8a0d9d" testName="DoubleThrowReleaseTest0" computerName="9TH" duration="00:00:00.0004645" startTime="2026-05-06T23:24:26.6553960+09:00" endTime="2026-05-06T23:24:26.6553960+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8adbb8ad-7d16-4139-bae0-9812e5ed8f69" />
+    <UnitTestResult executionId="b5956769-2b7d-4ac2-a162-b42560fa604b" testId="207292d1-64b0-834d-966e-2bd0c67ad71d" testName="Do_LogicalSingleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0006940" startTime="2026-05-06T23:24:31.9818699+09:00" endTime="2026-05-06T23:24:31.9818699+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b5956769-2b7d-4ac2-a162-b42560fa604b" />
+    <UnitTestResult executionId="db2ed4c9-8666-488f-a7cb-6f280f441022" testId="042895bf-0607-f43a-d25d-2f2399c24d15" testName="Release_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0007457" startTime="2026-05-06T23:24:31.9968946+09:00" endTime="2026-05-06T23:24:31.9979012+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="db2ed4c9-8666-488f-a7cb-6f280f441022" />
+    <UnitTestResult executionId="f81684b7-1db6-4871-ab2a-deb84f6a57c5" testId="592d7283-0573-ab31-87bc-74ff85c80d3f" testName="HasDoExecutorsTest" computerName="9TH" duration="00:00:00.0037519" startTime="2026-05-06T23:24:32.0863029+09:00" endTime="2026-05-06T23:24:32.0902392+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f81684b7-1db6-4871-ab2a-deb84f6a57c5" />
+    <UnitTestResult executionId="6de017f8-1376-4774-afe9-28d9ac04ce16" testId="898c067b-10ae-c3db-cae5-5634b70ceb52" testName="Press_Do_Release_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0007912" startTime="2026-05-06T23:24:32.0172587+09:00" endTime="2026-05-06T23:24:32.0179283+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6de017f8-1376-4774-afe9-28d9ac04ce16" />
+    <UnitTestResult executionId="a2e549c8-b0a4-4841-a4f2-1128ca072cf7" testId="b49ca8d0-5fe2-0c1c-c97f-6ff784a8f979" testName="DoubleThrowSingleThrow1Test" computerName="9TH" duration="00:00:00.0005723" startTime="2026-05-06T23:24:26.6879738+09:00" endTime="2026-05-06T23:24:26.6889693+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a2e549c8-b0a4-4841-a4f2-1128ca072cf7" />
+    <UnitTestResult executionId="620579b4-c405-455b-83b9-27bbb1a8d8e1" testId="6adac488-3b4c-953d-2c43-486df731b142" testName="PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN" computerName="9TH" duration="00:00:00.0177445" startTime="2026-05-06T23:24:26.7139976+09:00" endTime="2026-05-06T23:24:26.7321114+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="620579b4-c405-455b-83b9-27bbb1a8d8e1" />
+    <UnitTestResult executionId="68a11c47-1701-425b-8e2a-e0d9850bca96" testId="a3669001-4db6-8572-b258-e907989c9b10" testName="WhenDecomposedDoubleThrowError1Test" computerName="9TH" duration="00:00:00.0006981" startTime="2026-05-06T23:24:26.6819503+09:00" endTime="2026-05-06T23:24:26.6829524+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="68a11c47-1701-425b-8e2a-e0d9850bca96" />
+    <UnitTestResult executionId="a03bda2e-4d33-425a-b860-d651dff9d975" testId="69ee475c-9f9a-0205-3280-08761b0bf105" testName="DoubleThrowDoubleThrow3Test" computerName="9TH" duration="00:00:00.0005173" startTime="2026-05-06T23:24:26.6919714+09:00" endTime="2026-05-06T23:24:26.6929704+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a03bda2e-4d33-425a-b860-d651dff9d975" />
+    <UnitTestResult executionId="45a528d4-4425-43ef-a023-25197fc7dcef" testId="c51205fe-7c11-fce2-90ba-ea1a66ea50cc" testName="Do_PhysicalSingleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0007665" startTime="2026-05-06T23:24:31.9818699+09:00" endTime="2026-05-06T23:24:31.9828729+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="45a528d4-4425-43ef-a023-25197fc7dcef" />
+    <UnitTestResult executionId="8fb2507b-f9b5-41de-9a14-92431b92e061" testId="8a4cb9e8-7a3a-ee8b-8d09-af7fcb24645c" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0002078" startTime="2026-05-06T23:24:26.6709286+09:00" endTime="2026-05-06T23:24:26.6709286+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8fb2507b-f9b5-41de-9a14-92431b92e061" />
+    <UnitTestResult executionId="8c2b1a2b-bcf7-4605-a3fd-165206c4f644" testId="82eb59ae-0173-226e-b089-25738dc7a08f" testName="NormalEndTriggerTest" computerName="9TH" duration="00:00:00.0007945" startTime="2026-05-06T23:24:32.0814113+09:00" endTime="2026-05-06T23:24:32.0819549+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c2b1a2b-bcf7-4605-a3fd-165206c4f644" />
+    <UnitTestResult executionId="0374ad41-efd6-4a0d-bb70-26fca07c4a85" testId="80ffc9ee-8dff-58d0-3604-12060e635b20" testName="Stroke3Test" computerName="9TH" duration="00:00:00.0004156" startTime="2026-05-06T23:24:32.1057712+09:00" endTime="2026-05-06T23:24:32.1067730+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0374ad41-efd6-4a0d-bb70-26fca07c4a85" />
+    <UnitTestResult executionId="b7aa39e8-4746-401d-a2e4-b5d53dbda85f" testId="b4b87ab1-1be7-55c0-99ff-f813e9cabe7b" testName="Do_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0006142" startTime="2026-05-06T23:24:31.9953929+09:00" endTime="2026-05-06T23:24:31.9953929+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b7aa39e8-4746-401d-a2e4-b5d53dbda85f" />
+    <UnitTestResult executionId="2b419e71-f6d0-4472-81f8-db81ab86a32d" testId="bdd2e295-592b-2970-f476-5192828f3f14" testName="WhenDecomposed1Test" computerName="9TH" duration="00:00:00.0002493" startTime="2026-05-06T23:24:26.6809505+09:00" endTime="2026-05-06T23:24:26.6819503+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2b419e71-f6d0-4472-81f8-db81ab86a32d" />
+    <UnitTestResult executionId="97b3c7d5-1af1-4356-9224-9747aed25f92" testId="74e7010d-4fda-f646-2550-407910004128" testName="DoubleThrowDoubleThrow0Test" computerName="9TH" duration="00:00:00.0007237" startTime="2026-05-06T23:24:26.6899677+09:00" endTime="2026-05-06T23:24:26.6899677+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="97b3c7d5-1af1-4356-9224-9747aed25f92" />
+    <UnitTestResult executionId="f679d340-02b6-47d2-914b-cd29e17ac51d" testId="1c8acb5f-5af1-3e48-f57e-00f80f05e93b" testName="DoubleThrowDoTest0" computerName="9TH" duration="00:00:00.0005238" startTime="2026-05-06T23:24:26.6538927+09:00" endTime="2026-05-06T23:24:26.6553960+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f679d340-02b6-47d2-914b-cd29e17ac51d" />
+    <UnitTestResult executionId="4c49731e-c41d-4874-a36f-d409e0f36c71" testId="a2730a27-e5f1-dee3-dd9e-698e25241304" testName="ConstructorTest" computerName="9TH" duration="00:00:00.0165393" startTime="2026-05-06T23:24:26.6954745+09:00" endTime="2026-05-06T23:24:26.7120000+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c49731e-c41d-4874-a36f-d409e0f36c71" />
+    <UnitTestResult executionId="83ba30a6-9b1f-4316-822d-b10146df6711" testId="460ecae7-bb2c-8a33-507d-a20639e15e3f" testName="On_Do_LogicalSingleThrow_Test" computerName="9TH" duration="00:00:00.0018266" startTime="2026-05-06T23:24:32.0289463+09:00" endTime="2026-05-06T23:24:32.0309459+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="83ba30a6-9b1f-4316-822d-b10146df6711" />
+    <UnitTestResult executionId="b3cb4d25-def6-4e3e-80b1-2db97ca0fdef" testId="2a434760-2cb4-e2ea-6989-3929d1dea57d" testName="FireEventTest" computerName="9TH" duration="00:00:00.0001233" startTime="2026-05-06T23:24:26.6939671+09:00" endTime="2026-05-06T23:24:26.6939671+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b3cb4d25-def6-4e3e-80b1-2db97ca0fdef" />
+    <UnitTestResult executionId="3c6d51b3-c206-4d92-9529-57c59fb7e119" testId="93a8d1e8-3ca4-4018-5e49-77900ed132f8" testName="CreateHistoryTest" computerName="9TH" duration="00:00:00.0008220" startTime="2026-05-06T23:24:31.9798671+09:00" endTime="2026-05-06T23:24:31.9808700+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3c6d51b3-c206-4d92-9529-57c59fb7e119" />
+    <UnitTestResult executionId="0f507f58-dfa0-4f90-9550-384e7becb471" testId="8f8ef6c9-4bbc-ff90-8551-3cb75b4addd9" testName="DecomposedPressTest0" computerName="9TH" duration="00:00:00.0008706" startTime="2026-05-06T23:24:26.6569019+09:00" endTime="2026-05-06T23:24:26.6579090+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0f507f58-dfa0-4f90-9550-384e7becb471" />
+    <UnitTestResult executionId="67abbe94-6cab-4402-8b71-dd80d5b9f38d" testId="b903f473-caab-c187-3e65-669e013c6191" testName="Press_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0007042" startTime="2026-05-06T23:24:31.9918868+09:00" endTime="2026-05-06T23:24:31.9928857+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="67abbe94-6cab-4402-8b71-dd80d5b9f38d" />
+    <UnitTestResult executionId="8557fb6f-28e8-4068-bc6a-8dfa173124fd" testId="60fbe95a-a6ec-e357-476e-2610c90da7ab" testName="Press_Release_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0008798" startTime="2026-05-06T23:24:32.0129162+09:00" endTime="2026-05-06T23:24:32.0139156+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8557fb6f-28e8-4068-bc6a-8dfa173124fd" />
+    <UnitTestResult executionId="ec7f3cc6-2941-441a-b40f-9a2b91e5380f" testId="e6386020-066d-f388-b740-79f66ac913d1" testName="On_Release_LogicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0031376" startTime="2026-05-06T23:24:32.0490490+09:00" endTime="2026-05-06T23:24:32.0530527+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ec7f3cc6-2941-441a-b40f-9a2b91e5380f" />
+    <UnitTestResult executionId="ea4b4362-e198-4794-a6e7-e05c3bc2eebc" testId="37c6fa8f-7f65-4c2c-4769-8d3354b00cee" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0002535" startTime="2026-05-06T23:24:26.6699244+09:00" endTime="2026-05-06T23:24:26.6709286+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ea4b4362-e198-4794-a6e7-e05c3bc2eebc" />
+    <UnitTestResult executionId="95cc19e4-e950-46e2-946a-24239f5db12e" testId="001676fd-dee3-0bdf-6c0c-9f0cfa55574c" testName="StrokeResetTest" computerName="9TH" duration="00:00:00.0079088" startTime="2026-05-06T23:24:32.1098319+09:00" endTime="2026-05-06T23:24:32.1178496+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="95cc19e4-e950-46e2-946a-24239f5db12e" />
+    <UnitTestResult executionId="371a6968-cf5d-4d6d-a160-dff5809806d0" testId="d3585ef8-102e-1a60-6a8e-9d81f034dde9" testName="WhenDecomposed0Test" computerName="9TH" duration="00:00:00.0002901" startTime="2026-05-06T23:24:26.6809505+09:00" endTime="2026-05-06T23:24:26.6809505+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="371a6968-cf5d-4d6d-a160-dff5809806d0" />
+    <UnitTestResult executionId="e9f2a6a3-ec15-491e-8750-0e82358e362b" testId="1e16d0d5-459c-2be6-15dd-9070db155b99" testName="WhenEvaluatorTest" computerName="9TH" duration="00:00:00.1083800" startTime="2026-05-06T23:24:26.7341122+09:00" endTime="2026-05-06T23:24:26.8429009+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e9f2a6a3-ec15-491e-8750-0e82358e362b" />
+    <UnitTestResult executionId="182a8342-785f-4efa-b436-9c609ccac8aa" testId="57e25c1d-7806-0ac8-7d0f-966b1fdb9506" testName="IsStateTest" computerName="9TH" duration="00:00:00.0003702" startTime="2026-05-06T23:24:32.0269400+09:00" endTime="2026-05-06T23:24:32.0269400+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="182a8342-785f-4efa-b436-9c609ccac8aa" />
+    <UnitTestResult executionId="beacea58-2155-44d1-85f5-26e73b5f8eb7" testId="21319d7b-a0aa-49b2-a6d3-0786da46bf2b" testName="Press_Do_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0007504" startTime="2026-05-06T23:24:32.0018973+09:00" endTime="2026-05-06T23:24:32.0029012+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="beacea58-2155-44d1-85f5-26e73b5f8eb7" />
+    <UnitTestResult executionId="bda9cb5c-56e0-4407-8d45-ffb2a686f9a5" testId="6ed67d65-3614-7ea0-0e57-e8246a816b38" testName="Decomposed1Test" computerName="9TH" duration="00:00:00.0005874" startTime="2026-05-06T23:24:26.6869642+09:00" endTime="2026-05-06T23:24:26.6869642+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bda9cb5c-56e0-4407-8d45-ffb2a686f9a5" />
+    <UnitTestResult executionId="4960ecc2-a4ca-4728-bea9-057e78fd97fa" testId="ccdb6788-8dd3-6293-caa3-27ef1dcd5c9d" testName="Press_Do_Release_PhysicalDoubleThrow_WhenIsTrue_Test" computerName="9TH" duration="00:00:00.0009908" startTime="2026-05-06T23:24:32.0154225+09:00" endTime="2026-05-06T23:24:32.0154225+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4960ecc2-a4ca-4728-bea9-057e78fd97fa" />
+    <UnitTestResult executionId="4d4a28de-e7a3-4b78-9e44-d0c433b17557" testId="7f2f8a70-ca6b-81d5-966b-c991df13c7a2" testName="WhenDoubleThrow1Test" computerName="9TH" duration="00:00:00.0004841" startTime="2026-05-06T23:24:26.6769443+09:00" endTime="2026-05-06T23:24:26.6769443+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4d4a28de-e7a3-4b78-9e44-d0c433b17557" />
+    <UnitTestResult executionId="a49c7db3-0414-4e52-a802-7c15f781f5f5" testId="6e3444d8-9402-7fde-021e-9f4b7dba593c" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0006160" startTime="2026-05-06T23:24:32.0279480+09:00" endTime="2026-05-06T23:24:32.0289463+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a49c7db3-0414-4e52-a802-7c15f781f5f5" />
+    <UnitTestResult executionId="d5e4e365-4790-4e4a-86a6-0bbfbf25c218" testId="4c2abeb9-fa6f-d581-6890-683d7d07694f" testName="Press_Release_LogicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0007706" startTime="2026-05-06T23:24:32.0119127+09:00" endTime="2026-05-06T23:24:32.0129162+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d5e4e365-4790-4e4a-86a6-0bbfbf25c218" />
+    <UnitTestResult executionId="b5d44045-a9ba-40df-9fc1-4eb29abbd6d1" testId="4715cb60-d51b-288c-62a5-29cc4fd1241c" testName="OnStateChangeTest" computerName="9TH" duration="00:00:00.0066186" startTime="2026-05-06T23:24:26.8509129+09:00" endTime="2026-05-06T23:24:26.8579311+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b5d44045-a9ba-40df-9fc1-4eb29abbd6d1" />
+    <UnitTestResult executionId="0aafc824-a434-4535-b36e-079c1784c513" testId="8e3645dd-0dc0-0e2b-a4b6-3bd3a7dea0c8" testName="ResetTest" computerName="9TH" duration="00:00:00.0004325" startTime="2026-05-06T23:24:32.0279480+09:00" endTime="2026-05-06T23:24:32.0279480+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0aafc824-a434-4535-b36e-079c1784c513" />
+    <UnitTestResult executionId="4472bcec-40c7-4b6c-aaf8-5020fbfd84a1" testId="1f5c8f33-a23a-d398-1610-04619e509039" testName="Do_LogicalSingleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0007560" startTime="2026-05-06T23:24:31.9828729+09:00" endTime="2026-05-06T23:24:31.9838695+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4472bcec-40c7-4b6c-aaf8-5020fbfd84a1" />
+    <UnitTestResult executionId="035e7f7c-7f7b-4761-98d2-5841945cc1a3" testId="e5c2d6c9-86a1-2aa8-d1ec-3e342be59aad" testName="ToState0Test" computerName="9TH" duration="00:00:00.0002758" startTime="2026-05-06T23:24:32.0269400+09:00" endTime="2026-05-06T23:24:32.0279480+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="035e7f7c-7f7b-4761-98d2-5841945cc1a3" />
+    <UnitTestResult executionId="6ed13330-09de-4f38-9440-c6764a6f0513" testId="cba7677e-8288-0f16-74b7-d49ddfa18d3f" testName="Press_Do_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0008552" startTime="2026-05-06T23:24:32.0029012+09:00" endTime="2026-05-06T23:24:32.0038972+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6ed13330-09de-4f38-9440-c6764a6f0513" />
+    <UnitTestResult executionId="0c76a229-5777-4e84-b95b-75eefd853845" testId="28134b3c-ccb3-8d33-50dc-dd2a7bb1f41b" testName="IsStateTest" computerName="9TH" duration="00:00:00.0003674" startTime="2026-05-06T23:24:32.0987723+09:00" endTime="2026-05-06T23:24:32.0987723+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0c76a229-5777-4e84-b95b-75eefd853845" />
+    <UnitTestResult executionId="9b853387-968f-4e4e-810b-a70bcdbe6908" testId="be045d37-de03-569f-e10a-31a0cc14adc4" testName="On_Press_PhysicalDoubleThrow_Test" computerName="9TH" duration="00:00:00.0045462" startTime="2026-05-06T23:24:32.0370261+09:00" endTime="2026-05-06T23:24:32.0410312+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9b853387-968f-4e4e-810b-a70bcdbe6908" />
+    <UnitTestResult executionId="b259cc4a-8eb3-4946-b0bc-41ecbd39edb8" testId="0043e65f-0b58-128d-9885-65eba5a169a2" testName="OnGestureTimeoutTest" computerName="9TH" duration="00:00:05.1119895" startTime="2026-05-06T23:24:26.8599312+09:00" endTime="2026-05-06T23:24:31.9718473+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b259cc4a-8eb3-4946-b0bc-41ecbd39edb8" />
+    <UnitTestResult executionId="c0ce0835-0d36-49b3-9b6e-adb873d9111f" testId="b87c030d-6eae-f1eb-792b-50e1fc1abb9d" testName="DoubleThrowStroke1Test" computerName="9TH" duration="00:00:00.0003691" startTime="2026-05-06T23:24:26.6929704+09:00" endTime="2026-05-06T23:24:26.6939671+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0ce0835-0d36-49b3-9b6e-adb873d9111f" />
+    <UnitTestResult executionId="25b541ca-c9c6-47ca-95fe-35d4e2b93ccf" testId="39b69766-4360-eb20-6b1a-161d4830d56d" testName="DoubleThrowDoubleThrow2Test" computerName="9TH" duration="00:00:00.0005515" startTime="2026-05-06T23:24:26.6909707+09:00" endTime="2026-05-06T23:24:26.6919714+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25b541ca-c9c6-47ca-95fe-35d4e2b93ccf" />
+    <UnitTestResult executionId="1154020d-c1b3-4af7-a053-c941fec7f4af" testId="68daa99c-2770-ab4c-469f-94411dbdea99" testName="StrokeDoTest1" computerName="9TH" duration="00:00:00.0004343" startTime="2026-05-06T23:24:26.6639043+09:00" endTime="2026-05-06T23:24:26.6639043+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1154020d-c1b3-4af7-a053-c941fec7f4af" />
+    <UnitTestResult executionId="d06c0da9-2511-4ce7-8d45-962bec23e803" testId="4987353d-f1db-9a95-56e0-87b28a309af0" testName="WhenDescriptionTest0" computerName="9TH" duration="00:00:00.0002919" startTime="2026-05-06T23:24:26.6639043+09:00" endTime="2026-05-06T23:24:26.6639043+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d06c0da9-2511-4ce7-8d45-962bec23e803" />
+    <UnitTestResult executionId="6f3ad805-7d57-4026-8751-40a094aff632" testId="dc3a620e-78fa-1203-9374-3a925627a360" testName="ConstractorTest" computerName="9TH" duration="00:00:00.0004683" startTime="2026-05-06T23:24:26.6709286+09:00" endTime="2026-05-06T23:24:26.6719254+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6f3ad805-7d57-4026-8751-40a094aff632" />
+    <UnitTestResult executionId="74c3d688-b93b-44f5-a1bb-04457bb9143b" testId="3c633e18-4a46-8128-f76c-9a22f53d1429" testName="GetInversedSingleThrowTriggerDictionaryTest" computerName="9TH" duration="00:00:00.0006852" startTime="2026-05-06T23:24:32.0179283+09:00" endTime="2026-05-06T23:24:32.0189286+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="74c3d688-b93b-44f5-a1bb-04457bb9143b" />
+    <UnitTestResult executionId="f7adec64-4e10-4bdc-a7a3-fa1a5a1b7c52" testId="0a5ccf4a-3b88-b8a5-f903-4fd087137b7b" testName="Do_Release_PhysicalDoubleThrow_WhenIsFalse_Test" computerName="9TH" duration="00:00:00.0009529" startTime="2026-05-06T23:24:32.0089193+09:00" endTime="2026-05-06T23:24:32.0099129+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f7adec64-4e10-4bdc-a7a3-fa1a5a1b7c52" />
+    <UnitTestResult executionId="2fc7fd61-a0c7-4919-96b5-448f3f877761" testId="6555d0d2-7b77-9f95-81d8-ef21cd8c511f" testName="GetHashCodeTest" computerName="9TH" duration="00:00:00.0007905" startTime="2026-05-06T23:24:32.1088351+09:00" endTime="2026-05-06T23:24:32.1098319+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2fc7fd61-a0c7-4919-96b5-448f3f877761" />
+    <UnitTestResult executionId="4fa12ef9-a868-4d39-b6a9-e09f60551699" testId="2b8d4736-963a-a983-aa84-74baa3bd3699" testName="DoubleThrowDoubleThrow1Test" computerName="9TH" duration="00:00:00.0009300" startTime="2026-05-06T23:24:26.6899677+09:00" endTime="2026-05-06T23:24:26.6909707+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4fa12ef9-a868-4d39-b6a9-e09f60551699" />
+    <UnitTestResult executionId="3837a58b-1227-42d0-b65d-9415c8c877f1" testId="75b031d4-277b-1b78-c396-7015bb729415" testName="DoubleThrow1Test" computerName="9TH" duration="00:00:00.0005282" startTime="2026-05-06T23:24:26.6854603+09:00" endTime="2026-05-06T23:24:26.6854603+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3837a58b-1227-42d0-b65d-9415c8c877f1" />
+    <UnitTestResult executionId="c0fa9c6f-9117-4635-8561-37aaa644f48f" testId="fa0f4083-6256-cacd-2f4c-4a3db6468535" testName="AbnormalEndTriggersTest" computerName="9TH" duration="00:00:00.0014396" startTime="2026-05-06T23:24:32.0755788+09:00" endTime="2026-05-06T23:24:32.0780903+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0fa9c6f-9117-4635-8561-37aaa644f48f" />
+    <UnitTestResult executionId="9d8b7a12-e5c2-4367-94fb-6db031080080" testId="33d880dc-c544-b306-6d5b-646c2b258591" testName="DecomposedPressTest1" computerName="9TH" duration="00:00:00.0004424" startTime="2026-05-06T23:24:26.6609077+09:00" endTime="2026-05-06T23:24:26.6609077+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9d8b7a12-e5c2-4367-94fb-6db031080080" />
+    <UnitTestResult executionId="2d4ce861-43c7-4e63-a587-a2d427ca5229" testId="9590370e-18c2-05d5-ed05-165d842dd3d4" testName="WhenDecomposedDoubleThrowError3Test" computerName="9TH" duration="00:00:00.0005427" startTime="2026-05-06T23:24:26.6839539+09:00" endTime="2026-05-06T23:24:26.6839539+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2d4ce861-43c7-4e63-a587-a2d427ca5229" />
+    <UnitTestResult executionId="c0c2fa29-0d97-4c4b-83ab-fbca15741185" testId="75c7b864-a9e5-bc71-a616-f11e068eb1ed" testName="InvalidIndexTest" computerName="9TH" duration="00:00:00.0021527" startTime="2026-05-06T23:24:26.6654105+09:00" endTime="2026-05-06T23:24:26.6679300+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0c2fa29-0d97-4c4b-83ab-fbca15741185" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="NullEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="8fe48d07-0f37-1738-30a5-fe0fa3f9a570">
+      <Execution id="dddde9a7-f5a2-47c3-a51e-284cfb349637" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="NullEventTest" />
+    </UnitTest>
+    <UnitTest name="WhenDoubleThrowDecomposedError1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="5aa3479c-2100-f7ff-2efe-a0490b2d7ec6">
+      <Execution id="a3bcbf1f-a634-4b28-95c8-05c8fb342425" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDoubleThrowDecomposedError1Test" />
+    </UnitTest>
+    <UnitTest name="CreateHistoryTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="3d5845ee-dddd-8df3-d88e-bec91751e41b">
+      <Execution id="55d5b850-fb12-4d95-b250-94d2a751abfe" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="CreateHistoryTest" />
+    </UnitTest>
+    <UnitTest name="Press_Do_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="21319d7b-a0aa-49b2-a6d3-0786da46bf2b">
+      <Execution id="beacea58-2155-44d1-85f5-26e73b5f8eb7" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="InvalidIndexTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="afc88f11-7a71-367c-2fac-6049c534a4db">
+      <Execution id="06cce5c9-fc0c-43d8-8236-7743fab7bd76" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleKeySetBTest" name="InvalidIndexTest" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowPressTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="5f1fbb21-0e9f-fbf2-e6ed-5d6f9196a1b0">
+      <Execution id="c7c3d9f3-fdbf-40bd-9a3e-8e0c2dff0f5e" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DoubleThrowPressTest0" />
+    </UnitTest>
+    <UnitTest name="GetStrokeElementsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="5ab05196-a403-338b-9e56-aa75f955f3d9">
+      <Execution id="78117346-cb7c-464a-af63-20356a265cef" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="GetStrokeElementsTest" />
+    </UnitTest>
+    <UnitTest name="Press_Do_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="64db4608-cd5d-ec3d-8c3f-8dcaefc8f384">
+      <Execution id="bfcc7981-6fea-4791-afb3-f289b07ad6bd" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="HasReleaseExecutorsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c1182aea-28a0-3401-5610-5bbd25f42477">
+      <Execution id="b4c4add0-c1a5-4839-85a0-9cd41b2ec069" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="HasReleaseExecutorsTest" />
+    </UnitTest>
+    <UnitTest name="Release_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="96730515-8d56-5c3e-4b4c-76c0b5cf8447">
+      <Execution id="2430e5bb-1160-4b1b-8271-b98bf68812fd" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Release_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="Decomposed1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="6ed67d65-3614-7ea0-0e57-e8246a816b38">
+      <Execution id="bda9cb5c-56e0-4407-8d45-ffb2a686f9a5" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="Decomposed1Test" />
+    </UnitTest>
+    <UnitTest name="InvalidIndexTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="75c7b864-a9e5-bc71-a616-f11e068eb1ed">
+      <Execution id="c0c2fa29-0d97-4c4b-83ab-fbca15741185" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleKeySetATest" name="InvalidIndexTest" />
+    </UnitTest>
+    <UnitTest name="OnDecomposed_Release_LogicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="84ff0fe5-993f-0b7c-d99a-ab41853e0f03">
+      <Execution id="98010b8e-3aeb-46d9-a705-61806b00c746" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="OnDecomposed_Release_LogicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="WhenDoubleThrowDecomposedError3Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="115aeed0-4149-92cd-4934-e0f23b679375">
+      <Execution id="0882e6ed-8ac2-4eea-a5a7-3a2b25f7d5a1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDoubleThrowDecomposedError3Test" />
+    </UnitTest>
+    <UnitTest name="Do_PhysicalSingleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b83855da-2187-18df-271e-8f6cca2ad909">
+      <Execution id="f18464ce-a1bf-4671-a783-1870c0c00e72" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_PhysicalSingleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="OnMachineResetTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0089fa1f-3465-b887-dad1-155ec6d46799">
+      <Execution id="9c25fc95-eecc-418f-9ec3-8091fce43096" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="OnMachineResetTest" />
+    </UnitTest>
+    <UnitTest name="GetInversedSingleThrowTriggerDictionaryTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="3c633e18-4a46-8128-f76c-9a22f53d1429">
+      <Execution id="74c3d688-b93b-44f5-a1bb-04457bb9143b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="GetInversedSingleThrowTriggerDictionaryTest" />
+    </UnitTest>
+    <UnitTest name="WhenSingleThrow1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="602dd493-26f5-6f7c-76a3-7a9b3bb2e52e">
+      <Execution id="96d479e2-c1c4-4c67-ac95-a33fa064b80f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenSingleThrow1Test" />
+    </UnitTest>
+    <UnitTest name="Stroke0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="997a6b0f-d8f8-cb4e-3f3e-891dc65343f8">
+      <Execution id="f4759672-fa35-4e0f-a079-2b3b1339d55a" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="Stroke0Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowSingleThrow2Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="f1e569fa-645b-f7a1-77cd-80517ba47f00">
+      <Execution id="b4d622f6-c7b9-45a3-be1b-c43eb3132866" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowSingleThrow2Test" />
+    </UnitTest>
+    <UnitTest name="GetHashCodeTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="6555d0d2-7b77-9f95-81d8-ef21cd8c511f">
+      <Execution id="2fc7fd61-a0c7-4919-96b5-448f3f877761" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="GetHashCodeTest" />
+    </UnitTest>
+    <UnitTest name="OnDecomposed_Press_PhysicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="131cedce-292f-b1e4-a55a-d63dc05f0aed">
+      <Execution id="55f0d722-389a-4041-9fde-1648ffe207fd" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="OnDecomposed_Press_PhysicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="WhenDoubleThrow0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="ab495a16-050d-af3c-fc08-0ece59f0f17a">
+      <Execution id="e9d02372-9939-4e16-8e06-de8cd0bd48cc" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDoubleThrow0Test" />
+    </UnitTest>
+    <UnitTest name="Press_Do_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c129126b-aeef-1e8f-abfe-229039b97194">
+      <Execution id="75648f42-7bc4-4e9f-8216-02067ccb7192" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="FindStateFromHistoryTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="2989cc7f-6264-98bd-247c-b5b31eb46e7e">
+      <Execution id="04097729-c9f2-4f09-982e-914211bcd19b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="FindStateFromHistoryTest" />
+    </UnitTest>
+    <UnitTest name="GetDoubleThrowElementsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="69ae1362-6b03-0c8e-2374-9f2d03c5fd29">
+      <Execution id="a4936bdc-3e2e-40b5-93ad-a2798662d544" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="GetDoubleThrowElementsTest" />
+    </UnitTest>
+    <UnitTest name="Do_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="4f366701-2996-b25b-831a-061eabcff77a">
+      <Execution id="5884f96c-63f7-4300-93e2-356e35b26429" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="Release_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="042895bf-0607-f43a-d25d-2f2399c24d15">
+      <Execution id="db2ed4c9-8666-488f-a7cb-6f280f441022" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Release_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="StrokeDoTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="58fc7040-2ed0-7870-acdf-baa3d40a1a49">
+      <Execution id="1ab64d77-b65a-47f7-a9e6-cbf1e0697cff" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="StrokeDoTest0" />
+    </UnitTest>
+    <UnitTest name="DecomposedReleaseTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="e1288129-b5b4-b8a9-d164-0dd825597fc8">
+      <Execution id="c3647413-1825-435b-bc1e-da46b8615680" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DecomposedReleaseTest0" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowReleaseTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d4f4496f-a40e-7d75-246d-bfb0af8a0d9d">
+      <Execution id="8adbb8ad-7d16-4139-bae0-9812e5ed8f69" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DoubleThrowReleaseTest0" />
+    </UnitTest>
+    <UnitTest name="ToState0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="e5c2d6c9-86a1-2aa8-d1ec-3e342be59aad">
+      <Execution id="035e7f7c-7f7b-4761-98d2-5841945cc1a3" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="ToState0Test" />
+    </UnitTest>
+    <UnitTest name="Stroke1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="06e161ad-b7a7-4923-120d-97025ecd9d99">
+      <Execution id="6d4c2599-7d8e-4312-a537-95c37748abee" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="Stroke1Test" />
+    </UnitTest>
+    <UnitTest name="GetSingleThrowElementsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="9aae41ca-7ec0-7691-088b-156185c19639">
+      <Execution id="b1c541e7-be95-46eb-98db-2b4cec99b831" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="GetSingleThrowElementsTest" />
+    </UnitTest>
+    <UnitTest name="WhenEvaluatorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="1e16d0d5-459c-2be6-15dd-9070db155b99">
+      <Execution id="e9f2a6a3-ec15-491e-8750-0e82358e362b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="WhenEvaluatorTest" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="7f42c95f-6985-ed6c-4689-25dbd201237b">
+      <Execution id="2417575a-efae-4c45-babf-6617009a5d85" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleGestureMachineConfigTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="Press_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="ac48a17f-1556-fdb9-67b2-268c70f1694d">
+      <Execution id="56520946-4d5a-4f96-971b-ce6fb449bf28" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="Do_LogicalSingleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="1f5c8f33-a23a-d398-1610-04619e509039">
+      <Execution id="4472bcec-40c7-4b6c-aaf8-5020fbfd84a1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_LogicalSingleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="WhenDoubleThrowDecomposedError2Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b6fafb9e-639a-6e9f-44af-a88b12783043">
+      <Execution id="e571b9c3-b2da-40ec-86d3-7f1006250c76" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDoubleThrowDecomposedError2Test" />
+    </UnitTest>
+    <UnitTest name="PhysicalFireEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="151ac2a0-0282-b30c-67e3-2cc27cb2321f">
+      <Execution id="0f73c0ec-6bc7-4acc-a8f3-6acf43f98a4b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="PhysicalFireEventTest" />
+    </UnitTest>
+    <UnitTest name="Press_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="78c93ea1-fa8a-bee5-3fe9-c8ab245a59e8">
+      <Execution id="8f57c5cb-7c5f-484b-b358-5a7df41818b7" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="Do_Release_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="3c8e6fd7-d437-91d6-b42c-580decf70173">
+      <Execution id="ba9b6e73-0cc0-4d9f-9be0-6d8321696dfd" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_Release_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="OnMachineStopTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b83b3844-91a3-f34b-7db5-19ad53e9a3d5">
+      <Execution id="fb502233-8453-43a9-abcb-30d5381676aa" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="OnMachineStopTest" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c2800f74-7b4f-3dd4-fa4b-06855e0c9763">
+      <Execution id="363a878a-70ff-4c41-a31b-880358a6b9c7" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleGestureMachineTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="Press_Release_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="1511c442-9ee1-2e9f-e4a8-e310dc592613">
+      <Execution id="8d5fb127-55f3-418d-a2ab-868bda2f674b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Release_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="WhenDecomposedDoubleThrowError3Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="9590370e-18c2-05d5-ed05-165d842dd3d4">
+      <Execution id="2d4ce861-43c7-4e63-a587-a2d427ca5229" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDecomposedDoubleThrowError3Test" />
+    </UnitTest>
+    <UnitTest name="DecomposedReleaseTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b4825cc8-0daa-1f08-09f1-e93e90ac65ff">
+      <Execution id="0ffa669f-0f6a-4298-a9ef-b69a1ad43776" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DecomposedReleaseTest1" />
+    </UnitTest>
+    <UnitTest name="ConsumesNullEventAndReturnsFalse" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="6eaf3d17-73b0-015b-4591-a3ebc88b1ebc">
+      <Execution id="aa03a5de-376d-4435-92ad-6c2ad3c7f679" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="ConsumesNullEventAndReturnsFalse" />
+    </UnitTest>
+    <UnitTest name="Press_Do_Release_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="e79b7664-cd37-8be9-9941-2b164ba9e08b">
+      <Execution id="e666f7f5-18b1-47c1-a778-7b75a58f342a" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_Release_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="CreateExecutionContextTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="9138f89b-48eb-08c1-8cfd-2b8b17f8965f">
+      <Execution id="0833616d-e5bb-420e-809f-0353bb13e0fb" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleContextManagerTest" name="CreateExecutionContextTest" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d51bf9ec-badd-b8c1-f012-2a37a8d5c6f6">
+      <Execution id="8c0535c7-ff2b-4827-897f-9e412f1b9ef6" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleKeySetBTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="Press_Release_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="4c2abeb9-fa6f-d581-6890-683d7d07694f">
+      <Execution id="d5e4e365-4790-4e4a-86a6-0bbfbf25c218" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Release_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowReleaseTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="9482015f-a291-88fc-69ab-57c20f293e60">
+      <Execution id="4c14407d-0bc5-455d-a7af-d9d0f16a2b5c" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DoubleThrowReleaseTest1" />
+    </UnitTest>
+    <UnitTest name="ConsumesGivenPhysicalReleaseEventWhenItInIgnoreList" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d09381d0-ee89-9baa-f0c6-55e0debbed78">
+      <Execution id="3ead4d6e-3e62-4e02-b0e6-9d7f79509b6e" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="ConsumesGivenPhysicalReleaseEventWhenItInIgnoreList" />
+    </UnitTest>
+    <UnitTest name="DecomposedPressTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="8f8ef6c9-4bbc-ff90-8551-3cb75b4addd9">
+      <Execution id="0f507f58-dfa0-4f90-9550-384e7becb471" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DecomposedPressTest0" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowDoubleThrow1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="2b8d4736-963a-a983-aa84-74baa3bd3699">
+      <Execution id="4fa12ef9-a868-4d39-b6a9-e09f60551699" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowDoubleThrow1Test" />
+    </UnitTest>
+    <UnitTest name="Stroke2Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="3fb0a2f7-4f1e-971c-a80d-1e42d9e8c4c7">
+      <Execution id="1ef9e7cd-5b78-4955-bf3a-2020119fe8f1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="Stroke2Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrow1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="75b031d4-277b-1b78-c396-7015bb729415">
+      <Execution id="3837a58b-1227-42d0-b65d-9415c8c877f1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrow1Test" />
+    </UnitTest>
+    <UnitTest name="Release_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="456d9a07-1dac-3717-46f6-bcfd3edb764d">
+      <Execution id="b9303108-8a61-4848-b1e5-043c7ceac3f1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Release_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="On_Do_PhysicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="8fac7fa8-e85c-35a2-6361-7beb23b47fa4">
+      <Execution id="1ff7de64-b848-4767-92c0-02c326b01e17" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Do_PhysicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowDoubleThrow3Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="69ee475c-9f9a-0205-3280-08761b0bf105">
+      <Execution id="a03bda2e-4d33-425a-b860-d651dff9d975" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowDoubleThrow3Test" />
+    </UnitTest>
+    <UnitTest name="On_Do_LogicalSingleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="460ecae7-bb2c-8a33-507d-a20639e15e3f">
+      <Execution id="83ba30a6-9b1f-4316-822d-b10146df6711" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Do_LogicalSingleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="ToState0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0d2cc258-f851-f0a3-b925-0e5f271a1cf8">
+      <Execution id="57746813-752c-49ab-99cc-3462d2f30e35" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="ToState0Test" />
+    </UnitTest>
+    <UnitTest name="PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="6adac488-3b4c-953d-2c43-486df731b142">
+      <Execution id="620579b4-c405-455b-83b9-27bbb1a8d8e1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="PypassesGivenPointToStrokeWatcherWhenCurrentStateIsStateN" />
+    </UnitTest>
+    <UnitTest name="OnGestureTimeoutTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0043e65f-0b58-128d-9885-65eba5a169a2">
+      <Execution id="b259cc4a-8eb3-4946-b0bc-41ecbd39edb8" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="OnGestureTimeoutTest" />
+    </UnitTest>
+    <UnitTest name="Press_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b903f473-caab-c187-3e65-669e013c6191">
+      <Execution id="67abbe94-6cab-4402-8b71-dd80d5b9f38d" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="WhenSingleThrow0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="02dc88fa-f3bf-83c5-eed7-8f530bf65915">
+      <Execution id="26c9b3a7-17e6-4485-ac02-77d2f12f66c9" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenSingleThrow0Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowSingleThrow1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b49ca8d0-5fe2-0c1c-c97f-6ff784a8f979">
+      <Execution id="a2e549c8-b0a4-4841-a4f2-1128ca072cf7" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowSingleThrow1Test" />
+    </UnitTest>
+    <UnitTest name="WhenDescriptionTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="09940e8a-b350-6658-6a21-54a4043c66ac">
+      <Execution id="dc3b2e87-18dc-4574-9edd-6e963aba8575" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLEvaluatorTest" name="WhenDescriptionTest1" />
+    </UnitTest>
+    <UnitTest name="Release_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="a619916d-1b3a-3c5f-a311-d03ab9a412a8">
+      <Execution id="bd9d0c7d-c7b3-40d8-aa79-14cb979a44a2" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Release_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="dc3a620e-78fa-1203-9374-3a925627a360">
+      <Execution id="6f3ad805-7d57-4026-8751-40a094aff632" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleCallbackManagerTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="SingleThrowDoTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b2e67e73-501f-0b72-72d6-d12ea67a275c">
+      <Execution id="5d6ad854-1f46-44e6-9c62-43c9b38cd298" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="SingleThrowDoTest0" />
+    </UnitTest>
+    <UnitTest name="ResetTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="8e3645dd-0dc0-0e2b-a4b6-3bd3a7dea0c8">
+      <Execution id="0aafc824-a434-4535-b36e-079c1784c513" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="ResetTest" />
+    </UnitTest>
+    <UnitTest name="NormalEndTriggerTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="82eb59ae-0173-226e-b089-25738dc7a08f">
+      <Execution id="8c2b1a2b-bcf7-4605-a3fd-165206c4f644" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="NormalEndTriggerTest" />
+    </UnitTest>
+    <UnitTest name="ConstructorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="a2730a27-e5f1-dee3-dd9e-698e25241304">
+      <Execution id="4c49731e-c41d-4874-a36f-d409e0f36c71" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="ConstructorTest" />
+    </UnitTest>
+    <UnitTest name="StrokeDoTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="68daa99c-2770-ab4c-469f-94411dbdea99">
+      <Execution id="1154020d-c1b3-4af7-a053-c941fec7f4af" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="StrokeDoTest1" />
+    </UnitTest>
+    <UnitTest name="ResetTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="cf5ee9e0-1b22-27ab-e2e3-0e2deb017181">
+      <Execution id="08adabe3-8fc1-4e76-9d58-4297d11a8ca6" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="ResetTest" />
+    </UnitTest>
+    <UnitTest name="Press_Do_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="cba7677e-8288-0f16-74b7-d49ddfa18d3f">
+      <Execution id="6ed13330-09de-4f38-9440-c6764a6f0513" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="Do_Release_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d90cdddf-2b5d-5a91-88c6-d959110ef968">
+      <Execution id="78ea6195-3522-4dce-80d5-c70d6da1293a" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_Release_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="DecomposedPressTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="33d880dc-c544-b306-6d5b-646c2b258591">
+      <Execution id="9d8b7a12-e5c2-4367-94fb-6db031080080" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DecomposedPressTest1" />
+    </UnitTest>
+    <UnitTest name="RunTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="625934f7-e111-9685-749b-f3b579737f74">
+      <Execution id="b0f7acf2-629d-4f00-bdbd-efee933da4fb" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="RunTest" />
+    </UnitTest>
+    <UnitTest name="On_Do_PhysicalSingleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c5862cb9-db1f-2640-199b-9f0749f3a30a">
+      <Execution id="adede85a-4ba9-4ab5-98a5-8d05c8d72676" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Do_PhysicalSingleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="ToStateNTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="f653789a-43ac-0ca0-0c0a-68383d13d3de">
+      <Execution id="dc77eb74-8d93-4b91-8252-b63326961e12" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="ToStateNTest" />
+    </UnitTest>
+    <UnitTest name="On_Press_PhysicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="be045d37-de03-569f-e10a-31a0cc14adc4">
+      <Execution id="9b853387-968f-4e4e-810b-a70bcdbe6908" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Press_PhysicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="Do_LogicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="58f5d3e6-8093-d1ec-2157-d04b29c90a03">
+      <Execution id="a7ce1127-42b1-48a3-a02d-a6373cde9256" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_LogicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="FireEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="2a434760-2cb4-e2ea-6989-3929d1dea57d">
+      <Execution id="b3cb4d25-def6-4e3e-80b1-2db97ca0fdef" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="FireEventTest" />
+    </UnitTest>
+    <UnitTest name="RunThrowsInvalidOperationExceptionWhenCalledTwiceTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="49fa12d3-f5e9-a4ae-8457-7b5115f58982">
+      <Execution id="f6da2feb-2028-457e-9ef4-34b6dfa83262" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="RunThrowsInvalidOperationExceptionWhenCalledTwiceTest" />
+    </UnitTest>
+    <UnitTest name="Do_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="5e45bd01-7eb2-feaf-8744-f7d1de95dc0a">
+      <Execution id="60ae6876-b257-4eba-9900-c9efba8ba349" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="WhenDecomposed1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="bdd2e295-592b-2970-f476-5192828f3f14">
+      <Execution id="2b419e71-f6d0-4472-81f8-db81ab86a32d" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDecomposed1Test" />
+    </UnitTest>
+    <UnitTest name="WhenDoubleThrow1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="7f2f8a70-ca6b-81d5-966b-c991df13c7a2">
+      <Execution id="4d4a28de-e7a3-4b78-9e44-d0c433b17557" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDoubleThrow1Test" />
+    </UnitTest>
+    <UnitTest name="Do_Release_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="aaf22940-0cc2-e92d-8340-f1bbf655606f">
+      <Execution id="3613dc63-7347-4ace-ad24-503ec1ae2a94" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_Release_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="CreateEvaluateContextTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="9f335ce2-1aa9-6858-f137-1dece7f639a9">
+      <Execution id="ed002b99-5599-4652-bb03-2f69e706a4c0" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleContextManagerTest" name="CreateEvaluateContextTest" />
+    </UnitTest>
+    <UnitTest name="WhenDecomposedDoubleThrowError1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="a3669001-4db6-8572-b258-e907989c9b10">
+      <Execution id="68a11c47-1701-425b-8e2a-e0d9850bca96" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDecomposedDoubleThrowError1Test" />
+    </UnitTest>
+    <UnitTest name="IsStateTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="57e25c1d-7806-0ac8-7d0f-966b1fdb9506">
+      <Execution id="182a8342-785f-4efa-b436-9c609ccac8aa" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="IsStateTest" />
+    </UnitTest>
+    <UnitTest name="WhenDoubleThrowDecomposedError0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="85907372-02e4-e7c9-fb40-2f806581a8ed">
+      <Execution id="78e37193-77c8-4214-a34c-7e9aa42aff1b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDoubleThrowDecomposedError0Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowStroke0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="1fa7a019-1d51-ef50-8b00-2a7a97b01d30">
+      <Execution id="57d876f2-65ac-40e5-99c6-4d57d5ed147e" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowStroke0Test" />
+    </UnitTest>
+    <UnitTest name="On_Release_PhysicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d315faf1-870a-b600-5789-ca2ac76344f4">
+      <Execution id="b873cec7-84e9-48cf-af3e-2ea1638bfcab" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Release_PhysicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="On_Press_LogicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0f34524c-b005-e15e-779a-1afb7a76153d">
+      <Execution id="cd078d59-b0d0-40e2-a782-e1ae15a4d029" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Press_LogicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="Stroke3Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="80ffc9ee-8dff-58d0-3604-12060e635b20">
+      <Execution id="0374ad41-efd6-4a0d-bb70-26fca07c4a85" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="Stroke3Test" />
+    </UnitTest>
+    <UnitTest name="Press_Release_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d28479bd-576c-ed8f-22e9-a16405b558c8">
+      <Execution id="2aad8410-daa4-476e-b65d-bc3fab53dd52" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Release_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="GetInversedDoubleThrowTriggerDictionaryTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="176c1c08-35fc-575b-67e6-d765198b88f8">
+      <Execution id="b088c39d-5165-4ea7-877f-edc26f707a75" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="GetInversedDoubleThrowTriggerDictionaryTest" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowSingleThrow0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="4e8da9d7-8d22-9a2b-9d0b-ffc31c7af526">
+      <Execution id="f657dded-4150-4103-82e3-4656d844fc55" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowSingleThrow0Test" />
+    </UnitTest>
+    <UnitTest name="AbnormalEndTriggersTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="fa0f4083-6256-cacd-2f4c-4a3db6468535">
+      <Execution id="c0fa9c6f-9117-4635-8561-37aaa644f48f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="AbnormalEndTriggersTest" />
+    </UnitTest>
+    <UnitTest name="WhenDecomposed0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="d3585ef8-102e-1a60-6a8e-9d81f034dde9">
+      <Execution id="371a6968-cf5d-4d6d-a160-dff5809806d0" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDecomposed0Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowPressTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="85899d3a-c015-6a2d-1e16-19fe2e92739e">
+      <Execution id="585baa2b-a279-4059-b565-539d947f4cad" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DoubleThrowPressTest1" />
+    </UnitTest>
+    <UnitTest name="On_Release_LogicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="e6386020-066d-f388-b740-79f66ac913d1">
+      <Execution id="ec7f3cc6-2941-441a-b40f-9a2b91e5380f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Release_LogicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="Press_Do_Release_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="ccdb6788-8dd3-6293-caa3-27ef1dcd5c9d">
+      <Execution id="4960ecc2-a4ca-4728-bea9-057e78fd97fa" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_Release_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="SingleThrowDoTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="7da48fe0-7b90-b39c-1bf6-0c5eb9414953">
+      <Execution id="2fef9cc6-1f4e-42a3-8f62-a01151cdf792" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="SingleThrowDoTest1" />
+    </UnitTest>
+    <UnitTest name="EqualsTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0454cf38-abb0-b506-8b05-0d37eeef6acc">
+      <Execution id="b94f24b4-72b2-4e18-baee-4c3c216a9530" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="EqualsTest1" />
+    </UnitTest>
+    <UnitTest name="IgnoreRepeatedPressEvents" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="23c91618-3b71-5106-c421-53bc0f945170">
+      <Execution id="c363bc2a-902e-46cc-9ae5-a8cbde04f82b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="IgnoreRepeatedPressEvents" />
+    </UnitTest>
+    <UnitTest name="Do_Release_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0a5ccf4a-3b88-b8a5-f903-4fd087137b7b">
+      <Execution id="f7adec64-4e10-4bdc-a7a3-fa1a5a1b7c52" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_Release_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="Press_PhysicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="abdadf8c-e265-f874-84ae-9856fa590f76">
+      <Execution id="1f74ebff-c325-4ecc-ac07-a3bc6a436c00" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_PhysicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="Press_Do_Release_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="898c067b-10ae-c3db-cae5-5634b70ceb52">
+      <Execution id="6de017f8-1376-4774-afe9-28d9ac04ce16" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_Release_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="Decomposed0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="43881e50-c036-ce8c-3061-3a2cc9472120">
+      <Execution id="ce9bcf33-b627-41b0-afbb-3d3c9c71840e" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="Decomposed0Test" />
+    </UnitTest>
+    <UnitTest name="ReleaseEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="56bdc83d-e305-d4bb-8113-54b13b22e2cc">
+      <Execution id="56fed9a4-efed-4f15-95e7-3f90feb3f5c8" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="ReleaseEventTest" />
+    </UnitTest>
+    <UnitTest name="WhenDescriptionTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="4987353d-f1db-9a95-56e0-87b28a309af0">
+      <Execution id="d06c0da9-2511-4ce7-8d45-962bec23e803" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLEvaluatorTest" name="WhenDescriptionTest0" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="58682091-32e8-558f-f207-018202aef6c0">
+      <Execution id="cfedde93-bf95-461e-98ac-978fc06e561d" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="ResetTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="0b636873-88de-4684-168e-7a8b9924462c">
+      <Execution id="312530ba-ccb7-4ab0-a137-2655babdd9c1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="ResetTest" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowSingleThrow3Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="42df7cdd-8155-bc2a-4b8a-56f2424cfa17">
+      <Execution id="b9cccd00-4059-481a-81db-3d8911448ace" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowSingleThrow3Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowDoTest1" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="697dbc41-86f3-9c7e-7558-983e4743cb6a">
+      <Execution id="1aecad02-fb02-41b6-863c-e667399dbfaa" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DoubleThrowDoTest1" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="37c6fa8f-7f65-4c2c-4769-8d3354b00cee">
+      <Execution id="ea4b4362-e198-4794-a6e7-e05c3bc2eebc" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleRootElementTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="OnDecomposed_Press_LogicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="a8fd9f01-71b7-034f-da0d-2293dac859d5">
+      <Execution id="fbce675a-11ca-4fc0-ae40-16c0898f719c" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="OnDecomposed_Press_LogicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="PhysicalReleaseEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b555dba9-a5c4-6ece-2c1d-dd350c8eef40">
+      <Execution id="efde2506-5306-40a7-80fe-98a313e18909" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="PhysicalReleaseEventTest" />
+    </UnitTest>
+    <UnitTest name="OnGestureCancelTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="5b2ac6f6-7cfe-039d-061b-49cdad82f4c2">
+      <Execution id="d9afba6f-fac3-4811-955b-b8457858e243" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="OnGestureCancelTest" />
+    </UnitTest>
+    <UnitTest name="WhenDecomposedDoubleThrowError0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="831cfa47-6705-077a-87ae-cf6a1768ca38">
+      <Execution id="692532b5-b335-469a-add9-ac50877eb025" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDecomposedDoubleThrowError0Test" />
+    </UnitTest>
+    <UnitTest name="RootWhenTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="3c64f79f-50bf-e5dc-6c56-7e98e44f9c64">
+      <Execution id="07e5991f-385f-4d0c-8930-075313d0cba5" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="RootWhenTest" />
+    </UnitTest>
+    <UnitTest name="GetInversedDecomposedTriggerDictionaryTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="66b81c1a-9d17-ed6e-1887-9689cdce013b">
+      <Execution id="b654ed4f-8c65-425a-afe9-e053a951a868" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="GetInversedDecomposedTriggerDictionaryTest" />
+    </UnitTest>
+    <UnitTest name="Do_LogicalSingleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="207292d1-64b0-834d-966e-2bd0c67ad71d">
+      <Execution id="b5956769-2b7d-4ac2-a162-b42560fa604b" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_LogicalSingleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="OnStateChangeTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="4715cb60-d51b-288c-62a5-29cc4fd1241c">
+      <Execution id="b5d44045-a9ba-40df-9fc1-4eb29abbd6d1" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="OnStateChangeTest" />
+    </UnitTest>
+    <UnitTest name="On_Do_LogicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="e370c3d7-4c91-969c-caa7-24b5d52af767">
+      <Execution id="e9618dea-1fa9-47d5-ba1e-630ea708497f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="On_Do_LogicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="Do_PhysicalSingleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c51205fe-7c11-fce2-90ba-ea1a66ea50cc">
+      <Execution id="45a528d4-4425-43ef-a023-25197fc7dcef" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_PhysicalSingleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="OnMachineStartTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="e175b2f0-1068-7e8d-b583-e71a25e63247">
+      <Execution id="cfbe9eea-5a90-4097-a86e-82228591a7eb" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.GestureMachineTest" name="OnMachineStartTest" />
+    </UnitTest>
+    <UnitTest name="Press_Release_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="60fbe95a-a6ec-e357-476e-2610c90da7ab">
+      <Execution id="8557fb6f-28e8-4068-bc6a-8dfa173124fd" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Release_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowStroke1Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b87c030d-6eae-f1eb-792b-50e1fc1abb9d">
+      <Execution id="c0ce0835-0d36-49b3-9b6e-adb873d9111f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowStroke1Test" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="23d16121-ee73-abc3-f346-28003ef42dd9">
+      <Execution id="5b84a2e6-4969-4c10-84a3-c40d00902d37" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleKeySetATest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="HasPressExecutorsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="874a6043-5681-9df9-0382-d9582d7ba942">
+      <Execution id="983b4023-0d61-4dc2-aba0-00622a2109ef" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="HasPressExecutorsTest" />
+    </UnitTest>
+    <UnitTest name="OnDecomposed_Release_PhysicalDoubleThrow_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="bc6fdb1e-c947-c068-2ca9-8acccbaf17a9">
+      <Execution id="14ff8a52-139c-4d39-a06f-9c2aba327457" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="OnDecomposed_Release_PhysicalDoubleThrow_Test" />
+    </UnitTest>
+    <UnitTest name="PhysicalPressEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="3c80d26a-aca8-d466-0dc8-7d48bdf81e73">
+      <Execution id="70c23858-d4df-46c1-b80d-2debc9158038" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="PhysicalPressEventTest" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowDoubleThrow0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="74e7010d-4fda-f646-2550-407910004128">
+      <Execution id="97b3c7d5-1af1-4356-9224-9747aed25f92" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowDoubleThrow0Test" />
+    </UnitTest>
+    <UnitTest name="HasDoExecutorsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="592d7283-0573-ab31-87bc-74ff85c80d3f">
+      <Execution id="f81684b7-1db6-4871-ab2a-deb84f6a57c5" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="HasDoExecutorsTest" />
+    </UnitTest>
+    <UnitTest name="ToStateNTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="35d0c5ca-14bd-980b-12f0-d4aa2068921b">
+      <Execution id="e1850ff4-632b-4a90-bb98-819edb39b894" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="ToStateNTest" />
+    </UnitTest>
+    <UnitTest name="IsStateTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="28134b3c-ccb3-8d33-50dc-dd2a7bb1f41b">
+      <Execution id="0c76a229-5777-4e84-b95b-75eefd853845" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="IsStateTest" />
+    </UnitTest>
+    <UnitTest name="DoubleThrow0Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c2c6b6a2-988a-b341-f78c-277c3e622b84">
+      <Execution id="ac2b4119-5185-4f3e-bfdd-7bfb11565b36" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrow0Test" />
+    </UnitTest>
+    <UnitTest name="PressEventTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="2d476394-b382-5545-f9e2-17549e1a7858">
+      <Execution id="af56a83c-4b52-4201-bf8d-0230eb97602f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.TypeSystemTest" name="PressEventTest" />
+    </UnitTest>
+    <UnitTest name="Do_PhysicalDoubleThrow_WhenIsFalse_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="b4b87ab1-1be7-55c0-99ff-f813e9cabe7b">
+      <Execution id="b7aa39e8-4746-401d-a2e4-b5d53dbda85f" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Do_PhysicalDoubleThrow_WhenIsFalse_Test" />
+    </UnitTest>
+    <UnitTest name="EqualsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="23d602cd-2cc6-6609-1229-4cf2aa23a4be">
+      <Execution id="e456f35f-fd73-4a7e-8c03-6e248a249819" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeSequenceTest" name="EqualsTest" />
+    </UnitTest>
+    <UnitTest name="NoDefinitionTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="338d17db-cdb6-3f45-d4dd-9944b3b44bc4">
+      <Execution id="8744f4a1-1ecb-43cd-b4b1-89e39808a392" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="NoDefinitionTest" />
+    </UnitTest>
+    <UnitTest name="StrokeResetTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="001676fd-dee3-0bdf-6c0c-9f0cfa55574c">
+      <Execution id="95cc19e4-e950-46e2-946a-24239f5db12e" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StrokeTest" name="StrokeResetTest" />
+    </UnitTest>
+    <UnitTest name="GetDecomposedElementsTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="faa60c60-8d54-cd6e-5882-4209d4fd9103">
+      <Execution id="ff460576-c6ec-4842-a807-213a810718bd" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="GetDecomposedElementsTest" />
+    </UnitTest>
+    <UnitTest name="Press_Do_Release_LogicalDoubleThrow_WhenIsTrue_Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="c154141f-4c5e-6fc9-4342-241b09cf328f">
+      <Execution id="fcea05e5-cfb8-49b3-89ea-c967ae255a97" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="Press_Do_Release_LogicalDoubleThrow_WhenIsTrue_Test" />
+    </UnitTest>
+    <UnitTest name="CreateHistoryTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="93a8d1e8-3ca4-4018-5e49-77900ed132f8">
+      <Execution id="3c6d51b3-c206-4d92-9529-57c59fb7e119" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.State0Test" name="CreateHistoryTest" />
+    </UnitTest>
+    <UnitTest name="WhenDecomposedDoubleThrowError2Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="735bfbcf-8816-2c90-8b3f-a8007bc5fa84">
+      <Execution id="cdee9be7-c3a2-4503-8359-a7228d0acec0" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="WhenDecomposedDoubleThrowError2Test" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowDoubleThrow2Test" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="39b69766-4360-eb20-6b1a-161d4830d56d">
+      <Execution id="25b541ca-c9c6-47ca-95fe-35d4e2b93ccf" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.DSLSyntexTest" name="DoubleThrowDoubleThrow2Test" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="8a4cb9e8-7a3a-ee8b-8d09-af7fcb24645c">
+      <Execution id="8fb2507b-f9b5-41de-9a14-92431b92e061" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.SimpleContextManagerTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="DoubleThrowDoTest0" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="1c8acb5f-5af1-3e48-f57e-00f80f05e93b">
+      <Execution id="f679d340-02b6-47d2-914b-cd29e17ac51d" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.ExecutorTest" name="DoubleThrowDoTest0" />
+    </UnitTest>
+    <UnitTest name="ConstractorTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="6e3444d8-9402-7fde-021e-9f4b7dba593c">
+      <Execution id="a49c7db3-0414-4e52-a802-7c15f781f5f5" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="ConstractorTest" />
+    </UnitTest>
+    <UnitTest name="LastStateTest" storage="c:\users\seigl\projects\creviceapp\crevicelibtests\bin\release\crevicelibtests.dll" id="57ac32da-2009-cd4a-322b-677c1fa60b05">
+      <Execution id="1c072566-76d2-4a9c-99b9-dcdef8cb14de" />
+      <TestMethod codeBase="C:\Users\seigl\projects\creviceapp\CreviceLibTests\bin\Release\CreviceLibTests.dll" adapterTypeName="executor://mstestadapter/v2" className="CreviceLibTests.StateNTest" name="LastStateTest" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2d476394-b382-5545-f9e2-17549e1a7858" executionId="af56a83c-4b52-4201-bf8d-0230eb97602f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6eaf3d17-73b0-015b-4591-a3ebc88b1ebc" executionId="aa03a5de-376d-4435-92ad-6c2ad3c7f679" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5e45bd01-7eb2-feaf-8744-f7d1de95dc0a" executionId="60ae6876-b257-4eba-9900-c9efba8ba349" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="151ac2a0-0282-b30c-67e3-2cc27cb2321f" executionId="0f73c0ec-6bc7-4acc-a8f3-6acf43f98a4b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5b2ac6f6-7cfe-039d-061b-49cdad82f4c2" executionId="d9afba6f-fac3-4811-955b-b8457858e243" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3c8e6fd7-d437-91d6-b42c-580decf70173" executionId="ba9b6e73-0cc0-4d9f-9be0-6d8321696dfd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c5862cb9-db1f-2640-199b-9f0749f3a30a" executionId="adede85a-4ba9-4ab5-98a5-8d05c8d72676" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b4825cc8-0daa-1f08-09f1-e93e90ac65ff" executionId="0ffa669f-0f6a-4298-a9ef-b69a1ad43776" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b636873-88de-4684-168e-7a8b9924462c" executionId="312530ba-ccb7-4ab0-a137-2655babdd9c1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c1182aea-28a0-3401-5610-5bbd25f42477" executionId="b4c4add0-c1a5-4839-85a0-9cd41b2ec069" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4e8da9d7-8d22-9a2b-9d0b-ffc31c7af526" executionId="f657dded-4150-4103-82e3-4656d844fc55" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f1e569fa-645b-f7a1-77cd-80517ba47f00" executionId="b4d622f6-c7b9-45a3-be1b-c43eb3132866" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23d602cd-2cc6-6609-1229-4cf2aa23a4be" executionId="e456f35f-fd73-4a7e-8c03-6e248a249819" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="09940e8a-b350-6658-6a21-54a4043c66ac" executionId="dc3b2e87-18dc-4574-9edd-6e963aba8575" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="874a6043-5681-9df9-0382-d9582d7ba942" executionId="983b4023-0d61-4dc2-aba0-00622a2109ef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a8fd9f01-71b7-034f-da0d-2293dac859d5" executionId="fbce675a-11ca-4fc0-ae40-16c0898f719c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a619916d-1b3a-3c5f-a311-d03ab9a412a8" executionId="bd9d0c7d-c7b3-40d8-aa79-14cb979a44a2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58682091-32e8-558f-f207-018202aef6c0" executionId="cfedde93-bf95-461e-98ac-978fc06e561d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="64db4608-cd5d-ec3d-8c3f-8dcaefc8f384" executionId="bfcc7981-6fea-4791-afb3-f289b07ad6bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c154141f-4c5e-6fc9-4342-241b09cf328f" executionId="fcea05e5-cfb8-49b3-89ea-c967ae255a97" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="85899d3a-c015-6a2d-1e16-19fe2e92739e" executionId="585baa2b-a279-4059-b565-539d947f4cad" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="49fa12d3-f5e9-a4ae-8457-7b5115f58982" executionId="f6da2feb-2028-457e-9ef4-34b6dfa83262" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="66b81c1a-9d17-ed6e-1887-9689cdce013b" executionId="b654ed4f-8c65-425a-afe9-e053a951a868" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="602dd493-26f5-6f7c-76a3-7a9b3bb2e52e" executionId="96d479e2-c1c4-4c67-ac95-a33fa064b80f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bc6fdb1e-c947-c068-2ca9-8acccbaf17a9" executionId="14ff8a52-139c-4d39-a06f-9c2aba327457" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="697dbc41-86f3-9c7e-7558-983e4743cb6a" executionId="1aecad02-fb02-41b6-863c-e667399dbfaa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="abdadf8c-e265-f874-84ae-9856fa590f76" executionId="1f74ebff-c325-4ecc-ac07-a3bc6a436c00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2800f74-7b4f-3dd4-fa4b-06855e0c9763" executionId="363a878a-70ff-4c41-a31b-880358a6b9c7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="85907372-02e4-e7c9-fb40-2f806581a8ed" executionId="78e37193-77c8-4214-a34c-7e9aa42aff1b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="42df7cdd-8155-bc2a-4b8a-56f2424cfa17" executionId="b9cccd00-4059-481a-81db-3d8911448ace" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e79b7664-cd37-8be9-9941-2b164ba9e08b" executionId="e666f7f5-18b1-47c1-a778-7b75a58f342a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9f335ce2-1aa9-6858-f137-1dece7f639a9" executionId="ed002b99-5599-4652-bb03-2f69e706a4c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="456d9a07-1dac-3717-46f6-bcfd3edb764d" executionId="b9303108-8a61-4848-b1e5-043c7ceac3f1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="06e161ad-b7a7-4923-120d-97025ecd9d99" executionId="6d4c2599-7d8e-4312-a537-95c37748abee" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="78c93ea1-fa8a-bee5-3fe9-c8ab245a59e8" executionId="8f57c5cb-7c5f-484b-b358-5a7df41818b7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="176c1c08-35fc-575b-67e6-d765198b88f8" executionId="b088c39d-5165-4ea7-877f-edc26f707a75" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ac48a17f-1556-fdb9-67b2-268c70f1694d" executionId="56520946-4d5a-4f96-971b-ce6fb449bf28" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8fac7fa8-e85c-35a2-6361-7beb23b47fa4" executionId="1ff7de64-b848-4767-92c0-02c326b01e17" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b2e67e73-501f-0b72-72d6-d12ea67a275c" executionId="5d6ad854-1f46-44e6-9c62-43c9b38cd298" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8fe48d07-0f37-1738-30a5-fe0fa3f9a570" executionId="dddde9a7-f5a2-47c3-a51e-284cfb349637" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0089fa1f-3465-b887-dad1-155ec6d46799" executionId="9c25fc95-eecc-418f-9ec3-8091fce43096" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="831cfa47-6705-077a-87ae-cf6a1768ca38" executionId="692532b5-b335-469a-add9-ac50877eb025" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="43881e50-c036-ce8c-3061-3a2cc9472120" executionId="ce9bcf33-b627-41b0-afbb-3d3c9c71840e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="faa60c60-8d54-cd6e-5882-4209d4fd9103" executionId="ff460576-c6ec-4842-a807-213a810718bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5aa3479c-2100-f7ff-2efe-a0490b2d7ec6" executionId="a3bcbf1f-a634-4b28-95c8-05c8fb342425" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9482015f-a291-88fc-69ab-57c20f293e60" executionId="4c14407d-0bc5-455d-a7af-d9d0f16a2b5c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1511c442-9ee1-2e9f-e4a8-e310dc592613" executionId="8d5fb127-55f3-418d-a2ab-868bda2f674b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1fa7a019-1d51-ef50-8b00-2a7a97b01d30" executionId="57d876f2-65ac-40e5-99c6-4d57d5ed147e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d315faf1-870a-b600-5789-ca2ac76344f4" executionId="b873cec7-84e9-48cf-af3e-2ea1638bfcab" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9138f89b-48eb-08c1-8cfd-2b8b17f8965f" executionId="0833616d-e5bb-420e-809f-0353bb13e0fb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="131cedce-292f-b1e4-a55a-d63dc05f0aed" executionId="55f0d722-389a-4041-9fde-1648ffe207fd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23d16121-ee73-abc3-f346-28003ef42dd9" executionId="5b84a2e6-4969-4c10-84a3-c40d00902d37" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e370c3d7-4c91-969c-caa7-24b5d52af767" executionId="e9618dea-1fa9-47d5-ba1e-630ea708497f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e1288129-b5b4-b8a9-d164-0dd825597fc8" executionId="c3647413-1825-435b-bc1e-da46b8615680" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2989cc7f-6264-98bd-247c-b5b31eb46e7e" executionId="04097729-c9f2-4f09-982e-914211bcd19b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b555dba9-a5c4-6ece-2c1d-dd350c8eef40" executionId="efde2506-5306-40a7-80fe-98a313e18909" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0d2cc258-f851-f0a3-b925-0e5f271a1cf8" executionId="57746813-752c-49ab-99cc-3462d2f30e35" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d28479bd-576c-ed8f-22e9-a16405b558c8" executionId="2aad8410-daa4-476e-b65d-bc3fab53dd52" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="84ff0fe5-993f-0b7c-d99a-ab41853e0f03" executionId="98010b8e-3aeb-46d9-a705-61806b00c746" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="96730515-8d56-5c3e-4b4c-76c0b5cf8447" executionId="2430e5bb-1160-4b1b-8271-b98bf68812fd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e175b2f0-1068-7e8d-b583-e71a25e63247" executionId="cfbe9eea-5a90-4097-a86e-82228591a7eb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d90cdddf-2b5d-5a91-88c6-d959110ef968" executionId="78ea6195-3522-4dce-80d5-c70d6da1293a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4f366701-2996-b25b-831a-061eabcff77a" executionId="5884f96c-63f7-4300-93e2-356e35b26429" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0f34524c-b005-e15e-779a-1afb7a76153d" executionId="cd078d59-b0d0-40e2-a782-e1ae15a4d029" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3fb0a2f7-4f1e-971c-a80d-1e42d9e8c4c7" executionId="1ef9e7cd-5b78-4955-bf3a-2020119fe8f1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9aae41ca-7ec0-7691-088b-156185c19639" executionId="b1c541e7-be95-46eb-98db-2b4cec99b831" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3d5845ee-dddd-8df3-d88e-bec91751e41b" executionId="55d5b850-fb12-4d95-b250-94d2a751abfe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cf5ee9e0-1b22-27ab-e2e3-0e2deb017181" executionId="08adabe3-8fc1-4e76-9d58-4297d11a8ca6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2c6b6a2-988a-b341-f78c-277c3e622b84" executionId="ac2b4119-5185-4f3e-bfdd-7bfb11565b36" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="735bfbcf-8816-2c90-8b3f-a8007bc5fa84" executionId="cdee9be7-c3a2-4503-8359-a7228d0acec0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c129126b-aeef-1e8f-abfe-229039b97194" executionId="75648f42-7bc4-4e9f-8216-02067ccb7192" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="997a6b0f-d8f8-cb4e-3f3e-891dc65343f8" executionId="f4759672-fa35-4e0f-a079-2b3b1339d55a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="115aeed0-4149-92cd-4934-e0f23b679375" executionId="0882e6ed-8ac2-4eea-a5a7-3a2b25f7d5a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="338d17db-cdb6-3f45-d4dd-9944b3b44bc4" executionId="8744f4a1-1ecb-43cd-b4b1-89e39808a392" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58f5d3e6-8093-d1ec-2157-d04b29c90a03" executionId="a7ce1127-42b1-48a3-a02d-a6373cde9256" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3c64f79f-50bf-e5dc-6c56-7e98e44f9c64" executionId="07e5991f-385f-4d0c-8930-075313d0cba5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7da48fe0-7b90-b39c-1bf6-0c5eb9414953" executionId="2fef9cc6-1f4e-42a3-8f62-a01151cdf792" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5ab05196-a403-338b-9e56-aa75f955f3d9" executionId="78117346-cb7c-464a-af63-20356a265cef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58fc7040-2ed0-7870-acdf-baa3d40a1a49" executionId="1ab64d77-b65a-47f7-a9e6-cbf1e0697cff" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="625934f7-e111-9685-749b-f3b579737f74" executionId="b0f7acf2-629d-4f00-bdbd-efee933da4fb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d51bf9ec-badd-b8c1-f012-2a37a8d5c6f6" executionId="8c0535c7-ff2b-4827-897f-9e412f1b9ef6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d09381d0-ee89-9baa-f0c6-55e0debbed78" executionId="3ead4d6e-3e62-4e02-b0e6-9d7f79509b6e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ab495a16-050d-af3c-fc08-0ece59f0f17a" executionId="e9d02372-9939-4e16-8e06-de8cd0bd48cc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="57ac32da-2009-cd4a-322b-677c1fa60b05" executionId="1c072566-76d2-4a9c-99b9-dcdef8cb14de" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3c80d26a-aca8-d466-0dc8-7d48bdf81e73" executionId="70c23858-d4df-46c1-b80d-2debc9158038" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aaf22940-0cc2-e92d-8340-f1bbf655606f" executionId="3613dc63-7347-4ace-ad24-503ec1ae2a94" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b83b3844-91a3-f34b-7db5-19ad53e9a3d5" executionId="fb502233-8453-43a9-abcb-30d5381676aa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b6fafb9e-639a-6e9f-44af-a88b12783043" executionId="e571b9c3-b2da-40ec-86d3-7f1006250c76" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="35d0c5ca-14bd-980b-12f0-d4aa2068921b" executionId="e1850ff4-632b-4a90-bb98-819edb39b894" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23c91618-3b71-5106-c421-53bc0f945170" executionId="c363bc2a-902e-46cc-9ae5-a8cbde04f82b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0454cf38-abb0-b506-8b05-0d37eeef6acc" executionId="b94f24b4-72b2-4e18-baee-4c3c216a9530" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f653789a-43ac-0ca0-0c0a-68383d13d3de" executionId="dc77eb74-8d93-4b91-8252-b63326961e12" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f42c95f-6985-ed6c-4689-25dbd201237b" executionId="2417575a-efae-4c45-babf-6617009a5d85" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5f1fbb21-0e9f-fbf2-e6ed-5d6f9196a1b0" executionId="c7c3d9f3-fdbf-40bd-9a3e-8e0c2dff0f5e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="56bdc83d-e305-d4bb-8113-54b13b22e2cc" executionId="56fed9a4-efed-4f15-95e7-3f90feb3f5c8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="69ae1362-6b03-0c8e-2374-9f2d03c5fd29" executionId="a4936bdc-3e2e-40b5-93ad-a2798662d544" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b83855da-2187-18df-271e-8f6cca2ad909" executionId="f18464ce-a1bf-4671-a783-1870c0c00e72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="02dc88fa-f3bf-83c5-eed7-8f530bf65915" executionId="26c9b3a7-17e6-4485-ac02-77d2f12f66c9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="afc88f11-7a71-367c-2fac-6049c534a4db" executionId="06cce5c9-fc0c-43d8-8236-7743fab7bd76" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d4f4496f-a40e-7d75-246d-bfb0af8a0d9d" executionId="8adbb8ad-7d16-4139-bae0-9812e5ed8f69" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="207292d1-64b0-834d-966e-2bd0c67ad71d" executionId="b5956769-2b7d-4ac2-a162-b42560fa604b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="042895bf-0607-f43a-d25d-2f2399c24d15" executionId="db2ed4c9-8666-488f-a7cb-6f280f441022" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="592d7283-0573-ab31-87bc-74ff85c80d3f" executionId="f81684b7-1db6-4871-ab2a-deb84f6a57c5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="898c067b-10ae-c3db-cae5-5634b70ceb52" executionId="6de017f8-1376-4774-afe9-28d9ac04ce16" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b49ca8d0-5fe2-0c1c-c97f-6ff784a8f979" executionId="a2e549c8-b0a4-4841-a4f2-1128ca072cf7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6adac488-3b4c-953d-2c43-486df731b142" executionId="620579b4-c405-455b-83b9-27bbb1a8d8e1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a3669001-4db6-8572-b258-e907989c9b10" executionId="68a11c47-1701-425b-8e2a-e0d9850bca96" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="69ee475c-9f9a-0205-3280-08761b0bf105" executionId="a03bda2e-4d33-425a-b860-d651dff9d975" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c51205fe-7c11-fce2-90ba-ea1a66ea50cc" executionId="45a528d4-4425-43ef-a023-25197fc7dcef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8a4cb9e8-7a3a-ee8b-8d09-af7fcb24645c" executionId="8fb2507b-f9b5-41de-9a14-92431b92e061" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="82eb59ae-0173-226e-b089-25738dc7a08f" executionId="8c2b1a2b-bcf7-4605-a3fd-165206c4f644" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="80ffc9ee-8dff-58d0-3604-12060e635b20" executionId="0374ad41-efd6-4a0d-bb70-26fca07c4a85" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b4b87ab1-1be7-55c0-99ff-f813e9cabe7b" executionId="b7aa39e8-4746-401d-a2e4-b5d53dbda85f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bdd2e295-592b-2970-f476-5192828f3f14" executionId="2b419e71-f6d0-4472-81f8-db81ab86a32d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="74e7010d-4fda-f646-2550-407910004128" executionId="97b3c7d5-1af1-4356-9224-9747aed25f92" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1c8acb5f-5af1-3e48-f57e-00f80f05e93b" executionId="f679d340-02b6-47d2-914b-cd29e17ac51d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a2730a27-e5f1-dee3-dd9e-698e25241304" executionId="4c49731e-c41d-4874-a36f-d409e0f36c71" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="460ecae7-bb2c-8a33-507d-a20639e15e3f" executionId="83ba30a6-9b1f-4316-822d-b10146df6711" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2a434760-2cb4-e2ea-6989-3929d1dea57d" executionId="b3cb4d25-def6-4e3e-80b1-2db97ca0fdef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="93a8d1e8-3ca4-4018-5e49-77900ed132f8" executionId="3c6d51b3-c206-4d92-9529-57c59fb7e119" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8f8ef6c9-4bbc-ff90-8551-3cb75b4addd9" executionId="0f507f58-dfa0-4f90-9550-384e7becb471" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b903f473-caab-c187-3e65-669e013c6191" executionId="67abbe94-6cab-4402-8b71-dd80d5b9f38d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="60fbe95a-a6ec-e357-476e-2610c90da7ab" executionId="8557fb6f-28e8-4068-bc6a-8dfa173124fd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e6386020-066d-f388-b740-79f66ac913d1" executionId="ec7f3cc6-2941-441a-b40f-9a2b91e5380f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="37c6fa8f-7f65-4c2c-4769-8d3354b00cee" executionId="ea4b4362-e198-4794-a6e7-e05c3bc2eebc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="001676fd-dee3-0bdf-6c0c-9f0cfa55574c" executionId="95cc19e4-e950-46e2-946a-24239f5db12e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d3585ef8-102e-1a60-6a8e-9d81f034dde9" executionId="371a6968-cf5d-4d6d-a160-dff5809806d0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1e16d0d5-459c-2be6-15dd-9070db155b99" executionId="e9f2a6a3-ec15-491e-8750-0e82358e362b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="57e25c1d-7806-0ac8-7d0f-966b1fdb9506" executionId="182a8342-785f-4efa-b436-9c609ccac8aa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="21319d7b-a0aa-49b2-a6d3-0786da46bf2b" executionId="beacea58-2155-44d1-85f5-26e73b5f8eb7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6ed67d65-3614-7ea0-0e57-e8246a816b38" executionId="bda9cb5c-56e0-4407-8d45-ffb2a686f9a5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ccdb6788-8dd3-6293-caa3-27ef1dcd5c9d" executionId="4960ecc2-a4ca-4728-bea9-057e78fd97fa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f2f8a70-ca6b-81d5-966b-c991df13c7a2" executionId="4d4a28de-e7a3-4b78-9e44-d0c433b17557" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6e3444d8-9402-7fde-021e-9f4b7dba593c" executionId="a49c7db3-0414-4e52-a802-7c15f781f5f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4c2abeb9-fa6f-d581-6890-683d7d07694f" executionId="d5e4e365-4790-4e4a-86a6-0bbfbf25c218" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4715cb60-d51b-288c-62a5-29cc4fd1241c" executionId="b5d44045-a9ba-40df-9fc1-4eb29abbd6d1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8e3645dd-0dc0-0e2b-a4b6-3bd3a7dea0c8" executionId="0aafc824-a434-4535-b36e-079c1784c513" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1f5c8f33-a23a-d398-1610-04619e509039" executionId="4472bcec-40c7-4b6c-aaf8-5020fbfd84a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e5c2d6c9-86a1-2aa8-d1ec-3e342be59aad" executionId="035e7f7c-7f7b-4761-98d2-5841945cc1a3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cba7677e-8288-0f16-74b7-d49ddfa18d3f" executionId="6ed13330-09de-4f38-9440-c6764a6f0513" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28134b3c-ccb3-8d33-50dc-dd2a7bb1f41b" executionId="0c76a229-5777-4e84-b95b-75eefd853845" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="be045d37-de03-569f-e10a-31a0cc14adc4" executionId="9b853387-968f-4e4e-810b-a70bcdbe6908" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0043e65f-0b58-128d-9885-65eba5a169a2" executionId="b259cc4a-8eb3-4946-b0bc-41ecbd39edb8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b87c030d-6eae-f1eb-792b-50e1fc1abb9d" executionId="c0ce0835-0d36-49b3-9b6e-adb873d9111f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="39b69766-4360-eb20-6b1a-161d4830d56d" executionId="25b541ca-c9c6-47ca-95fe-35d4e2b93ccf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="68daa99c-2770-ab4c-469f-94411dbdea99" executionId="1154020d-c1b3-4af7-a053-c941fec7f4af" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4987353d-f1db-9a95-56e0-87b28a309af0" executionId="d06c0da9-2511-4ce7-8d45-962bec23e803" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dc3a620e-78fa-1203-9374-3a925627a360" executionId="6f3ad805-7d57-4026-8751-40a094aff632" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3c633e18-4a46-8128-f76c-9a22f53d1429" executionId="74c3d688-b93b-44f5-a1bb-04457bb9143b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0a5ccf4a-3b88-b8a5-f903-4fd087137b7b" executionId="f7adec64-4e10-4bdc-a7a3-fa1a5a1b7c52" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6555d0d2-7b77-9f95-81d8-ef21cd8c511f" executionId="2fc7fd61-a0c7-4919-96b5-448f3f877761" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2b8d4736-963a-a983-aa84-74baa3bd3699" executionId="4fa12ef9-a868-4d39-b6a9-e09f60551699" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="75b031d4-277b-1b78-c396-7015bb729415" executionId="3837a58b-1227-42d0-b65d-9415c8c877f1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fa0f4083-6256-cacd-2f4c-4a3db6468535" executionId="c0fa9c6f-9117-4635-8561-37aaa644f48f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="33d880dc-c544-b306-6d5b-646c2b258591" executionId="9d8b7a12-e5c2-4367-94fb-6db031080080" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9590370e-18c2-05d5-ed05-165d842dd3d4" executionId="2d4ce861-43c7-4e63-a587-a2d427ca5229" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="75c7b864-a9e5-bc71-a616-f11e068eb1ed" executionId="c0c2fa29-0d97-4c4b-83ab-fbca15741185" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="157" executed="157" passed="157" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+</TestRun>
